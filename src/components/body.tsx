@@ -1,0 +1,36 @@
+import { STORE_NAME } from '../store/constants';
+
+const {
+	data: {
+		useSelect,
+	}
+} = window[ 'wp' ];
+
+/**
+ * Export component that fires events for dirty and saving state changes.
+ *
+ * @since 0.1.0
+ */
+export default function Body() {
+
+	// Set states.
+	const {
+		isEditing,
+	} = useSelect( ( select: Function ) => {
+		const store = select( STORE_NAME );
+
+		return {
+			isEditing: store.isEditing(),
+		}
+	}, [] );
+
+	if( isEditing && ! document.body.classList.contains( 'is-editing-viewports' ) ) {
+		document.body.classList.add( 'is-editing-viewports' );
+	}
+
+	if( ! isEditing && document.body.classList.contains( 'is-editing-viewports' ) ) {
+		document.body.classList.remove( 'is-editing-viewports' );
+	}
+
+	return null;
+}

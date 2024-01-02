@@ -1,0 +1,375 @@
+// Import test environment.
+import { describe, expect, test } from '@jest/globals';
+
+// Import store parts.
+import * as actions from '../actions';
+
+// Deconstruct functions to test.
+const {
+	setViewports,
+	setViewport,
+	setDesktop,
+	setTablet,
+	setMobile,
+	setReady,
+	setLoading,
+	unsetLoading,
+	setSaving,
+	unsetSaving,
+	setAutoSaving,
+	unsetAutoSaving,
+	setActive,
+	unsetActive,
+	toggleActive,
+	toggleDesktop,
+	toggleTablet,
+	toggleMobile,
+	registerBlockInit,
+	updateBlockChanges,
+	updateBlockDefaults,
+	updateBlockValids,
+	removeBlock,
+	removeBlockChanges,
+	removeBlockSaves,
+	removeBlockRemoves,
+	saveBlock,
+	inspectBlock,
+	clearBlocks,
+	registerRenderer,
+} = actions;
+
+
+describe( 'store actions', () => {
+
+	test( 'setViewports', () => {
+		const viewports = {
+			320: 'Mobile',
+			768: 'Tablet',
+			1280: 'Desktop',
+		};
+		const check = {
+			type: 'SET_VIEWPORTS',
+			viewports,
+		};
+		const result = setViewports( viewports );
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'setViewport', () => {
+		const check = {
+			type: 'SET_VIEWPORT',
+			viewport: 320,
+		};
+		const result = setViewport( 320 );
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'setDesktop', () => {
+		const check = {
+			type: 'SET_DESKTOP',
+		};
+		const result = setDesktop();
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'setTablet', () => {
+		const check = {
+			type: 'SET_TABLET',
+		};
+		const result = setTablet();
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'setMobile', () => {
+		const check = {
+			type: 'SET_MOBILE',
+		};
+		const result = setMobile();
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'setReady', () => {
+		const check = {
+			type: 'SET_READY',
+		};
+		const result = setReady();
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'setLoading', () => {
+		const check = {
+			type: 'SET_LOADING',
+		};
+		const result = setLoading();
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'unsetLoading', () => {
+		const check = {
+			type: 'UNSET_LOADING',
+		};
+		const result = unsetLoading();
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'setSaving', () => {
+		const check = {
+			type: 'SET_SAVING',
+		};
+		const result = setSaving();
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'unsetSaving', () => {
+		const check = {
+			type: 'UNSET_SAVING',
+		};
+		const result = unsetSaving();
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'setAutoSaving', () => {
+		const check = {
+			type: 'SET_AUTOSAVING',
+		};
+		const result = setAutoSaving();
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'unsetAutoSaving', () => {
+		const check = {
+			type: 'UNSET_AUTOSAVING',
+		};
+		const result = unsetAutoSaving();
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'setActive', () => {
+		const check = {
+			type: 'SET_ACTIVE',
+		};
+		const result = setActive();
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'unsetActive', () => {
+		const check = {
+			type: 'UNSET_ACTIVE',
+		};
+		const result = unsetActive();
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'toggleActive', () => {
+		const check = {
+			type: 'TOGGLE_ACTIVE',
+		};
+		const result = toggleActive();
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'toggleDesktop', () => {
+		const check = {
+			type: 'TOGGLE_DESKTOP',
+		};
+		const result = toggleDesktop();
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'toggleTablet', () => {
+		const check = {
+			type: 'TOGGLE_TABLET',
+		};
+		const result = toggleTablet();
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'toggleMobile', () => {
+		const check = {
+			type: 'TOGGLE_MOBILE',
+		};
+		const result = toggleMobile();
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'registerBlockInit', () => {
+		const attributes = {
+			styles: {},
+			content: '',
+		}
+		const check = {
+			type: 'REGISTER_BLOCK_INIT',
+			clientId: 'client-id',
+			attributes: attributes,
+		};
+		const result = registerBlockInit( 'client-id', attributes );
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'updateBlockChanges', () => {
+		const attributes = {
+			styles: {},
+			content: '',
+		}
+		const check = {
+			type: 'UPDATE_BLOCK_CHANGES',
+			clientId: 'client-id',
+			attributes: attributes,
+		};
+		const result = updateBlockChanges( 'client-id', attributes );
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'updateBlockDefaults', () => {
+		const attributes = {
+			styles: {},
+			content: '',
+		}
+		const check = {
+			type: 'UPDATE_BLOCK_DEFAULTS',
+			clientId: 'client-id',
+			attributes: attributes,
+		};
+		const result = updateBlockDefaults( 'client-id', attributes );
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'updateBlockValids', () => {
+		const props = {}
+		const check = {
+			type: 'UPDATE_BLOCK_VALIDS',
+			clientId: 'client-id',
+		};
+		const result = updateBlockValids( 'client-id' );
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'removeBlock', () => {
+		const check = {
+			type: 'REMOVE_BLOCK',
+			clientId: 'client-id',
+		};
+		const result = removeBlock( 'client-id' );
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'removeBlockChanges', () => {
+		const props = {}
+		const check = {
+			type: 'REMOVE_BLOCK_CHANGES',
+			clientId: 'client-id',
+			props: props,
+			viewport: 320,
+		};
+		const result = removeBlockChanges( 'client-id', props, 320 );
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'removeBlockSaves', () => {
+		const props = {}
+		const check = {
+			type: 'REMOVE_BLOCK_SAVES',
+			clientId: 'client-id',
+			props: props,
+			viewport: 320,
+		};
+		const result = removeBlockSaves( 'client-id', props, 320 );
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'removeBlockRemoves', () => {
+		const props = {}
+		const check = {
+			type: 'REMOVE_BLOCK_REMOVES',
+			clientId: 'client-id',
+			props: props,
+			viewport: 320,
+		};
+		const result = removeBlockRemoves( 'client-id', props, 320 );
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'saveBlock', () => {
+		const check = {
+			type: 'SAVE_BLOCK',
+			clientId: 'client-id',
+		};
+		const result = saveBlock( 'client-id' );
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'inspectBlock', () => {
+
+		// Then check with object parameter.
+		const block = {
+			clientId: 'client-id',
+			viewport: 320,
+		}
+		const fullCheck = {
+			type: 'INSPECT_BLOCK',
+			block: block,
+		};
+		const fullResult = inspectBlock( block );
+
+		expect( fullCheck ).toStrictEqual( fullResult );
+
+		// Then check with falsy parameter.
+		const emptyCheck = {
+			type: 'INSPECT_BLOCK',
+			block: false,
+		};
+		const emptyResult = inspectBlock( false );
+
+		expect( emptyCheck ).toStrictEqual( emptyResult );
+	});
+
+	test( 'clearBlocks', () => {
+		const check = {
+			type: 'CLEAR_BLOCKS',
+		};
+		const result = clearBlocks();
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'registerRenderer', () => {
+		const callback = () => {};
+		const check = {
+			type: 'REGISTER_RENDERER',
+			prop: 'style-key',
+			callback: callback,
+			priority: 10,
+		};
+		const result = registerRenderer( 'style-key', callback, 10 );
+
+		expect( check ).toStrictEqual( result );
+	});
+
+} );

@@ -1,0 +1,367 @@
+import { STORE_NAME } from '../store/constants';
+
+const {
+	data: {
+		select,
+		dispatch,
+	},
+	element: {
+		useEffect,
+	}
+} = window[ 'wp' ];
+
+const { isObject } = window[ 'lodash' ];
+
+/**
+ * Global dirty and save states.
+ */
+let isAutosaving = false;
+let isRunning : any = false;
+let oldSaveEntityRecord : Function;
+let oldSavePost : Function;
+let oldAutosave : Function;
+
+
+/**
+ * Fire the given event on body and log it.
+ *
+ * @param name   The events name
+ * @param detail Additional data passed to subscribers
+ */
+function dispatchEvent( name : string, detail : any ) {
+	// if( 0 < name.indexOf( '-before' ) ) {
+	// 	console.log( '%c' + name, 'padding:4px 8px;background:orange;color:white' );
+	// 	console.log( detail );
+	// }
+
+	document.body.dispatchEvent( new CustomEvent( name, { detail } ) );
+
+	// if( 0 < name.indexOf( '-after' ) ) {
+	// 	console.log( '%c' + name, 'padding:4px 8px;background:orange;color:white' );
+	// 	console.log( detail );
+	// }
+}
+
+
+/**
+ * Wrapper function for saveEntityRecord().
+ *
+ * @param kind
+ * @param name
+ * @param record
+ * @param options
+ * @returns
+ */
+function newSaveEntityRecord( kind : string, name : string, record : any[], options : object ) {
+
+	// Bail out if autosaving.
+	if( isAutosaving ) {
+		return oldSaveEntityRecord( kind, name, record, options );
+	}
+
+	// Bail out if savePost.
+	if( 'savePost' === isRunning ) {
+		return oldSaveEntityRecord( kind, name, record, options );
+	}
+
+	// Set active runner flag.
+	isRunning = 'saveEntityRecord';
+
+	// Fire event before saveEntityRecord().
+	dispatchEvent( 'qp-saveEntityRecord-before', { kind, name, record, options } );
+
+	// Execute saveEnityRecord.
+	const resultPromise = oldSaveEntityRecord( kind, name, record, options );
+
+	// Return outer promise and dispatch an event when inner promise is done.
+	return new Promise( ( resolve, reject ) => {
+		resultPromise
+		.then( ( response : any ) => {
+			dispatchEvent( 'qp-saveEntityRecord-after', response );
+			resolve( response );
+		} )
+		.catch( ( response : any ) => {
+			dispatchEvent( 'qp-saveEntityRecord-after', response );
+			reject( response );
+		} );
+	} );
+}
+
+
+/**
+ * Wrapper function for autosave().
+ *
+ * @param state
+ * @returns
+ */
+function newSavePost( options = {} ) {
+	isRunning = 'savePost';
+
+	// Fire event before autosave().
+	dispatchEvent( 'qp-savePost-before', options );
+
+	// Execute autosave.
+	const resultPromise = oldSavePost( options );
+
+	// Return outer promise and dispatch an event when inner promise is done.
+	return new Promise( ( resolve, reject ) => {
+		resultPromise
+		.then( ( response : any ) => {
+			dispatchEvent( 'qp-savePost-after', response );
+			resolve( response );
+		} )
+		.catch( ( response : any ) => {
+			dispatchEvent( 'qp-savePost-after', response );
+			reject( response );
+		} );
+	} );
+}
+
+
+/**
+ * Wrapper function for autosave().
+ *
+ * @param state
+ * @returns
+ */
+function newAutosave( state : any ) {
+
+	// Fire event before autosave().
+	dispatchEvent( 'qp-autosave-before', state );
+	isAutosaving = true;
+
+	// Execute autosave.
+	const resultPromise = oldAutosave( state );
+
+	// Return outer promise and dispatch an event when inner promise is done.
+	return new Promise( ( resolve, reject ) => {
+		resultPromise
+		.then( ( response : any ) => {
+			dispatchEvent( 'qp-autosave-after', response );
+			isAutosaving = false;
+			resolve( response );
+		} )
+		.catch( ( response : any ) => {
+			dispatchEvent( 'qp-autosave-after', response );
+			isAutosaving = false;
+			reject( response );
+		} );
+	} );
+}
+
+
+/**
+ * Set saveMap to check the last save end call.
+ *
+ * @since 0.1.0
+ */
+const saveMap = new Map();
+
+
+/**
+ * Set function to fire on saving start.
+ *
+ * @param {object} event
+ *
+ * @since 0.1.0
+ */
+function onSaveEntityRecordStart( event ) {
+	const { name, record: {
+		id,
+	} } = event.detail;
+
+	console.log( `%cQP-Viewports -> onSaveEntityRecordStart -> ${ name } -> ${ id }`, 'padding:4px 8px;background:darkgreen;color:white' );
+
+	const saveKey = name + '-' + id;
+
+	saveMap.set( saveKey, true );
+
+	dispatch( STORE_NAME ).setSaving();
+}
+
+
+/**
+ * Set function to fire on saving end.
+ *
+ * @since 0.1.0
+ */
+function onSaveEntityRecordEnd( event ) {
+	const { type, id } = event.detail;
+
+	console.log( `%cQP-Viewports -> onSaveEntityRecordEnd -> ${ type } -> ${ id }`, 'padding:4px 8px;background:darkgreen;color:white' );
+
+	const saveKey = type + '-' + id;
+
+	saveMap.delete( saveKey );
+
+	if( 0 < saveMap.size ) {
+		return;
+	}
+
+	// Get all blocks attributes and interate through to read clientId.
+	const saves = select( STORE_NAME ).getSaves();
+	const valids = select( STORE_NAME ).getViewportValids();
+	const update = {};
+
+	for( const [ clientId, attributes ] of Object.entries( valids ) ) {
+		if( saves.hasOwnProperty( clientId ) && 0 < Object.keys( saves[ clientId ] ).length ) {
+			update[ clientId ] = {
+				tempId: clientId,
+				style: attributes[ 'style' ],
+			}
+		}
+	}
+
+	console.log( '%cQP-Viewports -> onSaveEntityRecordEnd update', 'padding:4px 8px;background:darkgreen;color:white' );
+
+	isRunning = false;
+
+	// Update all blocks to viewports valid attributes and unset saving.
+	dispatch( STORE_NAME ).unsetSaving();
+	dispatch( 'core/block-editor' ).updateBlockAttributes( Object.keys( update ), update, true );
+}
+
+
+/**
+ * Set function to fire on savePost start.
+ *
+ * @since 0.1.0
+ */
+function onSavePostStart( event ) {
+	if( isAutosaving ) {
+		return;
+	}
+
+	console.log( '%cQP-Viewports -> onSavePostStart', 'padding:4px 8px;background:darkgreen;color:white' );
+
+	dispatch( STORE_NAME ).setSaving();
+}
+
+
+/**
+ * Set function to fire on savePost end.
+ *
+ * @since 0.1.0
+ */
+function onSavePostEnd() {
+	if( isAutosaving ) {
+		return;
+	}
+
+	isRunning = false;
+
+	// Get all blocks attributes and interate through to read clientId.
+	const saves = select( STORE_NAME ).getSaves();
+	const valids = select( STORE_NAME ).getViewportValids();
+	const update = {};
+
+	for( const [ clientId, attributes ] of Object.entries( valids ) ) {
+		if( saves.hasOwnProperty( clientId ) && 0 < Object.keys( saves[ clientId ] ).length ) {
+			update[ clientId ] = {
+				tempId: clientId,
+				style: attributes[ 'style' ],
+			}
+		}
+	}
+
+	console.log( '%cQP-Viewports -> onSavePostEnd update', 'padding:4px 8px;background:darkgreen;color:white' );
+
+	// Update all blocks to viewports valid attributes and unset saving.
+	dispatch( STORE_NAME ).unsetSaving();
+	dispatch( 'core/block-editor' ).updateBlockAttributes( Object.keys( update ), update, true );
+}
+
+
+/**
+ * Set function to fire on saving start.
+ *
+ * @since 0.1.0
+ */
+function onAutoSavingStart() {
+	console.log( '%cQP-Viewports: onAutoSavingStart', 'padding:4px 8px;background:darkgreen;color:white' );
+
+	dispatch( STORE_NAME ).setAutoSaving();
+}
+
+
+/**
+ * Set function to fire on autosaving end.
+ *
+ * @since 0.1.0
+ */
+function onAutoSavingEnd() {
+	const isActive = select( STORE_NAME ).isActive();
+
+
+	// Get all blocks attributes and interate through to read clientId.
+	const valids = select( STORE_NAME ).getViewportValids();
+	const update = {};
+
+	for( const [ clientId, attributes ] of Object.entries( valids ) ) {
+		if( attributes.hasOwnProperty( 'style' ) && isObject( attributes[ 'style' ] ) &&  0 !== Object.keys( attributes[ 'style' ] ).length ) {
+			update[ clientId ] = attributes;
+		}
+	}
+
+	console.log( '%cQP-Viewports: valids onAutoSavingEnd', 'padding:4px 8px;background:darkgreen;color:white' );
+
+	// Update all blocks to viewport valid attributes and unset saving.
+	dispatch( STORE_NAME ).unsetAutoSaving();
+	dispatch( 'core/block-editor' ).updateBlockAttributes( Object.keys( update ), update, true );
+}
+
+
+/**
+ * Export component that fires events for dirty and saving state changes.
+ *
+ * @since 0.1.0
+ */
+export default function Save() {
+
+	/**
+	 * Set useEffect to handle onMount event registration onMount and onUnmount.
+	 *
+	 * @since 0.1.0
+	 */
+	useEffect( () => {
+		document.body.addEventListener( 'qp-saveEntityRecord-before', onSaveEntityRecordStart );
+		document.body.addEventListener( 'qp-saveEntityRecord-after', onSaveEntityRecordEnd );
+
+		document.body.addEventListener( 'qp-savePost-before', onSavePostStart );
+		document.body.addEventListener( 'qp-savePost-after', onSavePostEnd );
+
+		document.body.addEventListener( 'qp-autosave-before', onAutoSavingStart );
+		document.body.addEventListener( 'qp-autosave-after', onAutoSavingEnd );
+
+		return () => {
+			document.body.removeEventListener( 'qp-saveEntityRecord-before', onSaveEntityRecordStart );
+			document.body.removeEventListener( 'qp-saveEntityRecord-after', onSaveEntityRecordEnd );
+
+			document.body.removeEventListener( 'qp-savePost-before', onSavePostStart );
+			document.body.removeEventListener( 'qp-savePost-after', onSavePostEnd );
+
+			document.body.removeEventListener( 'qp-autosave-before', onAutoSavingStart );
+			document.body.removeEventListener( 'qp-autosave-after', onAutoSavingEnd );
+		}
+	}, [] );
+
+	// Hook into saveEntityRecord.
+	const coreStore = dispatch( 'core' );
+	if( coreStore && ! oldSaveEntityRecord ) {
+		oldSaveEntityRecord = coreStore.saveEntityRecord;
+		coreStore.saveEntityRecord = newSaveEntityRecord;
+	}
+
+	// Hook into autosave.
+	const coreEditorStore = dispatch( 'core/editor' );
+	if( coreEditorStore && ! oldAutosave ) {
+		oldAutosave = coreEditorStore.autosave;
+		coreEditorStore.autosave = newAutosave;
+
+		oldSavePost = coreEditorStore.savePost;
+		coreEditorStore.savePost = newSavePost;
+	}
+
+	// Return nothing.
+	return null;
+}
