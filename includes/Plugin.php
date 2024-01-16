@@ -248,11 +248,18 @@ class Plugin extends Instance {
 				foreach ( $attributes as $rules ) {
 					foreach ( $rules as $rule ) {
 						if ( ! empty( $rule['css'] ) ) {
-
+							
 							// Check if we have a leading wildcard.
 							if( 0 === strpos( $rule['css'], '%' ) ) {
-								$search = '/' . preg_quote( '%', '/' ) . '/';
-    							$css .= preg_replace( $search, $selector, $rule['css'], 1 );
+
+								// Split css_rules by selectors.
+								$css_rules = preg_split('/(?=%[>])/', $rule['css'], -1, PREG_SPLIT_NO_EMPTY );
+
+								// Parse them to css.
+								foreach ( $css_rules as $css_rule ) {
+									$search = '/' . preg_quote( '%', '/' ) . '/';
+    								$css .= preg_replace( $search, $selector, $css_rule, 1 );
+								}
 
 							// Check if we have static css.
 							} else {
