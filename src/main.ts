@@ -3,6 +3,7 @@ import './store/index';
 import './hooks';
 
 import { STORE_NAME } from './store/constants';
+import { isSiteEditor } from './utils/editor';
 import iframeHandler from './iframe';
 import Wrap from './components/wrap';
 import Sidebar from './components/sidebar';
@@ -78,35 +79,61 @@ domReady( () => {
 			iframeHandler();
 
 			// Make sure the viewport UI is attached to the DOM.
+			if ( ! sidebarWrap.isConnected ) {
+				if ( isSiteEditor() ) {
+					const sidebarUI = document.querySelector( '.edit-site-editor__interface-skeleton .interface-interface-skeleton__content' );
+
+					if ( sidebarUI ) {
+						sidebarUI.before( sidebarWrap );
+
+						if ( ! sidebarRoot ) {
+							sidebarRoot = createRoot( sidebarWrap );
+							sidebarRoot.render( createElement( Sidebar ) );
+						}
+					}
+				} else {
+					const sidebarUI = document.querySelector( '.edit-post-visual-editor .edit-post-visual-editor__content-area' );
+
+					if ( sidebarUI ) {
+						sidebarUI.before( sidebarWrap );
+
+						if ( ! sidebarRoot ) {
+							sidebarRoot = createRoot( sidebarWrap );
+							sidebarRoot.render( createElement( Sidebar ) );
+						}
+					}
+				}
+			}
+
+			// Make sure the viewport UI is attached to the DOM.
 			if ( ! viewportWrap.isConnected ) {
-				const viewportUI = document.querySelector( '.edit-site-visual-editor__editor-canvas, .edit-post-visual-editor__content-area iframe[name="editor-canvas"], .edit-post-visual-editor__content-area .is-desktop-preview' );
+				if ( isSiteEditor() ) {
+					const viewportUI = document.querySelector( '.interface-interface-skeleton__content .edit-site-visual-editor' );
 
-				if ( viewportUI ) {
-					viewportUI.before( viewportWrap );
+					if ( viewportUI ) {
+						viewportUI.before( viewportWrap );
 
-					if ( ! viewportRoot ) {
-						viewportRoot = createRoot( viewportWrap );
-						viewportRoot.render( createElement( Wrap ) );
+						if ( ! viewportRoot ) {
+							viewportRoot = createRoot( viewportWrap );
+							viewportRoot.render( createElement( Wrap ) );
+						}
+					}
+				} else {
+					const viewportUI = document.querySelector( '.edit-post-visual-editor__content-area iframe[name="editor-canvas"], .edit-post-visual-editor__content-area .is-desktop-preview' );
+
+					if ( viewportUI ) {
+						viewportUI.before( viewportWrap );
+
+						if ( ! viewportRoot ) {
+							viewportRoot = createRoot( viewportWrap );
+							viewportRoot.render( createElement( Wrap ) );
+						}
 					}
 				}
 			}
 
 			// Always render viewport root.
 			// viewportRoot.render( createElement( Wrap ) );
-
-			// Make sure the viewport UI is attached to the DOM.
-			if ( ! sidebarWrap.isConnected ) {
-				const sidebarUI = document.querySelector( '.edit-site-visual-editor > .components-resizable-box__container, .edit-post-visual-editor .edit-post-visual-editor__content-area' );
-
-				if ( sidebarUI ) {
-					sidebarUI.before( sidebarWrap );
-
-					if ( ! sidebarRoot ) {
-						sidebarRoot = createRoot( sidebarWrap );
-						sidebarRoot.render( createElement( Sidebar ) );
-					}
-				}
-			}
 
 			// Make sure the toggle UI is attached to the DOM.
 			if ( ! toggleWrap.isConnected ) {

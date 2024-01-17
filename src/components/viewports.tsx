@@ -24,6 +24,7 @@ const Viewports = () => {
 		return {
 			viewport: store.getViewport(),
 			isActive: store.isActive(),
+			isExpanded: store.isExpanded(),
 		}
 	}, [] );
 
