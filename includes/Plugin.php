@@ -123,12 +123,13 @@ class Plugin extends Instance {
 	 * @param  array  (required) $block         Block object.
 	 *
 	 * @since 0.1.0
+	 * @version 0.1.2
 	 *
 	 * @return string Filtered block content.
 	 */
 	public function render_block( $block_content, $block ) {
 		$class_name = \wp_unique_id( 'qp-viewports-' );
-		$selector   = '.wp-site-blocks .' . $class_name;
+		$selector   = 'body .wp-site-blocks .' . $class_name;
 		$options    = array( 'selector' => $selector );
 		$content    = new \WP_HTML_Tag_Processor( $block_content );
 
@@ -248,7 +249,7 @@ class Plugin extends Instance {
 				foreach ( $attributes as $rules ) {
 					foreach ( $rules as $rule ) {
 						if ( ! empty( $rule['css'] ) ) {
-							
+
 							// Check if we have a leading wildcard.
 							if( 0 === strpos( $rule['css'], '%' ) ) {
 
