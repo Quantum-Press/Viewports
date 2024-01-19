@@ -23,7 +23,7 @@ const iframeHandler = () => {
 	const $ui = document.querySelector( '.interface-interface-skeleton__content .components-resizable-box__container, .edit-post-visual-editor .is-desktop-preview, .edit-post-visual-editor__content-area .is-desktop-preview' );
 	const maxWidth = $ui ? $ui.getBoundingClientRect().width : 0;
 
-	const $uiWrap = document.querySelector( '.interface-interface-skeleton__content .components-resizable-box__container, .edit-post-visual-editor .is-desktop-preview, .edit-post-visual-editor__content-area' );
+	const $uiWrap = document.querySelector( '.edit-site-visual-editor, .edit-post-visual-editor .is-desktop-preview, .edit-post-visual-editor__content-area' );
 	const maxHeight = $uiWrap ? $uiWrap.getBoundingClientRect().height : 0;
 
 
