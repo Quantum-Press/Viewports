@@ -273,7 +273,7 @@ export const hasBlockViewports = ( state : State, clientId : string ) : boolean 
  * @return {boolean}
  */
 export const hasBlockDefaults = ( state : State, clientId : string ) : boolean => {
-	return state.defaults.hasOwnProperty( clientId ) && isObject( state.defaults[ clientId ] ) && state.defaults[ clientId ].hasOwnProperty( 'style' ) && Object.keys( state.defaults[ clientId ][ 'style' ] ).length ? true : false;
+	return state.defaults.hasOwnProperty( clientId ) && isObject( state.defaults[ clientId ] ) && state.defaults[ clientId ].hasOwnProperty( 'style' ) && isObject( state.defaults[ clientId ][ 'style' ] ) && Object.keys( state.defaults[ clientId ][ 'style' ] ).length ? true : false;
 };
 
 

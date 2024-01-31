@@ -182,7 +182,9 @@ export default function BlockEdit( blockArgs : any ) {
 
 		if( isEditing ) {
 			setUpdateValidsViewport( true );
-			setUpdateSelectedViewport( true  );
+			setUpdateSelectedViewport( true );
+		} else {
+			setUpdateDefaultsViewport( true );
 		}
 	}, [ lastEdit ] );
 
@@ -214,7 +216,7 @@ export default function BlockEdit( blockArgs : any ) {
 			} else {
 				setUpdateValidsViewport( true );
 			}
-			
+
 		} else {
 			setUpdateDefaultsViewport( true );
 		}

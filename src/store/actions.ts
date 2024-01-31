@@ -466,6 +466,25 @@ export const removeBlock = ( clientId : string ) : object => {
 
 
 /**
+ * Set Action to remove block defaults.
+ *
+ * @param {string}  clientId
+ * @param {object}  props
+ *
+ * @since 0.1.0
+ *
+ * @return {object} action
+ */
+export const removeBlockDefaults = ( clientId : string, props : object ) : object => {
+	return {
+		type: 'REMOVE_BLOCK_DEFAULTS',
+		clientId,
+		props,
+	};
+}
+
+
+/**
  * Set Action to remove block changes.
  *
  * @param {string}  clientId

@@ -1167,6 +1167,7 @@ describe( 'test store selectors', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				isActive: false,
+				isEditing: false,
 				viewport: 768,
 				valids: {
 					'client-id-1': {
@@ -1215,6 +1216,7 @@ describe( 'test store selectors', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				isActive: true,
+				isEditing: true,
 				viewport: 768,
 				valids: {
 					'client-id-1': {
@@ -1254,6 +1256,7 @@ describe( 'test store selectors', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				isActive: true,
+				isEditing: true,
 				viewport: 768,
 				valids: {
 					'client-id-1': {

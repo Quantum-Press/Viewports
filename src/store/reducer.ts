@@ -940,6 +940,63 @@ export function removeBlock( state : State, action : Action ) : State {
 
 
 /**
+ * Set reducer to remove block defaults.
+ *
+ * @param {object} state  current
+ * @param {object} action dispatched
+ *
+ * @since 0.1.0
+ *
+ * @return {object} updated state
+ */
+export function removeBlockDefaults( state : State, action : Action ) : State {
+	switch ( action.type ) {
+		case 'REMOVE_BLOCK_DEFAULTS' :
+			const { clientId, viewport, props } = action;
+			const { defaults, valids } = state;
+
+			if ( defaults.hasOwnProperty( clientId ) ) {
+
+				const blockRemoves = findRemoves( props, defaults[ clientId ][ 'style' ] );
+				console.log( 'blockRemoves', blockRemoves );
+
+				const blockChanges = findCleanedChanges( defaults[ clientId ][ 'style' ], blockRemoves );
+				console.log( 'blockChanges', blockChanges );
+
+				let nextState : any = {};
+
+				// Set blockChanges if they are empty or not.
+				nextState = {
+					... state,
+					defaults: {
+						... defaults,
+						[ clientId ]: {
+							style: {
+								... blockChanges
+							}
+						}
+					}
+				}
+
+				// Generate new valids from new state.
+				const blockValids = findBlockValids( clientId, nextState );
+
+				return {
+					... nextState,
+					valids: {
+						... valids,
+						[ clientId ]: blockValids
+					},
+					lastEdit: Date.now(),
+				}
+			}
+	}
+
+	return state;
+}
+
+
+/**
  * Set reducer to remove block changes.
  *
  * @param {object} state  current
@@ -1418,6 +1475,7 @@ export const combinedReducers = {
 	updateBlockDefaults,
 	updateBlockValids,
 	removeBlock,
+	removeBlockDefaults,
 	removeBlockChanges,
 	removeBlockSaves,
 	removeBlockRemoves,

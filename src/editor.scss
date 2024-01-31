@@ -96,11 +96,15 @@
 /**
  * Sidebar.
  */
+body.is-active-viewports {
+	#qp-viewports-sidebar-ui-wrap {
+		border-right: 1px solid #919191;
+	}
+}
 #qp-viewports-sidebar-ui-wrap {
 	position: relative;
 	height: calc( 100% - 45px );
 	margin-top: 45px;
-	border-right: 1px solid #919191;
 	box-sizing: border-box;
 	background: #212124;
 

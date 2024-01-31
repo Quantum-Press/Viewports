@@ -42,6 +42,7 @@ import {
 	updateBlockDefaults,
 	updateBlockValids,
 	removeBlock,
+	removeBlockDefaults,
 	removeBlockChanges,
 	removeBlockSaves,
 	removeBlockRemoves,
@@ -1411,6 +1412,155 @@ describe( 'test store reducers', () => {
 				valids: {},
 			}
 			const result = removeBlock( state, action );
+
+			expect( result ).toStrictEqual( check );
+		} );
+
+		test( 'can removeBlockDefaults() remove the first entry (style needs to stay)', () => {
+			const state = deepFreeze( {
+				... DEFAULT_STATE,
+				viewports: {
+					375: 'Mobile',
+					768: 'Tablet',
+					1280: 'Desktop',
+				},
+				defaults: {
+					'client-id': {
+						style: {
+							dimensions: {
+								padding: {
+									top: "20px",
+									bottom: "20px",
+								}
+							}
+						}
+					}
+				}
+			} );
+			const action = {
+				type: 'REMOVE_BLOCK_DEFAULTS',
+				clientId: 'client-id',
+				props: [ 'dimensions' ],
+			}
+
+			const check = {
+				... state,
+				defaults: {
+					'client-id': {
+						style: {}
+					}
+				},
+				valids: {
+					'client-id': {
+						0: {
+							style: {}
+						},
+						375: {
+							style: {}
+						},
+						768: {
+							style: {}
+						},
+						1280: {
+							style: {}
+						}
+					}
+				}
+			}
+			const result = removeBlockDefaults( state, action );
+
+			// Reset lastEdit cause it is a timestamp.
+			result.lastEdit = check.lastEdit;
+
+			expect( result ).toStrictEqual( check );
+		} );
+
+
+		test( 'can removeBlockDefaults() remove to the deepest', () => {
+			const state = deepFreeze( {
+				... DEFAULT_STATE,
+				viewports: {
+					375: 'Mobile',
+					768: 'Tablet',
+					1280: 'Desktop',
+				},
+				defaults: {
+					'client-id': {
+						style: {
+							dimensions: {
+								padding: {
+									top: "20px",
+									bottom: "20px",
+								}
+							}
+						}
+					}
+				}
+			} );
+			const action = {
+				type: 'REMOVE_BLOCK_DEFAULTS',
+				clientId: 'client-id',
+				props: [ 'dimensions', 'padding', 'top' ],
+			}
+
+			const check = {
+				... state,
+				defaults: {
+					'client-id': {
+						style: {
+							dimensions: {
+								padding: {
+									bottom: "20px",
+								}
+							}
+						}
+					}
+				},
+				valids: {
+					'client-id': {
+						0: {
+							style: {
+								dimensions: {
+									padding: {
+										bottom: "20px",
+									}
+								}
+							}
+						},
+						375: {
+							style: {
+								dimensions: {
+									padding: {
+										bottom: "20px",
+									}
+								}
+							}
+						},
+						768: {
+							style: {
+								dimensions: {
+									padding: {
+										bottom: "20px",
+									}
+								}
+							}
+						},
+						1280: {
+							style: {
+								dimensions: {
+									padding: {
+										bottom: "20px",
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			const result = removeBlockDefaults( state, action );
+
+			// Reset lastEdit cause it is a timestamp.
+			result.lastEdit = check.lastEdit;
 
 			expect( result ).toStrictEqual( check );
 		} );
