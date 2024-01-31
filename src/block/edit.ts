@@ -142,7 +142,7 @@ export default function BlockEdit( blockArgs : any ) {
 
 	// Use useEffect to handle clientId updates when we first setup block.
 	useLayoutEffect( () => {
-		if( updateTempId || tempId === clientId ) {
+		if( ( updateTempId || tempId === clientId ) && ! ( ! updateTempId && tempId === clientId ) ) {
 			return;
 		}
 
