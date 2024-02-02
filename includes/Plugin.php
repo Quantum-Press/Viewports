@@ -14,6 +14,7 @@ use Quantum\Viewports\Controller\Instance;
  *
  * @class    Quantum\Viewports\Plugin
  * @since    0.1.0
+ * @version  0.1.6
  * @package  Quantum\Viewports
  * @category Class
  * @author   Sebastian Buchwald // conversionmedia GmbH & Co. KG
@@ -225,7 +226,8 @@ class Plugin extends Instance {
 	 * @param string (required) $selector
 	 * @param array  (required) $viewports Pairs viewport to css
 	 *
-	 * @since 0.1.0
+	 * @since   0.1.0
+	 * @version 0.1.6
 	 *
 	 * @return string containing css
 	 */
@@ -238,10 +240,22 @@ class Plugin extends Instance {
 					foreach ( $rules as $rule ) {
 						if ( ! empty( $rule['css'] ) ) {
 
-							// Replace leading wildcard.
-							$search = '/' . preg_quote( '%', '/' ) . '/';
-							$rule_css = preg_replace( $search, $selector, $rule['css'], 1 );
-							$css .= sprintf( '@media (min-width: %spx) { %s }', $viewport, $rule_css );
+							// Check if we have a leading wildcard.
+							if( 0 === strpos( $rule['css'], '%' ) ) {
+
+								// Split css_rules by selectors.
+								$css_rules = preg_split('/(?=%[>])/', $rule['css'], -1, PREG_SPLIT_NO_EMPTY );
+
+								// Parse them to css.
+								foreach ( $css_rules as $css_rule ) {
+									$search = '/' . preg_quote( '%', '/' ) . '/';
+    								$css .= sprintf( '@media (min-width: %spx) { %s }', $viewport, preg_replace( $search, $selector, $css_rule, 1 ) );
+								}
+
+							// Check if we have static css.
+							} else {
+								$css .= sprintf( '@media (min-width: %spx) { %s { %s } }', $viewport, $selector, $rule['css'] );
+							}
 						}
 					}
 				}
