@@ -5,7 +5,7 @@
  *
  * Plugin Name: Quantum Viewports
  * Description: Extends the Gutenberg Editor with full responsive mobile first support.
- * Version:     0.1.7
+ * Version:     0.1.8
  * Text Domain: quantum-viewports
  * Domain Path: /languages
  *
@@ -26,7 +26,7 @@ use \Quantum\Viewports\Tool\Deactivator;
 use \Quantum\Viewports\Tool\Uninstaller;
 
 // Global variables, as few as possible
-define( 'QUANTUM_VIEWPORTS_VERSION',    '0.1.7' );
+define( 'QUANTUM_VIEWPORTS_VERSION',    '0.1.8' );
 define( 'QUANTUM_VIEWPORTS_FILE',       ( __FILE__ ) );
 define( 'QUANTUM_VIEWPORTS_URL',        untrailingslashit( plugin_dir_url( QUANTUM_VIEWPORTS_FILE ) ) );
 define( 'QUANTUM_VIEWPORTS_PATH',       untrailingslashit( plugin_dir_path( QUANTUM_VIEWPORTS_FILE ) ) );

@@ -255,6 +255,21 @@ export const compileMediaQueryAttributes = ( saves : Attributes, defaults : Attr
 		}
 	}
 
+	const checkEmpty = {
+		0 : {
+			default : [
+				{
+					priority : 5,
+					css : ''
+				}
+			]
+		}
+	}
+
+	if( isEqual( checkEmpty, compiled ) ) {
+		return {};
+	}
+
 	return compiled;
 };
 
