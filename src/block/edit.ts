@@ -13,6 +13,7 @@ const {
 		useLayoutEffect,
 		useEffect,
 		useState,
+		Component
 	}
 } = window[ 'wp' ];
 
@@ -383,7 +384,10 @@ export default function BlockEdit( blockArgs : any ) {
 		}
 	}, [] );
 
-
-	// Return base block edit.
-	return block.edit( props );
+	// Check if block.edit is a funktion or class component to return edit.
+	const isClassComponent = typeof block.edit === 'function' && block.edit.prototype instanceof Component;
+	return isClassComponent
+		? ( new block.edit( props ) ).render()
+		: block.edit( props )
+	;
 }

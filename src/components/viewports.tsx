@@ -61,7 +61,7 @@ const Viewports = () => {
 	 * @since 0.1.0
 	 */
 	const $ui = document.querySelector( '.interface-interface-skeleton__content .components-resizable-box__container, .edit-post-visual-editor .edit-post-visual-editor__content-area' );
-	const uiWidth = $ui ? $ui.getBoundingClientRect().width : 0;
+	const uiWidth = $ui ? $ui.getBoundingClientRect().width - 80 : 0;
 
 	/**
 	 * Set function to calculate width by viewportWidth.
@@ -70,7 +70,7 @@ const Viewports = () => {
 	 */
 	const calculateWidth = ( viewportWidth: number ) => {
 		if ( props.viewport > uiWidth ) {
-			return Math.ceil( uiWidth / props.viewport * viewportWidth ) - 80;
+			return Math.ceil( uiWidth / props.viewport * viewportWidth );
 		}
 
 		return Math.ceil( viewportWidth );
