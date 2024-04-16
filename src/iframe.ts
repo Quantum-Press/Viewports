@@ -51,7 +51,7 @@ const iframeHandler = () => {
 		const $iframe = document.querySelector( 'iframe[name="editor-canvas"]' ) as HTMLElement;
 
 		if ( isActive ) {
-			if ( viewport > maxWidth ) {
+			if ( viewport > ( maxWidth - 80 ) ) {
 				const factorSmaller = ( maxWidth - 80 ) / viewport;
 				const factorGreater = viewport / ( maxWidth - 80 );
 
@@ -82,7 +82,7 @@ const iframeHandler = () => {
 			$iframe.style.width = '100%';
 			$iframe.style.height = '100%';
 
-			$widthContainer.style.height = ( maxHeight - 45 ) + 'px';
+			$widthContainer.style.height = ( maxHeight ) + 'px';
 
 			$iframe.style.margin = '0';
 			$iframe.style.transform = 'scale(1)';
@@ -139,8 +139,6 @@ const iframeHandler = () => {
 			} else {
 				$desktopPreviewContainer.style.height = 'auto';
 			}
-
-			console.log( 'inactive - ', maxHeight );
 
 			$iframe.style.margin = '0';
 			$iframe.style.transform = 'scale(1)';

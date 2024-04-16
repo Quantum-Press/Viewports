@@ -14,7 +14,7 @@ use Quantum\Viewports\Controller\Instance;
  *
  * @class    Quantum\Viewports\Plugin
  * @since    0.1.0
- * @version  0.1.9
+ * @version  0.1.10
  * @package  Quantum\Viewports
  * @category Class
  * @author   Sebastian Buchwald // conversionmedia GmbH & Co. KG
