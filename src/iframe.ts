@@ -57,6 +57,7 @@ const iframeHandler = () => {
 
 				$iframe.style.width = viewport + 'px';
 				$iframe.style.height = ( ( maxHeight - 45 ) * factorGreater ) + 'px';
+
 				$widthContainer.style.height = ( maxHeight - 45 ) + 'px';
 
 				$iframe.style.margin = '40px';
@@ -68,6 +69,7 @@ const iframeHandler = () => {
 			} else {
 				$iframe.style.width = viewport + 1 + 'px';
 				$iframe.style.height = ( maxHeight - 45 ) + 'px';
+
 				$widthContainer.style.height = ( maxHeight - 45 ) + 'px';
 
 				$iframe.style.margin = '40px auto';
@@ -79,6 +81,7 @@ const iframeHandler = () => {
 		} else {
 			$iframe.style.width = '100%';
 			$iframe.style.height = '100%';
+
 			$widthContainer.style.height = ( maxHeight - 45 ) + 'px';
 
 			$iframe.style.margin = '0';
@@ -88,34 +91,40 @@ const iframeHandler = () => {
 
 
 	const calculatePostEditorSize = () => {
-		// Set maxWidth and maxHeight to calculate zoom.
-		const $widthContainer = document.querySelector( '.edit-post-visual-editor .is-desktop-preview, .edit-post-visual-editor__content-area .is-desktop-preview' ) as HTMLElement;
-		const maxWidth = $widthContainer ? $widthContainer.getBoundingClientRect().width - 80 : 0;
+		const $metaBoxes = document.querySelector( '.edit-post-layout__metaboxes .meta-box-sortables > div' );
+		const hasMetaBoxes = $metaBoxes ? true : false;
 
-		const $heightContainer = document.querySelector( '.edit-post-visual-editor .is-desktop-preview, .edit-post-visual-editor__content-area' ) as HTMLElement;
-		const maxHeight = $heightContainer ? $heightContainer.getBoundingClientRect().height - ( 101 + 80 ) : 0;
+		const $desktopPreviewContainer =  document.querySelector( '.edit-post-visual-editor .is-desktop-preview, .edit-post-visual-editor__content-area .is-desktop-preview' ) as HTMLElement;
+		const maxWidth = $desktopPreviewContainer ? $desktopPreviewContainer.getBoundingClientRect().width - 80 : 0;
+
+		const $contentContainer = document.querySelector( '.edit-post-visual-editor, .edit-post-visual-editor__content-area' ) as HTMLElement;
+		const maxHeight = $contentContainer ? $contentContainer.getBoundingClientRect().height : 0;
 
 		const $iframe = document.querySelector( 'iframe[name="editor-canvas"], .editor-styles-wrapper' ) as HTMLElement;
 
 		if ( isActive ) {
-			if ( viewport > maxWidth ) {
+			if ( viewport >= maxWidth ) {
 				const factorSmaller = ( maxWidth ) / viewport;
 				const factorGreater = viewport / ( maxWidth );
 
 				$iframe.style.width = viewport + 'px';
-				$iframe.style.height = ( maxHeight ) * factorGreater + 'px';
 
-				console.log(  maxHeight, factorGreater, factorSmaller, maxHeight * factorGreater, maxHeight * factorGreater * factorSmaller + 'px' );
+				let newHeight = ( maxHeight - ( 101 + 80 ) );
+
+				$iframe.style.height = newHeight * factorGreater + 'px';
+				$desktopPreviewContainer.style.height = newHeight + 'px';
 
 				$iframe.style.margin = '40px';
 				$iframe.style.transform = 'scale(' + factorSmaller + ')';
 				$iframe.style.transformOrigin = 'top center';
 
 			} else {
-				$iframe. style.width = viewport + 1 + 'px';
-				$iframe.style.height = ( maxHeight ) + 'px';
+				$iframe.style.width = viewport + 1 + 'px';
 
-				console.log( maxHeight );
+				let newHeight = ( maxHeight - ( 101 + 80 ) );
+
+				$iframe.style.height = newHeight + 'px';
+				$desktopPreviewContainer.style.height = newHeight + 'px';
 
 				$iframe.style.margin = '40px auto';
 				$iframe.style.transform = 'scale(1)';
@@ -123,7 +132,15 @@ const iframeHandler = () => {
 			}
 		} else {
 			$iframe.style.width = '100%';
-			$iframe.style.height = '100%';
+			$iframe.style.height = maxHeight + 'px';
+
+			if( $contentContainer ) {
+				$contentContainer.style.height = 'auto';
+			} else {
+				$desktopPreviewContainer.style.height = 'auto';
+			}
+
+			console.log( 'inactive - ', maxHeight );
 
 			$iframe.style.margin = '0';
 			$iframe.style.transform = 'scale(1)';
