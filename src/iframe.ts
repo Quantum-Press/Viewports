@@ -48,7 +48,11 @@ const iframeHandler = () => {
 		const $heightContainer = document.querySelector( '.edit-site-visual-editor' ) as HTMLElement;
 		const maxHeight = $heightContainer ? $heightContainer.getBoundingClientRect().height : 0;
 
-		const $iframe = document.querySelector( 'iframe[name="editor-canvas"]' ) as HTMLElement;
+		if( ! $widthContainer || ! $heightContainer ) {
+			return;
+		}
+
+		const $iframe = document.querySelector( 'iframe[name="editor-canvas"], .edit-site-editor-canvas-container' ) as HTMLElement;
 
 		if ( isActive ) {
 			if ( viewport > ( maxWidth - 80 ) ) {
@@ -64,8 +68,6 @@ const iframeHandler = () => {
 				$iframe.style.transform = 'scale(' + factorSmaller + ')';
 				$iframe.style.transformOrigin = 'top left';
 
-				console.log( 'transform iframe style', $iframe.style );
-
 			} else {
 				$iframe.style.width = viewport + 1 + 'px';
 				$iframe.style.height = ( maxHeight - 45 ) + 'px';
@@ -75,8 +77,6 @@ const iframeHandler = () => {
 				$iframe.style.margin = '40px auto';
 				$iframe.style.transform = 'scale(1)';
 				$iframe.style.transformOrigin = 'top center';
-
-				console.log( 'default iframe style', $iframe.style.height );
 			}
 		} else {
 			$iframe.style.width = '100%';
@@ -90,6 +90,11 @@ const iframeHandler = () => {
 	}
 
 
+	/**
+	 * Set function to calculate postEditor size.
+	 *
+	 * @since 0.1.7
+	 */
 	const calculatePostEditorSize = () => {
 		const $metaBoxes = document.querySelector( '.edit-post-layout__metaboxes .meta-box-sortables > div' );
 		const hasMetaBoxes = $metaBoxes ? true : false;
@@ -99,6 +104,10 @@ const iframeHandler = () => {
 
 		const $contentContainer = document.querySelector( '.edit-post-visual-editor, .edit-post-visual-editor__content-area' ) as HTMLElement;
 		const maxHeight = $contentContainer ? $contentContainer.getBoundingClientRect().height : 0;
+
+		if( ! $desktopPreviewContainer || ! $contentContainer ) {
+			return;
+		}
 
 		const $iframe = document.querySelector( 'iframe[name="editor-canvas"], .editor-styles-wrapper' ) as HTMLElement;
 
