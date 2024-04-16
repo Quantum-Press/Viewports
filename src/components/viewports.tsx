@@ -1,10 +1,15 @@
 import { STORE_NAME } from '../store/constants';
+import { useResizeObserver } from '../hooks/use-resize-observer';
 
 const {
 	data: {
 		select,
 		dispatch,
 		useSelect,
+	},
+	element: {
+		useEffect,
+		useRef,
 	}
 } = window[ 'wp' ];
 
@@ -27,6 +32,19 @@ const Viewports = () => {
 			isExpanded: store.isExpanded(),
 		}
 	}, [] );
+
+	// Set resize state.
+	const selector = 'iframe[name="editor-canvas"], .editor-styles-wrapper, .edit-site-editor-canvas-container'
+	const size = useResizeObserver( {
+		selector,
+		box: 'border-box',
+	} );
+
+	// Set useEffect to rerender on size changes.
+	useEffect(() => {
+		// Silencio.
+	}, [ size ] );
+
 
 	// Return instant if is not active.
 	if ( ! props.isActive ) {

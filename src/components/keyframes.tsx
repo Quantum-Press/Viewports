@@ -1,7 +1,7 @@
 import type { Attributes } from '../utils/types';
 import { isObject, getMergedAttributes } from '../utils/attributes';
 import { STORE_NAME } from '../store/constants';
-import { svgs } from './svgs';
+import { useResizeObserver } from '../hooks/use-resize-observer';
 
 const {
 	data: {
@@ -9,6 +9,7 @@ const {
 		dispatch,
 	},
 	element: {
+		useEffect,
 		useState,
 	}
 } = window[ 'wp' ];
@@ -43,6 +44,18 @@ const Keyframes = () => {
 		};
 	}, [] );
 
+	// Set resize state.
+	const selector = 'iframe[name="editor-canvas"], .editor-styles-wrapper, .edit-site-editor-canvas-container'
+	const size = useResizeObserver( {
+		selector,
+		box: 'border-box',
+	} );
+
+	// Set useEffect to rerender on size changes.
+	useEffect(() => {
+		// Silencio.
+	}, [ size ] );
+
 	// Set useState to handle hover pairing.
 	const [ hover, setHover ] : [ hover : any, setHover : Function ] = useState( false );
 
@@ -53,7 +66,7 @@ const Keyframes = () => {
 
 	// Set ui and its outerwidth for calculation
 	const $ui = document.querySelector( '.interface-interface-skeleton__content .components-resizable-box__container, .edit-post-visual-editor .edit-post-visual-editor__content-area' );
-	const uiWidth = $ui ? $ui.getBoundingClientRect().width : 0;
+	const uiWidth = $ui ? $ui.getBoundingClientRect().width - 80 : 0;
 
 	// Set defaults.
 	let saves : Attributes = {};
@@ -119,7 +132,9 @@ const Keyframes = () => {
 		const { size, position, viewport } = frame;
 		const zoom = uiWidth / props.viewport;
 
-		if( props.viewport > uiWidth ) {
+		console.log( frame );
+
+		if( props.viewport >= ( uiWidth ) ) {
 			if( 0 === size ) {
 				let tempSize = ( props.viewport - viewport ) / 2;
 
@@ -127,14 +142,14 @@ const Keyframes = () => {
 			}
 
 			if( 'center' === position ) {
-				return Math.round( ( zoom * size - 80 ) * 10 ) / 10;
+				return Math.round( ( zoom * size ) * 10 ) / 10;
 			}
 
 			return Math.round( ( zoom * size ) * 10 ) / 10;
 		}
 
 		if( 0 === size ) {
-			return (( uiWidth - viewport ) / 2 );
+			return (( uiWidth - viewport ) / 2 ) + 40;
 		}
 
 		return Math.round( size * 10 ) / 10;

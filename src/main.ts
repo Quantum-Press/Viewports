@@ -1,6 +1,6 @@
 import './editor.scss';
 import './store/index';
-import './hooks';
+import './register';
 
 import { STORE_NAME } from './store/constants';
 import { isSiteEditor } from './utils/editor';
