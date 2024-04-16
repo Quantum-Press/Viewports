@@ -95,6 +95,63 @@
 }
 
 
+/**
+ * Block Editor List View.
+ */
+table.block-editor-list-view-tree {
+	& > tbody {
+		& > tr {
+			& > td {
+				&.block-editor-list-view-block__menu-cell {
+					width: 52px;
+
+					& > * {
+						display: inline-block;
+						width: 24px;
+					}
+
+					button.qp-viewports-inspector-blocklist {
+						&:hover {
+							svg.inspect {
+								.cls-1 {
+									stroke: var( --wp-admin-theme-color );
+								}
+
+								.cls-2 {
+									fill: var( --wp-admin-theme-color );
+								}
+							}
+						}
+					}
+				}
+			}
+
+			&.is-selected {
+				& > td {
+					&.block-editor-list-view-block__menu-cell {
+						svg.inspect {
+							.cls-1 {
+								stroke: #fff !important;
+							}
+
+							.cls-2 {
+								fill: #fff !important;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+.block-editor-list-view-leaf {
+	.block-editor-list-view-block-select-button__label-wrapper {
+		min-width: 50px;
+	}
+}
+
+
 
 /**
  * Sidebar.
@@ -1164,6 +1221,19 @@ svg.qp-viewports-svg {
 			stroke: #000;
 			stroke-miterlimit: 10;
 			stroke-width: 80px;
+		}
+	}
+
+	&.inspect {
+		.cls-1 {
+			fill: none;
+			stroke: #000;
+			stroke-miterlimit: 10;
+			stroke-width: 80px;
+		}
+		.cls-2 {
+			fill: #000;
+			stroke-miterlimit: 10;
 		}
 	}
 

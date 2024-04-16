@@ -5,6 +5,7 @@ import './register';
 import { STORE_NAME } from './store/constants';
 import { isSiteEditor } from './utils/editor';
 import iframeHandler from './iframe';
+import portalHandler from './portals';
 import Wrap from './components/wrap';
 import Sidebar from './components/sidebar';
 import Toggle from './components/toggle';
@@ -79,33 +80,6 @@ domReady( () => {
 			iframeHandler();
 
 			// Make sure the viewport UI is attached to the DOM.
-			if ( ! sidebarWrap.isConnected ) {
-				if ( isSiteEditor() ) {
-					const sidebarUI = document.querySelector( '.edit-site-editor__interface-skeleton .interface-interface-skeleton__content' );
-
-					if ( sidebarUI ) {
-						sidebarUI.before( sidebarWrap );
-
-						if ( ! sidebarRoot ) {
-							sidebarRoot = createRoot( sidebarWrap );
-							sidebarRoot.render( createElement( Sidebar ) );
-						}
-					}
-				} else {
-					const sidebarUI = document.querySelector( '.edit-post-visual-editor .edit-post-visual-editor__content-area' );
-
-					if ( sidebarUI ) {
-						sidebarUI.before( sidebarWrap );
-
-						if ( ! sidebarRoot ) {
-							sidebarRoot = createRoot( sidebarWrap );
-							sidebarRoot.render( createElement( Sidebar ) );
-						}
-					}
-				}
-			}
-
-			// Make sure the viewport UI is attached to the DOM.
 			if ( ! viewportWrap.isConnected ) {
 				if ( isSiteEditor() ) {
 					const viewportUI = document.querySelector( '.interface-interface-skeleton__content .edit-site-visual-editor' );
@@ -132,8 +106,32 @@ domReady( () => {
 				}
 			}
 
-			// Always render viewport root.
-			// viewportRoot.render( createElement( Wrap ) );
+			// Make sure the viewport UI is attached to the DOM.
+			if ( ! sidebarWrap.isConnected ) {
+				if ( isSiteEditor() ) {
+					const sidebarUI = document.querySelector( '.edit-site-editor__interface-skeleton .interface-interface-skeleton__content' );
+
+					if ( sidebarUI ) {
+						sidebarUI.before( sidebarWrap );
+
+						if ( ! sidebarRoot ) {
+							sidebarRoot = createRoot( sidebarWrap );
+							sidebarRoot.render( createElement( Sidebar ) );
+						}
+					}
+				} else {
+					const sidebarUI = document.querySelector( '.edit-post-visual-editor .edit-post-visual-editor__content-area' );
+
+					if ( sidebarUI ) {
+						sidebarUI.before( sidebarWrap );
+
+						if ( ! sidebarRoot ) {
+							sidebarRoot = createRoot( sidebarWrap );
+							sidebarRoot.render( createElement( Sidebar ) );
+						}
+					}
+				}
+			}
 
 			// Make sure the toggle UI is attached to the DOM.
 			if ( ! toggleWrap.isConnected ) {
@@ -186,6 +184,8 @@ domReady( () => {
 
 			dispatch( STORE_NAME ).clearBlocks();
 		}
+
+		portalHandler();
 	} );
 
 } );

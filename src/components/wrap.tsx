@@ -1,9 +1,9 @@
-import Topbar from './topbar';
-import Highlighter from './highlighter/index';
-import Viewports from './viewports';
-import Keyframes from './keyframes';
 import Save from './save';
 import Body from './body';
+import Topbar from './topbar';
+import Viewports from './viewports';
+import Keyframes from './keyframes';
+import Highlighter from './highlighter/index';
 
 /**
  * Set component const to export ui wrap.

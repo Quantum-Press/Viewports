@@ -3,6 +3,7 @@ import BlockSave from './block/save';
 import BlockStyle from './block/style';
 
 import Indicator from './components/indicator';
+import InspectorToolbar from './components/inspector/toolbar';
 
 const {
 	blockEditor: {
@@ -52,6 +53,7 @@ addFilter( 'blocks.registerBlockType', 'quantumpress/viewports', ( block ) => {
 					<BlockControls>
 						<ToolbarGroup>
 							<Indicator props={ props }/>
+							<InspectorToolbar props={ props }/>
 						</ToolbarGroup>
 					</BlockControls>
 				</>

@@ -132,7 +132,7 @@ const Keyframes = () => {
 		const { size, position, viewport } = frame;
 		const zoom = uiWidth / props.viewport;
 
-		console.log( frame );
+		// console.log( frame );
 
 		if( props.viewport >= ( uiWidth ) ) {
 			if( 0 === size ) {
