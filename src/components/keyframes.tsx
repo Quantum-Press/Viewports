@@ -36,7 +36,6 @@ const Keyframes = () => {
 			saves: store.getSaves(),
 			changes: store.getChanges(),
 			removes: store.getRemoves(),
-			inspect: store.getInspect(),
 			viewport: store.getViewport(),
 			viewports: store.getViewports(),
 			isActive: store.isActive(),
@@ -290,11 +289,6 @@ const Keyframes = () => {
 								// Set hover pairing indicator.
 								if( hover && hover.clientId === clientId && hover.viewport === viewport ) {
 									classNames = classNames + ' hover';
-								}
-
-								// Set inspected indicator.
-								if( props.inspect && props.inspect.clientId === clientId && props.inspect.viewport === viewport ) {
-									classNames = classNames + ' inspected';
 								}
 
 								// Set calculated width.
