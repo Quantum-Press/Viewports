@@ -30,11 +30,11 @@ const ControlDefaults = () => {
 
 	// Set state dependencies.
 	const {
-		isExpanded,
+		isInspecting,
 		selected,
 	} = useSelect( ( select : Function ) => {
 		return {
-			isExpanded: select( STORE_NAME ).isExpanded(),
+			isInspecting: select( STORE_NAME ).isInspecting(),
 			selected: select( 'core/editor' ).getSelectedBlock(),
 		}
 	}, [] );
@@ -111,7 +111,7 @@ const ControlDefaults = () => {
 					<Icon icon="database"></Icon>
 				</div>
 
-				{ isExpanded &&
+				{ isInspecting &&
 					<div className="qp-viewports-sidebar-control-label">
 						{ __( 'Block defaults', 'quantum-viewports' ) }
 					</div>

@@ -499,21 +499,21 @@ export function unsetActive( state : State, action : Action ) : State {
 
 
 /**
- * Set reducer to update state for an expanded viewport simulation.
+ * Set reducer to set inspecting flag to true.
  *
  * @param {object} state  current
  * @param {object} action dispatched
  *
- * @since 0.1.0
+ * @since 0.2.2
  *
  * @return {object} updated state
  */
-export function setExpanded( state : State, action : Action ) : State {
+export function setInspecting( state : State, action : Action ) : State {
 	switch ( action.type ) {
-		case 'SET_EXPANDED' :
+		case 'SET_INSPECTING' :
 			return {
 				... state,
-				isExpanded: true,
+				isInspecting: true,
 			};
 	}
 
@@ -522,21 +522,44 @@ export function setExpanded( state : State, action : Action ) : State {
 
 
 /**
- * Set reducer to update state to shut down expanded viewport simulation.
+ * Set reducer to set inspecting flag to false.
  *
  * @param {object} state  current
  * @param {object} action dispatched
  *
- * @since 0.1.0
+ * @since 0.2.2
  *
  * @return {object} updated state
  */
-export function unsetExpanded( state : State, action : Action ) : State {
+export function unsetInspecting( state : State, action : Action ) : State {
 	switch ( action.type ) {
-		case 'UNSET_EXPANDED' :
+		case 'UNSET_INSPECTING' :
 			return {
 				... state,
-				isExpanded: false,
+				isInspecting: false,
+			};
+	}
+
+	return state;
+}
+
+
+/**
+ * Set reducer to set inspector position.
+ *
+ * @param {object} state  current
+ * @param {object} action dispatched
+ *
+ * @since 0.2.2
+ *
+ * @return {object} updated state
+ */
+export function setInspectorPosition( state : State, action : Action ) : State {
+	switch ( action.type ) {
+		case 'SET_INSPECTOR_POSITION' :
+			return {
+				... state,
+				inspectorPosition: action.position,
 			};
 	}
 
@@ -958,10 +981,7 @@ export function removeBlockDefaults( state : State, action : Action ) : State {
 			if ( defaults.hasOwnProperty( clientId ) ) {
 
 				const blockRemoves = findRemoves( props, defaults[ clientId ][ 'style' ] );
-				console.log( 'blockRemoves', blockRemoves );
-
 				const blockChanges = findCleanedChanges( defaults[ clientId ][ 'style' ], blockRemoves );
-				console.log( 'blockChanges', blockChanges );
 
 				let nextState : any = {};
 
@@ -1344,29 +1364,6 @@ export function saveBlock( state : State, action : Action ) : State {
 
 
 /**
- * Set reducer to inspect block.
- *
- * @param {object} state  current
- * @param {object} action dispatched
- *
- * @since 0.1.0
- *
- * @return {object} updated state
- */
-export function inspectBlock( state : State, action : Action ) : State {
-	switch ( action.type ) {
-		case 'INSPECT_BLOCK' :
-			return {
-				... state,
-				inspect: action.block,
-			};
-	}
-
-	return state;
-}
-
-
-/**
  * Set reducer to clear blocks.
  *
  * @param {object} state  current
@@ -1462,8 +1459,9 @@ export const combinedReducers = {
 	unsetAutoSaving,
 	setActive,
 	unsetActive,
-	setExpanded,
-	unsetExpanded,
+	setInspecting,
+	unsetInspecting,
+	setInspectorPosition,
 	setEditing,
 	unsetEditing,
 	toggleActive,
@@ -1480,7 +1478,6 @@ export const combinedReducers = {
 	removeBlockSaves,
 	removeBlockRemoves,
 	saveBlock,
-	inspectBlock,
 	clearBlocks,
 	registerRenderer,
 };

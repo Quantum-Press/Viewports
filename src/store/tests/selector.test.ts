@@ -23,6 +23,8 @@ const {
 	isSaving,
 	isAutoSaving,
 	isActive,
+	isInspecting,
+	inspectorPosition,
 	inDesktopRange,
 	inTabletRange,
 	inMobileRange,
@@ -40,7 +42,6 @@ const {
 	getViewportBlockValids,
 	getRemoves,
 	getBlockRemoves,
-	getInspect,
 	getLastEdit,
 	getRenderers,
 	getRenderer,
@@ -207,6 +208,50 @@ describe( 'test store selectors', () => {
 			const result = isActive( state );
 
 			expect( result ).toStrictEqual( true );
+		} );
+
+		test( 'can indicate isInspecting() falsy', () => {
+			const state = deepFreeze( {
+				... DEFAULT_STATE,
+				isInspecting: false,
+			} );
+
+			const result = isInspecting( state );
+
+			expect( result ).toStrictEqual( false );
+		} );
+
+		test( 'can indicate isInspecting() truely', () => {
+			const state = deepFreeze( {
+				... DEFAULT_STATE,
+				isInspecting: true,
+			} );
+
+			const result = isInspecting( state );
+
+			expect( result ).toStrictEqual( true );
+		} );
+
+		test( 'can get inspectorPosition left', () => {
+			const state = deepFreeze( {
+				... DEFAULT_STATE,
+				inspectorPosition: 'left',
+			} );
+
+			const result = inspectorPosition( state );
+
+			expect( result ).toStrictEqual( 'left' );
+		} );
+
+		test( 'can get inspectorPosition right', () => {
+			const state = deepFreeze( {
+				... DEFAULT_STATE,
+				inspectorPosition: 'right',
+			} );
+
+			const result = inspectorPosition( state );
+
+			expect( result ).toStrictEqual( 'right' );
 		} );
 
 		test( 'can indicate inDesktopRange() falsy', () => {
@@ -1508,36 +1553,6 @@ describe( 'test store selectors', () => {
 			}
 
 			const result = getBlockRemoves( state, 'client-id' );
-
-			expect( result ).toStrictEqual( check );
-		} );
-
-		test( 'can getInspect() on false', () => {
-			const state = deepFreeze( {
-				... DEFAULT_STATE,
-				inspect: false,
-			} );
-
-			const result = getInspect( state );
-
-			expect( result ).toStrictEqual( false );
-		} );
-
-		test( 'can getInspect() with inspected block', () => {
-			const state = deepFreeze( {
-				... DEFAULT_STATE,
-				inspect: {
-					clientId: 'client-id',
-					viewport: 375,
-				},
-			} );
-
-			const check = {
-				clientId: 'client-id',
-				viewport: 375,
-			}
-
-			const result = getInspect( state );
 
 			expect( result ).toStrictEqual( check );
 		} );

@@ -22,7 +22,8 @@ export type State = {
 	isRegistering : boolean;
 	isReady : boolean;
 	isActive : boolean;
-	isExpanded: boolean;
+	isInspecting: boolean;
+	inspectorPosition : string;
 	isEditing : boolean;
 	isSaving : boolean;
 	isAutoSaving : boolean;
@@ -73,6 +74,7 @@ export type Action = {
 	callback?    : Function,
 	force?       : boolean,
 	priority?    : number,
+	position?    : string,
 };
 
 export type Reducers = {

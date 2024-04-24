@@ -30,11 +30,11 @@ const ControlValids = () => {
 
 	// Set state dependencies.
 	const {
-		isExpanded,
+		isInspecting,
 		selected,
 	} = useSelect( ( select : Function ) => {
 		return {
-			isExpanded: select( STORE_NAME ).isExpanded(),
+			isInspecting: select( STORE_NAME ).isInspecting(),
 			selected: select( 'core/editor' ).getSelectedBlock(),
 		}
 	}, [] );
@@ -96,7 +96,7 @@ const ControlValids = () => {
 					<Icon icon="admin-customizer"></Icon>
 				</div>
 
-				{ isExpanded &&
+				{ isInspecting &&
 					<div className="qp-viewports-sidebar-control-label">
 						{ __( 'Rendered styles', 'quantum-viewports' ) }
 					</div>

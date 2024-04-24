@@ -29,13 +29,13 @@ const ControlBlock = () => {
 
 	// Set state dependencies.
 	const {
-		isExpanded,
+		isInspecting,
 		selected,
 	} = useSelect( ( select : Function ) => {
 		const store = select( STORE_NAME );
 
 		return {
-			isExpanded: store.isExpanded(),
+			isInspecting: store.isInspecting(),
 			selected: select( 'core/editor' ).getSelectedBlock(),
 		}
 	}, [] );
@@ -66,7 +66,7 @@ const ControlBlock = () => {
 					</ClipboardButton>
 				</div>
 
-				{ isExpanded &&
+				{ isInspecting &&
 					<div className="qp-viewports-sidebar-control-label">
 						{ hasCopied &&
 							<span>{ __( 'Copied clientID', 'quantum-viewports' ) }</span>

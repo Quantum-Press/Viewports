@@ -263,29 +263,46 @@ export const unsetActive = () : object => {
 
 
 /**
- * Set Action that updates expanded indicator to true.
+ * Set Action that updates inspecting indicator to true.
  *
- * @since 0.1.0
+ * @since 0.2.2
  *
  * @return {object} action
  */
-export const setExpanded = () : object => {
+export const setInspecting = () : object => {
 	return {
-		type: 'SET_EXPANDED',
+		type: 'SET_INSPECTING',
 	};
 }
 
 
 /**
- * Set Action that updates expanded indicator to false.
+ * Set Action that updates inspecting indicator to false.
  *
- * @since 0.1.0
+ * @since 0.2.2
  *
  * @return {object} action
  */
-export const unsetExpanded = () : object => {
+export const unsetInspecting = () : object => {
 	return {
-		type: 'UNSET_EXPANDED',
+		type: 'UNSET_INSPECTING',
+	};
+}
+
+
+/**
+ * Set Action that updatess inspector position.
+ *
+ * @param {string} position
+ *
+ * @since 0.2.2
+ *
+ * @return {object} action
+ */
+export const setInspectorPosition = ( position : string ) : object => {
+	return {
+		type: 'SET_INSPECTOR_POSITION',
+		position,
 	};
 }
 
@@ -560,23 +577,6 @@ export const saveBlock = ( clientId : string ) : object => {
 	return {
 		type: 'SAVE_BLOCK',
 		clientId,
-	};
-}
-
-
-/**
- * Set Action to inspect block.
- *
- * @param {mixed} block
- *
- * @since 0.1.0
- *
- * @return {object} action
- */
-export const inspectBlock = ( block : object | boolean ) : object => {
-	return {
-		type: 'INSPECT_BLOCK',
-		block,
 	};
 }
 

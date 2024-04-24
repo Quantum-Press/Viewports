@@ -31,11 +31,11 @@ const ControlChanges = () => {
 
 	// Set state dependencies.
 	const {
-		isExpanded,
+		isInspecting,
 		selected,
 	} = useSelect( ( select : Function ) => {
 		return {
-			isExpanded: select( STORE_NAME ).isExpanded(),
+			isInspecting: select( STORE_NAME ).isInspecting(),
 			selected: select( 'core/editor' ).getSelectedBlock(),
 		}
 	}, [] );
@@ -112,7 +112,7 @@ const ControlChanges = () => {
 					<Icon icon="database-add"></Icon>
 				</div>
 
-				{ isExpanded &&
+				{ isInspecting &&
 					<div className="qp-viewports-sidebar-control-label">
 						{ __( 'Block changes', 'quantum-viewports' ) }
 					</div>

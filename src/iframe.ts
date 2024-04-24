@@ -60,7 +60,7 @@ const iframeHandler = () => {
 				const factorGreater = viewport / ( maxWidth - 80 );
 
 				$iframe.style.width = viewport + 'px';
-				$iframe.style.height = ( ( maxHeight - 45 ) * factorGreater ) + 'px';
+				$iframe.style.height = ( ( maxHeight - 80 ) * factorGreater ) + 'px';
 
 				$widthContainer.style.height = ( maxHeight - 45 ) + 'px';
 
@@ -70,7 +70,7 @@ const iframeHandler = () => {
 
 			} else {
 				$iframe.style.width = viewport + 1 + 'px';
-				$iframe.style.height = ( maxHeight - 45 ) + 'px';
+				$iframe.style.height = ( maxHeight - 80 ) + 'px';
 
 				$widthContainer.style.height = ( maxHeight - 45 ) + 'px';
 
@@ -99,7 +99,7 @@ const iframeHandler = () => {
 		const $metaBoxes = document.querySelector( '.edit-post-layout__metaboxes .meta-box-sortables > div' );
 		const hasMetaBoxes = $metaBoxes ? true : false;
 
-		const $desktopPreviewContainer =  document.querySelector( '.edit-post-visual-editor .is-desktop-preview, .edit-post-visual-editor__content-area .is-desktop-preview' ) as HTMLElement;
+		const $desktopPreviewContainer =  document.querySelector( '.edit-post-visual-editor__content-area .is-desktop-preview, .edit-post-visual-editor > div:first-child:last-child' ) as HTMLElement;
 		const maxWidth = $desktopPreviewContainer ? $desktopPreviewContainer.getBoundingClientRect().width - 80 : 0;
 
 		const $contentContainer = document.querySelector( '.edit-post-visual-editor, .edit-post-visual-editor__content-area' ) as HTMLElement;

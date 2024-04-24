@@ -25,13 +25,13 @@ const ControlEdit = () => {
 
 	// Set state dependencies.
 	const {
-		isExpanded,
+		isInspecting,
 		isEditing,
 	} = useSelect( ( select : Function ) => {
 		const store = select( STORE_NAME );
 
 		return {
-			isExpanded: store.isExpanded(),
+			isInspecting: store.isInspecting(),
 			isEditing: store.isEditing(),
 		}
 	}, [] );
@@ -39,7 +39,7 @@ const ControlEdit = () => {
 
 	/**
 	 * Set funtion to toggle edit.
-	 * 
+	 *
 	 * @since 0.1.0
 	 */
 	const onClickControl = () => {
@@ -62,7 +62,7 @@ const ControlEdit = () => {
 					<Icon icon={ svgs.edit }></Icon>
 				</div>
 
-				{ isExpanded && 
+				{ isInspecting &&
 					<div className="qp-viewports-sidebar-control-label">
 						{ ! isEditing && __( 'Edit viewports', 'quantum-viewports' ) }
 						{ isEditing && __( 'Edit viewports: active', 'quantum-viewports' ) }

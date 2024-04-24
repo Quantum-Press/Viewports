@@ -29,7 +29,7 @@ const Viewports = () => {
 		return {
 			viewport: store.getViewport(),
 			isActive: store.isActive(),
-			isExpanded: store.isExpanded(),
+			isInspecting: store.isInspecting(),
 		}
 	}, [] );
 
@@ -78,7 +78,7 @@ const Viewports = () => {
 	 *
 	 * @since 0.1.0
 	 */
-	const $ui = document.querySelector( '.interface-interface-skeleton__content .components-resizable-box__container, .edit-post-visual-editor .edit-post-visual-editor__content-area' );
+	const $ui = document.querySelector( '.interface-interface-skeleton__content .components-resizable-box__container, .edit-post-visual-editor .edit-post-visual-editor__content-area, .edit-post-visual-editor > div:first-child:last-child' );
 	const uiWidth = $ui ? $ui.getBoundingClientRect().width - 80 : 0;
 
 	/**
@@ -101,13 +101,8 @@ const Viewports = () => {
 	 */
 	const onClickViewport = ( event: any ) => {
 		const selected = event.target.closest( '.qp-viewport' );
-		const inspect = select( STORE_NAME ).getInspect();
 
 		dispatch( STORE_NAME ).setViewport( parseInt( selected.getAttribute( 'data-viewport' ) ) );
-
-		if ( inspect ) {
-			dispatch( STORE_NAME ).inspectBlock( false );
-		}
 	}
 
 	/**

@@ -7,7 +7,7 @@ import { isSiteEditor } from './utils/editor';
 import iframeHandler from './iframe';
 import portalHandler from './portals';
 import Wrap from './components/wrap';
-import Sidebar from './components/sidebar';
+import Inspector from './components/inspector';
 import Toggle from './components/toggle';
 
 const {
@@ -31,9 +31,9 @@ const viewportWrap = document.createElement( 'div' );
 viewportWrap.id = 'qp-viewports-ui-wrap';
 let viewportRoot : any = false;
 
-const sidebarWrap = document.createElement( 'div' );
-sidebarWrap.id = 'qp-viewports-sidebar-ui-wrap';
-let sidebarRoot : any = false;
+const inspectorWrap = document.createElement( 'div' );
+inspectorWrap.id = 'qp-viewports-inspector-ui-wrap';
+let inspectorRoot : any = false;
 
 const toggleWrap = document.createElement( 'div' );
 toggleWrap.id = 'qp-viewports-toggle-ui-wrap';
@@ -93,7 +93,7 @@ domReady( () => {
 						}
 					}
 				} else {
-					const viewportUI = document.querySelector( '.edit-post-visual-editor__content-area iframe[name="editor-canvas"], .edit-post-visual-editor__content-area .is-desktop-preview' );
+					const viewportUI = document.querySelector( '.edit-post-visual-editor__content-area iframe[name="editor-canvas"], .edit-post-visual-editor__content-area .is-desktop-preview, .edit-post-visual-editor > div:first-child:last-child .editor-styles-wrapper' );
 
 					if ( viewportUI ) {
 						viewportUI.before( viewportWrap );
@@ -107,27 +107,27 @@ domReady( () => {
 			}
 
 			// Make sure the viewport UI is attached to the DOM.
-			if ( ! sidebarWrap.isConnected ) {
+			if ( ! inspectorWrap.isConnected ) {
 				if ( isSiteEditor() ) {
-					const sidebarUI = document.querySelector( '.edit-site-editor__interface-skeleton .interface-interface-skeleton__content' );
+					const inspectorUI = document.querySelector( '.edit-site-editor__interface-skeleton .interface-interface-skeleton__content' );
 
-					if ( sidebarUI ) {
-						sidebarUI.before( sidebarWrap );
+					if ( inspectorUI ) {
+						inspectorUI.before( inspectorWrap );
 
-						if ( ! sidebarRoot ) {
-							sidebarRoot = createRoot( sidebarWrap );
-							sidebarRoot.render( createElement( Sidebar ) );
+						if ( ! inspectorRoot ) {
+							inspectorRoot = createRoot( inspectorWrap );
+							inspectorRoot.render( createElement( Inspector ) );
 						}
 					}
 				} else {
-					const sidebarUI = document.querySelector( '.edit-post-visual-editor .edit-post-visual-editor__content-area' );
+					const inspectorUI = document.querySelector( '.edit-post-visual-editor .edit-post-visual-editor__content-area, .edit-post-layout .interface-interface-skeleton__content' );
 
-					if ( sidebarUI ) {
-						sidebarUI.before( sidebarWrap );
+					if ( inspectorUI ) {
+						inspectorUI.before( inspectorWrap );
 
-						if ( ! sidebarRoot ) {
-							sidebarRoot = createRoot( sidebarWrap );
-							sidebarRoot.render( createElement( Sidebar ) );
+						if ( ! inspectorRoot ) {
+							inspectorRoot = createRoot( inspectorWrap );
+							inspectorRoot.render( createElement( Inspector ) );
 						}
 					}
 				}

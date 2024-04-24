@@ -52,8 +52,8 @@ addFilter( 'blocks.registerBlockType', 'quantumpress/viewports', ( block ) => {
 					<BlockStyle props={ props } />
 					<BlockControls>
 						<ToolbarGroup>
-							<Indicator props={ props }/>
 							<InspectorToolbar props={ props }/>
+							<Indicator props={ props }/>
 						</ToolbarGroup>
 					</BlockControls>
 				</>

@@ -24,12 +24,12 @@ const ControlEdit = () => {
 
 	// Set state dependencies.
 	const {
-		isExpanded,
+		isInspecting,
 	} = useSelect( ( select : Function ) => {
 		const store = select( STORE_NAME );
 
 		return {
-			isExpanded: store.isExpanded(),
+			isInspecting: store.isInspecting(),
 		}
 	}, [] );
 
@@ -40,29 +40,29 @@ const ControlEdit = () => {
 	 * @since 0.1.0
 	 */
 	const onClickControl = () => {
-		if( isExpanded ) {
-			dispatch( STORE_NAME ).unsetExpanded();
+		if( isInspecting ) {
+			dispatch( STORE_NAME ).unsetInspecting();
 		} else {
-			dispatch( STORE_NAME ).setExpanded();
+			dispatch( STORE_NAME ).setInspecting();
 		}
 	}
 
 	return (
 		<div className="qp-viewports-sidebar-control expander">
 			<div className="qp-viewports-sidebar-control-toggle" onClick={ onClickControl }>
-				{ ! isExpanded && <div className="qp-viewports-sidebar-control-icon">
+				{ ! isInspecting && <div className="qp-viewports-sidebar-control-icon">
 					<Icon icon="arrow-right-alt2"></Icon>
 					<Icon icon="arrow-right-alt2"></Icon>
 				</div> }
 
-				{ isExpanded && <div className="qp-viewports-sidebar-control-icon">
+				{ isInspecting && <div className="qp-viewports-sidebar-control-icon">
 					<Icon icon="arrow-left-alt2"></Icon>
 					<Icon icon="arrow-left-alt2"></Icon>
 				</div> }
 
 				<div className="qp-viewports-sidebar-control-label">
-					{ ! isExpanded && __( 'Expand', 'quantum-viewports' ) }
-					{ isExpanded && __( 'Collapse', 'quantum-viewports' ) }
+					{ ! isInspecting && __( 'Expand', 'quantum-viewports' ) }
+					{ isInspecting && __( 'Collapse', 'quantum-viewports' ) }
 				</div>
 			</div>
 		</div>

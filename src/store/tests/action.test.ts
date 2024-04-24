@@ -20,6 +20,9 @@ const {
 	unsetAutoSaving,
 	setActive,
 	unsetActive,
+	setInspecting,
+	unsetInspecting,
+	setInspectorPosition,
 	toggleActive,
 	toggleDesktop,
 	toggleTablet,
@@ -33,7 +36,6 @@ const {
 	removeBlockSaves,
 	removeBlockRemoves,
 	saveBlock,
-	inspectBlock,
 	clearBlocks,
 	registerRenderer,
 } = actions;
@@ -170,6 +172,34 @@ describe( 'store actions', () => {
 			type: 'UNSET_ACTIVE',
 		};
 		const result = unsetActive();
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'setInspecting', () => {
+		const check = {
+			type: 'SET_INSPECTING',
+		};
+		const result = setInspecting();
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'unsetInspecting', () => {
+		const check = {
+			type: 'UNSET_INSPECTING',
+		};
+		const result = unsetInspecting();
+
+		expect( check ).toStrictEqual( result );
+	});
+
+	test( 'setInspectorPosition', () => {
+		const check = {
+			type: 'SET_INSPECTOR_POSITION',
+			position: 'right',
+		};
+		const result = setInspectorPosition( 'right' );
 
 		expect( check ).toStrictEqual( result );
 	});
@@ -323,31 +353,6 @@ describe( 'store actions', () => {
 		const result = saveBlock( 'client-id' );
 
 		expect( check ).toStrictEqual( result );
-	});
-
-	test( 'inspectBlock', () => {
-
-		// Then check with object parameter.
-		const block = {
-			clientId: 'client-id',
-			viewport: 320,
-		}
-		const fullCheck = {
-			type: 'INSPECT_BLOCK',
-			block: block,
-		};
-		const fullResult = inspectBlock( block );
-
-		expect( fullCheck ).toStrictEqual( fullResult );
-
-		// Then check with falsy parameter.
-		const emptyCheck = {
-			type: 'INSPECT_BLOCK',
-			block: false,
-		};
-		const emptyResult = inspectBlock( false );
-
-		expect( emptyCheck ).toStrictEqual( emptyResult );
 	});
 
 	test( 'clearBlocks', () => {

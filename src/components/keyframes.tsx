@@ -65,7 +65,7 @@ const Keyframes = () => {
 	}
 
 	// Set ui and its outerwidth for calculation
-	const $ui = document.querySelector( '.interface-interface-skeleton__content .components-resizable-box__container, .edit-post-visual-editor .edit-post-visual-editor__content-area' );
+	const $ui = document.querySelector( '.interface-interface-skeleton__content .components-resizable-box__container, .edit-post-visual-editor .edit-post-visual-editor__content-area, .edit-post-visual-editor > div:first-child:last-child' );
 	const uiWidth = $ui ? $ui.getBoundingClientRect().width - 80 : 0;
 
 	// Set defaults.
@@ -176,7 +176,6 @@ const Keyframes = () => {
 
 		if( viewport > 0 ) {
 			dispatch( STORE_NAME ).setViewport( viewport );
-			dispatch( STORE_NAME ).inspectBlock( false );
 		}
 	}
 

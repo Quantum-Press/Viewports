@@ -3,7 +3,7 @@ import Body from './body';
 import Topbar from './topbar';
 import Viewports from './viewports';
 import Keyframes from './keyframes';
-import Highlighter from './highlighter/index';
+import Highlights from './highlights/index';
 
 /**
  * Set component const to export ui wrap.
@@ -20,7 +20,7 @@ export default function Wrap() {
 			<Topbar />
 			<Viewports />
 			<Keyframes />
-			<Highlighter />
+			<Highlights />
 		</>
 	);
 }

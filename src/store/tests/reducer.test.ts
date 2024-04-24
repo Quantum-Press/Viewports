@@ -33,6 +33,9 @@ import {
 	unsetAutoSaving,
 	setActive,
 	unsetActive,
+	setInspecting,
+	unsetInspecting,
+	setInspectorPosition,
 	toggleActive,
 	toggleDesktop,
 	toggleTablet,
@@ -47,7 +50,6 @@ import {
 	removeBlockSaves,
 	removeBlockRemoves,
 	saveBlock,
-	inspectBlock,
 	clearBlocks,
 	registerRenderer,
 } from '../reducer';
@@ -438,6 +440,61 @@ describe( 'test store reducers', () => {
 				viewport: 1360,
 			};
 			const result = unsetActive( state, action );
+
+			expect( check ).toStrictEqual( result );
+		} );
+
+		test( 'can setInspecting()', () => {
+			const state = deepFreeze( {
+				... DEFAULT_STATE,
+				isInspecting: false,
+			} );
+			const action = {
+				type: 'SET_INSPECTING',
+			};
+
+			const check = {
+				... DEFAULT_STATE,
+				isInspecting: true,
+			};
+			const result = setInspecting( state, action );
+
+			expect( check ).toStrictEqual( result );
+		} );
+
+		test( 'can unsetInspecting()', () => {
+			const state = deepFreeze( {
+				... DEFAULT_STATE,
+				isInspecting: true,
+			} );
+			const action = {
+				type: 'UNSET_INSPECTING',
+			};
+
+			const check = {
+				... DEFAULT_STATE,
+				isInspecting: false,
+			};
+			const result = unsetInspecting( state, action );
+
+			expect( check ).toStrictEqual( result );
+		} );
+
+		test( 'can setInspectorPosition() to right', () => {
+			const state = deepFreeze( {
+				... DEFAULT_STATE,
+				inspectorPosition: 'left',
+			} );
+			const action = {
+				type: 'SET_INSPECTOR_POSITION',
+				position: 'right',
+			};
+
+			const check = {
+				... DEFAULT_STATE,
+				inspectorPosition: 'right',
+			};
+			const result = setInspectorPosition( state, action );
 
 			expect( check ).toStrictEqual( result );
 		} );
@@ -2209,31 +2266,6 @@ describe( 'test store reducers', () => {
 				}
 			}
 			const result = saveBlock( state, action );
-
-			expect( result ).toStrictEqual( check );
-		} );
-
-		test( 'can inspectBlock() with a block set', () => {
-			const state = deepFreeze( {
-				... DEFAULT_STATE,
-				inspect: false,
-			} );
-			const action = {
-				type: 'INSPECT_BLOCK',
-				block: {
-					clientId: 'client-id',
-					viewport: 1280,
-				}
-			}
-
-			const check = {
-				... state,
-				inspect: {
-					clientId: 'client-id',
-					viewport: 1280,
-				}
-			}
-			const result = inspectBlock( state, action );
 
 			expect( result ).toStrictEqual( check );
 		} );

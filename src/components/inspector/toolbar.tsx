@@ -1,8 +1,14 @@
+import { STORE_NAME } from '../../store/constants';
 import { svgs } from '../svgs';
 
 const {
 	components: {
 		ToolbarButton,
+	},
+	data: {
+		useSelect,
+		select,
+		dispatch,
 	},
 	i18n: {
 		__,
@@ -17,14 +23,17 @@ const {
  * @since 0.2.1
  */
 const InspectorToolbar = ( props ) => {
+
+	// Set states.
 	const {
-		clientId,
-		attributes,
-	} = props;
+		isInspecting,
+	} = useSelect( ( select : Function ) => {
+		const store = select( STORE_NAME );
 
-	// Set storeId.
-	const storeId = attributes?.tempId !== clientId ? clientId : attributes?.tempId;
-
+		return {
+			isInspecting: store.isInspecting(),
+		}
+	}, [] );
 
 	/**
 	 * Set function to fire on click inspect to trigger ui.
@@ -32,11 +41,18 @@ const InspectorToolbar = ( props ) => {
 	 * @since 0.2.1
 	 */
 	const onClickInspect = () => {
-		console.log( 'onClick' );
+		if( select( STORE_NAME ).isInspecting() ) {
+			dispatch( STORE_NAME ).unsetInspecting();
+		} else {
+			dispatch( STORE_NAME ).setInspecting();
+		}
 	}
 
 	// Set button classnames.
-	const classNames = [ 'qp-viewports-inspector-toolbar' ];
+	let classNames = 'qp-viewports-inspector-toolbar';
+	if( isInspecting ) {
+		classNames = classNames + ' active';
+	}
 
 	// Render component.
 	return (

@@ -30,11 +30,11 @@ const ControlSaves = () => {
 
 	// Set state dependencies.
 	const {
-		isExpanded,
+		isInspecting,
 		selected,
 	} = useSelect( ( select : Function ) => {
 		return {
-			isExpanded: select( STORE_NAME ).isExpanded(),
+			isInspecting: select( STORE_NAME ).isInspecting(),
 			selected: select( 'core/editor' ).getSelectedBlock(),
 		}
 	}, [] );
@@ -111,7 +111,7 @@ const ControlSaves = () => {
 					<Icon icon="database-view"></Icon>
 				</div>
 
-				{ isExpanded && <div className="qp-viewports-sidebar-control-label">
+				{ isInspecting && <div className="qp-viewports-sidebar-control-label">
 					{ __( 'Block saves', 'quantum-viewports' ) }
 				</div> }
 			</div>

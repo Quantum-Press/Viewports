@@ -170,16 +170,30 @@ export const isActive = ( state : State ) : boolean => {
 
 
 /**
- * Set selector to return isExpanded indicator.
+ * Set selector to return isInspecting indicator.
  *
  * @param {object} state current
  *
- * @since 0.1.0
+ * @since 0.2.2
  *
  * @return {boolean}
  */
-export const isExpanded = ( state : State ) : boolean => {
-	return state.isExpanded;
+export const isInspecting = ( state : State ) : boolean => {
+	return state.isInspecting;
+};
+
+
+/**
+ * Set selector to return inspectorPosition.
+ *
+ * @param {object} state current
+ *
+ * @since 0.2.2
+ *
+ * @return {string}
+ */
+export const inspectorPosition = ( state : State ) : string => {
+	return state.inspectorPosition;
 };
 
 
@@ -574,20 +588,6 @@ export const getBlockRemoves = ( state : State, clientId : string ) : object => 
 
 	return {};
 };
-
-
-/**
- * Set selector to return actual inspected block.
- *
- * @param {object} state current
- *
- * @since 0.1.0
- *
- * @return {mixed} object block || boolean false
- */
-export const getInspect = ( state : State ) : object | boolean => {
-	return state.inspect;
-}
 
 
 /**

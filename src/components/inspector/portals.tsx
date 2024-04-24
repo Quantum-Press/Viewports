@@ -1,8 +1,14 @@
+import { STORE_NAME } from '../../store/constants';
 import { svgs } from '../svgs';
 
 const {
 	components: {
 		Button,
+	},
+	data: {
+		useSelect,
+		select,
+		dispatch,
 	},
 	element: {
 		useEffect,
@@ -35,6 +41,17 @@ const getBlocklistRows = () => {
 export const InspectorPortals = () => {
 	const [ reset, setReset ] = useState( false );
 
+	// Set states.
+	const {
+		isInspecting,
+	} = useSelect( ( select : Function ) => {
+		const store = select( STORE_NAME );
+
+		return {
+			isInspecting: store.isInspecting(),
+		}
+	}, [] );
+
 	// Set useEffect to handle reset.
 	useEffect( () => {
 		if( ! reset ) {
@@ -46,6 +63,24 @@ export const InspectorPortals = () => {
 
 	// Set elements to iterate through.
 	const $elements = Array.from( getBlocklistRows() );
+
+	/**
+	 * Set function to find parent of given node by selector.
+	 *
+	 * @since 0.2.2
+	 */
+	const findParentBySelector = ( node: Element, selector: string ) : Element | null => {
+		let currentElement: Element | null = node.parentElement;
+
+		while( currentElement !== null ) {
+			if( currentElement instanceof Element && currentElement.matches( selector ) ) {
+				return currentElement;
+			}
+			currentElement = currentElement.parentElement;
+		}
+
+		return null;
+	}
 
 	/**
 	 * Set function to fire on click expander to reset component.
@@ -61,8 +96,27 @@ export const InspectorPortals = () => {
 	 *
 	 * @since 0.2.1
 	 */
-	const onClickInspect = () => {
-		console.log( 'onClick' );
+	const onClickInspect = ( event ) => {
+		const parent = findParentBySelector( event.target, '.block-editor-list-view-leaf' );
+		if( ! parent ) {
+			return;
+		}
+
+		const clientId = parent.getAttribute( 'data-block' );
+		const selected = select( 'core/block-editor' ).getSelectedBlock();
+		const selectedClientId = selected ? selected.clientId : null;
+
+		const isInspecting = select( STORE_NAME ).isInspecting();
+
+		if( isInspecting && selectedClientId === clientId ) {
+			dispatch( STORE_NAME ).unsetInspecting(); return;
+		}
+
+		if( selectedClientId !== clientId ) {
+			dispatch( 'core/block-editor' ).selectBlock( clientId );
+		}
+
+		dispatch( STORE_NAME ).setInspecting();
 	}
 
 	// Render component.
@@ -79,7 +133,11 @@ export const InspectorPortals = () => {
 				}
 
 				// Set button classNames
-				const classNames = [ 'qp-viewports-inspector-blocklist' ];
+				let classNames = 'qp-viewports-inspector-blocklist-toggle';
+
+				if( isInspecting ) {
+					classNames = classNames + ' active';
+				}
 
 				// Set target if exist, append it to menu-cell.
 				let $target = $element.querySelector( '.block-editor-block-inspector' );

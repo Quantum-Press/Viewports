@@ -20,9 +20,9 @@ const {
  *
  * @param object props
  *
- * @since 0.1.0
+ * @since 0.2.2
  */
-const ControlLink = () => {
+const Foot = () => {
 
 	// Set state dependencies.
 	const {
@@ -39,20 +39,17 @@ const ControlLink = () => {
 	const version = getVersion();
 
 	return (
-		<div className="qp-viewports-sidebar-control link">
-			<div className="qp-viewports-sidebar-control-toggle">
-				<div className="qp-viewports-sidebar-control-icon">
-					<Icon icon={ svgs.logo }></Icon>
+		<div className="qp-viewports-inspector-foot">
+			<div className="qp-viewports-inspector-control title">
+				<div className="qp-viewports-inspector-control-icon">
+					{ svgs.logo }
 				</div>
-
-				{ isInspecting &&
-					<div className="qp-viewports-sidebar-control-label">
-						{ __( 'Quantum Viewports - Version', 'quantum-viewports' ) + ' ' + version }
-					</div>
-				}
+				{ isInspecting && <div className="qp-viewports-inspector-control-label">
+					{ __( 'Quantum Viewports - Version', 'quantum-viewports' ) + ' ' + version }
+				</div> }
 			</div>
 		</div>
 	);
 }
 
-export default ControlLink;
+export default Foot;
