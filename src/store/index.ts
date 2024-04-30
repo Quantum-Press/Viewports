@@ -2,6 +2,7 @@ import reducer from './reducer';
 import * as selectors from './selectors';
 import * as actions from './actions';
 import { STORE_NAME } from './constants';
+import * as types from './types';
 
 const {
 	data: {
@@ -45,3 +46,11 @@ export const store = createReduxStore( STORE_NAME, {
  * @since 0.1.0
  */
 register( store );
+
+
+/**
+ * Export store types.
+ *
+ * @since 0.2.3
+ */
+export * from './types';

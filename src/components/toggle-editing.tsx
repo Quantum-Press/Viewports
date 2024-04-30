@@ -17,44 +17,46 @@ const {
 } = window[ 'wp' ];
 
 /**
- * Set component const to export indicator ui.
- *
- * @param object props
+ * Set component const to export toggle edit ui.
  *
  * @since 0.1.0
  */
-const Indicator = ( props ) => {
-	const {
-		clientId,
-		attributes,
-	} = props;
+const ToggleEdit = () => {
 
-	const storeId = attributes?.tempId !== clientId ? clientId : attributes?.tempId;
-
+	// Set state dependency.
 	const {
-		isEditing
+		isActive,
+		isEditing,
 	} = useSelect( ( select ) => {
 		return {
+			isActive: select( STORE_NAME ).isActive(),
 			isEditing: select( STORE_NAME ).isEditing(),
 		}
 	} );
 
-	const store = dispatch( STORE_NAME );
-	const isActive = select( STORE_NAME ).isActive();
+	// Set dispatcher.
+	const dispatcher = dispatch( STORE_NAME );
 
+	/**
+	 * Set function to fire on click.
+	 *
+	 * @since 0.2.3
+	 */
 	const onClick = () => {
 		if( ! isActive ) {
-			store.setLoading();
-		}
-
-		if( isEditing ) {
-			store.unsetEditing();
+			dispatcher.setEditing();
+			dispatcher.setLoading();
 		} else {
-			store.setEditing();
+			if( ! isEditing ) {
+				dispatcher.setEditing();
+			} else {
+				dispatcher.unsetEditing();
+			}
 		}
 	}
 
-	const classNames = [ 'qp-viewports-indicator' ];
+	// Set classNames by states.
+	const classNames = [ 'qp-viewports-toggle-editing' ];
 	if( isEditing ) {
 		classNames.push( 'is-editing' );
 	}
@@ -70,4 +72,4 @@ const Indicator = ( props ) => {
 	);
 }
 
-export default Indicator;
+export default ToggleEdit;

@@ -1,4 +1,4 @@
-const { isObject, isArray, isEmpty } = window[ 'lodash' ];
+import type { Spectrum } from '../../generator/types';
 
 interface Style {
 	baseKeys : Array<any>;
@@ -8,100 +8,52 @@ interface Style {
 	onClickFunction : Function;
 }
 
-
 /**
- * Set function to render a single style entry recursively.
+ * Set function to render a style component for given spectrum.
  *
- * @param {object} style
+ * @param {object}
  *
  * @since 0.2.2
- *
- * @return {object} component
  */
-const Style = ( {
-	baseKeys,
-	origKeys,
-	styleKey,
-	styleValue,
-	onClickFunction
-} : Style ) => {
-	origKeys = [ ... origKeys, styleKey ];
+export const Style = ( attributes ) => {
 
-	const keys = [ ... baseKeys, styleKey ];
-	const baseKey = keys.join( '-' );
-	const isNull = null === styleValue;
-	const isObj = isObject( styleValue );
-	const isArr = isArray( styleValue );
-	const isVal = isNull || ( ! isObj && ! isArr );
+	// Deconstruct attributes.
+	const {
+		viewport,
+	} = attributes;
 
+	// Set spectrum.
+	const spectrum = attributes.spectrum as Spectrum;
+
+	// Render component.
 	return (
-		<div key={ `style-wrap-${ baseKey }` } className="style-wrap">
-			{ isVal &&
-				<div key={ `style-value-pair-${ baseKey }` } className="style-value-pair">
-					<span key={ `style-remove-${ baseKey }` } className="style-key" onClick={ () => { onClickFunction( origKeys ); } }>{ styleKey + ": " }</span>
-					<span key={ `style-value-${ baseKey }` }>{ styleValue }</span>
-				</div>
+		<div className="qp-viewports-inspector-style">
+			{ '' !== spectrum.media && viewport < spectrum.viewport &&
+				<div className="media">{ '@media (' + spectrum.media + ')' }</div>
 			}
-
-			{ ! isVal &&
-				<div key={ `style-key-${ baseKey }` } className="style-key">
-					{ isObj && ! isEmpty( styleValue ) &&
-						<span key={ `style-remove-${ baseKey }` } onClick={ () => { onClickFunction( origKeys ); } }>{ styleKey + ": {" }</span>
-					}
-
-					{ isObj && isEmpty( styleValue ) &&
-						<span key={ `style-remove-${ baseKey }` } onClick={ () => { onClickFunction( origKeys ); } }>{ styleKey + ": {}" }</span>
-					}
-
-					{ isArr && ! isEmpty( styleValue ) &&
-						<span key={ `style-remove-${ baseKey }` } onClick={ () => { onClickFunction( origKeys ); } }>{ styleKey + ": [" }</span>
-					}
-
-					{ isArr && isEmpty( styleValue ) &&
-						<span key={ `style-remove-${ baseKey }` } onClick={ () => { onClickFunction( origKeys ); } }>{ styleKey + ": []" }</span>
-					}
-				</div>
+			{ '' !== spectrum.media && viewport >= spectrum.viewport &&
+				<div className="media active">{ '@media (' + spectrum.media + ')' }</div>
 			}
+			<div className="selector-start">
+				{ spectrum.selector + ' {' }
+			</div>
+			<div className="property">{ "<" + spectrum.property + ">" }</div>
+			{ Object.entries( spectrum.properties ).map( entry => {
+				const property = entry[ 0 ];
+				const value = entry[ 1 ];
 
-			{ ( ! isNull && ( isObj || isArr ) ) &&
-				<div key={ `style-values-${ baseKey }` } className="style-values">
-					{ isArr && styleValue.map( ( style, index ) => {
-						const newKeys = [ ... keys, index ];
-						const newKey  = newKeys.join( '-' );
+				if( ! property || ! value ) {
+					return null;
+				}
 
-						return <Style
-							key={ `style-${ newKey }` }
-							origKeys={ origKeys }
-							baseKeys={ newKeys }
-							styleKey={ index }
-							styleValue={ style }
-							onClickFunction={ onClickFunction }
-						/>
-					}) }
-
-					{ isObj && Object.entries( styleValue ).map( ( style, index ) => {
-						const newKeys = [ ... keys, index ];
-						const newKey  = newKeys.join( '-' );
-
-						return <Style
-							key={ `style-${ newKey }` }
-							origKeys={ origKeys }
-							baseKeys={ newKeys }
-							styleKey={ style[0] }
-							styleValue={ style[1] }
-							onClickFunction={ onClickFunction }
-						/>
-					}) }
-				</div>
-			}
-
-			{ ! isVal && isObj && ! isEmpty( styleValue ) &&
-				<div key={ `style-closure-${ baseKey }` } className="style-closure">{ "}" }</div>
-			}
-
-			{ ! isVal && isArr && ! isEmpty( styleValue ) &&
-				<div key={ `style-closure-${ baseKey }` } className="style-closure">{ "]" }</div>
-			}
+				return (
+					<div className="css-wrap">
+						<div className="css-key">{ property }:</div>
+						<div className="css-value">{ value };</div>
+					</div>
+				);
+			} ) }
+			<div className="selector-end">{ '}' }</div>
 		</div>
 	);
 }

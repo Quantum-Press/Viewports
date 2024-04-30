@@ -22,7 +22,7 @@ const {
  *
  * @since 0.2.1
  */
-const InspectorToolbar = ( props ) => {
+const ToggleInspecting = ( props ) => {
 
 	// Set states.
 	const {
@@ -49,9 +49,9 @@ const InspectorToolbar = ( props ) => {
 	}
 
 	// Set button classnames.
-	let classNames = 'qp-viewports-inspector-toolbar';
+	let classNames = 'qp-viewports-toggle-inspecting';
 	if( isInspecting ) {
-		classNames = classNames + ' active';
+		classNames = classNames + ' is-inspecting';
 	}
 
 	// Render component.
@@ -65,4 +65,4 @@ const InspectorToolbar = ( props ) => {
 	);
 }
 
-export default InspectorToolbar;
+export default ToggleInspecting;

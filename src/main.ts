@@ -176,6 +176,7 @@ domReady( () => {
 	 * @since 0.1.0
 	 */
 	subscribe( () => {
+		/*
 		const searchParams  = new URLSearchParams( window.location.search );
 		const newTemplateId = searchParams.get( 'postId' );
 
@@ -184,6 +185,7 @@ domReady( () => {
 
 			dispatch( STORE_NAME ).clearBlocks();
 		}
+		*/
 
 		portalHandler();
 	} );

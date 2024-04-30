@@ -1,28 +1,15 @@
-import { STORE_NAME } from '../../store/constants';
-import { svgs } from '../svgs';
 import Block from './block';
 
 const {
-	components: {
-		Icon,
-	},
 	data: {
 		select,
 		dispatch,
 		useSelect,
 	},
-	element: {
-		useEffect,
-	},
-	i18n: {
-		__,
-	}
 } = window[ 'wp' ];
 
 /**
  * Set component const to export sidebar control-edit ui.
- *
- * @param object props
  *
  * @since 0.2.2
  */
@@ -46,6 +33,7 @@ const BlockList = () => {
 	// Set blocks.
 	const blocks = select( 'core/editor' ).getBlocks();
 
+	// Render component.
 	return (
 		<div className="qp-viewports-inspector-blocklist">
 			{ blocks.map( ( block ) => {

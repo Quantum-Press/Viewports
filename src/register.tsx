@@ -2,8 +2,8 @@ import BlockEdit from './block/edit';
 import BlockSave from './block/save';
 import BlockStyle from './block/style';
 
-import Indicator from './components/indicator';
-import InspectorToolbar from './components/inspector/toolbar';
+import ToggleEdit from './components/toggle-editing';
+import ToggleInspecting from './components/inspector/toggle-inspecting';
 
 const {
 	blockEditor: {
@@ -52,8 +52,8 @@ addFilter( 'blocks.registerBlockType', 'quantumpress/viewports', ( block ) => {
 					<BlockStyle props={ props } />
 					<BlockControls>
 						<ToolbarGroup>
-							<InspectorToolbar props={ props }/>
-							<Indicator props={ props }/>
+							<ToggleInspecting props={ props }/>
+							<ToggleEdit />
 						</ToolbarGroup>
 					</BlockControls>
 				</>

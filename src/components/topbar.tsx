@@ -1,6 +1,8 @@
 import { useLongPress } from '../utils/longpress';
 import { STORE_NAME } from '../store/constants';
 import { svgs } from './svgs';
+import ToggleEditing from './toggle-editing';
+import ToggleInspecting from './inspector/toggle-inspecting';
 
 
 const {
@@ -42,12 +44,13 @@ const Topbar = () => {
 			inTabletRange: store.inTabletRange(),
 			mobile: store.getMobile(),
 			inMobileRange: store.inMobileRange(),
+			isInspecting: store.isInspecting(),
 		}
 	}, [] );
 
 	/**
 	 * Set function to handle prev action.
-	 * 
+	 *
 	 */
 	const onClickPrev = () => {
 		dispatch.setPrevViewport();
@@ -55,7 +58,7 @@ const Topbar = () => {
 
 	/**
 	 * Set function to handle prev action.
-	 * 
+	 *
 	 */
 	const onClickNext = () => {
 		dispatch.setNextViewport();
@@ -119,6 +122,10 @@ const Topbar = () => {
 	// Render component.
 	return (
 		<div className="qp-viewports-topbar">
+			<div className="qp-viewports-actions">
+				{ ! props.isInspecting && ( <ToggleInspecting /> ) }
+				<ToggleEditing />
+			</div>
 			<div className="qp-viewports-shorthands">
 				<div className={ classNamesPrev } onClick={ onClickPrev }>
 					<Icon icon="arrow-left"/>

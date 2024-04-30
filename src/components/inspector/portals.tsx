@@ -102,16 +102,18 @@ export const InspectorPortals = () => {
 			return;
 		}
 
+		// Set indicators.
 		const clientId = parent.getAttribute( 'data-block' );
 		const selected = select( 'core/block-editor' ).getSelectedBlock();
 		const selectedClientId = selected ? selected.clientId : null;
-
 		const isInspecting = select( STORE_NAME ).isInspecting();
 
+		// Check if we need to unset inspecting.
 		if( isInspecting && selectedClientId === clientId ) {
 			dispatch( STORE_NAME ).unsetInspecting(); return;
 		}
 
+		// Check if we need to update selected block.
 		if( selectedClientId !== clientId ) {
 			dispatch( 'core/block-editor' ).selectBlock( clientId );
 		}
@@ -119,7 +121,7 @@ export const InspectorPortals = () => {
 		dispatch( STORE_NAME ).setInspecting();
 	}
 
-	// Render component.
+	// Render portal components.
 	return (
 		<>
 			{ $elements.map( ( $element, index ) => {
@@ -134,9 +136,8 @@ export const InspectorPortals = () => {
 
 				// Set button classNames
 				let classNames = 'qp-viewports-inspector-blocklist-toggle';
-
 				if( isInspecting ) {
-					classNames = classNames + ' active';
+					classNames = classNames + ' is-inspecting';
 				}
 
 				// Set target if exist, append it to menu-cell.
@@ -172,4 +173,5 @@ export const InspectorPortals = () => {
 		</>
 	);
 }
+
 export default InspectorPortals;

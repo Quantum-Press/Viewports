@@ -4,9 +4,6 @@ import Body from './body';
 import Foot from './foot';
 
 const {
-	components: {
-		ToolbarButton,
-	},
 	data: {
 		useSelect,
 	},
@@ -17,8 +14,6 @@ const {
 
 /**
  * Set component const to export inspector ui.
- *
- * @param object props
  *
  * @since 0.2.2
  */
@@ -49,6 +44,7 @@ const Inspector = () => {
 		classNamesWrap = classNamesWrap + ' expanded';
 	}
 
+	// Render component.
 	return (
 		<div className={ classNamesWrap }>
 			<Head />

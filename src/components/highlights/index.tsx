@@ -6,26 +6,32 @@ const {
 		useSelect,
 	},
 	element: {
-		useEffect,
+		useLayoutEffect,
 		useState,
-		useRef,
 	}
 } = window[ 'wp' ];
 
-// Highlighter component.
+/**
+ * Set component const to export Highlights UI.
+ *
+ * @since 0.2.2
+ */
 const Highlights = () => {
 
 	// Set store states.
 	const {
 		viewport,
+		isLoading,
 		isActive,
 		isEditing,
 		isInspecting,
+		inspectorPosition,
 	} = useSelect( ( select: Function ) => {
 		const store = select( STORE_NAME );
 
 		return {
 			viewport: store.getViewport(),
+			isLoading: store.isLoading(),
 			isActive: store.isActive(),
 			isEditing: store.isEditing(),
 			isInspecting: store.isInspecting(),
@@ -36,16 +42,15 @@ const Highlights = () => {
 	// Set state.
 	const [ observers, setObservers ] = useState( {} );
 
-
 	// Useffect if we are enable / disable editing viewports.
-	useEffect( () => {
+	useLayoutEffect( () => {
 		const update = { ... observers };
 
 		if( isEditing && isActive ) {
 			update[ 'editor' ] = {
 				selector: 'iframe[name="editor-canvas"], .editor-styles-wrapper',
 				type: 'target',
-				padding: 20,
+				padding: 10,
 			};
 		}
 
@@ -53,20 +58,10 @@ const Highlights = () => {
 			delete update[ 'editor' ];
 		}
 
-		if( ! isActive && update.hasOwnProperty( 'editor' ) ) {
-			delete update[ 'editor' ];
-		}
-
 		setObservers( update );
-	}, [ isEditing, isActive ] )
+	}, [ isLoading, isActive, isEditing, isInspecting, inspectorPosition ] )
 
-
-	// UseEffect to force redraw on viewport change.
-	useEffect( () => {
-		setObservers( { ... observers } );
-	}, [ viewport, isInspecting ] );
-
-
+	// Render component.
 	return (
 		<div className="qp-viewports-highlight-wrap">
 			{ Object.entries( observers ).map( ( observer ) => {
@@ -77,6 +72,5 @@ const Highlights = () => {
 		</div>
 	);
 };
-
 
 export default Highlights;

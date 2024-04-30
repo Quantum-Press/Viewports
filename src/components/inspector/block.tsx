@@ -1,18 +1,12 @@
 import { STORE_NAME } from '../../store/constants';
-import { svgs } from '../svgs';
 
 const {
 	components: {
-		Icon,
 		Button,
 	},
 	data: {
 		select,
 		dispatch,
-		useSelect,
-	},
-	element: {
-		useEffect,
 	},
 	i18n: {
 		__,
@@ -34,28 +28,71 @@ const Block = ( props ) => {
 		level,
 	} = props;
 
+	// Deconstruct block.
 	const {
 		clientId,
 		name,
 		innerBlocks
 	} = block;
 
-	// Set className.
-	const className = `qp-viewports-inspector-blocklist-block level-${ level }`;
-
+	// Set store.
 	const store = select( STORE_NAME );
 
+	// Set indicators.
 	const hasDefaults = store.hasBlockDefaults( clientId );
 	const hasSaves = store.hasBlockSaves( clientId );
 	const hasChanges = store.hasBlockChanges( clientId );
 	const hasRemoves = store.hasBlockRemoves( clientId );
 
-	const buttonText = hasChanges || hasRemoves || hasSaves ? 'VCSS' : 'CSS';
+	// Set buttonText.
+	const buttonText = hasChanges || hasRemoves || hasSaves ? 'VCSS' : hasDefaults ? 'CSS' : '';
 
+	// Set className.
+	const className = `qp-viewports-inspector-blocklist-block level-${ level }`;
+
+	// Set button classNames.
 	const buttonClassNames = [ 'select' ];
 	if( ! hasChanges && ! hasRemoves && ! hasSaves && ! hasDefaults ) {
 		buttonClassNames.push( 'disabled' );
 	}
+
+
+	/**
+	 * Set function to return child blocks.
+	 *
+	 * @since 0.2.2
+	 */
+	const getChildBlocks = () => {
+
+		// Check if we have innerBlocks..
+		if( innerBlocks && 0 < innerBlocks.length ) {
+			return innerBlocks;
+		}
+
+		// Check if innerBlocks controlled seperately.
+		const innerBlocksControlled = select( 'core/block-editor' ).areInnerBlocksControlled( clientId );
+		if( ! innerBlocksControlled ) {
+			return [];
+		}
+
+		// Check if innerBlocks are seperately stored in blockEditor store.
+		const clientIds = select( 'core/block-editor' ).getBlockOrder( clientId );
+		if( 0 === clientIds.length ) {
+			return [];
+		}
+
+		// Iterate over clientIds to collect its block object.
+		const blocks = [];
+		for( let index = 0; index < clientIds.length; index++ ) {
+			const clientId = clientIds[ index ];
+			const block = select( 'core/block-editor' ).getBlock( clientId );
+
+			blocks.push( block );
+		}
+
+		return blocks;
+	}
+
 
 	/**
 	 * Set function to fire on click select.
@@ -66,31 +103,15 @@ const Block = ( props ) => {
 		dispatch( 'core/block-editor' ).selectBlock( clientId );
 	}
 
-	/**
-	 * Set function to fire on click reset.
-	 *
-	 * @since 0.2.2
-	 */
-	const onClickReset = () => {
+	// Set childBlocks
+	const childBlocks = getChildBlocks();
 
-	}
-
-	console.log( 'are inner blocks controlled ', select( 'core/block-editor' ).areInnerBlocksControlled( clientId ) );
-
+	// Render component.
 	return (
 		<>
 			<div className={ className }>
 				<div className="name">{ name }</div>
 				<div className="actions">
-					{ ( hasChanges || hasRemoves ) &&
-						<Button
-							className="reset"
-							icon="update"
-							label={ __( 'Reset changes', 'quantum-viewports' ) }
-							onClick={ onClickReset }
-						/>
-					}
-
 					<Button
 						className={ buttonClassNames.join( ' ' ) }
 						text={ buttonText }
@@ -99,7 +120,7 @@ const Block = ( props ) => {
 					/>
 				</div>
 			</div>
-			{ 0 < innerBlocks.length && innerBlocks.map( block => {
+			{ 0 < childBlocks.length && childBlocks.map( block => {
 				return (
 					<Block block={ block } level={ level + 1 } />
 				)

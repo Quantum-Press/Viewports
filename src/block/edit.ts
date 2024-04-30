@@ -372,6 +372,7 @@ export default function BlockEdit( blockArgs : any ) {
 	}, [ attributes ] );
 
 	// Use useEffect to handle block remove.
+	/*
 	useLayoutEffect( () => {
 		return () => {
 			if( ! isSaving ) {
@@ -383,6 +384,7 @@ export default function BlockEdit( blockArgs : any ) {
 			}
 		}
 	}, [] );
+	*/
 
 	// Check if block.edit is a funktion or class component to return edit.
 	const isClassComponent = typeof block.edit === 'function' && block.edit.prototype instanceof Component;

@@ -1,4 +1,5 @@
 import { STORE_NAME } from '../../store/constants';
+import useLocalStorage from '../../hooks/use-local-storage';
 import { svgs } from '../svgs';
 
 const {
@@ -21,8 +22,6 @@ const {
 /**
  * Set component const to export sidebar control-edit ui.
  *
- * @param object props
- *
  * @since 0.2.2
  */
 const Head = () => {
@@ -42,21 +41,24 @@ const Head = () => {
 		}
 	}, [] );
 
+	// Set position.
+	const [ position, setPosition ] = useLocalStorage( 'inspector.position', inspectorPosition );
+
 	// Set useEffect to handle inspector position indicator via bodyclass.
 	useEffect( () => {
-		if( 'right' === inspectorPosition ) {
+		if( 'right' === position ) {
 			document.body.classList.remove( 'is-left-inspector' );
 			document.body.classList.add( 'is-right-inspector' );
 			return;
 		}
 
-		if( 'left' === inspectorPosition ) {
+		if( 'left' === position ) {
 			document.body.classList.remove( 'is-right-inspector' );
 			document.body.classList.add( 'is-left-inspector' );
 			return;
 		}
 
-	}, [ inspectorPosition ] );
+	}, [ position ] );
 
 	// Set useEffect to handle inspecting indicator via bodyclass.
 	useEffect( () => {
@@ -89,9 +91,11 @@ const Head = () => {
 	 * @since 0.2.2
 	 */
 	const onClickPosition = () => {
-		if( 'left' === inspectorPosition ) {
+		if( 'left' === position ) {
+			setPosition( 'right' );
 			dispatch( STORE_NAME ).setInspectorPosition( 'right' );
 		} else {
+			setPosition( 'left' );
 			dispatch( STORE_NAME ).setInspectorPosition( 'left' );
 		}
 	}
@@ -110,6 +114,7 @@ const Head = () => {
 		}
 	}
 
+	// Render component.
 	return (
 		<div className="qp-viewports-inspector-head">
 			<div className="qp-viewports-inspector-control title" onClick={ onClickTitle }>
@@ -122,8 +127,8 @@ const Head = () => {
 			</div>
 			{ isInspecting && <div className="qp-viewports-inspector-control position" onClick={ onClickPosition }>
 				<div className="qp-viewports-inspector-control-icon">
-					{ 'left' === inspectorPosition && <Icon icon="align-pull-left"></Icon> }
-					{ 'right' === inspectorPosition && <Icon icon="align-pull-right"></Icon> }
+					{ 'left' === position && <Icon icon="align-pull-left"></Icon> }
+					{ 'right' === position && <Icon icon="align-pull-right"></Icon> }
 				</div>
 			</div> }
 			{ isInspecting && <div className="qp-viewports-inspector-control close" onClick={ onClickClose }>

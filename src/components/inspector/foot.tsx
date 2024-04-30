@@ -3,11 +3,7 @@ import { getVersion } from '../../utils/editor';
 import { svgs } from '../svgs';
 
 const {
-	components: {
-		Icon,
-	},
 	data: {
-		dispatch,
 		useSelect,
 	},
 	i18n: {
@@ -17,8 +13,6 @@ const {
 
 /**
  * Set component const to export sidebar control-edit ui.
- *
- * @param object props
  *
  * @since 0.2.2
  */
@@ -38,6 +32,7 @@ const Foot = () => {
 	// Setup version.
 	const version = getVersion();
 
+	// Render component.
 	return (
 		<div className="qp-viewports-inspector-foot">
 			<div className="qp-viewports-inspector-control title">

@@ -1,22 +1,9 @@
-import { STORE_NAME } from '../../store/constants';
 import { useResizeObserver } from '../../hooks/use-resize-observer';
-
-const {
-	data: {
-		useSelect,
-	},
-	element: {
-		useEffect,
-		useState,
-		useRef,
-	}
-} = window[ 'wp' ];
 
 type Highlight = {
 	selector: string,
-	type: string,
+	padding: number,
 }
-
 
 /**
  * Set component const to export Highlight UI.
@@ -25,15 +12,13 @@ type Highlight = {
  */
 const Highlight = ( props ) => {
 
+	// Deconstruct component props.
 	const {
 		observe: {
 			selector,
-			type,
 			padding = 0,
 		}
 	} = props;
-
-	const [ selectorData, setSelectorData ] = useState( {} );
 
 	// Set resize observer hook to observe element sizing and position.
 	const size = useResizeObserver( {
@@ -64,6 +49,7 @@ const Highlight = ( props ) => {
 		return {};
 	}
 
+
 	/**
 	 * Set Function to get client style.
 	 *
@@ -80,13 +66,11 @@ const Highlight = ( props ) => {
 		};
 	}
 
-	// Set client style.
-	const style = getClientStyle();
-
+	// Render component.
 	return (
 		<div
 			className="qp-viewports-highlight"
-			style={ style }
+			style={ getClientStyle() }
 		></div>
 	);
 }
