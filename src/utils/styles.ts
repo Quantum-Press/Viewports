@@ -1,4 +1,4 @@
-import type { Attributes } from "../utils/types";
+import type { Attributes } from "../utils";
 import type { Renderer, RendererList } from "../store/types";
 import { STORE_NAME } from '../store/constants';
 

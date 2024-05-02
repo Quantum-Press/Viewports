@@ -1,8 +1,6 @@
 import Breadcrumb from './breadcrumb';
 import BlockList from './blocklist';
-import StyleList from './stylelist';
-import Accordion from '../accordion';
-import Dimensions from '../dimensions';
+import Selected from './selected';
 
 const {
 	data: {
@@ -34,26 +32,7 @@ const Body = () => {
 		<div className="qp-viewports-inspector-body">
 			<Breadcrumb />
 			{ ! selected && ( <BlockList /> ) }
-			{ selected && (
-				<div className="qp-viewports-inspector-selected">
-					<Accordion
-						storePath="inspector.dimensions"
-						defaultValue={ true }
-						label={ __( 'Dimensions', 'quantum-viewports' ) }
-					>
-						<Dimensions />
-					</Accordion>
-					<Accordion
-						storePath="inspector.styles"
-						defaultValue={ true }
-						label={ __( 'Styles', 'quantum-viewports' ) }
-					>
-						<StyleList
-							block={ selected }
-						/>
-					</Accordion>
-				</div>
-			) }
+			{ selected && ( <Selected selected={ selected } /> ) }
 		</div>
 	);
 }

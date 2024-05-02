@@ -1,3 +1,4 @@
+import useResizeEditor from '../hooks/use-resize-editor';
 import Save from './save';
 import Body from './body';
 import Topbar from './topbar';
@@ -13,6 +14,10 @@ import Highlights from './highlights/index';
  * @since 0.1.0
  */
 export default function Wrap() {
+
+	// Set resize editor state dependency.
+	const sizes = useResizeEditor();
+
 	return (
 		<>
 			<Body />

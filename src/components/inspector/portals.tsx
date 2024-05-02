@@ -134,6 +134,27 @@ export const InspectorPortals = () => {
 					$expander.addEventListener( 'click', onClickExpander );
 				}
 
+				// Set parent.
+				const $parent = findParentBySelector( $element, '.block-editor-list-view-leaf' );
+				if( ! $parent ) {
+					return;
+				}
+
+				// Set clientId and store to check indicators.
+				const clientId = $parent.getAttribute( 'data-block' );
+				const store = select( STORE_NAME );
+
+				// Set indicators.
+				const hasDefaults = store.hasBlockDefaults( clientId );
+				const hasSaves = store.hasBlockSaves( clientId );
+				const hasChanges = store.hasBlockChanges( clientId );
+				const hasRemoves = store.hasBlockRemoves( clientId );
+
+				// Check if we have any entries to skip rendering.
+				if( ! hasDefaults && ! hasSaves && ! hasChanges && ! hasRemoves ) {
+					return null;
+				}
+
 				// Set button classNames
 				let classNames = 'qp-viewports-inspector-blocklist-toggle';
 				if( isInspecting ) {
@@ -145,8 +166,6 @@ export const InspectorPortals = () => {
 				if( ! $target ) {
 					const $inspectorCell = document.createElement( 'div' );
 					$inspectorCell.classList.add( 'block-editor-block-inspector' );
-
-					const $menuCell = $element.querySelector( '.block-editor-list-view-block__menu-cell' );
 
 					$element.insertAdjacentElement( 'afterbegin', $inspectorCell );
 

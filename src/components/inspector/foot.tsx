@@ -3,6 +3,9 @@ import { getVersion } from '../../utils/editor';
 import { svgs } from '../svgs';
 
 const {
+	components: {
+		Button,
+	},
 	data: {
 		useSelect,
 	},
@@ -35,14 +38,11 @@ const Foot = () => {
 	// Render component.
 	return (
 		<div className="qp-viewports-inspector-foot">
-			<div className="qp-viewports-inspector-control title">
-				<div className="qp-viewports-inspector-control-icon">
-					{ svgs.logo }
-				</div>
-				{ isInspecting && <div className="qp-viewports-inspector-control-label">
-					{ __( 'Quantum Viewports - Version', 'quantum-viewports' ) + ' ' + version }
-				</div> }
-			</div>
+			<Button
+				className="qp-viewports-link"
+				icon={ svgs.logo }
+				text={ __( 'Quantum Viewports - Version', 'quantum-viewports' ) + ' ' + version }
+			/>
 		</div>
 	);
 }

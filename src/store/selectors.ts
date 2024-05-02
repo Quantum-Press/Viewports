@@ -1,4 +1,4 @@
-import type { Attributes } from '../utils/types';
+import type { Attributes } from '../utils';
 import type { State } from './types';
 
 import { getMergedAttributes } from '../utils/attributes';

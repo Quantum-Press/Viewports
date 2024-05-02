@@ -1,9 +1,9 @@
-import { compileMediaQueries } from '../utils/styles';
 import { STORE_NAME } from '../store/constants';
+import Generator from '../generator';
+import { useResizeObserver } from '../hooks';
 
 const {
 	data: {
-		select,
 		useSelect,
 	},
 } = window[ 'wp' ];
@@ -11,22 +11,24 @@ const {
 /**
  * Set function to render blockStyle depending on outer state.
  *
- * @param
- *
  * @since 0.1.0
  */
-export default function BlockStyle( args : any ) {
-	const { props } = args;
+export default function BlockStyle( props : any ) {
+
+	// Deconstruct props.
+	const { block } = props;
+
+	// Deconstruct block properties.
 	const {
 		clientId,
 		attributes
-	} = props;
+	} = block;
 	const { tempId } = attributes;
 
 	// Set store id to jump over first init.
 	const storeId = tempId !== clientId ? clientId : tempId;
 
-	// Set states.
+	// Set state dependencies.
 	const {
 		valids,
 	} = useSelect( ( select : Function ) => {
@@ -37,13 +39,23 @@ export default function BlockStyle( args : any ) {
 		};
 	}, [] );
 
-	// Build css.
-	let css = compileMediaQueries( storeId, valids );
-		css = css.split( ';' ).join( '!important;' );
+	// Set resize state.
+	const selector = '.interface-interface-skeleton__content';
+	const size = useResizeObserver( {
+		selector,
+		box: 'border-box',
+	} );
 
+
+	// Set styles generator and get spectrumSet.
+	const generator = new Generator( block, '#block-' + clientId );
+	const css = generator.getCSS();
+
+	// Check if we have css to render.
 	if ( '' === css ) {
 		return null;
 	}
 
+	// Render component.
 	return <style id={ 'qp-viewports-block-style-' + storeId }>{ css }</style>;
 }

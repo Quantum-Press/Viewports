@@ -17,7 +17,7 @@ const {
  *
  * @since 0.2.3
  */
-const useLocalStorage = ( storePath, defaultValue = null ) => {
+export function useLocalStorage( storePath, defaultValue = null ) {
 
 	// Set state to handle storage entry by object traverse.
 	const [ value, setValue ] = useState( () => {

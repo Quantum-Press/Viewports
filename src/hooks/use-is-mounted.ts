@@ -19,3 +19,5 @@ export function useIsMounted(): () => boolean {
 
 	return useCallback( () => isMounted.current, [] )
 }
+
+export default useIsMounted;

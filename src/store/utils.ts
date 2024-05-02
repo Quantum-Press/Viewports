@@ -1,6 +1,7 @@
-import { getMergedAttributes, sanitizeAttributes, isObject } from '../utils/attributes';
+import { isObject, getMergedAttributes, sanitizeAttributes } from '../utils/attributes';
 import type { State } from './types';
-import type { Attributes } from '../utils/types';
+import type { Attributes } from '../utils';
+
 const { isEqual, cloneDeep } = window[ 'lodash' ];
 
 /**

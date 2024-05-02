@@ -15,7 +15,7 @@ const {
 
 // Set portal element base.
 const portalWrap = document.createElement( 'div' );
-portalWrap.id = 'qp-viewports-portal-ui-wrap';
+portalWrap.id = 'qp-viewports-portal-wrap';
 let portalRoot : any = false;
 
 

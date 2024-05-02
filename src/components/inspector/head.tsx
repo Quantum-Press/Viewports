@@ -1,10 +1,11 @@
 import { STORE_NAME } from '../../store/constants';
-import useLocalStorage from '../../hooks/use-local-storage';
+import { useLocalStorage } from '../../hooks';
 import { svgs } from '../svgs';
+import ToggleInspecting from './toggle-inspecting';
 
 const {
 	components: {
-		Icon,
+		Button,
 	},
 	data: {
 		select,
@@ -62,13 +63,12 @@ const Head = () => {
 
 	// Set useEffect to handle inspecting indicator via bodyclass.
 	useEffect( () => {
-		if( isInspecting ) {
-			document.body.classList.add( 'is-inspecting' );
-		} else {
+		document.body.classList.add( 'is-inspecting' );
+
+		return () => {
 			document.body.classList.remove( 'is-inspecting' );
 		}
-
-	}, [ isInspecting ] );
+	}, [] );
 
 
 	/**
@@ -117,25 +117,19 @@ const Head = () => {
 	// Render component.
 	return (
 		<div className="qp-viewports-inspector-head">
-			<div className="qp-viewports-inspector-control title" onClick={ onClickTitle }>
-				<div className="qp-viewports-inspector-control-icon">
-					{ svgs.inspect }
-				</div>
-				{ isInspecting && <div className="qp-viewports-inspector-control-label">
-					{ __( 'Inspector', 'quantum-viewports' ) }
-				</div> }
-			</div>
-			{ isInspecting && <div className="qp-viewports-inspector-control position" onClick={ onClickPosition }>
-				<div className="qp-viewports-inspector-control-icon">
-					{ 'left' === position && <Icon icon="align-pull-left"></Icon> }
-					{ 'right' === position && <Icon icon="align-pull-right"></Icon> }
-				</div>
-			</div> }
-			{ isInspecting && <div className="qp-viewports-inspector-control close" onClick={ onClickClose }>
-				<div className="qp-viewports-inspector-control-icon">
-					<Icon icon="no-alt"></Icon>
-				</div>
-			</div> }
+			<ToggleInspecting
+				text={ __( 'Inspector', 'quantum-viewports' ) }
+			/>
+			<Button
+				className="qp-viewports-inspector-position"
+				icon={ 'left' === position ? 'align-pull-left' : 'align-pull-right' }
+				onClick={ onClickPosition }
+			/>
+			<Button
+				className="qp-viewports-inspector-close"
+				icon="no-alt"
+				onClick={ onClickClose }
+			/>
 		</div>
 	);
 }

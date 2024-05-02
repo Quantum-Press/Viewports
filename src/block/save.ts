@@ -1,4 +1,4 @@
-import type { Attributes } from '../utils/types';
+import type { Attributes } from '../utils';
 import { compileMediaQueryAttributes } from '../utils/styles';
 import { STORE_NAME } from '../store/constants';
 

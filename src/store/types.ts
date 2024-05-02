@@ -1,4 +1,4 @@
-import type { Attributes } from '../utils/types';
+import type { Attributes } from '../utils';
 
 export type Viewports = {
 	[ key: number ] : string,

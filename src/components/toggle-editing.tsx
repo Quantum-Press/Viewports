@@ -4,7 +4,7 @@ import { svgs } from './svgs';
 
 const {
 	components: {
-		ToolbarButton,
+		Button,
 	},
 	data: {
 		select,
@@ -21,7 +21,12 @@ const {
  *
  * @since 0.1.0
  */
-const ToggleEdit = () => {
+const ToggleEdit = ( props ) => {
+
+	// Deconstruct props.
+	const {
+		text,
+	} = props;
 
 	// Set state dependency.
 	const {
@@ -63,11 +68,12 @@ const ToggleEdit = () => {
 
 	// Render component.
 	return (
-		<ToolbarButton
+		<Button
 			className={ classNames }
 			icon={ svgs.edit }
 			label={ __( 'Edit viewport settings', 'quantum-viewports' ) }
 			onClick={ onClick }
+			text={ text && isEditing ? text : '' }
 		/>
 	);
 }

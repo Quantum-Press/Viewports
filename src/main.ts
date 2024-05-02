@@ -4,11 +4,10 @@ import './register';
 
 import { STORE_NAME } from './store/constants';
 import { isSiteEditor } from './utils/editor';
-import iframeHandler from './iframe';
 import portalHandler from './portals';
 import Wrap from './components/wrap';
 import Inspector from './components/inspector';
-import Toggle from './components/toggle';
+import ToggleView from './components/toggle-view';
 
 const {
 	data: {
@@ -28,15 +27,15 @@ const {
 
 // Setup dom elements.
 const viewportWrap = document.createElement( 'div' );
-viewportWrap.id = 'qp-viewports-ui-wrap';
+viewportWrap.id = 'qp-viewports-wrap';
 let viewportRoot : any = false;
 
 const inspectorWrap = document.createElement( 'div' );
-inspectorWrap.id = 'qp-viewports-inspector-ui-wrap';
+inspectorWrap.id = 'qp-viewports-inspector-wrap';
 let inspectorRoot : any = false;
 
-const toggleWrap = document.createElement( 'div' );
-toggleWrap.id = 'qp-viewports-toggle-ui-wrap';
+const toggleViewWrap = document.createElement( 'div' );
+toggleViewWrap.id = 'qp-viewports-toggle-view-wrap';
 let toggleRoot : any = false;
 let toggleElement : any = false;
 
@@ -48,18 +47,6 @@ let toggleElement : any = false;
  * @link https://developer.mozilla.org/en-US/docs/Glossary/IIFE
  */
 domReady( () => {
-
-	/**
-	 * Set event listening to resize.
-	 */
-	window.addEventListener( 'resize', () => {
-		if ( viewportWrap.isConnected ) {
-			iframeHandler();
-
-			viewportRoot.render( createElement( Wrap ) );
-		}
-	});
-
 
 	/**
 	 * Subscribe to editor, to load on first init.
@@ -75,9 +62,6 @@ domReady( () => {
 
 		// Is executed after any editor change.
 		const afterEditorChange = () => {
-
-			// Run iframe handler first.
-			iframeHandler();
 
 			// Make sure the viewport UI is attached to the DOM.
 			if ( ! viewportWrap.isConnected ) {
@@ -134,15 +118,15 @@ domReady( () => {
 			}
 
 			// Make sure the toggle UI is attached to the DOM.
-			if ( ! toggleWrap.isConnected ) {
+			if ( ! toggleViewWrap.isConnected ) {
 				const toggleUI = document.querySelector( '.edit-site-header-edit-mode__end, .edit-post-header__settings' );
 
 				if ( toggleUI ) {
-					toggleUI.before( toggleWrap );
+					toggleUI.before( toggleViewWrap );
 
 					if ( ! toggleRoot ) {
-						toggleRoot = createRoot( toggleWrap );
-						toggleElement = createElement( Toggle );
+						toggleRoot = createRoot( toggleViewWrap );
+						toggleElement = createElement( ToggleView );
 
 						toggleRoot.render( toggleElement );
 					}

@@ -48,7 +48,7 @@ const Highlights = () => {
 
 		if( isEditing && isActive ) {
 			update[ 'editor' ] = {
-				selector: 'iframe[name="editor-canvas"], .editor-styles-wrapper',
+				selector: 'iframe[name="editor-canvas"], .editor-styles-wrapper, .edit-site-editor-canvas-container',
 				type: 'target',
 				padding: 10,
 			};

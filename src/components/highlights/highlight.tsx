@@ -1,4 +1,4 @@
-import { useResizeObserver } from '../../hooks/use-resize-observer';
+import { useResizeObserver } from '../../hooks';
 
 type Highlight = {
 	selector: string,

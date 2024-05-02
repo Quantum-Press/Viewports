@@ -27,7 +27,7 @@ export const Style = ( attributes ) => {
 
 	// Render component.
 	return (
-		<div className="qp-viewports-inspector-style">
+		<div className="qp-viewports-inspector-style" data-viewport={ spectrum.viewport }>
 			{ '' !== spectrum.media && viewport < spectrum.viewport &&
 				<div className="media">{ '@media (' + spectrum.media + ')' }</div>
 			}

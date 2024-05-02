@@ -134,10 +134,10 @@ export class Generator {
 							const priority = parseInt( priorityDirty );
 
 							// Set result of custom renderer callback.
-							const css = styleRenderer( simulate, options, this.isSaving );
+							const css = styleRenderer( style, options, this.isSaving );
 
 							// Debug custom simulation.
-							// console.log( 'simulate', simulate, css );
+							// console.log( 'simulate', style, simulate, css );
 
 							// Set split css by selector.
 							const cssParts = css.split( this.selector );
@@ -151,18 +151,25 @@ export class Generator {
 
 								// Set selector by combining base selector with nested selectors.
 								const selectorParts = partCSS.split( '{', );
-								const selector = selectorParts[ 0 ];
 
-								// Set default rule.
-								ruleSet.push( {
-									property,
-									viewport,
-									priority,
-									selector: selector,
-									css: partCSS,
-									style: simulate,
-									properties: this.generateProperties( partCSS ),
-								} );
+								// Iterate over each selector part.
+								for( let i = 0; i < selectorParts.length - 1; i++ ) {
+
+									// Set selector and declarations.
+									const selector = selectorParts[ i ].trim();
+									const declarations = selectorParts[ i + 1 ].split( '}' )[ 0 ].trim();
+
+									// Set rule.
+									ruleSet.push( {
+										property,
+										viewport,
+										priority,
+										selector: selector,
+										css: selector + '{' + declarations + '}',
+										style: simulate,
+										properties: this.generateProperties( partCSS ),
+									} );
+								}
 							} );
 						}
 
@@ -191,6 +198,9 @@ export class Generator {
 				prevStyle = style;
 			}
 		} );
+
+		// Debug ruleSet.
+		// console.log( 'ruleSet', ruleSet );
 
 		return ruleSet;
 	}
@@ -333,19 +343,38 @@ export class Generator {
 		// Set css defaults
 		const css : string[] = [];
 
-		// Set spectrums.
-		const spectrumSet = this.getSpectrumSet();
+		// Set unfiltered spectrumSet.
+		const unfiltered = this.getSpectrumSet();
+
+		// Set viewport.
+		const viewport = select( STORE_NAME ).getViewport();
+
+		// Set count iterations.
+		const spectrumSet = [] as SpectrumSet;
+
+		// Reduce for actual viewport.
+		for ( let index = 0; index < unfiltered.length; index++ ) {
+			const spectrum = unfiltered[ index ];
+
+			if( spectrum.from <= viewport ) {
+				spectrumSet.push( spectrum );
+			}
+		}
 
 		// Iterate over spectrums to collect css.
 		for( let i = 0; i < spectrumSet.length; i++ ) {
 			const spectrum = spectrumSet[ i ];
+			const importantCSS = spectrum.css.split( ';' ).join( '!important;' );
 
 			if( spectrum.media === '' ) {
-				css.push( spectrum.css );
+				css.push( importantCSS );
 			} else {
-				css.push( '@media (' + spectrum.media + ') {' + spectrum.css + '}' );
+				css.push( '@media (' + spectrum.media + '){' + importantCSS + '}' );
 			}
 		}
+
+		// Debug css.
+		// console.log( 'css', css );
 
 		// Return joined css.
 		return css.join( '' );
@@ -362,27 +391,39 @@ export class Generator {
 		// Set min and minMax defaults.
 		const min = {};
 		const minMax = {};
+		const prevSet = {};
+
+		// Set prev default.
+		const prevDefault = {
+			property: '',
+			viewport: 0,
+			priority: 0,
+			selector: '',
+			css: '',
+			style: {},
+			properties: {},
+		} as Rule;
 
 		// Iterate over properties to split min from min-max queries.
 		for( let i = 0; i < this.properties.length; i++ ) {
 			const key = this.properties[ i ];
-
-			// Set initial prev rule to compare with, inside viewport loop.
-			let prev = {
-				property: '',
-				viewport: 0,
-				priority: 0,
-				selector: '',
-				css: '',
-				style: {},
-				properties: {},
-			} as Rule;
 
 			// Iterate over ruleSet to compare viewport settings.
 			this.ruleSet.forEach( ( rule : Rule ) => {
 				if( key !== rule.property ) {
 					return true;
 				}
+
+				// Set actual prev if already set.
+				let prev = {} as Rule;
+				if( prevSet.hasOwnProperty( rule.selector ) ) {
+					prev = prevSet[ rule.selector ];
+				} else {
+					prev = prevDefault;
+				}
+
+				// Debug prev.
+				// console.log( 'prev', prev, rule );
 
 				// Check if there is a difference between last and actual css.
 				if ( isEqual( prev.css, rule.css ) ) {
@@ -393,39 +434,52 @@ export class Generator {
 				if ( '' !== prev.css && '' === rule.css ) {
 					delete min[ prev.viewport ][ key ];
 
-					// Set viewport first if not already did.
+					// Set viewport if not already did.
 					if ( ! minMax.hasOwnProperty( prev.viewport ) ) {
 						minMax[ prev.viewport ] = {};
 					}
 
+					// Set key if not already did.
+					if ( ! minMax[ prev.viewport ].hasOwnProperty( key ) ) {
+						minMax[ prev.viewport ][ key ] = [];
+					}
+
 					// Shift spectrum to minmax.
-					minMax[ prev.viewport ][ key ] = {
+					minMax[ prev.viewport ][ key ].push( {
 						... prev,
 						from: prev.viewport,
 						to: rule.viewport - 1,
 						media: 'min-width:' + prev.viewport + 'px) and (max-width:' + ( rule.viewport - 1 ) + 'px',
-					} as Spectrum;
+					} ) as Spectrum;
 
 				// Check if we need to add the spectrum to min.
 				} else if ( '' !== rule.css && ! isEqual( prev.css, rule.css ) ) {
 
-					// Set viewport first if not already did.
+					// Set viewport if not already did.
 					if ( ! min.hasOwnProperty( rule.viewport ) ) {
 						min[ rule.viewport ] = {};
 					}
 
-					min[ rule.viewport ][ key ] = {
+					// Set key if not already did.
+					if ( ! min[ rule.viewport ].hasOwnProperty( key ) ) {
+						min[ rule.viewport ][ key ] = [];
+					}
+
+					min[ rule.viewport ][ key ].push( {
 						... rule,
-						from: prev.viewport,
-						to: rule.viewport,
+						from: rule.viewport,
+						to: -1,
 						media: rule.viewport > 0 ? 'min-width:' + rule.viewport + 'px' : '',
-					} as Spectrum;
+					} ) as Spectrum;
 				}
 
 				// Prepare prev state for next iteration.
-				prev = rule;
+				prevSet[ rule.selector ] = rule;
 			} );
 		}
+
+		// Debug min and minMax.
+		// console.log( 'min', min, 'minMax', minMax );
 
 		// Set spectrumSet default.
 		const spectrumSet = [] as SpectrumSet;
@@ -434,32 +488,45 @@ export class Generator {
 		for( let i = 0; i < this.viewports.length; i++ ) {
 			const viewport = this.viewports[ i ];
 
+			// Build sorted min spectrumSet parts.
 			if( min.hasOwnProperty( viewport ) ) {
-				const unsorted = Object.entries( min[ viewport ] ).map( ( entry : Array<any> ) => {
-					return entry[ 1 ];
-				} ) as SpectrumSet;
+				const unsorted = [] as SpectrumSet;
 
+				// Collect unsorted spectrums.
+				for( const [ key ] of Object.entries( min[ viewport ] ) ) {
+					min[ viewport ][ key ].forEach( ( spectrum ) => {
+						unsorted.push( spectrum );
+					} );
+				}
+
+				// Sort the unsorted.
 				unsorted.sort( ( a, b ) => a.priority - b.priority );
-
 				unsorted.forEach( ( spectrum ) => {
 					spectrumSet.push( spectrum );
 				} );
 			}
 
+			// Build sorted minMax spectrumSet parts.
 			if( minMax.hasOwnProperty( viewport ) ) {
-				for( const [ key, entry ] of Object.entries( minMax[ viewport ] ) ) {
-					const unsorted = Object.entries( min[ viewport ] ).map( ( entry : Array<any> ) => {
-						return entry[ 1 ];
-					} ) as SpectrumSet;
+				const unsorted = [] as SpectrumSet;
 
-					unsorted.sort( ( a, b ) => a.priority - b.priority );
-
-					unsorted.forEach( ( spectrum ) => {
-						spectrumSet.push( spectrum );
+				// Collect unsorted spectrums.
+				for( const [ key ] of Object.entries( minMax[ viewport ] ) ) {
+					minMax[ viewport ][ key ].forEach( ( spectrum ) => {
+						unsorted.push( spectrum );
 					} );
 				}
+
+				// Sort the unsorted.
+				unsorted.sort( ( a, b ) => a.priority - b.priority );
+				unsorted.forEach( ( spectrum ) => {
+					spectrumSet.push( spectrum );
+				} );
 			}
 		}
+
+		// Debug spectrumSet.
+		// console.log( 'spectrumSet', spectrumSet );
 
 		return spectrumSet;
 	}

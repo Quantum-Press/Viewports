@@ -7,6 +7,7 @@ import ToggleInspecting from './inspector/toggle-inspecting';
 
 const {
 	components: {
+		Button,
 		Icon,
 	},
 	data: {
@@ -16,6 +17,9 @@ const {
 	},
 	element: {
 		useEffect,
+	},
+	i18n: {
+		__,
 	}
 } = window[ 'wp' ];
 
@@ -124,24 +128,36 @@ const Topbar = () => {
 		<div className="qp-viewports-topbar">
 			<div className="qp-viewports-actions">
 				{ ! props.isInspecting && ( <ToggleInspecting /> ) }
-				<ToggleEditing />
+				<ToggleEditing
+					text={ __( 'Viewport', 'quantum-viewports' ) }
+				/>
 			</div>
 			<div className="qp-viewports-shorthands">
-				<div className={ classNamesPrev } onClick={ onClickPrev }>
-					<Icon icon="arrow-left"/>
-				</div>
-				<div className={ classNamesMobile } { ... mobileEvents }>
-					<Icon icon="smartphone"/>
-				</div>
-				<div className={ classNamesTablet } { ... tabletEvents }>
-					<Icon icon="tablet"/>
-				</div>
-				<div className={ classNamesDesktop } { ... desktopEvents }>
-					<Icon icon="desktop"/>
-				</div>
-				<div className={ classNamesNext } onClick={ onClickNext }>
-					<Icon icon="arrow-right"/>
-				</div>
+				<Button
+					className={ classNamesPrev }
+					onClick={ onClickPrev }
+					icon="arrow-left"
+				/>
+				<Button
+					className={ classNamesMobile }
+					icon="smartphone"
+					{ ... mobileEvents }
+				/>
+				<Button
+					className={ classNamesTablet }
+					icon="tablet"
+					{ ... tabletEvents }
+				/>
+				<Button
+					className={ classNamesDesktop }
+					icon="desktop"
+					{ ... desktopEvents }
+				/>
+				<Button
+					className={ classNamesNext }
+					icon="arrow-right"
+					onClick={ onClickNext }
+				/>
 			</div>
 			<div className="qp-viewports-data">
 				<span className="chosen-zoom">Zoom: { zoom.toString().replace( '.', ',' ) }%</span>

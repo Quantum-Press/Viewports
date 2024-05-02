@@ -49,7 +49,7 @@ addFilter( 'blocks.registerBlockType', 'quantumpress/viewports', ( block ) => {
 			return (
 				<>
 					<BlockEdit block={ block } props={ props } />
-					<BlockStyle props={ props } />
+					<BlockStyle block={ props } />
 					<BlockControls>
 						<ToolbarGroup>
 							<ToggleInspecting props={ props }/>

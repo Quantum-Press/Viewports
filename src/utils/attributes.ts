@@ -1,4 +1,12 @@
-import type { Attributes } from './types';
+/**
+ * Set interface for Attributes.
+ *
+ * @since 0.1.0
+ */
+export type Attributes = {
+	[ key: string ] : any;
+}
+
 
 /**
  * Set function to indicate an object.
@@ -95,7 +103,3 @@ export const fillEmpty = ( fill : Attributes, filler : Attributes ) : Attributes
 
 	return filled;
 }
-
-
-
-export default { getMergedAttributes, sanitizeAttributes, isObject, fillEmpty };

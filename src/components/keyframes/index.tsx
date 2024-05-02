@@ -1,7 +1,7 @@
-import type { Attributes } from '../utils/types';
-import { isObject, getMergedAttributes } from '../utils/attributes';
-import { STORE_NAME } from '../store/constants';
-import { useResizeObserver } from '../hooks/use-resize-observer';
+import type { Attributes } from '../../utils';
+import { isObject, getMergedAttributes } from '../../utils';
+import { STORE_NAME } from '../../store/constants';
+import { useResizeObserver, useHighlight, useHighlightSidebar } from '../../hooks';
 
 const {
 	data: {
@@ -39,24 +39,46 @@ const Keyframes = () => {
 			viewport: store.getViewport(),
 			viewports: store.getViewports(),
 			isActive: store.isActive(),
+			isInspecting: store.isInspecting(),
 			selected: blockEditor.getSelectedBlock(),
 		};
 	}, [] );
 
 	// Set resize state.
-	const selector = 'iframe[name="editor-canvas"], .editor-styles-wrapper, .edit-site-editor-canvas-container'
+	const selector = '.interface-interface-skeleton__content';
 	const size = useResizeObserver( {
 		selector,
 		box: 'border-box',
 	} );
 
+	// Set highlight hook.
+	const [ highlight, setHighlight ] = useHighlight();
+
+	// Set highlightSidebar hook.
+	const [ highlightSidebar, setHighlightSidebar ] = useHighlightSidebar();
+
+	// Set useState to handle inspect viewport.
+	const [ highlightViewport, setHighlightViewport ] = useState( false );
+
+	// Set useState to handle hover pairing.
+	const [ hover, setHover ] = useState( false );
+
 	// Set useEffect to rerender on size changes.
 	useEffect(() => {
 		// Silencio.
-	}, [ size ] );
+	}, [ size, props.isInspecting ] );
 
-	// Set useState to handle hover pairing.
-	const [ hover, setHover ] : [ hover : any, setHover : Function ] = useState( false );
+	// Set useEffect to set Highligh on size changes.
+	useEffect( () => {
+		if( ! highlightViewport ) {
+			return;
+		}
+
+		setHighlight( '.qp-viewports-inspector-style[data-viewport="' + highlightViewport + '"]' );
+		setHighlightSidebar( highlightViewport );
+		setHighlightViewport( false );
+
+	}, [ highlightViewport ] );
 
 	// Return instant if is not active.
 	if( false === props.isActive ) {
@@ -174,7 +196,9 @@ const Keyframes = () => {
 		viewport = parseInt( viewport );
 
 		if( viewport > 0 ) {
-			dispatch( STORE_NAME ).setViewport( viewport );
+			dispatch( STORE_NAME ).setInspecting();
+
+			setHighlightViewport( viewport );
 		}
 	}
 

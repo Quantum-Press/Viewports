@@ -21,17 +21,18 @@ export const svgs = {
 
 			<path className="l10 lh" d="M970.5,968.7l320.1,320.1L970.5,968.7z"/>
 		</svg>,
-	toggle:
-		<svg className="qp-viewports-svg toggle" x="0px" y="0px" viewBox="0 0 1280 1280">
-			<g className="outer">
-				<path className="st0" d="M67.1,430C128.7,262.1,262,128.7,430,67.2"/>
-				<path className="st0" d="M430,1212.9C262,1151.4,128.7,1018,67.1,850"/>
-				<path className="st0" d="M1212.9,850c-61.6,168-194.9,301.3-362.9,362.9"/>
-				<path className="st0" d="M849.7,67.1c167.9,61.5,301.2,194.6,362.9,362.4"/>
+	view:
+		<svg className="qp-viewports-svg view" x="0px" y="0px" viewBox="0 0 1360 1360">
+			<g>
+				<path className="cls-2" d="M38.9,467.8h79.7l59.7,213.4c13.8,48.2,23.1,89.8,37.4,138.1h2.6c14.3-48.3,24-90,37.4-138.1l58.9-213.4h76.8l-131.4,424.4h-89.3L38.9,467.8Z"/>
+				<path className="cls-2" d="M404.8,467.8h75.3v424.4h-75.3v-424.4Z"/>
+				<path className="cls-2" d="M553.4,467.8h255.4v63.3h-180.2v108.8h152.6v63.3h-152.6v125.6h186.7v63.3h-261.9v-424.4Z"/>
+				<path className="cls-2" d="M825.8,467.8h77.4l36.9,214.4c6.9,45.2,14.1,90.3,21,135.5h2.6c8.8-45.2,18.2-90.7,27.5-135.5l52.2-214.4h65.4l52.2,214.4c9.3,44,18.7,90,28,135.5h2.6c6.9-45.6,13.6-91.1,20.5-135.5l36.9-214.4h72.2l-81.5,424.4h-93.2l-52.7-223.5c-7-33-13.2-65.4-18.7-97.6h-2.6c-5.8,32.2-12.2,64.6-19.2,97.6l-51.4,223.5h-91.6l-84.4-424.4Z"/>
 			</g>
-			<ellipse className="st0 border" cx="640" cy="640" rx="410" ry="210"/>
-			<circle className="st0 iris" cx="640" cy="640" r="210"/>
-			<circle className="st0 pupil" cx="640" cy="640" r="210"/>
+			<path className="cls-1" d="M1091.8,1130c-108.5,99.4-253.1,160-411.8,160s-303.3-60.6-411.8-160"/>
+			<path className="cls-1" d="M268.4,230c108.5-99.4,253.1-160,411.8-160s303.3,60.6,411.8,160"/>
+			<path className="cls-1 cls-3" d="M876.4,1040c-58.3,31.9-125.2,50-196.4,50s-138.1-18.1-196.4-50"/>
+			<path className="cls-1 cls-3" d="M483.6,320c58.3-31.9,125.2-50,196.4-50s138.1,18.1,196.4,50"/>
 		</svg>,
 	edit:
 		<svg className="qp-viewports-svg edit" viewBox="0 0 1360 1360">

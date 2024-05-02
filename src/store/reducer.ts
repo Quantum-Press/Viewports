@@ -1,7 +1,7 @@
 import type { State, Action, Reducers } from './types';
 
 import { DEFAULT_STATE } from './default';
-import { getMergedAttributes, sanitizeAttributes } from '../utils/attributes';
+import { getMergedAttributes } from '../utils/attributes';
 import {
 	isInMobileRange,
 	isInTabletRange,

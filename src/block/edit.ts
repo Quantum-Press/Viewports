@@ -56,7 +56,7 @@ const registerActivate = () => {
 
 	activeTimeout = setTimeout( () => {
 		dispatch( STORE_NAME ).setActive();
-	}, 2000 );
+	}, 50 );
 }
 
 

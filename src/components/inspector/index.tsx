@@ -32,16 +32,15 @@ const Inspector = () => {
 		}
 	}, [] );
 
+	// Check if we need to render.
+	if( ! isInspecting ) {
+		return null;
+	}
+
 	// Setup classNames.
 	let classNamesWrap = 'qp-viewports-inspector';
-	if( ! isActive && ! isInspecting ) {
-		classNamesWrap = classNamesWrap + ' inactive';
-	}
-	if( ! isActive && isInspecting ) {
+	if( ! isActive ) {
 		classNamesWrap = classNamesWrap + ' flyout';
-	}
-	if( isInspecting ) {
-		classNamesWrap = classNamesWrap + ' expanded';
 	}
 
 	// Render component.

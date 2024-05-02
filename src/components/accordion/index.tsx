@@ -1,4 +1,4 @@
-import useLocalStorage from '../../hooks/use-local-storage';
+import { useLocalStorage } from '../../hooks';
 
 const {
 	components: {
@@ -7,8 +7,8 @@ const {
 } = window[ 'wp' ];
 
 interface AccordionProps {
-	storePath?: string;
-	defaultValue?: any;
+	isOpen: boolean;
+	setIsOpen: (value: boolean) => void;
 	label?: string;
 	children?: React.ReactNode;
 }
@@ -19,14 +19,11 @@ interface AccordionProps {
  * @since 0.2.3
  */
 const Accordion: React.FC<AccordionProps> = ({
-	storePath,
-	defaultValue = false,
+	isOpen,
+	setIsOpen,
 	label = 'Toggle Accordion',
 	children
 }) => {
-
-	// Set states.
-	const [ isOpen, setIsOpen ] = useLocalStorage( storePath, defaultValue );
 
 	// Set classNames.
 	const classNames = [ 'qp-viewports-accordion' ];

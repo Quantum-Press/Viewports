@@ -2,13 +2,12 @@ import { useLongPress } from '../utils/longpress';
 import { STORE_NAME } from '../store/constants';
 import { svgs } from './svgs';
 
-
 const {
 	components: {
+		Button,
 		Icon,
 	},
 	data: {
-		select,
 		useSelect,
 		useDispatch,
 	},
@@ -18,13 +17,13 @@ const {
 } = window[ 'wp' ];
 
 /**
- * Set component const to export toggle ui.
+ * Set component const to export toggleView ui.
  *
  * @param object props
  *
  * @since 0.1.0
  */
-const Toggle = () => {
+const ToggleView = () => {
 
 	// Set dispatch.
 	const dispatch = useDispatch( STORE_NAME );
@@ -43,7 +42,7 @@ const Toggle = () => {
 	}, [] );
 
 	// Set classNames for toggle.
-	let classNamesToggle = 'qp-viewports-toggle';
+	let classNamesToggle = 'qp-viewports-toggle-view';
 	if ( props.isRegistering ) {
 		classNamesToggle = classNamesToggle + ' registering';
 	}
@@ -62,10 +61,12 @@ const Toggle = () => {
 
 	// Render component.
 	return (
-		<div className={ classNamesToggle } onClick={ ! props.isActive ? dispatch.setLoading : dispatch.unsetActive }>
-			<Icon icon={ svgs.toggle }/>
-		</div>
+		<Button
+			className={ classNamesToggle }
+			onClick={ ! props.isActive ? dispatch.setLoading : dispatch.unsetActive }
+			icon={ svgs.view }
+		/>
 	);
 }
 
-export default Toggle;
+export default ToggleView;

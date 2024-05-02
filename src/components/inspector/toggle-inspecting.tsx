@@ -3,7 +3,7 @@ import { svgs } from '../svgs';
 
 const {
 	components: {
-		ToolbarButton,
+		Button,
 	},
 	data: {
 		useSelect,
@@ -23,6 +23,11 @@ const {
  * @since 0.2.1
  */
 const ToggleInspecting = ( props ) => {
+
+	// Deconstruct props.
+	const {
+		text,
+	} = props;
 
 	// Set states.
 	const {
@@ -56,11 +61,12 @@ const ToggleInspecting = ( props ) => {
 
 	// Render component.
 	return (
-		<ToolbarButton
+		<Button
 			className={ classNames }
 			icon={ svgs.inspect }
 			label={ __( 'Inspect styles', 'quantum-viewports' ) }
 			onClick={ onClickInspect }
+			text={ text ? text : '' }
 		/>
 	);
 }

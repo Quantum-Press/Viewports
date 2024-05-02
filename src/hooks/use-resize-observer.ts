@@ -1,4 +1,4 @@
-import { useIsMounted } from '../hooks/use-is-mounted';
+import { useIsMounted } from '../hooks';
 
 const {
 	element: {
@@ -143,3 +143,5 @@ function extractSize(
 		: // @ts-ignore Support Firefox's non-standard behavior
 		( entry[ box ][ sizeType ] as number )
 }
+
+export default useResizeObserver;

@@ -1,5 +1,5 @@
 import { STORE_NAME } from '../store/constants';
-import { useResizeObserver } from '../hooks/use-resize-observer';
+import { useResizeObserver } from '../hooks';
 
 const {
 	data: {
@@ -34,7 +34,7 @@ const Viewports = () => {
 	}, [] );
 
 	// Set resize state.
-	const selector = 'iframe[name="editor-canvas"], .editor-styles-wrapper, .edit-site-editor-canvas-container'
+	const selector = '.interface-interface-skeleton__content';
 	const size = useResizeObserver( {
 		selector,
 		box: 'border-box',
