@@ -42,24 +42,10 @@ const Topbar = () => {
 			mobile: store.getMobile(),
 			inMobileRange: store.inMobileRange(),
 			isInspecting: store.isInspecting(),
+			inspectorPosition: store.getInspectorPosition(),
 		}
 	}, [] );
 
-	/**
-	 * Set function to handle prev action.
-	 *
-	 */
-	const onClickPrev = () => {
-		dispatch.setPrevViewport();
-	}
-
-	/**
-	 * Set function to handle prev action.
-	 *
-	 */
-	const onClickNext = () => {
-		dispatch.setNextViewport();
-	}
 
 	// Set event default options for shorthand longpress action.
 	const defaultOptions = {
@@ -102,8 +88,8 @@ const Topbar = () => {
 		return null;
 	}
 
+	// Set classNames of prev and next.
 	let classNamesPrev = 'qp-viewport-shorthand prev';
-
 	let classNamesNext = 'qp-viewport-shorthand next';
 
 	// Set maxWidth of editor frame to calculate zoom.
@@ -116,11 +102,32 @@ const Topbar = () => {
 		zoom = Math.round( ( maxWidth - 80 ) / props.viewport * 10000 ) / 100; // 80 = margin left & right of scaled editor frame.
 	}
 
+
+	/**
+	 * Set function to handle prev action.
+	 *
+	 * @since 0.1.0
+	 */
+	const onClickPrev = () => {
+		dispatch.setPrevViewport();
+	}
+
+
+	/**
+	 * Set function to handle prev action.
+	 *
+	 * @since 0.1.0
+	 */
+	const onClickNext = () => {
+		dispatch.setNextViewport();
+	}
+
+
 	// Render component.
 	return (
 		<div className="qp-viewports-topbar">
-			<div className="qp-viewports-actions">
-				{ ! props.isInspecting && ( <ToggleInspecting /> ) }
+			<div className="qp-viewports-actions left">
+				{ ! props.isInspecting && 'left' === props.inspectorPosition && ( <ToggleInspecting /> ) }
 				<ToggleEditing
 					text={ __( 'Viewport', 'quantum-viewports' ) }
 				/>
@@ -152,8 +159,9 @@ const Topbar = () => {
 					onClick={ onClickNext }
 				/>
 			</div>
-			<div className="qp-viewports-data">
+			<div className="qp-viewports-actions right">
 				<span className="chosen-zoom">Zoom: { zoom.toString().replace( '.', ',' ) }%</span>
+				{ ! props.isInspecting && 'right' === props.inspectorPosition && ( <ToggleInspecting /> ) }
 			</div>
 		</div>
 	);

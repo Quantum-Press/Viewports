@@ -487,14 +487,14 @@ export const removeBlock = ( clientId : string ) : Action => {
  * Set Action to remove block saves.
  *
  * @param {string} clientId
- * @param {object} props
+ * @param {Array} props
  * @param {number} viewport
  *
  * @since 0.1.0
  *
  * @return {Action}
  */
-export const removeBlockSaves = ( clientId : string, props : object, viewport : number ) : Action => {
+export const removeBlockSaves = ( clientId : string, props : Array<string>, viewport : number ) : Action => {
 	return {
 		type: 'REMOVE_BLOCK_SAVES',
 		clientId,
@@ -508,14 +508,14 @@ export const removeBlockSaves = ( clientId : string, props : object, viewport : 
  * Set Action to restore block saves.
  *
  * @param {string} clientId
- * @param {object} props
+ * @param {Array} props
  * @param {number} viewport
  *
  * @since 0.1.0
  *
  * @return {Action}
  */
-export const restoreBlockSaves = ( clientId : string, props : object, viewport : number ) : Action => {
+export const restoreBlockSaves = ( clientId : string, props : Array<string>, viewport : number ) : Action => {
 	return {
 		type: 'RESTORE_BLOCK_SAVES',
 		clientId,

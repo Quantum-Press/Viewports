@@ -1,7 +1,7 @@
 import { sanitizeAttributes } from '../utils/attributes';
 import { STORE_NAME } from '../store/constants';
 
-const { isEqual } = window[ 'lodash' ];
+const { isEqual, cloneDeep } = window[ 'lodash' ];
 const {
 	data: {
 		useDispatch,
@@ -204,7 +204,7 @@ export default function BlockEdit( blockArgs : any ) {
 	useLayoutEffect( () => {
 		// console.log( 'fire useEffect viewport, isActive', clientId, viewport, isActive );
 
-		if( isActive && isEditing ) {
+		if( isActive && isEditing && isSelected ) {
 			const storeId = tempId || clientId;
 			const hasBlockViewports = select( STORE_NAME ).hasBlockViewports( storeId );
 
@@ -222,12 +222,12 @@ export default function BlockEdit( blockArgs : any ) {
 			setUpdateDefaultsViewport( true );
 		}
 
-	}, [ viewport, isActive ] );
+	}, [ viewport, isActive, isSelected ] );
 
 
 	// Use useEffect to handle editing flag updates.
 	useLayoutEffect( () => {
-		if( isEditing ) {
+		if( isEditing && isSelected ) {
 			setUpdateValidsViewport( true );
 		} else {
 			setUpdateDefaultsViewport( true );
@@ -246,7 +246,7 @@ export default function BlockEdit( blockArgs : any ) {
 
 		// console.log( 'useEffect updateValidsViewport', tempId, valids );
 
-		setAttributes( valids );
+		setAttributes( cloneDeep( valids ) );
 
 		setUpdateValidsViewport( false );
 		setIgnoreSelectedViewport( true );
@@ -266,7 +266,7 @@ export default function BlockEdit( blockArgs : any ) {
 
 		// console.log( 'useEffect updateSelectedViewport', tempId, valids );
 
-		setAttributes( valids );
+		setAttributes( cloneDeep( valids ) );
 
 		setUpdateSelected( true );
 
@@ -297,7 +297,7 @@ export default function BlockEdit( blockArgs : any ) {
 		if( ! isEqual( defaults, sanitizeAttributes( attributes ) ) ) {
 			// console.log( 'useEffect updateDefaultsViewport', tempId, defaults, sanitizeAttributes( attributes ) );
 
-			setAttributes( defaults );
+			setAttributes( cloneDeep( defaults ) );
 
 			if( isSelected ) {
 				setUpdateSelected( true );

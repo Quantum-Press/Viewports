@@ -251,7 +251,7 @@ body.is-active-viewports {
 	.qp-viewports-inspector-head {
 		display: flex;
 		border-bottom: 1px solid #919191;
-		padding-right: 6px;
+		padding: 0 4px;
 
 		button {
 			height: 47px;
@@ -336,7 +336,7 @@ body.is-active-viewports {
 	align-items: flex-start;
 	list-style: none;
 	margin: 0;
-	padding: 0 10px;
+	padding: 0 14px;
 	background: #35363a;
 
 	li {
@@ -386,7 +386,8 @@ body.is-active-viewports {
 		align-items: center;
 		justify-content: space-between;
 		border-bottom: 1px solid #424849;
-		padding-left: 10px;
+		padding-left: 14px;
+		padding-right: 4px;
 
 		&:last-child {
 			border-bottom: none;
@@ -403,7 +404,6 @@ body.is-active-viewports {
 			align-items: center;
 			justify-content: flex-end;
 			width: 100px;
-			border-right: 1px solid #424849;
 
 			button {
 				height: 26px;
@@ -424,6 +424,14 @@ body.is-active-viewports {
 			width: 100%;
 		}
 	}
+}
+
+
+/**
+ * Inspector - Selected.
+ */
+.qp-viewports-inspector-selected-wrap {
+	padding: 0 4px;
 }
 
 
@@ -1051,6 +1059,11 @@ table.block-editor-list-view-tree {
 		flex-direction: row;
 		align-items: center;
 		width: 150px;
+		padding: 0 4px;
+
+		&.right {
+			justify-content: flex-end;
+		}
 
 		button {
 			width: 44px;
@@ -1123,6 +1136,14 @@ table.block-editor-list-view-tree {
 				}
 			}
 		}
+
+		.chosen-viewport,
+		.chosen-zoom {
+			padding-right: 6px;
+			font-size: 12px;
+			color: #919191;
+			align-self: center;
+		}
 	}
 
 	.qp-viewports-shorthands {
@@ -1162,24 +1183,6 @@ table.block-editor-list-view-tree {
 					color: var( --wp-admin-theme-color );
 				}
 			}
-		}
-	}
-
-	.qp-viewports-data {
-		display: flex;
-		flex-direction: row;
-		justify-content: flex-end;
-		padding-left: 10px;
-		padding-right: 10px;
-		gap: 10px;
-		width: 130px;
-		height: 47px;
-
-		.chosen-viewport,
-		.chosen-zoom {
-			color: #919191;
-			font-size: 12px;
-			align-self: center;
 		}
 	}
 }

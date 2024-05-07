@@ -164,7 +164,7 @@ export type Action = {
 	viewport?: number;
 	size?: Size;
 	attributes?: Attributes;
-	props?: Attributes;
+	props?: Array<string>;
 	prop?: string;
 	callback?: Function;
 	force?: boolean;

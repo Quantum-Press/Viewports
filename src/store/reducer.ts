@@ -7,7 +7,6 @@ import {
 	isInDesktopRange,
 	getHighestPossibleViewport,
 	findBlockSaves,
-	findBlockDefaults,
 	findBlockValids,
 	findBlockChanges,
 	findRemoves,
@@ -762,16 +761,9 @@ export function registerBlockInit( state : State, action : Action ) : State {
 			const { init, saves, valids } = state;
 
 			// Find defaults and viewport saves.
-			const blockDefaults = findBlockDefaults( clientId, attributes );
-			const blockSaves = findBlockSaves( clientId, attributes );
+			const blockSaves = findBlockSaves( attributes );
 
-			// Check if we got some defaults to store in saves.
-			if( Object.keys( blockDefaults ).length ) {
-				if( ! isObject( blockSaves[ clientId ] ) ) {
-					blockSaves[ clientId ] = {};
-				}
-				blockSaves[ clientId ][ 0 ] = blockDefaults[ clientId ];
-			}
+			console.log( 'blockSaves', blockSaves );
 
 			// Set initState.
 			const initState = {
@@ -782,7 +774,7 @@ export function registerBlockInit( state : State, action : Action ) : State {
 				},
 				saves: {
 					... saves,
-					... blockSaves,
+					[ clientId ]: blockSaves,
 				}
 			}
 
@@ -792,13 +784,12 @@ export function registerBlockInit( state : State, action : Action ) : State {
 			// Set spectrumState for spectrumSet generation.
 			const spectrumState = {
 				valids: blockValids,
-				defaults: traverseGet( clientId, blockDefaults ) || {},
-				saves: traverseGet( clientId, blockSaves, ) || {},
+				saves: blockSaves,
 				changes: {},
 				removes: {},
-				rendererPropertySet: state.renderer,
-				isSaving: state.isSaving,
-				viewport: state.viewport,
+				rendererPropertySet: initState.renderer,
+				isSaving: initState.isSaving,
+				viewport: initState.viewport,
 			};
 
 			// Deconstruct spectrumProperties.
@@ -816,15 +807,15 @@ export function registerBlockInit( state : State, action : Action ) : State {
 					[ clientId ]: blockValids
 				},
 				cssSet: {
-					... state.cssSet,
+					... initState.cssSet,
 					[ clientId ]: css,
 				},
 				spectrumSets: {
-					... state.spectrumSets,
+					... initState.spectrumSets,
 					[ clientId ]: spectrumSet,
 				},
 				inlineStyleSets: {
-					... state.inlineStyleSets,
+					... initState.inlineStyleSets,
 					[ clientId ]: inlineStyle,
 				},
 			}
@@ -857,7 +848,7 @@ export function updateBlockChanges( state : State, action : Action ) : State {
 
 			// Set new generated block changes by comparing it to the actual viewport valid.
 			// Here you will get just the difference between both.
-			let difference = findBlockChanges( viewport, clientId, attributes, state );
+			let difference = findBlockChanges( viewport, clientId, cloneDeep( attributes ), state );
 
 			// Set indicator for existing differences.
 			const hasDifference = 0 < Object.entries( difference ).length;
@@ -1080,7 +1071,7 @@ export function removeBlockSaves( state : State, action : Action ) : State {
 			const { saves, removes, valids } = state;
 
 			if ( saves.hasOwnProperty( clientId ) && saves[ clientId ].hasOwnProperty( viewport ) ) {
-				const blockRemoves = findRemoves( props, saves[ clientId ][ viewport ][ 'style' ] );
+				const blockRemoves = findRemoves( [ ... props ], saves[ clientId ][ viewport ][ 'style' ] );
 
 				let nextRemoves = {};
 				if ( removes.hasOwnProperty( clientId ) && removes[ clientId ].hasOwnProperty( viewport ) ) {
@@ -1170,19 +1161,27 @@ export function restoreBlockSaves( state : State, action : Action ) : State {
 			const { changes, removes, valids } = state;
 
 			// Set nextState.
-			let nextState : any = {};
+			let nextState : any = { ... state };
+
+			// Set states.
+			const blockChangesStyle = cloneDeep( traverseGet( [ clientId, viewport, 'style' ].join( '.' ), changes ) );
+			const blockRemovesStyle = cloneDeep( traverseGet( [ clientId, viewport, 'style' ].join( '.' ), removes ) );
+
+			// Set indicators.
+			const hasChanges = blockChangesStyle && Object.keys( blockChangesStyle ).length;
+			const hasRemoves = blockRemovesStyle && Object.keys( blockRemovesStyle ).length;
 
 			// Check if there is an entry for clientId and viewport to remove from changes.
-			if ( changes.hasOwnProperty( clientId ) && changes[ clientId ].hasOwnProperty( viewport ) ) {
+			if ( hasChanges ) {
 
 				// Set new block removes and changes.
-				const blockRemoves = findRemoves( props, changes[ clientId ][ viewport ][ 'style' ] );
-				const blockChanges = findCleanedChanges( changes[ clientId ][ viewport ][ 'style' ], blockRemoves );
+				const blockRemoves = findRemoves( cloneDeep( props ), blockChangesStyle );
+				const blockChanges = findCleanedChanges( blockChangesStyle, blockRemoves );
 
 				// Check viewport changes to update or to remove viewport changes.
 				if ( 0 < Object.entries( blockChanges ).length ) {
 					nextState = {
-						... state,
+						... nextState,
 						changes: {
 							... changes,
 							[ clientId ]: {
@@ -1203,7 +1202,7 @@ export function restoreBlockSaves( state : State, action : Action ) : State {
 					delete cleanedViewports[ clientId ][ viewport ];
 
 					nextState = {
-						... state,
+						... nextState,
 						changes: cleanedViewports,
 					}
 				}
@@ -1217,23 +1216,23 @@ export function restoreBlockSaves( state : State, action : Action ) : State {
 					delete cleanedChanges[ clientId ];
 
 					nextState = {
-						... state,
+						... nextState,
 						changes: cleanedChanges,
 					}
 				}
 			}
 
 			// Check if there is an entry for clientId and viewport to remove from removes.
-			if ( removes.hasOwnProperty( clientId ) && removes[ clientId ].hasOwnProperty( viewport ) ) {
+			if ( hasRemoves ) {
 
 				// Set new block removes and changes.
-				const blockRemoves = findRemoves( props, removes[ clientId ][ viewport ][ 'style' ] );
-				const blockChanges = findCleanedChanges( removes[ clientId ][ viewport ][ 'style' ], blockRemoves );
+				const blockRemoves = findRemoves( cloneDeep( props ), blockRemovesStyle );
+				const blockChanges = findCleanedChanges( blockRemovesStyle, blockRemoves );
 
 				// Check viewport removes to update or to remove viewport removes.
 				if ( 0 < Object.entries( blockChanges ).length ) {
 					nextState = {
-						... state,
+						... nextState,
 						removes: {
 							... removes,
 							[ clientId ]: {
@@ -1254,7 +1253,7 @@ export function restoreBlockSaves( state : State, action : Action ) : State {
 					delete cleanedViewports[ clientId ][ viewport ];
 
 					nextState = {
-						... state,
+						... nextState,
 						removes: cleanedViewports,
 					}
 				}
@@ -1268,7 +1267,7 @@ export function restoreBlockSaves( state : State, action : Action ) : State {
 					delete cleanedRemoves[ clientId ];
 
 					nextState = {
-						... state,
+						... nextState,
 						removes: cleanedRemoves,
 					}
 				}

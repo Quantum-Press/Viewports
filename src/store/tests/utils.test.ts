@@ -16,7 +16,6 @@ import {
 	isInMobileRange,
 	getHighestPossibleViewport,
 	getIframeViewport,
-	findBlockDefaults,
 	findBlockSaves,
 	clearEmptySaves,
 	findBlockChanges,
@@ -67,46 +66,8 @@ describe( 'store utils', () => {
 		expect( getHighestPossibleViewport( viewports ) ).toStrictEqual( 768 );
 	} );
 
-	test( 'can findBlockDefaults() with empty attributes', () => {
-		const result = findBlockDefaults( 'client-id', {} );
-
-		expect( result ).toStrictEqual( {} );
-	} );
-
-	test( 'can findBlockDefaults() with filled attributes', () => {
-		const attributes = {
-			content: 'Text',
-			style: {
-				dimensions: {
-					padding: '20px',
-					margin: {
-						top: '40px',
-						bottom: '40px',
-					}
-				}
-			}
-		}
-
-		const check = {
-			'client-id': {
-				style: {
-					dimensions: {
-						padding: '20px',
-						margin: {
-							top: '40px',
-							bottom: '40px',
-						}
-					}
-				}
-			}
-		};
-		const result = findBlockDefaults( 'client-id', attributes );
-
-		expect( result ).toStrictEqual( check );
-	} );
-
 	test( 'can findBlockSaves() with empty attributes', () => {
-		const result = findBlockSaves( 'client-id', {} );
+		const result = findBlockSaves( {} );
 
 		expect( result ).toStrictEqual( {} );
 	} );
@@ -153,7 +114,7 @@ describe( 'store utils', () => {
 			viewports: saves,
 		}
 
-		const result = findBlockSaves( 'client-id', attributes );
+		const result = findBlockSaves( attributes );
 
 		expect( result ).toStrictEqual( { 'client-id': saves } );
 	} );

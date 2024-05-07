@@ -215,11 +215,11 @@ export const isInspecting = ( state : State ) : boolean => {
  *
  * @param {State} state current
  *
- * @since 0.2.2
+ * @since 0.2.6
  *
  * @return {string}
  */
-export const inspectorPosition = ( state : State ) : string => {
+export const getInspectorPosition = ( state : State ) : string => {
 	return state.inspectorPosition;
 };
 

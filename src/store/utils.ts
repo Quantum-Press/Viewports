@@ -112,29 +112,6 @@ export const getHighestPossibleViewport = ( viewports : object ) : number => {
 
 
 /**
- * Set function to find block defaults.
- *
- * @param {string} clientId
- * @param {object} attributes
- *
- * @since 0.1.0
- *
- * @return {object} defaults
- */
-export const findBlockDefaults = ( clientId : string, attributes : Attributes ) : Attributes => {
-	const defaults : Attributes = {};
-
-	if ( ! attributes.hasOwnProperty( 'style' ) ) {
-		return {};
-	}
-
-	defaults[ clientId ] = cloneDeep( sanitizeAttributes( attributes ) );
-
-	return defaults;
-}
-
-
-/**
  * Set function to find block saves.
  *
  * @param {string} clientId
@@ -142,13 +119,17 @@ export const findBlockDefaults = ( clientId : string, attributes : Attributes ) 
  *
  * @since 0.1.0
  *
- * @return {object} saves
+ * @return {Attributes} saves
  */
-export const findBlockSaves = ( clientId : string, attributes : Attributes ) : Attributes => {
-	const saves : Attributes = {};
+export const findBlockSaves = ( attributes : Attributes ) : Attributes => {
+	let saves : Attributes = {};
 
 	if ( attributes.hasOwnProperty( 'viewports' ) && 'undefined' !== typeof attributes.viewports ) {
-		saves[ clientId ] = cloneDeep( attributes.viewports );
+		saves = cloneDeep( attributes.viewports );
+	}
+
+	if ( attributes.hasOwnProperty( 'style' ) && 'undefined' !== typeof attributes.style ) {
+		saves[ 0 ] = cloneDeep( sanitizeAttributes( attributes ) );
 	}
 
 	return saves;
@@ -454,7 +435,7 @@ export const findCleanedChanges = ( attributes : Attributes, removes : Attribute
 		return cleaned;
 	}
 
-	for ( const [ attributeKey, attributeValue ] of Object.entries( attributes ) ) {
+	for ( const [ attributeKey, attributeValue ] of Object.entries( cloneDeep( attributes ) ) ) {
 		if ( ! removes.hasOwnProperty( attributeKey ) ) {
 			cleaned[ attributeKey ] = attributeValue;
 			continue;

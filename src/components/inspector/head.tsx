@@ -28,8 +28,6 @@ const Head = () => {
 
 	// Set state dependencies.
 	const {
-		isActive,
-		isInspecting,
 		inspectorPosition,
 	} = useSelect( ( select : Function ) => {
 		const store = select( STORE_NAME );
@@ -37,7 +35,7 @@ const Head = () => {
 		return {
 			isActive: store.isActive(),
 			isInspecting: store.isInspecting(),
-			inspectorPosition: store.inspectorPosition(),
+			inspectorPosition: store.getInspectorPosition(),
 		}
 	}, [] );
 

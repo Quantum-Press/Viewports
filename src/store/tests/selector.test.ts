@@ -24,7 +24,7 @@ const {
 	isAutoSaving,
 	isActive,
 	isInspecting,
-	inspectorPosition,
+	getInspectorPosition,
 	inDesktopRange,
 	inTabletRange,
 	inMobileRange,
@@ -231,24 +231,24 @@ describe( 'test store selectors', () => {
 			expect( result ).toStrictEqual( true );
 		} );
 
-		test( 'can get inspectorPosition left', () => {
+		test( 'can getInspectorPosition left', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				inspectorPosition: 'left',
 			} );
 
-			const result = inspectorPosition( state );
+			const result = getInspectorPosition( state );
 
 			expect( result ).toStrictEqual( 'left' );
 		} );
 
-		test( 'can get inspectorPosition right', () => {
+		test( 'can getInspectorPosition right', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				inspectorPosition: 'right',
 			} );
 
-			const result = inspectorPosition( state );
+			const result = getInspectorPosition( state );
 
 			expect( result ).toStrictEqual( 'right' );
 		} );

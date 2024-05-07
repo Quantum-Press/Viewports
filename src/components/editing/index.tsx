@@ -15,7 +15,6 @@ const Editing = () => {
 
 	// Set store states.
 	const {
-		iframeSize,
 		isActive,
 		isEditing,
 	} = useSelect( ( select: Function ) => {
@@ -27,7 +26,7 @@ const Editing = () => {
 			isActive: store.isActive(),
 			isEditing: store.isEditing(),
 			isInspecting: store.isInspecting(),
-			inspectorPosition: store.inspectorPosition(),
+			inspectorPosition: store.getInspectorPosition(),
 		}
 	}, [] );
 

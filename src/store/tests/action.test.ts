@@ -290,7 +290,7 @@ describe( 'store actions', () => {
 	});
 
 	test( 'restoreBlockSaves', () => {
-		const props = {}
+		const props = []
 		const check = {
 			type: 'RESTORE_BLOCK_SAVES',
 			clientId: 'client-id',
@@ -303,7 +303,7 @@ describe( 'store actions', () => {
 	});
 
 	test( 'removeBlockSaves', () => {
-		const props = {}
+		const props = []
 		const check = {
 			type: 'REMOVE_BLOCK_SAVES',
 			clientId: 'client-id',

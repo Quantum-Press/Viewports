@@ -51,7 +51,7 @@ export const DEFAULT_STATE = {
 	isReady: false,
 	isActive: false,
 	isInspecting: false,
-	inspectorPosition: 'left',
+	inspectorPosition: 'right',
 	isEditing: false,
 	isSaving: false,
 	isAutoSaving: false,
