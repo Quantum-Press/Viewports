@@ -1,4 +1,6 @@
-import type { Spectrum } from '../../generator/types';
+import type { Spectrum } from '../../store';
+import { STORE_NAME } from '../../store';
+import { useHighlightProperty } from '../../hooks';
 
 interface Style {
 	baseKeys : Array<any>;
@@ -7,6 +9,16 @@ interface Style {
 	styleValue : any;
 	onClickFunction : Function;
 }
+
+const { isEqual } = window[ 'lodash' ];
+const {
+	components: {
+		Button,
+	},
+	data: {
+		dispatch,
+	}
+} = window[ 'wp' ];
 
 /**
  * Set function to render a style component for given spectrum.
@@ -19,15 +31,65 @@ export const Style = ( attributes ) => {
 
 	// Deconstruct attributes.
 	const {
+		clientId,
 		viewport,
 	} = attributes;
 
 	// Set spectrum.
 	const spectrum = attributes.spectrum as Spectrum;
 
+	// Set useHighlightProperty hook.
+	const [ highlightProperty, setHighlightProperty ] = useHighlightProperty();
+
+	// Set indicators.
+	const hasChanges = Object.keys( spectrum.changesProperties ).length ? true : false;
+	const hasRemoves = Object.keys( spectrum.removesProperties ).length ? true : false;
+	const canRestore = hasChanges || hasRemoves;
+	const canRemove = ! isEqual( spectrum.savesProperties, spectrum.removesProperties );
+
+	// Set classNames.
+	const classNames = [ 'qp-viewports-inspector-style' ];
+	if( hasChanges ) {
+		classNames.push( 'has-changes' );
+	}
+	if( hasRemoves ) {
+		classNames.push( 'has-removes' );
+	}
+
+
+	/**
+	 * Set function to fire on click property.
+	 *
+	 * @since 0.2.5
+	 */
+	const onClickProperty = () => {
+		setHighlightProperty( spectrum.selectorPanel );
+	}
+
+
+	/**
+	 * Set function to fire on click remove.
+	 *
+	 * @since 0.2.5
+	 */
+	const onClickRemove = () => {
+		dispatch( STORE_NAME ).removeBlockSaves( clientId, [ spectrum.property ], spectrum.viewport );
+	}
+
+
+	/**
+	 * Set function to fire on click remove.
+	 *
+	 * @since 0.2.5
+	 */
+	const onClickRestore = () => {
+		dispatch( STORE_NAME ).restoreBlockSaves( clientId, [ spectrum.property ], spectrum.viewport );
+	}
+
+
 	// Render component.
 	return (
-		<div className="qp-viewports-inspector-style" data-viewport={ spectrum.viewport }>
+		<div className={ classNames.join( ' ' ) } data-viewport={ spectrum.viewport }>
 			{ '' !== spectrum.media && viewport < spectrum.viewport &&
 				<div className="media">{ '@media (' + spectrum.media + ')' }</div>
 			}
@@ -37,7 +99,25 @@ export const Style = ( attributes ) => {
 			<div className="selector-start">
 				{ spectrum.selector + ' {' }
 			</div>
-			<div className="property">{ "<" + spectrum.property + ">" }</div>
+			<div className="actions">
+				<Button
+					className="property"
+					text={ "<" + spectrum.type + ':' + spectrum.property + ">" }
+					onClick={ onClickProperty }
+				/>
+				<div className="state-actions">
+					{ canRestore && <Button
+						className="restore"
+						icon="update"
+						onClick={ onClickRestore }
+					/> }
+					{ canRemove && <Button
+						className="remove"
+						icon="trash"
+						onClick={ onClickRemove }
+					/> }
+				</div>
+			</div>
 			{ Object.entries( spectrum.properties ).map( entry => {
 				const property = entry[ 0 ];
 				const value = entry[ 1 ];
@@ -46,8 +126,17 @@ export const Style = ( attributes ) => {
 					return null;
 				}
 
+				const classNames = [ 'css-wrap' ];
+				if( spectrum.changesProperties.hasOwnProperty( property ) ) {
+					classNames.push( 'changed' );
+				}
+				if( spectrum.removesProperties.hasOwnProperty( property ) ) {
+					classNames.push( 'removed' );
+				}
+
 				return (
-					<div className="css-wrap">
+					<div className={ classNames.join( ' ' ) }>
+						<div className="css-status"></div>
 						<div className="css-key">{ property }:</div>
 						<div className="css-value">{ value };</div>
 					</div>

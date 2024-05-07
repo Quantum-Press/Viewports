@@ -29,12 +29,10 @@ const {
 	toggleMobile,
 	registerBlockInit,
 	updateBlockChanges,
-	updateBlockDefaults,
 	updateBlockValids,
 	removeBlock,
-	removeBlockChanges,
 	removeBlockSaves,
-	removeBlockRemoves,
+	restoreBlockSaves,
 	saveBlock,
 	clearBlocks,
 	registerRenderer,
@@ -270,21 +268,6 @@ describe( 'store actions', () => {
 		expect( check ).toStrictEqual( result );
 	});
 
-	test( 'updateBlockDefaults', () => {
-		const attributes = {
-			styles: {},
-			content: '',
-		}
-		const check = {
-			type: 'UPDATE_BLOCK_DEFAULTS',
-			clientId: 'client-id',
-			attributes: attributes,
-		};
-		const result = updateBlockDefaults( 'client-id', attributes );
-
-		expect( check ).toStrictEqual( result );
-	});
-
 	test( 'updateBlockValids', () => {
 		const props = {}
 		const check = {
@@ -306,15 +289,15 @@ describe( 'store actions', () => {
 		expect( check ).toStrictEqual( result );
 	});
 
-	test( 'removeBlockChanges', () => {
+	test( 'restoreBlockSaves', () => {
 		const props = {}
 		const check = {
-			type: 'REMOVE_BLOCK_CHANGES',
+			type: 'RESTORE_BLOCK_SAVES',
 			clientId: 'client-id',
 			props: props,
 			viewport: 320,
 		};
-		const result = removeBlockChanges( 'client-id', props, 320 );
+		const result = restoreBlockSaves( 'client-id', props, 320 );
 
 		expect( check ).toStrictEqual( result );
 	});
@@ -328,19 +311,6 @@ describe( 'store actions', () => {
 			viewport: 320,
 		};
 		const result = removeBlockSaves( 'client-id', props, 320 );
-
-		expect( check ).toStrictEqual( result );
-	});
-
-	test( 'removeBlockRemoves', () => {
-		const props = {}
-		const check = {
-			type: 'REMOVE_BLOCK_REMOVES',
-			clientId: 'client-id',
-			props: props,
-			viewport: 320,
-		};
-		const result = removeBlockRemoves( 'client-id', props, 320 );
 
 		expect( check ).toStrictEqual( result );
 	});
@@ -370,9 +340,10 @@ describe( 'store actions', () => {
 			type: 'REGISTER_RENDERER',
 			prop: 'style-key',
 			callback: callback,
+			selectorPanel: '.panel',
 			priority: 10,
 		};
-		const result = registerRenderer( 'style-key', callback, 10 );
+		const result = registerRenderer( 'style-key', callback, 10, '.panel' );
 
 		expect( check ).toStrictEqual( result );
 	});

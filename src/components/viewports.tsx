@@ -1,5 +1,4 @@
-import { STORE_NAME } from '../store/constants';
-import { useResizeObserver } from '../hooks';
+import { STORE_NAME } from '../store';
 
 const {
 	data: {
@@ -7,10 +6,6 @@ const {
 		dispatch,
 		useSelect,
 	},
-	element: {
-		useEffect,
-		useRef,
-	}
 } = window[ 'wp' ];
 
 /**
@@ -30,21 +25,9 @@ const Viewports = () => {
 			viewport: store.getViewport(),
 			isActive: store.isActive(),
 			isInspecting: store.isInspecting(),
+			iframeSize: store.getIframeSize(),
 		}
 	}, [] );
-
-	// Set resize state.
-	const selector = '.interface-interface-skeleton__content';
-	const size = useResizeObserver( {
-		selector,
-		box: 'border-box',
-	} );
-
-	// Set useEffect to rerender on size changes.
-	useEffect(() => {
-		// Silencio.
-	}, [ size ] );
-
 
 	// Return instant if is not active.
 	if ( ! props.isActive ) {

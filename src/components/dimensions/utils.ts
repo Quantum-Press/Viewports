@@ -15,7 +15,7 @@ const {
 export const getFilledStyles = ( path : string, style, schema ) => {
 	const parts = path.split( '.' );
 	const styleKey = parts.shift();
-	const styleValue = style.hasOwnProperty( styleKey ) ? style[ styleKey ] : false;
+	const styleValue = style && style.hasOwnProperty( styleKey ) ? style[ styleKey ] : false;
 
 	// Check parts to recursively call itself.
 	if( parts.length > 0 ) {

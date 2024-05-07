@@ -1,5 +1,4 @@
 import type { Attributes } from '../utils';
-import { compileMediaQueryAttributes } from '../utils/styles';
 import { STORE_NAME } from '../store/constants';
 
 const {
@@ -35,23 +34,23 @@ export const BlockSave = ( { block, props }: { block: Attributes, props: Attribu
 
 	// Check whether we need to save block viewports.
 	if ( hasBlockViewports && isSaving ) {
-		const defaults = store.getBlockDefaults( clientId );
-		const style = defaults.hasOwnProperty( 'style' ) ? defaults.style : {};
 		const saves = store.getGeneratedBlockSaves( clientId );
-		const inlines = compileMediaQueryAttributes( saves, defaults );
+		const inlineStyle = store.getInlineStyle( clientId );
 
 		// Avoid the trap of using { ...props.attributes, ...defaults }.
 		// It will destroy the connection to html comment serializer.
-		props.attributes.style = style;
-		props.attributes.viewports = saves;
+		props.attributes.style = saves.hasOwnProperty( 0 ) ? saves[ 0 ].style : {};
+		props.attributes.viewports = Object.fromEntries(
+			Object.entries( saves ).filter( ( [ key ] ) => key !== '0' )
+		);
 
-		if ( Object.keys( inlines ).length ) {
-			props.attributes.inlineStyles = inlines;
+		if ( Object.keys( inlineStyle ).length ) {
+			props.attributes.inlineStyles = inlineStyle;
 		} else {
 			props.attributes.inlineStyles = {};
 		}
 
-		console.log( '%cQP-Viewports -> SAVE_BLOCK WITH VIEWPORTS	', 'padding:4px 8px;background:green;color:white', clientId, props.attributes );
+		console.log( '%cQP-Viewports -> SAVE_BLOCK WITH VIEWPORTS', 'padding:4px 8px;background:green;color:white', clientId, props.attributes.style, props.attributes.viewports, props.attributes.style, props.attributes.inlineStyle );
 
 		dispatch( STORE_NAME ).saveBlock( clientId );
 	}
@@ -60,12 +59,12 @@ export const BlockSave = ( { block, props }: { block: Attributes, props: Attribu
 	if ( ! hasBlockViewports && isSaving ) {
 		const defaults = store.getBlockDefaults( clientId );
 		const style = defaults.hasOwnProperty( 'style' ) ? defaults.style : {};
-		const inlines = compileMediaQueryAttributes( {}, defaults );
+		const inlineStyle = store.getInlineStyle( clientId );
 
 		props.attributes.style = style;
 
-		if ( Object.keys( inlines ).length ) {
-			props.attributes.inlineStyles = inlines;
+		if ( Object.keys( inlineStyle ).length ) {
+			props.attributes.inlineStyles = inlineStyle;
 		} else {
 			props.attributes.inlineStyles = {};
 		}
@@ -80,7 +79,7 @@ export const BlockSave = ( { block, props }: { block: Attributes, props: Attribu
 
 		props.attributes.style = style;
 
-		console.log( '%cQP-Viewports -> AUTOSAVE_BLOCK', 'padding:4px 8px;background:green;color:white', clientId, props.attributes.style );
+		console.log( '%cQP-Viewports -> AUTOSAVE_BLOCK', 'padding:4px 8px;background:green;color:white', clientId, props.attributes.style, props.attributes.viewports, props.attributes.style, props.attributes.inlineStyle );
 
 		return block.save( props );
 	}

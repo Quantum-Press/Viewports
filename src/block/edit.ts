@@ -286,7 +286,6 @@ export default function BlockEdit( blockArgs : any ) {
 
 	}, [ updateSelected ] );
 
-
 	// Use useEffect to handle updates on block defaults via viewport change.
 	useLayoutEffect( () => {
 		if( ! updateDefaultsViewport ) {
@@ -296,7 +295,7 @@ export default function BlockEdit( blockArgs : any ) {
 		const defaults = select( STORE_NAME ).getBlockDefaults( tempId );
 
 		if( ! isEqual( defaults, sanitizeAttributes( attributes ) ) ) {
-			// console.log( 'useEffect updateDefaultsViewport', tempId, defaults );
+			// console.log( 'useEffect updateDefaultsViewport', tempId, defaults, sanitizeAttributes( attributes ) );
 
 			setAttributes( defaults );
 
@@ -308,7 +307,6 @@ export default function BlockEdit( blockArgs : any ) {
 		setUpdateDefaultsViewport( false );
 
 	}, [ updateDefaultsViewport ] );
-
 
 	// Use useEffect to handle ignore attribute change watcher on viewport change.
 	useEffect( () => {
@@ -360,33 +358,14 @@ export default function BlockEdit( blockArgs : any ) {
 		}
 
 		if( isSelected ) {
-			if( isActive && isEditing ) {
-				store.updateBlockChanges( tempId, attributes );
-				// console.log( 'update block changes', tempId, clientId );
-			} else {
-				store.updateBlockDefaults( tempId, attributes );
-				// console.log( 'update block defaults', tempId );
-			}
+			// console.log( 'updateBlockChanges', tempId, attributes );
+			store.updateBlockChanges( tempId, attributes );
 		}
 
 	}, [ attributes ] );
 
-	// Use useEffect to handle block remove.
-	/*
-	useLayoutEffect( () => {
-		return () => {
-			if( ! isSaving ) {
-				const storeId = clientId === tempId ? clientId : tempId;
 
-				store.removeBlock( storeId );
-
-				// console.log( '[remove]', storeId, attributes.hasOwnProperty( 'url' ) ? attributes.url : '' );
-			}
-		}
-	}, [] );
-	*/
-
-	// Check if block.edit is a funktion or class component to return edit.
+	// Check if block.edit is a function or class component to return its edit function.
 	const isClassComponent = typeof block.edit === 'function' && block.edit.prototype instanceof Component;
 	return isClassComponent
 		? ( new block.edit( props ) ).render()

@@ -1,7 +1,6 @@
 import type { State, Action, Reducers } from './types';
-
 import { DEFAULT_STATE } from './default';
-import { getMergedAttributes } from '../utils/attributes';
+import { isObject, getMergedAttributes, traverseGet } from '../utils';
 import {
 	isInMobileRange,
 	isInTabletRange,
@@ -15,6 +14,7 @@ import {
 	findCleanedChanges,
 	clearEmptySaves,
 	clearDuplicateSaves,
+	getSpectrumProperties
 } from './utils';
 
 const { isEqual, cloneDeep } = window[ 'lodash' ];
@@ -23,12 +23,12 @@ const { isEqual, cloneDeep } = window[ 'lodash' ];
 /**
  * Set reducer to update viewports list.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function setViewports( state : State , action : Action ) : State {
 	switch ( action.type ) {
@@ -49,12 +49,12 @@ export function setViewports( state : State , action : Action ) : State {
 /**
  * Set reducer to update viewport.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function setViewport( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -79,12 +79,12 @@ export function setViewport( state : State, action : Action ) : State {
 /**
  * Set reducer to update to prev viewport.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function setPrevViewport( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -118,12 +118,12 @@ export function setPrevViewport( state : State, action : Action ) : State {
 /**
  * Set reducer to update to next viewport.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function setNextViewport( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -158,12 +158,12 @@ export function setNextViewport( state : State, action : Action ) : State {
 /**
  * Set reducer to update desktop viewport size.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function setDesktop( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -185,12 +185,12 @@ export function setDesktop( state : State, action : Action ) : State {
 /**
  * Set reducer to update tablet viewport size.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function setTablet( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -212,12 +212,12 @@ export function setTablet( state : State, action : Action ) : State {
 /**
  * Set reducer to update mobile viewport size.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function setMobile( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -237,14 +237,37 @@ export function setMobile( state : State, action : Action ) : State {
 
 
 /**
- * Set reducer to update registering indicator to boolean true.
+ * Set reducer to update iframe size.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
+ */
+export function setIframeSize( state : State, action : Action ) : State {
+	switch ( action.type ) {
+		case 'SET_IFRAME_SIZE' :
+			return {
+				... state,
+				iframeSize: action.size,
+			};
+	}
+
+	return state;
+}
+
+
+/**
+ * Set reducer to update registering indicator to boolean true.
+ *
+ * @param {State} state current
+ * @param {Action} action dispatched
+ *
+ * @since 0.1.0
+ *
+ * @return {State} updated state
  */
 export function setRegistering( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -262,12 +285,12 @@ export function setRegistering( state : State, action : Action ) : State {
 /**
  * Set reducer to update registering indicator to boolean false.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function unsetRegistering( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -285,12 +308,12 @@ export function unsetRegistering( state : State, action : Action ) : State {
 /**
  * Set reducer to update ready indicator to boolean true.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function setReady( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -308,12 +331,12 @@ export function setReady( state : State, action : Action ) : State {
 /**
  * Set reducer to update loading indicator to boolean true.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function setLoading( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -331,12 +354,12 @@ export function setLoading( state : State, action : Action ) : State {
 /**
  * Set reducer to update loading indicator to boolean false.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function unsetLoading( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -354,12 +377,12 @@ export function unsetLoading( state : State, action : Action ) : State {
 /**
  * Set reducer to update saving indicator to boolean true.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function setSaving( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -377,12 +400,12 @@ export function setSaving( state : State, action : Action ) : State {
 /**
  * Set reducer to update saving indicator to boolean false.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function unsetSaving( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -400,12 +423,12 @@ export function unsetSaving( state : State, action : Action ) : State {
 /**
  * Set reducer to update autosaving indicator to boolean true.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function setAutoSaving( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -423,12 +446,12 @@ export function setAutoSaving( state : State, action : Action ) : State {
 /**
  * Set reducer to update autosaving indicator to boolean false.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function unsetAutoSaving( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -446,12 +469,12 @@ export function unsetAutoSaving( state : State, action : Action ) : State {
 /**
  * Set reducer to update state for an active viewport simulation.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function setActive( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -477,12 +500,12 @@ export function setActive( state : State, action : Action ) : State {
 /**
  * Set reducer to update state to shut down viewport simulation.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function unsetActive( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -501,12 +524,12 @@ export function unsetActive( state : State, action : Action ) : State {
 /**
  * Set reducer to set inspecting flag to true.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.2.2
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function setInspecting( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -524,12 +547,12 @@ export function setInspecting( state : State, action : Action ) : State {
 /**
  * Set reducer to set inspecting flag to false.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.2.2
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function unsetInspecting( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -547,12 +570,12 @@ export function unsetInspecting( state : State, action : Action ) : State {
 /**
  * Set reducer to set inspector position.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.2.2
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function setInspectorPosition( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -570,12 +593,12 @@ export function setInspectorPosition( state : State, action : Action ) : State {
 /**
  * Set reducer to update state for active editing.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function setEditing( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -593,12 +616,12 @@ export function setEditing( state : State, action : Action ) : State {
 /**
  * Set reducer to update state to shut down editing.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function unsetEditing( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -616,12 +639,12 @@ export function unsetEditing( state : State, action : Action ) : State {
 /**
  * Set reducer to toggle active and inactive viewport simulation.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function toggleActive( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -647,12 +670,12 @@ export function toggleActive( state : State, action : Action ) : State {
 /**
  * Set reducer to toggle viewport to stored desktop viewport.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function toggleDesktop( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -670,12 +693,12 @@ export function toggleDesktop( state : State, action : Action ) : State {
 /**
  * Set reducer to toggle viewport to stored tablet viewport.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function toggleTablet( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -693,12 +716,12 @@ export function toggleTablet( state : State, action : Action ) : State {
 /**
  * Set reducer to toggle viewport to stored mobile viewport.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function toggleMobile( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -716,16 +739,18 @@ export function toggleMobile( state : State, action : Action ) : State {
 /**
  * Set reducer to register a block init.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function registerBlockInit( state : State, action : Action ) : State {
 	switch ( action.type ) {
 		case 'REGISTER_BLOCK_INIT' :
+
+			// Deconstruct action.
 			const { clientId, attributes } = action;
 
 			// Bubble out on undefined clientId.
@@ -733,31 +758,74 @@ export function registerBlockInit( state : State, action : Action ) : State {
 				return state;
 			}
 
-			const { init, defaults, saves, valids } = state;
+			// Deconstruct state.
+			const { init, saves, valids } = state;
 
+			// Find defaults and viewport saves.
+			const blockDefaults = findBlockDefaults( clientId, attributes );
+			const blockSaves = findBlockSaves( clientId, attributes );
+
+			// Check if we got some defaults to store in saves.
+			if( Object.keys( blockDefaults ).length ) {
+				if( ! isObject( blockSaves[ clientId ] ) ) {
+					blockSaves[ clientId ] = {};
+				}
+				blockSaves[ clientId ][ 0 ] = blockDefaults[ clientId ];
+			}
+
+			// Set initState.
 			const initState = {
 				... state,
 				init: {
 					... init,
 					[ clientId ]: true,
 				},
-				defaults: {
-					... defaults,
-					... findBlockDefaults( clientId, attributes ),
-				},
 				saves: {
 					... saves,
-					... findBlockSaves( clientId, attributes )
+					... blockSaves,
 				}
 			}
 
+			// Set blockValids.
 			const blockValids = findBlockValids( clientId, initState );
 
+			// Set spectrumState for spectrumSet generation.
+			const spectrumState = {
+				valids: blockValids,
+				defaults: traverseGet( clientId, blockDefaults ) || {},
+				saves: traverseGet( clientId, blockSaves, ) || {},
+				changes: {},
+				removes: {},
+				rendererPropertySet: state.renderer,
+				isSaving: state.isSaving,
+				viewport: state.viewport,
+			};
+
+			// Deconstruct spectrumProperties.
+			const {
+				css,
+				spectrumSet,
+				inlineStyle,
+			} = getSpectrumProperties( clientId, spectrumState );
+
+			// Return new state.
 			return {
 				... initState,
 				valids: {
 					... valids,
 					[ clientId ]: blockValids
+				},
+				cssSet: {
+					... state.cssSet,
+					[ clientId ]: css,
+				},
+				spectrumSets: {
+					... state.spectrumSets,
+					[ clientId ]: spectrumSet,
+				},
+				inlineStyleSets: {
+					... state.inlineStyleSets,
+					[ clientId ]: inlineStyle,
 				},
 			}
 	}
@@ -769,18 +837,23 @@ export function registerBlockInit( state : State, action : Action ) : State {
 /**
  * Set reducer to update block changes.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function updateBlockChanges( state : State, action : Action ) : State {
 	switch ( action.type ) {
 		case 'UPDATE_BLOCK_CHANGES' :
-			const { viewport, changes, valids } = state;
+
+			// Deconstruct state and action.
+			const { isActive, isEditing, changes, valids } = state;
 			const { clientId, attributes } = action;
+
+			// Set viewport.
+			const viewport = isActive && isEditing ? state.viewport : 0;
 
 			// Set new generated block changes by comparing it to the actual viewport valid.
 			// Here you will get just the difference between both.
@@ -827,55 +900,45 @@ export function updateBlockChanges( state : State, action : Action ) : State {
 			// Set new generated block valids from new generated block changes.
 			const blockValids = findBlockValids( clientId, nextState );
 
+			// Set spectrumState for spectrumSet generation.
+			const spectrumState = {
+				valids: blockValids,
+				saves: traverseGet( clientId, nextState.saves ) || {},
+				changes: traverseGet( clientId, nextState.changes ),
+				removes: traverseGet( clientId, nextState.removes ),
+				rendererPropertySet: nextState.renderer,
+				isSaving: nextState.isSaving,
+				viewport: nextState.viewport,
+			};
+
+			// Deconstruct spectrumProperties.
+			const {
+				css,
+				spectrumSet,
+				inlineStyle,
+			} = getSpectrumProperties( clientId, spectrumState );
+
+			// Return new state.
 			return {
 				... nextState,
 				viewports: state.viewports,
 				lastEdit: state.lastEdit,
 				valids: {
 					... valids,
-					[ clientId ]: blockValids
-				},
-			}
-	}
-
-	return state;
-}
-
-
-/**
- * Set reducer to update block defaults.
- *
- * @param {object} state  current
- * @param {object} action dispatched
- *
- * @since 0.1.0
- *
- * @return {object} updated state
- */
-export function updateBlockDefaults( state : State, action : Action ) : State {
-	switch ( action.type ) {
-		case 'UPDATE_BLOCK_DEFAULTS' :
-			const { defaults, valids } = state;
-			const { clientId, attributes } = action;
-
-			const blockDefaults = { style: cloneDeep( attributes.style ) };
-
-			const nextState = {
-				... state,
-				defaults: {
-					... defaults,
-					[ clientId ]: blockDefaults,
-				}
-			};
-
-			const blockValids = findBlockValids( clientId, nextState );
-
-			return {
-				... nextState,
-				valids: {
-					... valids,
 					[ clientId ]: blockValids,
-				}
+				},
+				cssSet: {
+					... state.cssSet,
+					[ clientId ]: css,
+				},
+				spectrumSets: {
+					... state.spectrumSets,
+					[ clientId ]: spectrumSet,
+				},
+				inlineStyleSets: {
+					... state.inlineStyleSets,
+					[ clientId ]: inlineStyle,
+				},
 			}
 	}
 
@@ -886,26 +949,60 @@ export function updateBlockDefaults( state : State, action : Action ) : State {
 /**
  * Set reducer to update block valids.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function updateBlockValids( state : State, action : Action ) : State {
 	switch ( action.type ) {
 		case 'UPDATE_BLOCK_VALIDS' :
+
+			// Deconstruct state and action.
 			const { valids } = state;
 			const { clientId } = action;
 
+			// Generate new valids from new state.
 			const blockValids = findBlockValids( clientId, state );
 
+			// Set spectrumState for spectrumSet generation.
+			const spectrumState = {
+				valids: blockValids,
+				saves: traverseGet( clientId, state.saves ) || {},
+				changes: traverseGet( clientId, state.changes ),
+				removes: traverseGet( clientId, state.removes ),
+				rendererPropertySet: state.renderer,
+				isSaving: state.isSaving,
+				viewport: state.viewport,
+			};
+
+			// Deconstruct spectrumProperties.
+			const {
+				css,
+				spectrumSet,
+				inlineStyle,
+			} = getSpectrumProperties( clientId, spectrumState );
+
+			// Return new state.
 			return {
 				... state,
 				valids: {
 					... valids,
 					[ clientId ]: blockValids,
+				},
+				cssSet: {
+					... state.cssSet,
+					[ clientId ]: css,
+				},
+				spectrumSets: {
+					... state.spectrumSets,
+					[ clientId ]: spectrumSet,
+				},
+				inlineStyleSets: {
+					... state.inlineStyleSets,
+					[ clientId ]: inlineStyle,
 				},
 			};
 	}
@@ -917,40 +1014,44 @@ export function updateBlockValids( state : State, action : Action ) : State {
 /**
  * Set reducer to remove block.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function removeBlock( state : State, action : Action ) : State {
 	switch ( action.type ) {
 		case 'REMOVE_BLOCK' :
+
+			// Deconstruct action.
 			const { clientId } = action;
 
+			// Remove init entry.
 			const init = { ... state.init };
 			delete init[ clientId ];
 
-			const defaults = { ... state.defaults };
-			delete defaults[ clientId ];
-
+			// Remove saves entry.
 			const saves = { ... state.saves };
 			delete saves[ clientId ];
 
+			// Remove changes entry.
 			const changes = { ... state.changes };
 			delete changes[ clientId ];
 
+			// Remove removes entry.
 			const removes = { ... state.removes };
 			delete removes[ clientId ];
 
+			// Remove valids entry.
 			const valids = { ... state.valids };
 			delete valids[ clientId ];
 
+			// Return new state.
 			return {
 				... state,
 				init,
-				defaults,
 				saves,
 				changes,
 				removes,
@@ -963,37 +1064,40 @@ export function removeBlock( state : State, action : Action ) : State {
 
 
 /**
- * Set reducer to remove block defaults.
+ * Set reducer to remove block saves.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
-export function removeBlockDefaults( state : State, action : Action ) : State {
+export function removeBlockSaves( state : State, action : Action ) : State {
 	switch ( action.type ) {
-		case 'REMOVE_BLOCK_DEFAULTS' :
+		case 'REMOVE_BLOCK_SAVES' :
 			const { clientId, viewport, props } = action;
-			const { defaults, valids } = state;
+			const { saves, removes, valids } = state;
 
-			if ( defaults.hasOwnProperty( clientId ) ) {
+			if ( saves.hasOwnProperty( clientId ) && saves[ clientId ].hasOwnProperty( viewport ) ) {
+				const blockRemoves = findRemoves( props, saves[ clientId ][ viewport ][ 'style' ] );
 
-				const blockRemoves = findRemoves( props, defaults[ clientId ][ 'style' ] );
-				const blockChanges = findCleanedChanges( defaults[ clientId ][ 'style' ], blockRemoves );
+				let nextRemoves = {};
+				if ( removes.hasOwnProperty( clientId ) && removes[ clientId ].hasOwnProperty( viewport ) ) {
+					nextRemoves = getMergedAttributes( removes[ clientId ][ viewport ][ 'style' ], blockRemoves );
+				} else {
+					nextRemoves = blockRemoves;
+				}
 
-				let nextState : any = {};
-
-				// Set blockChanges if they are empty or not.
-				nextState = {
+				let nextState = {
 					... state,
-					defaults: {
-						... defaults,
+					removes: {
+						... removes,
 						[ clientId ]: {
-							style: {
-								... blockChanges
-							}
+							... removes[ clientId ],
+							[ viewport ]: {
+								style: nextRemoves,
+							},
 						}
 					}
 				}
@@ -1001,11 +1105,42 @@ export function removeBlockDefaults( state : State, action : Action ) : State {
 				// Generate new valids from new state.
 				const blockValids = findBlockValids( clientId, nextState );
 
+				// Set spectrumState for spectrumSet generation.
+				const spectrumState = {
+					valids: blockValids,
+					saves: traverseGet( clientId, nextState.saves ) || {},
+					changes: traverseGet( clientId, nextState.changes ),
+					removes: traverseGet( clientId, nextState.removes ),
+					rendererPropertySet: nextState.renderer,
+					isSaving: nextState.isSaving,
+					viewport: nextState.viewport,
+				};
+
+				// Deconstruct spectrumProperties.
+				const {
+					css,
+					spectrumSet,
+					inlineStyle,
+				} = getSpectrumProperties( clientId, spectrumState );
+
+				// Return new state.
 				return {
 					... nextState,
 					valids: {
 						... valids,
 						[ clientId ]: blockValids
+					},
+					cssSet: {
+						... state.cssSet,
+						[ clientId ]: css,
+					},
+					spectrumSets: {
+						... state.spectrumSets,
+						[ clientId ]: spectrumSet,
+					},
+					inlineStyleSets: {
+						... state.inlineStyleSets,
+						[ clientId ]: inlineStyle,
 					},
 					lastEdit: Date.now(),
 				}
@@ -1017,26 +1152,32 @@ export function removeBlockDefaults( state : State, action : Action ) : State {
 
 
 /**
- * Set reducer to remove block changes.
+ * Set reducer to restore block saves.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
-export function removeBlockChanges( state : State, action : Action ) : State {
+export function restoreBlockSaves( state : State, action : Action ) : State {
 	switch ( action.type ) {
-		case 'REMOVE_BLOCK_CHANGES' :
+		case 'RESTORE_BLOCK_SAVES' :
+
+			// Deconstruct state and action.
 			const { clientId, viewport, props } = action;
-			const { changes, valids } = state;
+			const { changes, removes, valids } = state;
 
+			// Set nextState.
+			let nextState : any = {};
+
+			// Check if there is an entry for clientId and viewport to remove from changes.
 			if ( changes.hasOwnProperty( clientId ) && changes[ clientId ].hasOwnProperty( viewport ) ) {
-				const blockRemoves = findRemoves( props, changes[ clientId ][ viewport ] );
-				const blockChanges = findCleanedChanges( changes[ clientId ][ viewport ], blockRemoves );
 
-				let nextState : any = {};
+				// Set new block removes and changes.
+				const blockRemoves = findRemoves( props, changes[ clientId ][ viewport ][ 'style' ] );
+				const blockChanges = findCleanedChanges( changes[ clientId ][ viewport ][ 'style' ], blockRemoves );
 
 				// Check viewport changes to update or to remove viewport changes.
 				if ( 0 < Object.entries( blockChanges ).length ) {
@@ -1046,7 +1187,9 @@ export function removeBlockChanges( state : State, action : Action ) : State {
 							... changes,
 							[ clientId ]: {
 								... changes[ clientId ],
-								[ viewport ]: blockChanges
+								[ viewport ]: {
+									style: blockChanges,
+								}
 							}
 						}
 					}
@@ -1078,173 +1221,28 @@ export function removeBlockChanges( state : State, action : Action ) : State {
 						changes: cleanedChanges,
 					}
 				}
-
-				// Generate new valids from new state.
-				const blockValids = findBlockValids( clientId, nextState );
-
-				return {
-					... nextState,
-					valids: {
-						... valids,
-						[ clientId ]: blockValids
-					},
-					lastEdit: Date.now(),
-				}
 			}
-	}
 
-	return state;
-}
-
-
-/**
- * Set reducer to remove block saves.
- *
- * @param {object} state  current
- * @param {object} action dispatched
- *
- * @since 0.1.0
- *
- * @return {object} updated state
- */
-export function removeBlockSaves( state : State, action : Action ) : State {
-	switch ( action.type ) {
-		case 'REMOVE_BLOCK_SAVES' :
-			const { clientId, viewport, props } = action;
-			const { saves, removes, valids } = state;
-
-			if ( saves.hasOwnProperty( clientId ) && saves[ clientId ].hasOwnProperty( viewport ) ) {
-				const blockRemoves = findRemoves( props, saves[ clientId ][ viewport ] );
-				const blockChanges = findCleanedChanges( saves[ clientId ][ viewport ], blockRemoves );
-
-				let nextState : any = {};
-				let nextRemoves = {};
-
-				if ( removes.hasOwnProperty( clientId ) && removes[ clientId ].hasOwnProperty( viewport ) ) {
-					nextRemoves = getMergedAttributes( removes[ clientId ][ viewport ], blockRemoves );
-				} else {
-					nextRemoves = blockRemoves;
-				}
-
-				// Check viewport changes to update or to remove viewport changes.
-				if ( 0 < Object.entries( blockChanges ).length ) {
-					nextState = {
-						... state,
-						saves: {
-							... saves,
-							[ clientId ]: {
-								... saves[ clientId ],
-								[ viewport ]: blockChanges
-							}
-						},
-						removes: {
-							... removes,
-							[ clientId ]: {
-								... removes[ clientId ],
-								[ viewport ]: nextRemoves,
-							}
-						}
-					}
-				} else {
-					const cleanedViewports = {
-						... saves,
-						[ clientId ]: {
-							... saves[ clientId ]
-						}
-					};
-					delete cleanedViewports[ clientId ][ viewport ];
-
-					nextState = {
-						... state,
-						saves: cleanedViewports,
-						removes: {
-							... removes,
-							[ clientId ]: {
-								... removes[ clientId ],
-								[ viewport ]: nextRemoves,
-							}
-						},
-					}
-				}
-
-				// Check clientId changes on emptyness to cleanup.
-				if ( 0 === Object.entries( nextState.saves[ clientId ] ).length ) {
-					const cleanedChanges = {
-						... saves,
-					};
-
-					delete cleanedChanges[ clientId ];
-
-					nextState = {
-						... nextState,
-						saves: cleanedChanges,
-					}
-				}
-
-				const blockValids = findBlockValids( clientId, nextState );
-
-				return {
-					... nextState,
-					valids: {
-						... valids,
-						[ clientId ]: blockValids
-					},
-					lastEdit: Date.now(),
-				}
-			}
-	}
-
-	return state;
-}
-
-
-/**
- * Set reducer to remove block removes.
- *
- * @param {object} state  current
- * @param {object} action dispatched
- *
- * @since 0.1.0
- *
- * @return {object} updated state
- */
-export function removeBlockRemoves( state : State, action : Action ) : State {
-	switch ( action.type ) {
-		case 'REMOVE_BLOCK_REMOVES' :
-			const { clientId, viewport, props } = action;
-			const { saves, removes, valids } = state;
-
+			// Check if there is an entry for clientId and viewport to remove from removes.
 			if ( removes.hasOwnProperty( clientId ) && removes[ clientId ].hasOwnProperty( viewport ) ) {
-				const blockRemoves = findRemoves( props, removes[ clientId ][ viewport ] );
-				const blockChanges = findCleanedChanges( removes[ clientId ][ viewport ], blockRemoves );
 
-				let nextState : any = {};
-				let nextSaves = {};
+				// Set new block removes and changes.
+				const blockRemoves = findRemoves( props, removes[ clientId ][ viewport ][ 'style' ] );
+				const blockChanges = findCleanedChanges( removes[ clientId ][ viewport ][ 'style' ], blockRemoves );
 
-				if ( saves.hasOwnProperty( clientId ) && saves[ clientId ].hasOwnProperty( viewport ) ) {
-					nextSaves = getMergedAttributes( saves[ clientId ][ viewport ], blockRemoves );
-				} else {
-					nextSaves = blockRemoves;
-				}
-
-				// Check viewport changes to update or to remove viewport changes.
+				// Check viewport removes to update or to remove viewport removes.
 				if ( 0 < Object.entries( blockChanges ).length ) {
 					nextState = {
 						... state,
-						saves: {
-							... saves,
-							[ clientId ]: {
-								... saves[ clientId ],
-								[ viewport ]: nextSaves,
-							}
-						},
 						removes: {
 							... removes,
 							[ clientId ]: {
 								... removes[ clientId ],
-								[ viewport ]: blockChanges
+								[ viewport ]: {
+									style: blockChanges,
+								}
 							}
-						},
+						}
 					}
 				} else {
 					const cleanedViewports = {
@@ -1257,41 +1255,66 @@ export function removeBlockRemoves( state : State, action : Action ) : State {
 
 					nextState = {
 						... state,
-						saves: {
-							... saves,
-							[ clientId ]: {
-								... saves[ clientId ],
-								[ viewport ]: nextSaves,
-							}
-						},
 						removes: cleanedViewports,
 					}
 				}
 
-				// Check clientId changes on emptyness to cleanup.
+				// Check clientId removes on emptyness to cleanup.
 				if ( 0 === Object.entries( nextState.removes[ clientId ] ).length ) {
-					const cleanedChanges = {
+					const cleanedRemoves = {
 						... removes,
 					};
 
-					delete cleanedChanges[ clientId ];
+					delete cleanedRemoves[ clientId ];
 
 					nextState = {
-						... nextState,
-						removes: cleanedChanges,
+						... state,
+						removes: cleanedRemoves,
 					}
 				}
+			}
 
-				const blockValids = findBlockValids( clientId, nextState );
+			// Generate new valids from new state.
+			const blockValids = findBlockValids( clientId, nextState );
 
-				return {
-					... nextState,
-					valids: {
-						... valids,
-						[ clientId ]: blockValids
-					},
-					lastEdit: Date.now(),
-				}
+			// Set spectrumState for spectrumSet generation.
+			const spectrumState = {
+				valids: blockValids,
+				saves: traverseGet( clientId, nextState.saves ) || {},
+				changes: traverseGet( clientId, nextState.changes ),
+				removes: traverseGet( clientId, nextState.removes ),
+				rendererPropertySet: nextState.renderer,
+				isSaving: nextState.isSaving,
+				viewport: nextState.viewport,
+			};
+
+			// Deconstruct spectrumProperties.
+			const {
+				css,
+				spectrumSet,
+				inlineStyle,
+			} = getSpectrumProperties( clientId, spectrumState );
+
+			// Return new state.
+			return {
+				... nextState,
+				valids: {
+					... valids,
+					[ clientId ]: blockValids
+				},
+				cssSet: {
+					... state.cssSet,
+					[ clientId ]: css,
+				},
+				spectrumSets: {
+					... state.spectrumSets,
+					[ clientId ]: spectrumSet,
+				},
+				inlineStyleSets: {
+					... state.inlineStyleSets,
+					[ clientId ]: inlineStyle,
+				},
+				lastEdit: Date.now(),
 			}
 	}
 
@@ -1302,12 +1325,12 @@ export function removeBlockRemoves( state : State, action : Action ) : State {
 /**
  * Set reducer to save block.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function saveBlock( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -1317,25 +1340,36 @@ export function saveBlock( state : State, action : Action ) : State {
 
 			// Set states.
 			let blockSaves = saves.hasOwnProperty( clientId ) ? saves[ clientId ] : {};
-			const blockChanges = changes.hasOwnProperty( clientId ) ? changes[ clientId ] : {};
-			const blockRemoves = removes.hasOwnProperty( clientId ) ? removes[ clientId ] : {};
+			let blockChanges = changes.hasOwnProperty( clientId ) ? changes[ clientId ] : {};
+			let blockRemoves = removes.hasOwnProperty( clientId ) ? removes[ clientId ] : {};
+
+			// Set indicators.
+			const hasBlockSaves = Object.keys( blockSaves ).length ? true : false;
+			const hasBlockChanges = Object.keys( blockChanges ).length ? true : false;
+			const hasBlockRemoves = Object.keys( blockRemoves ).length ? true : false;
 
 			// Check if we can skip the save call.
-			const skipSave = ! Object.keys( blockChanges ).length && ! Object.keys( blockSaves ).length && ! Object.keys( blockRemoves ).length;
-			if( skipSave ) {
+			if( ! hasBlockSaves && ! hasBlockChanges && ! hasBlockRemoves ) {
 				return state;
 			}
 
-			// Build new blockSaves.
+			// Set merged blockSaves.
 			blockSaves = getMergedAttributes( blockSaves, blockChanges );
+
+			// Cleanup saves from removes.
+			blockSaves = findCleanedChanges( blockSaves, blockRemoves );
+
+			// Cleanup saves on emptyness.
 			blockSaves = clearEmptySaves( blockSaves );
 			blockSaves = clearDuplicateSaves( blockSaves );
 
-			// Remove changes and removes.
-			const newChanges = { ... changes };
-			delete newChanges[ clientId ];
-			const newRemoves = { ... removes };
-			delete newRemoves[ clientId ];
+			// Cleanup changes and removes.
+			if( hasBlockChanges ) {
+				delete changes[ clientId ];
+			}
+			if( hasBlockRemoves ) {
+				delete removes[ clientId ];
+			}
 
 			// Build nextState to build new block valids.
 			const nextState = {
@@ -1344,18 +1378,49 @@ export function saveBlock( state : State, action : Action ) : State {
 					... saves,
 					[ clientId ]: blockSaves,
 				},
-				changes: newChanges,
-				removes: newRemoves,
+				changes: { ... changes },
+				removes: { ... removes },
 			}
 
+			// Generate new valids from new state.
 			const blockValids = findBlockValids( clientId, nextState );
+
+			// Set spectrumState for spectrumSet generation.
+			const spectrumState = {
+				valids: blockValids,
+				saves: traverseGet( clientId, nextState.saves ) || {},
+				changes: traverseGet( clientId, nextState.changes ),
+				removes: traverseGet( clientId, nextState.removes ),
+				rendererPropertySet: nextState.renderer,
+				isSaving: nextState.isSaving,
+				viewport: nextState.viewport,
+			};
+
+			// Deconstruct spectrumProperties.
+			const {
+				css,
+				spectrumSet,
+				inlineStyle,
+			} = getSpectrumProperties( clientId, spectrumState );
 
 			return {
 				... nextState,
 				valids: {
 					... valids,
 					[ clientId ]: blockValids
-				}
+				},
+				cssSet: {
+					... state.cssSet,
+					[ clientId ]: css,
+				},
+				spectrumSets: {
+					... state.spectrumSets,
+					[ clientId ]: spectrumSet,
+				},
+				inlineStyleSets: {
+					... state.inlineStyleSets,
+					[ clientId ]: inlineStyle,
+				},
 			}
 	}
 
@@ -1366,12 +1431,12 @@ export function saveBlock( state : State, action : Action ) : State {
 /**
  * Set reducer to clear blocks.
  *
- * @param {object} state  current
- * @param {object} action dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return {object} updated state
+ * @return {State} updated state
  */
 export function clearBlocks( state : State, action : Action ) : State {
 	switch ( action.type ) {
@@ -1379,7 +1444,6 @@ export function clearBlocks( state : State, action : Action ) : State {
 			return {
 				... state,
 				init: {},
-				defaults: {},
 				saves: {},
 				changes: {},
 				removes: {},
@@ -1394,12 +1458,12 @@ export function clearBlocks( state : State, action : Action ) : State {
 /**
  * Set reducer to register custom style renderer.
  *
- * @param state  The current state
- * @param action The action to be dispatched
+ * @param {State} state current
+ * @param {Action} action dispatched
  *
  * @since 0.1.0
  *
- * @return The updated state
+ * @return {State} updated state
  */
 export function registerRenderer( state : State, action : Action ) : State {
 	if( action.type === 'REGISTER_RENDERER' ) {
@@ -1412,7 +1476,10 @@ export function registerRenderer( state : State, action : Action ) : State {
 					... state.renderer,
 					[ prop ]: {
 						... state.renderer[ prop ],
-						[ priority ]: callback,
+						[ priority ]: {
+							callback,
+							selectorPanel: action.selectorPanel,
+						}
 					}
 				}
 			}
@@ -1423,7 +1490,10 @@ export function registerRenderer( state : State, action : Action ) : State {
 			renderer: {
 				... state.renderer,
 				[ prop ]: {
-					[ priority ]: callback,
+					[ priority ]: {
+						callback,
+						selectorPanel: action.selectorPanel,
+					}
 				}
 			}
 		}
@@ -1436,8 +1506,6 @@ export function registerRenderer( state : State, action : Action ) : State {
 /**
  * Set reducer to handle.
  *
- * @type {object}
- *
  * @since 0.1.0
  */
 export const combinedReducers = {
@@ -1448,6 +1516,7 @@ export const combinedReducers = {
 	setDesktop,
 	setTablet,
 	setMobile,
+	setIframeSize,
 	setRegistering,
 	unsetRegistering,
 	setReady,
@@ -1470,13 +1539,10 @@ export const combinedReducers = {
 	toggleMobile,
 	registerBlockInit,
 	updateBlockChanges,
-	updateBlockDefaults,
 	updateBlockValids,
 	removeBlock,
-	removeBlockDefaults,
-	removeBlockChanges,
 	removeBlockSaves,
-	removeBlockRemoves,
+	restoreBlockSaves,
 	saveBlock,
 	clearBlocks,
 	registerRenderer,
@@ -1486,15 +1552,15 @@ export const combinedReducers = {
 /**
  * Set function to get reduced next state.
  *
- * @param {object} state
- * @param {object} action
- * @param {object} reducers
+ * @param {State} state
+ * @param {Action} action
+ * @param {Reducers} reducers
  *
  * @since 0.1.0
  *
- * @return {object} nextState
+ * @return {State} nextState
  */
-const getReducedNextState = ( state : State, action : Action, reducers: Reducers ) => {
+const getReducedNextState = ( state : State, action : Action, reducers : Reducers ) : State => {
 	let nextState = state;
 
 	for( const [ name, callback ] of Object.entries( reducers ) ) {
@@ -1508,14 +1574,14 @@ const getReducedNextState = ( state : State, action : Action, reducers: Reducers
 /**
  * Set function to run with every change in store.
  *
- * @param {object} reducers
+ * @param {Reducers} reducers
  *
  * @since 0.1.0
  *
- * @return {object} containing reducer
+ * @return {Function} reducing
  */
-const withChanges = ( reducers ) => {
-	return ( state : State = DEFAULT_STATE, action : Action ) => {
+const withChanges = ( reducers : Reducers ) : Function => {
+	return ( state : State = DEFAULT_STATE, action : Action ) : State => {
 		const nextState = getReducedNextState( state, action, reducers );
 
 		if( ! state ) {

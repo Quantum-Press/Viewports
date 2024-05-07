@@ -18,12 +18,7 @@ const {
  *
  * @since 0.2.4
  */
-const Selected = ( props ) => {
-
-	// Deconstruct props.
-	const {
-		selected,
-	} = props;
+const Selected = ({ block }) => {
 
 	// Set hook dependencies.
 	const [ isOverflowing ] = useOverflow( '.qp-viewports-inspector-selected-wrap', 'height' );
@@ -55,7 +50,7 @@ const Selected = ( props ) => {
 					label={ __( 'Styles', 'quantum-viewports' ) }
 				>
 					<StyleList
-						block={ selected }
+						block={ block }
 					/>
 				</Accordion>
 			</div>

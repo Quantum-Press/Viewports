@@ -1,6 +1,7 @@
-import { isObject, getMergedAttributes, sanitizeAttributes } from '../utils/attributes';
-import type { State } from './types';
+import { isObject, getMergedAttributes, sanitizeAttributes } from '../utils';
+import { Generator } from './generator';
 import type { Attributes } from '../utils';
+import type { Styles, SpectrumState, SpectrumProperties, State } from './types';
 
 const { isEqual, cloneDeep } = window[ 'lodash' ];
 
@@ -168,12 +169,28 @@ export const clearEmptySaves = ( saves : Attributes ) : Attributes => {
 		return {};
 	}
 
-	var cleared : Attributes = {};
+	let cleared : Attributes = {};
 
-	for ( const [ viewport, styles ] of Object.entries( saves ) ) {
-		if ( isObject( styles ) ) {
-			if ( 0 < Object.keys( styles ).length ) {
-				cleared[ parseInt( viewport ) ] = styles;
+	// Iterate over save entries.
+	for ( const [ dirtyViewport, { style } ] of Object.entries( saves ) ) {
+
+		// Check if we have viewport styles.
+		if ( isObject( style ) && Object.keys( style ).length ) {
+			const viewport = parseInt( dirtyViewport );
+			const clearedProperties = clearEmptyProperties( style );
+
+			// Check if we have viewport style properties.
+			if( Object.keys( clearedProperties ).length ) {
+
+				// Check if we need to add viewport.
+				if( ! cleared.hasOwnProperty( viewport ) ) {
+					cleared[ viewport ] = {
+						style: {},
+					};
+				}
+
+				// Set cleared properties.
+				cleared[ viewport ][ 'style' ] = { ... clearedProperties };
 			}
 		}
 	}
@@ -181,6 +198,49 @@ export const clearEmptySaves = ( saves : Attributes ) : Attributes => {
 	return cleared;
 }
 
+
+/**
+ * Set function to clear empty properties.
+ *
+ * @param {object} saves
+ *
+ * @since 0.2.5
+ *
+ * @return {object} cleaned
+ */
+export const clearEmptyProperties = ( properties : Styles ) : Styles => {
+	let cleared : Styles = {};
+
+	// Iterate over style properties.
+	for ( const [ property, styles ] of Object.entries( properties ) ) {
+		if ( styles && isObject( styles ) && Object.keys( styles ).length ) {
+
+			// Iterate over styles.
+			for ( const [ key, value ] of Object.entries( styles ) ) {
+
+				// Clear empty array.
+				if( Array.isArray( value ) && ! value.length ) {
+					continue;
+				}
+
+				// Clear empty object.
+				if( isObject( value ) && ! Object.keys( value ) ) {
+					continue;
+				}
+
+				// Set property.
+				if( ! cleared.hasOwnProperty( property ) ) {
+					cleared[ property ] = {};
+				}
+
+				// Set key value pairs.
+				cleared[ property ][ key ] = value;
+			}
+		}
+	}
+
+	return cleared;
+}
 
 
 /**
@@ -259,21 +319,18 @@ export const findBlockChanges = ( viewport : number, clientId : string, attribut
  * @return {object} valids
  */
 export const findBlockValids = ( clientId : string, state : State ) : Attributes => {
-	const { defaults, saves, changes, viewports } = state;
+	const { saves, changes, viewports } = state;
 
-	const blockDefaults = defaults.hasOwnProperty( clientId ) ? cloneDeep( defaults[ clientId ] ) : {};
 	const blockSaves = saves.hasOwnProperty( clientId ) ? cloneDeep( saves[ clientId ] ) : {};
 	const blockChanges = changes.hasOwnProperty( clientId ) ? cloneDeep( changes[ clientId ] ) : {};
 
-	const blockValids : Attributes = {};
+	const blockValids : Attributes = {
+		0: {},
+	};
 
 	let last = 0;
 	for ( const [ dirty ] of Object.entries( viewports ) ) {
 		let viewport = parseInt( dirty );
-
-		if ( 0 === last ) {
-			blockValids[ 0 ] = blockDefaults;
-		}
 
 		if ( blockSaves.hasOwnProperty( viewport ) ) {
 			if ( blockChanges.hasOwnProperty( viewport ) ) {
@@ -411,4 +468,28 @@ export const findCleanedChanges = ( attributes : Attributes, removes : Attribute
 	}
 
 	return cleaned;
+}
+
+
+/**
+ * Set function to return spectrumSet from new generator.
+ *
+ * @param {string} clientId
+ * @param {SpectrumState} state
+ *
+ * @since 0.2.5
+ *
+ * @return {SpectrumProperties}
+ */
+export const getSpectrumProperties = ( clientId : string, state : SpectrumState ) : SpectrumProperties => {
+
+	// Set styles generator and get spectrumSet.
+	const generator = new Generator( clientId, state );
+
+	// Return properties.
+	return {
+		css: generator.getCSSViewportSet(),
+		spectrumSet: generator.getSpectrumSet(),
+		inlineStyle: generator.getInlineStyle(),
+	}
 }

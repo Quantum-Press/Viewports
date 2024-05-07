@@ -2,7 +2,6 @@ import reducer from './reducer';
 import * as selectors from './selectors';
 import * as actions from './actions';
 import { STORE_NAME } from './constants';
-import * as types from './types';
 
 const {
 	data: {
@@ -53,4 +52,19 @@ register( store );
  *
  * @since 0.2.3
  */
-export * from './types';
+export type * from './types';
+
+
+/**
+ * Export constants.
+ *
+ * @since 0.2.5
+ */
+export { STORE_NAME } from './constants';
+
+/**
+ * Export generator.
+ *
+ * @since 0.2.5
+ */
+export { Generator } from './generator';

@@ -1,16 +1,15 @@
 
-import { STORE_NAME } from '../store/constants';
-import { isSiteEditor } from '../utils/editor';
-import { useResizeObserver } from './use-resize-observer';
+import { STORE_NAME } from '../store';
+import { isSiteEditor } from '../utils';
+import { useResizeObserver } from './';
 
 const {
 	data: {
-		select,
+		dispatch,
 		useSelect,
 	},
 	element: {
 		useEffect,
-		useState,
 	}
 } = window[ 'wp' ];
 
@@ -22,9 +21,6 @@ const {
  */
 export const useResizeEditor = () => {
 
-	// Set initial state.
-	const [ editorSize, setEditorSize ] = useState( false );
-
 	// Set resize states.
 	const resizeSkeleton = useResizeObserver( {
 		selector: '.interface-interface-skeleton__content',
@@ -32,6 +28,11 @@ export const useResizeEditor = () => {
 	} );
 	const resizeEditor = useResizeObserver( {
 		selector: 'iframe[name="editor-canvas"], .editor-styles-wrapper, .edit-site-editor-canvas-container',
+		box: 'border-box',
+	} );
+
+	const resizeWrap = useResizeObserver( {
+		selector: '.edit-post-visual-editor, .edit-site-visual-editor',
 		box: 'border-box',
 	} );
 
@@ -50,22 +51,15 @@ export const useResizeEditor = () => {
 
 	// Set useEffect to recalculate sizes.
 	useEffect( () => {
-		calculateIframeSize();
-	}, [ resizeSkeleton, resizeEditor ] );
-
-
-	/**
-	 * Set function to calculate sizes for site or post editor.
-	 *
-	 * @since 0.2.4
-	 */
-	const calculateIframeSize = () => {
 		if ( isSiteEditor() ) {
 			calculateSiteEditorSize();
 		} else {
 			calculatePostEditorSize();
 		}
-	}
+
+		dispatch( STORE_NAME ).setIframeSize( resizeEditor );
+
+	}, [ resizeSkeleton, resizeEditor ] );
 
 
 	/**

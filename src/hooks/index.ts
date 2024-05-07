@@ -3,7 +3,8 @@ import useLocalStorage from "./use-local-storage";
 import useResizeObserver from "./use-resize-observer";
 import useOverflow from "./use-overflow";
 import useHighlight from "./use-highlight";
-import useHighlightSidebar from "./use-highlight-sidebar";
+import useHighlightViewport from "./use-highlight-viewport";
+import useHighlightProperty from "./use-highlight-property";
 
 export {
 	useIsMounted,
@@ -11,5 +12,8 @@ export {
 	useResizeObserver,
 	useOverflow,
 	useHighlight,
-	useHighlightSidebar,
+	useHighlightViewport,
+	useHighlightProperty,
 }
+
+export type * from './use-resize-observer';

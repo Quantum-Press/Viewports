@@ -4,7 +4,7 @@ import Body from './body';
 import Topbar from './topbar';
 import Viewports from './viewports';
 import Keyframes from './keyframes';
-import Highlights from './highlights/index';
+import Editing from './editing';
 
 /**
  * Set component const to export ui wrap.
@@ -16,7 +16,7 @@ import Highlights from './highlights/index';
 export default function Wrap() {
 
 	// Set resize editor state dependency.
-	const sizes = useResizeEditor();
+	useResizeEditor();
 
 	return (
 		<>
@@ -25,7 +25,7 @@ export default function Wrap() {
 			<Topbar />
 			<Viewports />
 			<Keyframes />
-			<Highlights />
+			<Editing />
 		</>
 	);
 }

@@ -1,12 +1,14 @@
-import { STORE_NAME } from '../../store/constants';
-import Generator from '../../generator';
+import { STORE_NAME } from '../../store';
 import Style from './style';
-import { useResizeObserver } from '../../hooks';
 
 const {
 	data: {
+		select,
 		useSelect,
 	},
+	element: {
+		useEffect,
+	}
 } = window[ 'wp' ];
 
 /**
@@ -18,38 +20,41 @@ const {
  */
 const StyleList = ({ block }) => {
 
-	// Deconstruct block.
+	// Deconstruct block
 	const {
 		clientId,
+		attributes: {
+			tempId,
+		}
 	} = block;
 
+	// Set storeId.
+	const storeId = tempId ? tempId : clientId;
+
 	// Set store dependencies.
-	useSelect( ( select : Function ) => {
+	const {
+		iframeSize,
+	} = useSelect( ( select : Function ) => {
+		const store = select( STORE_NAME );
+
 		return {
-			valids: select( STORE_NAME ).getBlockValids( clientId ),
-			viewport: select( STORE_NAME ).getViewport(),
+			valids: store.getBlockValids( storeId ),
+			iframeSize: store.getIframeSize(),
 		};
 	}, [] );
 
-	// Set resize state.
-	const selector = '.interface-interface-skeleton__content';
-	const size = useResizeObserver( {
-		selector,
-		box: 'border-box',
-	} );
+	// Set spectrumSet.
+	const spectrumSet = select( STORE_NAME ).getSpectrumSet( storeId );
 
-	// Set styles generator and get spectrumSet.
-	const generator = new Generator( block, '#block-' + clientId.split( '-' ).shift() );
-	const spectrumSet = generator.getSpectrumSet();
-
-	// Render component
+	// Render component.
 	return (
 		<div className="qp-viewports-inspector-stylelist">
 			{ spectrumSet.map( spectrum => {
 				return (
 					<Style
+						clientId={ clientId }
 						spectrum={ spectrum }
-						viewport={ size.width }
+						viewport={ iframeSize.width }
 					/>
 				);
 			} ) }

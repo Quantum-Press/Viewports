@@ -1,19 +1,14 @@
-import { useLongPress } from '../utils/longpress';
-import { STORE_NAME } from '../store/constants';
+import { STORE_NAME } from '../store';
 import { svgs } from './svgs';
 
 const {
 	components: {
 		Button,
-		Icon,
 	},
 	data: {
 		useSelect,
 		useDispatch,
 	},
-	element: {
-		useEffect,
-	}
 } = window[ 'wp' ];
 
 /**

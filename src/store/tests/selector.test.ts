@@ -34,7 +34,6 @@ const {
 	getGeneratedBlockSaves,
 	getChanges,
 	getBlockChanges,
-	getDefaults,
 	getBlockDefaults,
 	getValids,
 	getBlockValids,
@@ -43,8 +42,8 @@ const {
 	getRemoves,
 	getBlockRemoves,
 	getLastEdit,
-	getRenderers,
-	getRenderer,
+	getRendererPropertySet,
+	getRendererSet,
 	needsRenderer,
 	hasRenderer,
 } = selectors;
@@ -923,66 +922,6 @@ describe( 'test store selectors', () => {
 			expect( result ).toStrictEqual( check );
 		} );
 
-		test( 'can getDefaults() on emptyness', () => {
-			const state = deepFreeze( {
-				... DEFAULT_STATE,
-				defaults: {},
-			} );
-
-			const result = getDefaults( state );
-
-			expect( result ).toStrictEqual( {} );
-		} );
-
-		test( 'can getDefaults() with defaults', () => {
-			const state = deepFreeze( {
-				... DEFAULT_STATE,
-				defaults: {
-					'client-id-1': {
-						style: {
-							dimensions: {
-								margin: {
-									top: '20px',
-									bottom: '20px',
-								}
-							}
-						}
-					},
-					'client-id-2': {
-						style: {
-							dimensions: {
-								margin: '40px',
-							}
-						}
-					}
-				}
-			} );
-
-			const check = {
-				'client-id-1': {
-					style: {
-						dimensions: {
-							margin: {
-								top: '20px',
-								bottom: '20px',
-							}
-						}
-					}
-				},
-				'client-id-2': {
-					style: {
-						dimensions: {
-							margin: '40px',
-						}
-					}
-				}
-			};
-
-			const result = getDefaults( state );
-
-			expect( result ).toStrictEqual( check );
-		} );
-
 		test( 'can getBlockDefaults() on emptyness', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
@@ -1579,18 +1518,18 @@ describe( 'test store selectors', () => {
 			expect( result ).toStrictEqual( 1693932000 );
 		} );
 
-		test( 'can getRenderer() on emptyness', () => {
+		test( 'can getRendererSet() on emptyness', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				renderer: {},
 			} );
 
-			const result = getRenderer( state, 'key' );
+			const result = getRendererSet( state, 'key' );
 
 			expect( result ).toStrictEqual( false );
 		} );
 
-		test( 'can getRenderer() with renderers and invalid key', () => {
+		test( 'can getRendererSet() with renderers and invalid key', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				renderer: {
@@ -1598,12 +1537,12 @@ describe( 'test store selectors', () => {
 				},
 			} );
 
-			const result = getRenderer( state, 'padding' );
+			const result = getRendererSet( state, 'padding' );
 
 			expect( result ).toStrictEqual( false );
 		} );
 
-		test( 'can getRenderer() with renderers and valid key', () => {
+		test( 'can getRendererSet() with renderers and valid key', () => {
 			const callback = () => {};
 
 			const state = deepFreeze( {
@@ -1613,40 +1552,52 @@ describe( 'test store selectors', () => {
 				},
 			} );
 
-			const result = getRenderer( state, 'key' );
+			const result = getRendererSet( state, 'key' );
 
 			expect( result ).toStrictEqual( callback );
 		} );
 
-		test( 'can getRenderers() on emptyness', () => {
+		test( 'can getRendererPropertySet() on emptyness', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				renderer: {},
 			} );
 
-			const result = getRenderers( state );
+			const result = getRendererPropertySet( state );
 
 			expect( result ).toStrictEqual( {} );
 		} );
 
-		test( 'can getRenderers() with renderers', () => {
+		test( 'can getRendererPropertySet() with renderers', () => {
 			const callback1 = () => {};
 			const callback2 = () => {};
 
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				renderer: {
-					key1: callback1,
-					key2: callback2,
+					key1: {
+						callback: callback1,
+						selectorPanel: '.panel',
+					},
+					key2: {
+						callback: callback2,
+						selectorPanel: '.panel',
+					},
 				},
 			} );
 
 			const check = {
-				key1: callback1,
-				key2: callback2,
+				key1: {
+					callback: callback1,
+					selectorPanel: '.panel',
+				},
+				key2: {
+					callback: callback2,
+					selectorPanel: '.panel',
+				},
 			}
 
-			const result = getRenderers( state );
+			const result = getRendererPropertySet( state );
 
 			expect( result ).toStrictEqual( check );
 		} );

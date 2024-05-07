@@ -42,13 +42,10 @@ import {
 	toggleMobile,
 	registerBlockInit,
 	updateBlockChanges,
-	updateBlockDefaults,
 	updateBlockValids,
 	removeBlock,
-	removeBlockDefaults,
-	removeBlockChanges,
 	removeBlockSaves,
-	removeBlockRemoves,
+	restoreBlockSaves,
 	saveBlock,
 	clearBlocks,
 	registerRenderer,
@@ -1243,90 +1240,6 @@ describe( 'test store reducers', () => {
 			expect( result ).toStrictEqual( check );
 		} );
 
-		test( 'can updateBlockDefaults() with filled attributes', () => {
-			const state = deepFreeze( {
-				... DEFAULT_STATE,
-				viewports: {
-					768: 'Tablet',
-					1280: 'Desktop',
-				},
-				defaults: {},
-			} );
-			const action = {
-				type: 'UPDATE_BLOCK_DEFAULTS',
-				clientId: 'client-id',
-				attributes: {
-					content: 'Text',
-					style: {
-						dimensions: {
-							padding: "40px",
-							margin: {
-								top: "20px",
-								bottom: "40px",
-							}
-						}
-					}
-				}
-			};
-
-			const check = {
-				... state,
-				defaults: {
-					'client-id': {
-						style: {
-							dimensions: {
-								padding: "40px",
-								margin: {
-									top: "20px",
-									bottom: "40px",
-								}
-							}
-						}
-					}
-				},
-				valids: {
-					'client-id': {
-						0: {
-							style: {
-								dimensions: {
-									padding: "40px",
-									margin: {
-										top: "20px",
-										bottom: "40px",
-									}
-								}
-							}
-						},
-						768: {
-							style: {
-								dimensions: {
-									padding: "40px",
-									margin: {
-										top: "20px",
-										bottom: "40px",
-									}
-								}
-							}
-						},
-						1280: {
-							style: {
-								dimensions: {
-									padding: "40px",
-									margin: {
-										top: "20px",
-										bottom: "40px",
-									}
-								}
-							}
-						},
-					}
-				}
-			};
-			const result = updateBlockDefaults( state, action );
-
-			expect( result ).toStrictEqual( check );
-		} );
-
 		test( 'can updateBlockValids() with defaults, saves and changes', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
@@ -1473,156 +1386,7 @@ describe( 'test store reducers', () => {
 			expect( result ).toStrictEqual( check );
 		} );
 
-		test( 'can removeBlockDefaults() remove the first entry (style needs to stay)', () => {
-			const state = deepFreeze( {
-				... DEFAULT_STATE,
-				viewports: {
-					375: 'Mobile',
-					768: 'Tablet',
-					1280: 'Desktop',
-				},
-				defaults: {
-					'client-id': {
-						style: {
-							dimensions: {
-								padding: {
-									top: "20px",
-									bottom: "20px",
-								}
-							}
-						}
-					}
-				}
-			} );
-			const action = {
-				type: 'REMOVE_BLOCK_DEFAULTS',
-				clientId: 'client-id',
-				props: [ 'dimensions' ],
-			}
-
-			const check = {
-				... state,
-				defaults: {
-					'client-id': {
-						style: {}
-					}
-				},
-				valids: {
-					'client-id': {
-						0: {
-							style: {}
-						},
-						375: {
-							style: {}
-						},
-						768: {
-							style: {}
-						},
-						1280: {
-							style: {}
-						}
-					}
-				}
-			}
-			const result = removeBlockDefaults( state, action );
-
-			// Reset lastEdit cause it is a timestamp.
-			result.lastEdit = check.lastEdit;
-
-			expect( result ).toStrictEqual( check );
-		} );
-
-
-		test( 'can removeBlockDefaults() remove to the deepest', () => {
-			const state = deepFreeze( {
-				... DEFAULT_STATE,
-				viewports: {
-					375: 'Mobile',
-					768: 'Tablet',
-					1280: 'Desktop',
-				},
-				defaults: {
-					'client-id': {
-						style: {
-							dimensions: {
-								padding: {
-									top: "20px",
-									bottom: "20px",
-								}
-							}
-						}
-					}
-				}
-			} );
-			const action = {
-				type: 'REMOVE_BLOCK_DEFAULTS',
-				clientId: 'client-id',
-				props: [ 'dimensions', 'padding', 'top' ],
-			}
-
-			const check = {
-				... state,
-				defaults: {
-					'client-id': {
-						style: {
-							dimensions: {
-								padding: {
-									bottom: "20px",
-								}
-							}
-						}
-					}
-				},
-				valids: {
-					'client-id': {
-						0: {
-							style: {
-								dimensions: {
-									padding: {
-										bottom: "20px",
-									}
-								}
-							}
-						},
-						375: {
-							style: {
-								dimensions: {
-									padding: {
-										bottom: "20px",
-									}
-								}
-							}
-						},
-						768: {
-							style: {
-								dimensions: {
-									padding: {
-										bottom: "20px",
-									}
-								}
-							}
-						},
-						1280: {
-							style: {
-								dimensions: {
-									padding: {
-										bottom: "20px",
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-			const result = removeBlockDefaults( state, action );
-
-			// Reset lastEdit cause it is a timestamp.
-			result.lastEdit = check.lastEdit;
-
-			expect( result ).toStrictEqual( check );
-		} );
-
-		test( 'can removeBlockChanges() with viewport and remove the first entry', () => {
+		test( 'can restoreBlockSaves() with viewport and remove the first entry', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				viewports: {
@@ -1705,7 +1469,7 @@ describe( 'test store reducers', () => {
 					}
 				}
 			}
-			const result = removeBlockChanges( state, action );
+			const result = restoreBlockSaves( state, action );
 
 			// Reset lastEdit cause it is a timestamp.
 			result.lastEdit = check.lastEdit;
@@ -1713,7 +1477,7 @@ describe( 'test store reducers', () => {
 			expect( result ).toStrictEqual( check );
 		} );
 
-		test( 'can removeBlockChanges() with viewport and remove to the deepest', () => {
+		test( 'can restoreBlockSaves() with viewport and remove to the deepest', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				viewports: {
@@ -1805,7 +1569,7 @@ describe( 'test store reducers', () => {
 					}
 				}
 			}
-			const result = removeBlockChanges( state, action );
+			const result = restoreBlockSaves( state, action );
 
 			// Reset lastEdit cause it is a timestamp.
 			result.lastEdit = check.lastEdit;
@@ -1921,207 +1685,6 @@ describe( 'test store reducers', () => {
 			}
 
 			const result = removeBlockSaves( state, action );
-
-			// Reset lastEdit cause it is a timestamp.
-			result.lastEdit = check.lastEdit;
-
-			expect( result ).toStrictEqual( check );
-		} );
-
-		test( 'can removeBlockRemoves() with viewport and remove the first entry', () => {
-			const state = deepFreeze( {
-				... DEFAULT_STATE,
-				viewports: {
-					375: 'Mobile',
-					768: 'Tablet',
-					1280: 'Desktop',
-				},
-				removes: {
-					'client-id': {
-						768: {
-							style: {
-								dimensions: {
-									padding: {
-										top: "20px",
-										bottom: "20px",
-									}
-								}
-							}
-						},
-						1280: {
-							style: {
-								dimensions: {
-									padding: {
-										top: "40px",
-										bottom: "40px",
-									}
-								}
-							}
-						}
-					}
-				}
-			} );
-			const action = {
-				type: 'REMOVE_BLOCK_REMOVES',
-				clientId: 'client-id',
-				viewport: 1280,
-				props: [ 'style' ],
-			}
-
-			const check = {
-				... state,
-				saves: {
-					'client-id': {
-						1280: {
-							style: {
-								dimensions: {
-									padding: {
-										top: "40px",
-										bottom: "40px",
-									}
-								}
-							}
-						}
-					}
-				},
-				removes: {
-					'client-id': {
-						768: {
-							style: {
-								dimensions: {
-									padding: {
-										top: "20px",
-										bottom: "20px",
-									}
-								}
-							}
-						}
-					}
-				},
-				valids: {
-					'client-id': {
-						0: {},
-						375: {},
-						768: {},
-						1280: {
-							style: {
-								dimensions: {
-									padding: {
-										top: "40px",
-										bottom: "40px",
-									}
-								}
-							}
-						},
-					}
-				}
-			}
-
-			const result = removeBlockRemoves( state, action );
-
-			// Reset lastEdit cause it is a timestamp.
-			result.lastEdit = check.lastEdit;
-
-			expect( result ).toStrictEqual( check );
-		} );
-
-		test( 'can removeBlockRemoves() with viewport and remove to the deepest', () => {
-			const state = deepFreeze( {
-				... DEFAULT_STATE,
-				viewports: {
-					375: 'Mobile',
-					768: 'Tablet',
-					1280: 'Desktop',
-				},
-				removes: {
-					'client-id': {
-						768: {
-							style: {
-								dimensions: {
-									padding: {
-										top: "20px",
-										bottom: "20px",
-									}
-								}
-							}
-						},
-						1280: {
-							style: {
-								dimensions: {
-									padding: {
-										top: "40px",
-										bottom: "40px",
-									}
-								}
-							}
-						}
-					}
-				}
-			} );
-			const action = {
-				type: 'REMOVE_BLOCK_REMOVES',
-				clientId: 'client-id',
-				viewport: 1280,
-				props: [ 'style', 'dimensions', 'padding', 'top' ],
-			}
-
-			const check = {
-				... state,
-				saves: {
-					'client-id': {
-						1280: {
-							style: {
-								dimensions: {
-									padding: {
-										top: "40px",
-									}
-								}
-							}
-						}
-					}
-				},
-				removes: {
-					'client-id': {
-						768: {
-							style: {
-								dimensions: {
-									padding: {
-										top: "20px",
-										bottom: "20px",
-									}
-								}
-							}
-						},
-						1280: {
-							style: {
-								dimensions: {
-									padding: {
-										bottom: "40px",
-									}
-								}
-							}
-						}
-					}
-				},
-				valids: {
-					'client-id': {
-						0: {},
-						375: {},
-						768: {},
-						1280: {
-							style: {
-								dimensions: {
-									padding: {
-										top: "40px",
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-
-			const result = removeBlockRemoves( state, action );
 
 			// Reset lastEdit cause it is a timestamp.
 			result.lastEdit = check.lastEdit;
@@ -2351,7 +1914,10 @@ describe( 'test store reducers', () => {
 				... DEFAULT_STATE,
 				renderer: {
 					foo: {
-						1: callback1,
+						1: {
+							callback: callback1,
+							selectorPanel: '.panel',
+						}
 					}
 				}
 			} );
@@ -2360,14 +1926,60 @@ describe( 'test store reducers', () => {
 				prop: 'foo',
 				callback: callback2,
 				priority: 10,
+				selectorPanel: '.custom-panel',
 			}
 
 			const check = {
 				... state,
 				renderer: {
 					foo: {
-						1: callback1,
-						10: callback2,
+						1: {
+							callback: callback1,
+							selectorPanel: '.panel',
+						},
+						10: {
+							callback: callback2,
+							selectorPanel: '.custom-panel',
+						}
+					}
+				}
+			}
+			const result = registerRenderer( state, action );
+
+			expect( result ).toStrictEqual( check );
+		} );
+
+		test( 'can registerRenderer() on existing property with same priority', () => {
+			const callback1 = () => {};
+			const callback2 = () => {};
+
+			const state = deepFreeze( {
+				... DEFAULT_STATE,
+				renderer: {
+					foo: {
+						1: {
+							callback: callback1,
+							selectorPanel: '.panel',
+						}
+					}
+				}
+			} );
+			const action = {
+				type: 'REGISTER_RENDERER',
+				prop: 'foo',
+				callback: callback2,
+				priority: 1,
+				selectorPanel: '.custom-panel',
+			}
+
+			const check = {
+				... state,
+				renderer: {
+					foo: {
+						1: {
+							callback: callback2,
+							selectorPanel: '.custom-panel',
+						}
 					}
 				}
 			}

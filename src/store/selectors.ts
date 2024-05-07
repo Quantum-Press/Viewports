@@ -1,12 +1,25 @@
+import type { Size } from '../hooks';
 import type { Attributes } from '../utils';
-import type { State } from './types';
+import type {
+	State,
+	RendererSet,
+	RendererPropertySet,
+	SpectrumSet,
+	InlineStyleSet,
+} from './types';
 
-import { getMergedAttributes } from '../utils/attributes';
+import {
+	getMergedAttributes,
+	traverseFilled,
+	traverseGet,
+} from '../utils';
 import {
 	isInMobileRange,
 	isInTabletRange,
 	isInDesktopRange,
+	findCleanedChanges,
 	clearEmptySaves,
+	clearDuplicateSaves,
 } from './utils';
 
 const { isObject } = window[ 'lodash' ];
@@ -14,7 +27,7 @@ const { isObject } = window[ 'lodash' ];
 /**
  * Set selector to return viewports.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.1.0
  *
@@ -28,7 +41,7 @@ export const getViewports = ( state : State ) : object => {
 /**
  * Set selector to return active viewport.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.1.0
  *
@@ -46,7 +59,7 @@ export const getViewport = ( state : State ) : number => {
 /**
  * Set selector to return desktop viewport.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.1.0
  *
@@ -60,7 +73,7 @@ export const getDesktop = ( state : State ) : number => {
 /**
  * Set selector to return tablet viewport.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.1.0
  *
@@ -74,7 +87,7 @@ export const getTablet = ( state : State ) : number => {
 /**
  * Set selector to return mobile viewport.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.1.0
  *
@@ -86,9 +99,23 @@ export const getMobile = ( state : State ) : number => {
 
 
 /**
+ * Set selector to return iframe size.
+ *
+ * @param {State} state current
+ *
+ * @since 0.2.5
+ *
+ * @return {Size} of iframe
+ */
+export const getIframeSize = ( state : State ) : Size => {
+	return state.iframeSize;
+};
+
+
+/**
  * Set selector to return isRegistering indicator.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.1.0
  *
@@ -102,7 +129,7 @@ export const isRegistering = ( state : State ) : boolean => {
 /**
  * Set selector to return isReady indicator.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.1.0
  *
@@ -116,7 +143,7 @@ export const isReady = ( state : State ) : boolean => {
 /**
  * Set selector to return isLoading indicator.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.1.0
  *
@@ -130,7 +157,7 @@ export const isLoading = ( state : State ) : boolean => {
 /**
  * Set selector to return isSaving indicator.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.1.0
  *
@@ -144,7 +171,7 @@ export const isSaving = ( state : State ) : boolean => {
 /**
  * Set selector to return isAutoSaving indicator.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.1.0
  *
@@ -158,7 +185,7 @@ export const isAutoSaving = ( state : State ) : boolean => {
 /**
  * Set selector to return isActive indicator.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.1.0
  *
@@ -172,7 +199,7 @@ export const isActive = ( state : State ) : boolean => {
 /**
  * Set selector to return isInspecting indicator.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.2.2
  *
@@ -186,7 +213,7 @@ export const isInspecting = ( state : State ) : boolean => {
 /**
  * Set selector to return inspectorPosition.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.2.2
  *
@@ -200,7 +227,7 @@ export const inspectorPosition = ( state : State ) : string => {
 /**
  * Set selector to return isEditing indicator.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.1.0
  *
@@ -214,7 +241,7 @@ export const isEditing = ( state : State ) : boolean => {
 /**
  * Set selector to indicate inDesktopRange.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.1.0
  *
@@ -228,7 +255,7 @@ export const inDesktopRange = ( state : State ) : boolean => {
 /**
  * Set selector to indicate inTabletRange.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.1.0
  *
@@ -242,7 +269,7 @@ export const inTabletRange = ( state : State ) : boolean => {
 /**
  * Set selector to indicate inMobileRange.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.1.0
  *
@@ -256,7 +283,7 @@ export const inMobileRange = ( state : State ) : boolean => {
 /**
  * Set selector to indicate hasBlockViewports.
  *
- * @param {object} state current
+ * @param {State} state current
  * @param {string} clientId
  *
  * @since 0.1.0
@@ -279,7 +306,7 @@ export const hasBlockViewports = ( state : State, clientId : string ) : boolean 
 /**
  * Set selector to indicate hasBlockDefaults.
  *
- * @param {object} state current
+ * @param {State} state current
  * @param {string} clientId
  *
  * @since 0.1.0
@@ -287,14 +314,14 @@ export const hasBlockViewports = ( state : State, clientId : string ) : boolean 
  * @return {boolean}
  */
 export const hasBlockDefaults = ( state : State, clientId : string ) : boolean => {
-	return state.defaults.hasOwnProperty( clientId ) && isObject( state.defaults[ clientId ] ) && state.defaults[ clientId ].hasOwnProperty( 'style' ) && isObject( state.defaults[ clientId ][ 'style' ] ) && Object.keys( state.defaults[ clientId ][ 'style' ] ).length ? true : false;
+	return traverseFilled( [ clientId, 0, 'style' ].join( '.' ), state.saves );
 };
 
 
 /**
  * Set selector to indicate hasBlockSaves.
  *
- * @param {object} state current
+ * @param {State} state current
  * @param {string} clientId
  *
  * @since 0.1.0
@@ -302,14 +329,14 @@ export const hasBlockDefaults = ( state : State, clientId : string ) : boolean =
  * @return {boolean}
  */
 export const hasBlockSaves = ( state : State, clientId : string ) : boolean => {
-	return state.saves.hasOwnProperty( clientId ) && isObject( state.saves[ clientId ] ) && Object.keys( state.saves[ clientId ] ).length ? true : false;
+	return traverseFilled( [ clientId ].join( '.' ), state.saves );
 };
 
 
 /**
  * Set selector to indicate hasBlockChanges.
  *
- * @param {object} state current
+ * @param {State} state current
  * @param {string} clientId
  *
  * @since 0.1.0
@@ -317,14 +344,31 @@ export const hasBlockSaves = ( state : State, clientId : string ) : boolean => {
  * @return {boolean}
  */
 export const hasBlockChanges = ( state : State, clientId : string ) : boolean => {
-	return state.changes.hasOwnProperty( clientId ) && isObject( state.changes[ clientId ] ) && Object.keys( state.changes[ clientId ] ).length ? true : false;
+	return traverseFilled( [ clientId ].join( '.' ), state.changes );
+};
+
+
+/**
+ * Set selector to indicate hasBlockPropertyChanges.
+ *
+ * @param {State} state current
+ * @param {string} clientId
+ * @param {number} viewport
+ * @param {string} property
+ *
+ * @since 0.2.5
+ *
+ * @return {boolean}
+ */
+export const hasBlockPropertyChanges = ( state : State, clientId : string, viewport : number, property : string ) : boolean => {
+	return traverseFilled( [ clientId, viewport, 'style', property ].join( '.' ), state.changes );
 };
 
 
 /**
  * Set selector to indicate hasBlockValids.
  *
- * @param {object} state current
+ * @param {State} state current
  * @param {string} clientId
  *
  * @since 0.1.0
@@ -332,14 +376,14 @@ export const hasBlockChanges = ( state : State, clientId : string ) : boolean =>
  * @return {boolean}
  */
 export const hasBlockValids = ( state : State, clientId : string ) : boolean => {
-	return state.valids.hasOwnProperty( clientId ) && isObject( state.valids[ clientId ] ) && Object.keys( state.valids[ clientId ] ).length ? true : false;
+	return traverseFilled( [ clientId ].join( '.' ), state.valids );
 };
 
 
 /**
  * Set selector to indicate hasBlockRemoves.
  *
- * @param {object} state current
+ * @param {State} state current
  * @param {string} clientId
  *
  * @since 0.1.0
@@ -347,14 +391,31 @@ export const hasBlockValids = ( state : State, clientId : string ) : boolean => 
  * @return {boolean}
  */
 export const hasBlockRemoves = ( state : State, clientId : string ) : boolean => {
-	return state.removes.hasOwnProperty( clientId ) && Object.keys( state.removes[ clientId ] ).length ? true : false;
+	return traverseFilled( [ clientId ].join( '.' ), state.removes );
+};
+
+
+/**
+ * Set selector to indicate hasBlockPropertyChanges.
+ *
+ * @param {State} state current
+ * @param {string} clientId
+ * @param {number} viewport
+ * @param {string} property
+ *
+ * @since 0.2.5
+ *
+ * @return {boolean}
+ */
+export const hasBlockPropertyRemoves = ( state : State, clientId : string, viewport : number, property : string ) : boolean => {
+	return traverseFilled( [ clientId, viewport, 'style', property ].join( '.' ), state.removes );
 };
 
 
 /**
  * Set selector to return all saves.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.1.0
  *
@@ -368,7 +429,7 @@ export const getSaves = ( state : State ) : object => {
 /**
  * Set selector to return saves from a single block.
  *
- * @param {object} state current
+ * @param {State} state current
  * @param {string} clientId
  *
  * @since 0.1.0
@@ -376,18 +437,31 @@ export const getSaves = ( state : State ) : object => {
  * @return {object} block saves
  */
 export const getBlockSaves = ( state : State, clientId : string ) : object => {
-	if( state.saves.hasOwnProperty( clientId ) ) {
-		return state.saves[ clientId ];
-	}
+	return traverseGet( [ clientId ].join( '.' ), state.saves ) || {};
+};
 
-	return {};
+
+/**
+ * Set selector to return saves by clientId, viewport and property.
+ *
+ * @param {State} state current
+ * @param {string} clientId
+ * @param {number} viewport
+ * @param {string} property
+ *
+ * @since 0.2.5
+ *
+ * @return {object} block saves
+ */
+export const getBlockPropertySaves = ( state : State, clientId : string, viewport : number, property : string ) : object => {
+	return traverseGet( [ clientId, viewport, 'style', property ].join( '.' ), state.saves ) || {};
 };
 
 
 /**
  * Set selector to return new generated saves from a single block.
  *
- * @param {object} state current
+ * @param {State} state current
  * @param {string} clientId
  *
  * @since 0.1.0
@@ -395,16 +469,36 @@ export const getBlockSaves = ( state : State, clientId : string ) : object => {
  * @return {object} block saves
  */
 export const getGeneratedBlockSaves = ( state : State, clientId : string ) : object => {
-	let blockChanges = state.changes.hasOwnProperty( clientId ) ? state.changes[ clientId ] : {};
-	let blockSaves = state.saves.hasOwnProperty( clientId ) ? state.saves[ clientId ] : {};
+	const { saves, changes, removes, valids } = state;
 
-	if( ! Object.keys( blockChanges ).length && ! Object.keys( blockSaves ).length ) {
+	// Set states.
+	let blockSaves = saves.hasOwnProperty( clientId ) ? saves[ clientId ] : {};
+	let blockChanges = changes.hasOwnProperty( clientId ) ? changes[ clientId ] : {};
+	let blockRemoves = removes.hasOwnProperty( clientId ) ? removes[ clientId ] : {};
+
+	// Set indicators.
+	const hasBlockSaves = Object.keys( blockSaves ).length ? true : false;
+	const hasBlockChanges = Object.keys( blockChanges ).length ? true : false;
+	const hasBlockRemoves = Object.keys( blockRemoves ).length ? true : false;
+
+	// Check if we can skip the save call.
+	if( ! hasBlockSaves && ! hasBlockChanges && ! hasBlockRemoves ) {
 		return {};
 	}
 
+	// Set merged blockSaves.
 	blockSaves = getMergedAttributes( blockSaves, blockChanges );
-	blockSaves = clearEmptySaves( blockSaves );
 
+	// Cleanup saves from removes.
+	blockSaves = findCleanedChanges( blockSaves, blockRemoves );
+
+	// Cleanup saves on emptyness.
+	blockSaves = clearEmptySaves( blockSaves );
+	blockSaves = clearDuplicateSaves( blockSaves );
+
+	// if( hasBlockRemoves ) { console.log( 'after clean', { ... blockSaves } ); }
+
+	// Return cleaned blockSaves.
 	return blockSaves;
 };
 
@@ -412,7 +506,7 @@ export const getGeneratedBlockSaves = ( state : State, clientId : string ) : obj
 /**
  * Set selector to return all changes.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.1.0
  *
@@ -426,7 +520,7 @@ export const getChanges = ( state : State ) : object => {
 /**
  * Set selector to return changes from a single block.
  *
- * @param {object} state current
+ * @param {State} state current
  * @param {string} clientId
  *
  * @since 0.1.0
@@ -443,23 +537,26 @@ export const getBlockChanges = ( state : State, clientId : string ) : object => 
 
 
 /**
- * Set selector to return all defaults.
+ * Set selector to return changes by clientId, viewport and property.
  *
- * @param {object} state current
+ * @param {State} state current
+ * @param {string} clientId
+ * @param {number} viewport
+ * @param {string} property
  *
- * @since 0.1.0
+ * @since 0.2.5
  *
- * @return {object} defaults
+ * @return {object} block changes
  */
-export const getDefaults = ( state : State ) : object => {
-	return state.defaults;
+export const getBlockPropertyChanges = ( state : State, clientId : string, viewport : number, property : string ) : object => {
+	return traverseGet( [ clientId, viewport, 'style', property ].join( '.' ), state.changes ) || {};
 };
 
 
 /**
  * Set selector to return defaults from a single block.
  *
- * @param {object} state current
+ * @param {State} state current
  * @param {string} clientId
  *
  * @since 0.1.0
@@ -467,20 +564,14 @@ export const getDefaults = ( state : State ) : object => {
  * @return {object} block defaults
  */
 export const getBlockDefaults = ( state : State, clientId : string ) : object => {
-	if( state.defaults.hasOwnProperty( clientId ) && 0 < Object.entries( state.defaults[ clientId ] ).length ) {
-		return state.defaults[ clientId ];
-	}
-
-	return {
-		style: {},
-	};
+	return traverseGet( [ clientId, 0 ].join( '.' ), state.saves ) || {};
 };
 
 
 /**
  * Set selector to return all valids.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.1.0
  *
@@ -494,7 +585,7 @@ export const getValids = ( state : State ) : object => {
 /**
  * Set selector to return valids from a single block.
  *
- * @param {object} state current
+ * @param {State} state current
  * @param {string} clientId
  *
  * @since 0.1.0
@@ -513,7 +604,7 @@ export const getBlockValids = ( state : State, clientId : string ) : object => {
 /**
  * Set selector to return all valids by actual viewport.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.1.0
  *
@@ -537,7 +628,7 @@ export const getViewportValids = ( state : State ) : object => {
 /**
  * Set selector to return block valids from a single block by actual viewport.
  *
- * @param {object} state current
+ * @param {State} state current
  * @param {string} clientId
  *
  * @since 0.1.0
@@ -560,7 +651,7 @@ export const getViewportBlockValids = ( state : State, clientId : string ) : obj
 /**
  * Set selector to return all removes.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.1.0
  *
@@ -574,7 +665,7 @@ export const getRemoves = ( state : State ) : object => {
 /**
  * Set selector to return removes from a single block.
  *
- * @param {object} state current
+ * @param {State} state current
  * @param {string} clientId
  *
  * @since 0.1.0
@@ -591,13 +682,28 @@ export const getBlockRemoves = ( state : State, clientId : string ) : object => 
 
 
 /**
+ * Set selector to return removes by clientId, viewport and property.
+ *
+ * @param {State} state current
+ * @param {string} clientId
+ *
+ * @since 0.2.5
+ *
+ * @return {object} block removes
+ */
+export const getBlockPropertyRemoves = ( state : State, clientId : string, viewport : number, property : string ) : object => {
+	const removes = traverseGet( [ clientId, viewport, 'style', property ].join( '.' ), state.removes );
+
+	return removes ? removes : {};
+};
+
+
+/**
  * Set selector to return timestamp when we last edited from outside block context.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.1.0
- *
- * @return {integer} last edited timestamp
  */
 export const getLastEdit = ( state : State ) : number => {
 	return state.lastEdit;
@@ -607,28 +713,24 @@ export const getLastEdit = ( state : State ) : number => {
 /**
  * Set selector to return all renderers.
  *
- * @param {object} state current
+ * @param {State} state current
  *
  * @since 0.1.0
- *
- * @return {object} renderers
  */
-export const getRenderers = ( state : State ) : object => {
+export const getRendererPropertySet = ( state : State ) : RendererPropertySet => {
 	return state.renderer;
 }
 
 
 /**
- * Set selector to return renderer by given key.
+ * Set selector to return rendererSet by given key.
  *
- * @param {object} state current
+ * @param {State} state current
  * @param {string} key
  *
- * @since 0.1.0
- *
- * @return {mixed} function || boolean false
+ * @since 0.2.5
  */
-export const getRenderer = ( state : State, key : string ) : Function | boolean => {
+export const getRendererSet = ( state : State, key : string ) : false | RendererSet => {
 	return state.renderer.hasOwnProperty( key ) ? state.renderer[ key ] : false;
 }
 
@@ -636,12 +738,10 @@ export const getRenderer = ( state : State, key : string ) : Function | boolean 
 /**
  * Set selector to indicate whether actual style attributes need a custom renderer.
  *
- * @param {object} state current
+ * @param {State} state current
  * @param {object} style
  *
  * @since 0.1.0
- *
- * @return {boolean}
  */
 export const needsRenderer = ( state : State, style : Attributes ) : boolean => {
 	let need = false;
@@ -658,13 +758,62 @@ export const needsRenderer = ( state : State, style : Attributes ) : boolean => 
 /**
  * Set selector to indicate whether we have a registered renderer for given property key.
  *
- * @param {object} state current
+ * @param {State} state current
  * @param {string} key
  *
  * @since 0.1.0
- *
- * @return {boolean}
  */
 export const hasRenderer = ( state : State, key : string ) : boolean => {
 	return state.renderer.hasOwnProperty( key );
+}
+
+
+/**
+ * Set selector to return spectrumSet by clientId.
+ *
+ * @param {State} state current
+ * @param {string} clientId
+ *
+ * @since 0.2.5
+ */
+export const getCSS = ( state : State, clientId : string ) : string => {
+	const cssSet = state.cssSet.hasOwnProperty( clientId ) ? state.cssSet[ clientId ] : {};
+	const css = [];
+
+	Object.keys( cssSet ).forEach( viewportDirty => {
+		const viewport = parseInt( viewportDirty );
+		const cssParts = cssSet[ viewport ];
+
+		if( state.iframeSize.width >= viewport ) {
+			css.push( cssParts.join( '' ) );
+		}
+	} );
+
+	return css.join( '' );
+}
+
+
+/**
+ * Set selector to return spectrumSet by clientId.
+ *
+ * @param {State} state current
+ * @param {string} clientId
+ *
+ * @since 0.2.5
+ */
+export const getSpectrumSet = ( state : State, clientId : string ) : SpectrumSet => {
+	return state.spectrumSets.hasOwnProperty( clientId ) ? state.spectrumSets[ clientId ] : [];
+}
+
+
+/**
+ * Set selector to return inlineStyle by clientId.
+ *
+ * @param {State} state current
+ * @param {string} clientId
+ *
+ * @since 0.2.5
+ */
+export const getInlineStyle = ( state : State, clientId : string ) : InlineStyleSet => {
+	return state.inlineStyleSets.hasOwnProperty( clientId ) ? state.inlineStyleSets[ clientId ] : {};
 }

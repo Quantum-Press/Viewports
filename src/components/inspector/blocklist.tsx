@@ -3,7 +3,6 @@ import Block from './block';
 const {
 	data: {
 		select,
-		dispatch,
 		useSelect,
 	},
 } = window[ 'wp' ];

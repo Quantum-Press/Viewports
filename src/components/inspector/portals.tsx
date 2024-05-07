@@ -1,4 +1,4 @@
-import { STORE_NAME } from '../../store/constants';
+import { STORE_NAME } from '../../store';
 import { svgs } from '../svgs';
 
 const {

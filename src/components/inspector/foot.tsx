@@ -1,5 +1,5 @@
-import { STORE_NAME } from '../../store/constants';
-import { getVersion } from '../../utils/editor';
+import { STORE_NAME } from '../../store';
+import { getVersion } from '../../utils';
 import { svgs } from '../svgs';
 
 const {

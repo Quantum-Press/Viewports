@@ -1,7 +1,7 @@
 import type { Attributes } from '../../utils';
 import { isObject, getMergedAttributes } from '../../utils';
-import { STORE_NAME } from '../../store/constants';
-import { useResizeObserver, useHighlight, useHighlightSidebar } from '../../hooks';
+import { STORE_NAME } from '../../store';
+import { useHighlight, useHighlightViewport } from '../../hooks';
 
 const {
 	data: {
@@ -37,6 +37,7 @@ const Keyframes = () => {
 			changes: store.getChanges(),
 			removes: store.getRemoves(),
 			viewport: store.getViewport(),
+			iframeSize: store.getIframeSize(),
 			viewports: store.getViewports(),
 			isActive: store.isActive(),
 			isInspecting: store.isInspecting(),
@@ -44,21 +45,14 @@ const Keyframes = () => {
 		};
 	}, [] );
 
-	// Set resize state.
-	const selector = '.interface-interface-skeleton__content';
-	const size = useResizeObserver( {
-		selector,
-		box: 'border-box',
-	} );
-
 	// Set highlight hook.
 	const [ highlight, setHighlight ] = useHighlight();
 
-	// Set highlightSidebar hook.
-	const [ highlightSidebar, setHighlightSidebar ] = useHighlightSidebar();
+	// Set highlightViewport hook.
+	const [ highlightViewport, sethighlightViewport ] = useHighlightViewport();
 
 	// Set useState to handle inspect viewport.
-	const [ highlightViewport, setHighlightViewport ] = useState( false );
+	const [ highlighted, setHighlighted ] = useState( false );
 
 	// Set useState to handle hover pairing.
 	const [ hover, setHover ] = useState( false );
@@ -66,19 +60,19 @@ const Keyframes = () => {
 	// Set useEffect to rerender on size changes.
 	useEffect(() => {
 		// Silencio.
-	}, [ size, props.isInspecting ] );
+	}, [ props.iframeSize, props.isInspecting ] );
 
 	// Set useEffect to set Highligh on size changes.
 	useEffect( () => {
-		if( ! highlightViewport ) {
+		if( ! highlighted ) {
 			return;
 		}
 
-		setHighlight( '.qp-viewports-inspector-style[data-viewport="' + highlightViewport + '"]' );
-		setHighlightSidebar( highlightViewport );
-		setHighlightViewport( false );
+		setHighlight( '.qp-viewports-inspector-style[data-viewport="' + highlighted + '"]' );
+		sethighlightViewport( highlighted );
+		setHighlighted( false );
 
-	}, [ highlightViewport ] );
+	}, [ highlighted ] );
 
 	// Return instant if is not active.
 	if( false === props.isActive ) {
@@ -119,7 +113,7 @@ const Keyframes = () => {
 	// Set keyframes to render.
 	const keyframes : Attributes = {};
 	for( const [ clientId, viewports ] of Object.entries( merged ) ) {
-		keyframes[ clientId ] = [ { viewport: 0, size: 80, position: 'center' } ];
+		keyframes[ clientId ] = [ { viewport: -1, size: 80, position: 'center' } ];
 
 		for( const [ dirty ] of Object.entries( viewports ) ) {
 			let viewport = parseInt( dirty );
@@ -129,7 +123,7 @@ const Keyframes = () => {
 			if( 0 === keyframes[ clientId ].length ) {
 				first.size = viewport - 3;
 
-				keyframes[ clientId ] = [ { position: 'first', ...keyframe }, first, { position: 'last', ...keyframe } ];
+				keyframes[ clientId ] = [ { position: 'first', ... keyframe }, first, { position: 'last', ... keyframe } ];
 			} else {
 				first.size = (( viewport - first.viewport ) / 2 );
 				first.position = 'first';
@@ -138,7 +132,7 @@ const Keyframes = () => {
 				last.size = (( viewport - first.viewport ) / 2 );
 				last.position = 'last';
 
-				keyframes[ clientId ] = [ { position: 'first', ...keyframe }, first, ...keyframes[ clientId ], last, { position: 'last', ...keyframe } ];
+				keyframes[ clientId ] = [ { position: 'first', ... keyframe }, first, ... keyframes[ clientId ], last, { position: 'last', ... keyframe } ];
 			}
 		}
 	}
@@ -198,7 +192,7 @@ const Keyframes = () => {
 		if( viewport > 0 ) {
 			dispatch( STORE_NAME ).setInspecting();
 
-			setHighlightViewport( viewport );
+			setHighlighted( viewport );
 		}
 	}
 
@@ -231,26 +225,6 @@ const Keyframes = () => {
 	 */
 	const onMouseOut = () => {
 		setHover( false );
-	}
-
-
-	/**
-	 * Set function to indicate whether given viewport is in range.
-	 *
-	 * @since 0.1.0
-	 */
-	const getInfoText = () => {
-		let keyframeViewport = 0;
-
-		for( const [ clientId, viewports ] of Object.entries( merged ) ) {
-			for( const [ viewport ] of Object.entries( viewports ) ) {
-				if( viewport <= props.viewport ) {
-					keyframeViewport = parseInt( viewport );
-				}
-			}
-		}
-
-		return keyframeViewport > 0 ? `min-width: ${ keyframeViewport }px` : 'default';
 	}
 
 

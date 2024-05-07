@@ -17,7 +17,7 @@ export type Attributes = {
  *
  * @return {boolean}
  */
-export const isObject = ( item : any ) => typeof item === 'object' && ! Array.isArray( item );
+export const isObject = ( item : any ) => item && typeof item === 'object' && ! Array.isArray( item );
 
 
 /**
@@ -102,4 +102,75 @@ export const fillEmpty = ( fill : Attributes, filler : Attributes ) : Attributes
 	}
 
 	return filled;
+}
+
+
+/**
+ * Set function to check existing property by traversing path.
+ *
+ * @param {string} path
+ * @param {object} object
+ *
+ * @since 0.2.5
+ */
+export const traverseExist = ( path : string, object : object ) : boolean => {
+	const parts = path.split( '.' );
+	const property = parts.shift();
+
+	if( object && isObject( object ) && object.hasOwnProperty( property ) ) {
+		if( parts.length ) {
+			return traverseExist( parts.join( '.' ), object[ property ] );
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+
+/**
+ * Set function to check if object or array is filled by traversing path.
+ *
+ * @param {string} path
+ * @param {object} object
+ *
+ * @since 0.2.5
+ */
+export const traverseFilled = ( path : string, object : object ) : boolean => {
+	const value = traverseGet( path, object );
+
+	if( isObject( value ) && Object.keys( value ).length ) {
+		return true;
+	}
+
+	if( Array.isArray( value ) && value.length ) {
+		return true;
+	}
+
+	return false;
+}
+
+
+/**
+ * Set function to get object value by traversing path.
+ *
+ * @param {string} path
+ * @param {object} object
+ *
+ * @since 0.2.5
+ */
+export const traverseGet = ( path : string, object : object ) : any => {
+	const parts = path.split( '.' );
+	const property = parts.shift();
+
+	if( ! parts.length && isObject( object ) && object.hasOwnProperty( property ) ) {
+		return object[ property ];
+	}
+
+	if( parts.length && isObject( object ) && object.hasOwnProperty( property ) ) {
+		return traverseGet( parts.join( '.' ), object[ property ] );
+	}
+
+	return null;
 }

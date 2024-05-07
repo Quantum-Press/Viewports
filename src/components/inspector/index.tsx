@@ -1,4 +1,4 @@
-import { STORE_NAME } from '../../store/constants';
+import { STORE_NAME } from '../../store';
 import Head from './head';
 import Body from './body';
 import Foot from './foot';

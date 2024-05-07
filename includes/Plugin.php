@@ -14,7 +14,7 @@ use Quantum\Viewports\Controller\Instance;
  *
  * @class    Quantum\Viewports\Plugin
  * @since    0.1.0
- * @version  0.1.10
+ * @version  0.2.5
  * @package  Quantum\Viewports
  * @category Class
  * @author   Sebastian Buchwald // conversionmedia GmbH & Co. KG
@@ -124,45 +124,32 @@ class Plugin extends Instance {
 	 * @param  array  (required) $block         Block object.
 	 *
 	 * @since 0.1.0
-	 * @version 0.1.2
+	 * @version 0.2.5
 	 *
 	 * @return string Filtered block content.
 	 */
 	public function render_block( $block_content, $block ) {
-		$class_name = \wp_unique_id( 'qp-viewports-' );
-		$selector   = 'body .wp-site-blocks .' . $class_name;
-		$options    = array( 'selector' => $selector );
-		$content    = new \WP_HTML_Tag_Processor( $block_content );
 
-		// Setup flag.
+		// Set indicators.
+		$has_inline_styles = isset( $block[ 'attrs' ][ 'inlineStyles' ] );
 		$has_styles = false;
+
+		// Check if we inline styles.
+		if( ! $has_inline_styles ) {
+			return $block_content;
+		}
+
+		// Setup block.
+		$class_name = \wp_unique_id( 'qp-viewports-' );
+		$selector = 'body .wp-site-blocks .' . $class_name;
+		$content = new \WP_HTML_Tag_Processor( $block_content );
 
 		// Skip to next tag and remove its inline styles.
 		$content->next_tag();
 		$content->remove_attribute( 'style' );
 
-		if ( isset( $block[ 'attrs' ][ 'style' ] ) && ! empty( $block[ 'attrs' ][ 'style' ] ) ) {
-			$block_styles = $block[ 'attrs' ][ 'style' ];
-
-			$style_rule = \wp_style_engine_get_styles( $block_styles, $options );
-
-			if ( ! empty( $style_rule ) && isset( $style_rule[ 'css' ] ) ) {
-				$this->register_css( $style_rule[ 'css' ] );
-				$has_styles = true;
-			}
-		}
-
-		if ( isset( $block[ 'attrs' ][ 'viewports' ] ) ) {
-			$viewports     = $block[ 'attrs' ][ 'viewports' ];
-			$viewports_css = $this->get_rendered_css( $selector, $viewports );
-
-			if ( ! empty( $viewports_css ) ) {
-				$this->register_css( $viewports_css );
-				$has_styles = true;
-			}
-		}
-
-		if ( isset( $block[ 'attrs' ][ 'inlineStyles' ] ) ) {
+		// Check if block has inlineStyles attribute.
+		if ( $has_inline_styles ) {
 			$inline_css = $this->get_rendered_inline_css( $selector, $block[ 'attrs' ][ 'inlineStyles' ] );
 
 			if ( ! empty( $inline_css ) ) {
@@ -179,47 +166,6 @@ class Plugin extends Instance {
 	}
 
 
-
-	/**
-	 * Method to render viewports css.
-	 *
-	 * @param string (required) $selector
-	 * @param array  (required) $viewports Pairs viewport to css
-	 *
-	 * @since 0.1.0
-	 *
-	 * @return string containing css
-	 */
-	protected function get_rendered_css( $selector, $viewports ) {
-		$styles = array();
-
-		foreach ( $viewports as $viewport => $attributes ) {
-			if ( ! isset( $attributes['style'] ) ) {
-				continue;
-			}
-
-			$temp = \wp_style_engine_get_styles( $attributes[ 'style' ], array( 'selector' => $selector ) );
-
-			if ( ! empty( $temp ) ) {
-				$styles[ $viewport ] = $temp;
-			}
-		}
-
-		if ( empty( $styles ) ) {
-			return false;
-		}
-
-		$css = '';
-
-		foreach ( $styles as $viewport => $rules ) {
-			$css .= sprintf( '@media (min-width: %spx){%s}', $viewport, $rules[ 'css' ] );
-		}
-
-		return $css;
-	}
-
-
-
 	/**
 	 * Method to return rendered inline viewports css.
 	 *
@@ -227,66 +173,76 @@ class Plugin extends Instance {
 	 * @param array  (required) $viewports Pairs viewport to css
 	 *
 	 * @since   0.1.0
-	 * @version 0.1.6
+	 * @version 0.2.5
 	 *
 	 * @return string containing css
 	 */
 	protected function get_rendered_inline_css( $selector, $viewports ) {
-		$css = '';
+		$inline_css = '';
 
 		foreach ( $viewports as $viewport => $attributes ) {
-			if ( 0 < (int) $viewport ) {
-				foreach ( $attributes as $rules ) {
-					foreach ( $rules as $rule ) {
-						if ( ! empty( $rule['css'] ) ) {
+			foreach ( $attributes as $rules ) {
+				foreach ( $rules as $rule ) {
 
-							// Check if we have a leading wildcard.
-							if( 0 === strpos( $rule['css'], '%' ) ) {
+					// Reset css.
+					$css = [];
 
-								// Split css_rules by selectors.
-								$css_rules = preg_split('/(?=%[>])/', $rule['css'], -1, PREG_SPLIT_NO_EMPTY );
+					// Check if there is css.
+					if ( ! empty( $rule[ 'css' ] ) ) {
 
-								// Parse them to css.
-								foreach ( $css_rules as $css_rule ) {
-									$search = '/' . preg_quote( '%', '/' ) . '/';
-    								$css .= sprintf( '@media (min-width: %spx) { %s }', $viewport, preg_replace( $search, $selector, $css_rule, 1 ) );
-								}
+						// Set state.
+						$from = isset( $rule[ 'from' ] ) ? (int) $rule[ 'from' ] : (int) $viewport;
+						$to = isset( $rule[ 'to' ] ) ? (int) $rule[ 'to' ] : -1;
 
-							// Check if we have static css.
-							} else {
-								$css .= sprintf( '@media (min-width: %spx) { %s { %s } }', $viewport, $selector, $rule['css'] );
+						// Check if we have a leading wildcard.
+						if( 0 === strpos( $rule[ 'css' ], '%' ) ) {
+
+							// Split css_rules by selectors.
+							$css_rules = preg_split( '/(?=%[>])/', $rule[ 'css' ], -1, PREG_SPLIT_NO_EMPTY );
+
+							// Parse them to css.
+							foreach ( $css_rules as $css_rule ) {
+								$search = '/' . preg_quote( '%', '/' ) . '/';
+								$css[] = preg_replace( $search, $selector, $css_rule, 1 );
 							}
+
+						// Else set plain css with fresh selector.
+						} else {
+							$css[] = sprintf( '%s { %s }', $selector, $rule[ 'css' ] );
 						}
-					}
-				}
-			} else {
-				foreach ( $attributes as $rules ) {
-					foreach ( $rules as $rule ) {
-						if ( ! empty( $rule['css'] ) ) {
 
-							// Check if we have a leading wildcard.
-							if( 0 === strpos( $rule['css'], '%' ) ) {
+						// Set joined css and set media css.
+						$css = implode( '', $css );
+						$media_css = '';
 
-								// Split css_rules by selectors.
-								$css_rules = preg_split('/(?=%[>])/', $rule['css'], -1, PREG_SPLIT_NO_EMPTY );
-
-								// Parse them to css.
-								foreach ( $css_rules as $css_rule ) {
-									$search = '/' . preg_quote( '%', '/' ) . '/';
-    								$css .= preg_replace( $search, $selector, $css_rule, 1 );
-								}
-
-							// Check if we have static css.
-							} else {
-								$css .= sprintf( '%s { %s }',  $selector, $rule['css'] );
-							}
+						// Set min and max.
+						if( $from > 0 && -1 !== $to ) {
+							$media_css = sprintf( '@media (min-width: %spx) and (max-width: %spx) { %s }', $from, $to, $css );
 						}
+
+						// Set min.
+						if( $from > 0 && -1 === $to ) {
+							$media_css = sprintf( '@media (min-width: %spx) { %s }', $from, $css );
+						}
+
+						// Set max.
+						if( $from === 0 && 0 < $to ) {
+							$media_css = sprintf( '@media (max-width: %spx) { %s }', $to, $css );
+						}
+
+						// Set default.
+						if( $from === 0 && -1 === $to ) {
+							$media_css = $css;
+						}
+
+						// Append to inline_css.
+						$inline_css .= $media_css;
 					}
 				}
 			}
 		}
 
-		return $css;
+		return $inline_css;
 	}
 
 

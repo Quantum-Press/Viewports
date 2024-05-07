@@ -1,22 +1,15 @@
-import { useLongPress } from '../utils/longpress';
-import { STORE_NAME } from '../store/constants';
-import { svgs } from './svgs';
+import { useLongPress } from '../utils';
+import { STORE_NAME } from '../store';
 import ToggleEditing from './toggle-editing';
 import ToggleInspecting from './inspector/toggle-inspecting';
-
 
 const {
 	components: {
 		Button,
-		Icon,
 	},
 	data: {
-		select,
 		useSelect,
 		useDispatch,
-	},
-	element: {
-		useEffect,
 	},
 	i18n: {
 		__,

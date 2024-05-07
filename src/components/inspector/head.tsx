@@ -1,6 +1,5 @@
-import { STORE_NAME } from '../../store/constants';
+import { STORE_NAME } from '../../store';
 import { useLocalStorage } from '../../hooks';
-import { svgs } from '../svgs';
 import ToggleInspecting from './toggle-inspecting';
 
 const {

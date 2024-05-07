@@ -6,9 +6,6 @@ const {
 	data: {
 		useSelect,
 	},
-	i18n: {
-		__,
-	}
 } = window[ 'wp' ];
 
 /**
@@ -32,7 +29,7 @@ const Body = () => {
 		<div className="qp-viewports-inspector-body">
 			<Breadcrumb />
 			{ ! selected && ( <BlockList /> ) }
-			{ selected && ( <Selected selected={ selected } /> ) }
+			{ selected && ( <Selected block={ selected }/> ) }
 		</div>
 	);
 }

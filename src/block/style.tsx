@@ -1,9 +1,8 @@
-import { STORE_NAME } from '../store/constants';
-import Generator from '../generator';
-import { useResizeObserver } from '../hooks';
+import { STORE_NAME } from '../store';
 
 const {
 	data: {
+		select,
 		useSelect,
 	},
 } = window[ 'wp' ];
@@ -29,27 +28,17 @@ export default function BlockStyle( props : any ) {
 	const storeId = tempId !== clientId ? clientId : tempId;
 
 	// Set state dependencies.
-	const {
-		valids,
-	} = useSelect( ( select : Function ) => {
+	useSelect( ( select : Function ) => {
 		const store = select( STORE_NAME );
 
 		return {
 			valids: store.getBlockValids( storeId ),
+			size: store.getIframeSize(),
 		};
 	}, [] );
 
-	// Set resize state.
-	const selector = '.interface-interface-skeleton__content';
-	const size = useResizeObserver( {
-		selector,
-		box: 'border-box',
-	} );
-
-
-	// Set styles generator and get spectrumSet.
-	const generator = new Generator( block, '#block-' + clientId );
-	const css = generator.getCSS();
+	// Set css from store.
+	const css = select( STORE_NAME ).getCSS( storeId );
 
 	// Check if we have css to render.
 	if ( '' === css ) {
