@@ -3,7 +3,7 @@
     "type": "wordpress-plugin",
     "description": "",
     "license": "non-public",
-    "version": "0.2.6",
+    "version": "0.2.65",
     "autoload": {
         "psr-4": {
             "Quantum\\Viewports\\": "includes/"

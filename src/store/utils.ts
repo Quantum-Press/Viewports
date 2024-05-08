@@ -1,7 +1,7 @@
-import { isObject, getMergedAttributes, sanitizeAttributes } from '../utils';
+import { isObject, getMergedAttributes, traverseGet } from '../utils';
 import { Generator } from './generator';
 import type { Attributes } from '../utils';
-import type { Styles, SpectrumState, SpectrumProperties, State } from './types';
+import type { Styles, SpectrumState, SpectrumProperties, State, ViewportSet, ViewportStyle } from './types';
 
 const { isEqual, cloneDeep } = window[ 'lodash' ];
 
@@ -108,31 +108,6 @@ export const getHighestPossibleViewport = ( viewports : object ) : number => {
 	}
 
 	return highestViewport;
-}
-
-
-/**
- * Set function to find block saves.
- *
- * @param {string} clientId
- * @param {object} attributes
- *
- * @since 0.1.0
- *
- * @return {Attributes} saves
- */
-export const findBlockSaves = ( attributes : Attributes ) : Attributes => {
-	let saves : Attributes = {};
-
-	if ( attributes.hasOwnProperty( 'viewports' ) && 'undefined' !== typeof attributes.viewports ) {
-		saves = cloneDeep( attributes.viewports );
-	}
-
-	if ( attributes.hasOwnProperty( 'style' ) && 'undefined' !== typeof attributes.style ) {
-		saves[ 0 ] = cloneDeep( sanitizeAttributes( attributes ) );
-	}
-
-	return saves;
 }
 
 
@@ -265,6 +240,35 @@ export const clearDuplicateSaves = ( saves : Attributes ) : Attributes => {
 
 
 /**
+ * Set function to find block saves.
+ *
+ * @param {string} clientId
+ * @param {object} attributes
+ *
+ * @since 0.1.0
+ *
+ * @return {Attributes} saves
+ */
+export const findBlockSaves = ( attributes : Attributes ) : Attributes => {
+	const style = traverseGet( 'style', attributes ) || {};
+
+	let saves = {
+		0: {
+			style: cloneDeep( style ),
+		}
+	}
+
+	const viewports = traverseGet( 'viewports', attributes ) || {}
+
+	if( Object.keys( viewports ).length ) {
+		saves = getMergedAttributes( saves, cloneDeep( viewports ) );
+	}
+
+	return saves;
+}
+
+
+/**
  * Set function to find changes in block.
  *
  * @param {integer} viewport
@@ -279,13 +283,10 @@ export const clearDuplicateSaves = ( saves : Attributes ) : Attributes => {
 export const findBlockChanges = ( viewport : number, clientId : string, attributes : Attributes, state : State ) : Attributes => {
 	const valids = findBlockValids( clientId, state );
 
-	const style = attributes.hasOwnProperty( 'style' ) && isObject( attributes[ 'style' ] ) ? cloneDeep( attributes[ 'style' ] ) : {};
-	const valid = valids.hasOwnProperty( viewport ) &&
-				  valids[ viewport ].hasOwnProperty( 'style' ) &&
-				  isObject( valids[ viewport ]['style'] ) ?
-				  cloneDeep( valids[ viewport ][ 'style' ] ) : {};
+	const style = traverseGet( [ 'style' ].join( '.' ), attributes ) || {};
+	const valid = traverseGet( [ viewport, 'style' ].join( '.' ), valids ) || {};
 
-	return findObjectChanges( style, valid );
+	return findObjectChanges( cloneDeep( style ), cloneDeep( valid ) );
 }
 
 
@@ -302,28 +303,32 @@ export const findBlockChanges = ( viewport : number, clientId : string, attribut
 export const findBlockValids = ( clientId : string, state : State ) : Attributes => {
 	const { saves, changes, viewports } = state;
 
-	const blockSaves = saves.hasOwnProperty( clientId ) ? cloneDeep( saves[ clientId ] ) : {};
-	const blockChanges = changes.hasOwnProperty( clientId ) ? cloneDeep( changes[ clientId ] ) : {};
+	const blockSaves = traverseGet( clientId, saves ) || {};
+	const blockChanges = traverseGet( clientId, changes ) || {};
 
-	const blockValids : Attributes = {
-		0: {},
+	const blockValids : ViewportStyle = {
+		0: {
+			style: {},
+		},
 	};
 
 	let last = 0;
 	for ( const [ dirty ] of Object.entries( viewports ) ) {
 		let viewport = parseInt( dirty );
 
+		const lastBlockValids = cloneDeep( blockValids[ last ] );
+
 		if ( blockSaves.hasOwnProperty( viewport ) ) {
 			if ( blockChanges.hasOwnProperty( viewport ) ) {
-				blockValids[ viewport ] = getMergedAttributes( blockValids[ last ], blockSaves[ viewport ], blockChanges[ viewport ] );
+				blockValids[ viewport ] = getMergedAttributes( lastBlockValids, blockSaves[ viewport ], blockChanges[ viewport ] );
 			} else {
-				blockValids[ viewport ] = getMergedAttributes( blockValids[ last ], blockSaves[ viewport ] );
+				blockValids[ viewport ] = getMergedAttributes( lastBlockValids, blockSaves[ viewport ] );
 			}
 		} else {
 			if ( blockChanges.hasOwnProperty( viewport ) ) {
-				blockValids[ viewport ] = getMergedAttributes( blockValids[ last ], blockChanges[ viewport ] );
+				blockValids[ viewport ] = getMergedAttributes( lastBlockValids, blockChanges[ viewport ] );
 			} else {
-				blockValids[ viewport ] = cloneDeep( blockValids[ last ] );
+				blockValids[ viewport ] = lastBlockValids;
 			}
 		}
 
@@ -369,10 +374,10 @@ export const findObjectChanges = ( attributes : Attributes, valids : Attributes 
 			continue;
 		}
 
-		if ( isObject( attributeValue ) ) {
-			changes[ attributeKey ] = { ... attributeValue };
-		} else if ( Array.isArray( attributeValue ) ) {
-			changes[ attributeKey ] = [ ... attributeValue ];
+		if( isObject( attributeValue ) ) {
+			changes[ attributeKey ] = cloneDeep( attributeValue );
+		} else if( Array.isArray( attributeValue ) ) {
+			changes[ attributeKey ] = cloneDeep( attributeValue );
 		} else {
 			changes[ attributeKey ] = attributeValue;
 		}

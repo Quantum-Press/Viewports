@@ -39,6 +39,7 @@ const StyleList = ({ block }) => {
 
 		return {
 			valids: store.getBlockValids( storeId ),
+			removes: store.getBlockRemoves( storeId ),
 			iframeSize: store.getIframeSize(),
 		};
 	}, [] );

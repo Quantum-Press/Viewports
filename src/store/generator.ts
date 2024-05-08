@@ -1,5 +1,6 @@
 import type {
 	RendererSet,
+	ViewportStyle,
 	Styles,
 	CSSProperties,
 	CSSCollectionSet,
@@ -12,8 +13,9 @@ import type {
 	InlineStyleSet,
 } from '../store';
 import { getMergedAttributes, traverseGet } from '../utils';
+import { findObjectChanges } from './utils';
 
-const { isEqual } = window[ 'lodash' ];
+const { isEqual, cloneDeep } = window[ 'lodash' ];
 const {
 	styleEngine: {
 		compileCSS,
@@ -96,17 +98,17 @@ export class Generator {
 		};
 
 		// Set block valids from store to build rules from.
-		const valids = this.state.valids;
+		const valids = cloneDeep( this.state.valids ) as ViewportStyle;
 
 		// Set initial states.
 		const ruleSet = [] as RuleSet;
 		let prevStyle = {} as Styles;
 
 		// Iterate over block valids.
-		Object.entries( valids ).forEach( ( [ viewportString, { style } ] ) => {
+		Object.entries( valids ).forEach( ( [ viewportDirty, { style } ] ) => {
 
 			// Cleanup viewport.
-			const viewport = parseInt( viewportString )
+			const viewport = parseInt( viewportDirty )
 
 			// Check if there are styles.
 			if( style ) {
@@ -120,11 +122,11 @@ export class Generator {
 				for( const [ property ] of Object.entries( style ) ) {
 
 					// Set state attributes
-					const saves = traverseGet( [ viewport, 'style', property ].join( '.' ), this.state.saves ) || {};
+					const saves = cloneDeep( traverseGet( [ viewport, 'style', property ].join( '.' ), this.state.saves ) ) || {};
 
 					// Set state attribute changes.
-					const changes = traverseGet( [ viewport, 'style', property ].join( '.' ), this.state.changes ) || {};
-					const removes = traverseGet( [ viewport, 'style', property ].join( '.' ), this.state.removes ) || {};
+					const changes = cloneDeep( traverseGet( [ viewport, 'style', property ].join( '.' ), this.state.changes ) ) || {};
+					const removes = cloneDeep( traverseGet( [ viewport, 'style', property ].join( '.' ), this.state.removes ) ) || {};
 
 					// Set valids from saves + changes.
 					const valids = getMergedAttributes( saves, changes );
@@ -151,13 +153,13 @@ export class Generator {
 						// Set changes simulation object.
 						const changesSimulation = {
 							... style,
-							[ property ]: changes,
+							[ property ]: getMergedAttributes( saves, changes ),
 						}
 
 						// Set removes simulation object.
 						const removesSimulation = {
 							... style,
-							[ property ]: removes,
+							[ property ]: removes, // #TODO weakspot see changesSimulation above.
 						}
 
 						// Iterate over renderers to store its rules.
@@ -222,7 +224,7 @@ export class Generator {
 									saves,
 									savesProperties,
 									changes,
-									changesProperties,
+									changesProperties: findObjectChanges( changesProperties, savesProperties ),
 									removes,
 									removesProperties,
 								} );

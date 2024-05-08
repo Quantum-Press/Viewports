@@ -10,11 +10,13 @@ export type Viewports = {
 }
 
 export type ViewportSet = {
-	[ key: string ] : {
-		[ key: number ] : {
-			style: Styles;
-		}
-	};
+	[ key: string ] : ViewportStyle;
+}
+
+export type ViewportStyle = {
+	[ key: number ] : {
+		style: Styles;
+	}
 }
 
 export type ViewportStyleSet = {
@@ -101,10 +103,10 @@ export type SpectrumProperties = {
 }
 
 export type SpectrumState = {
-	valids: Attributes;
-	saves: Attributes;
-	changes: Attributes;
-	removes: Attributes;
+	valids: ViewportStyle;
+	saves: ViewportStyle;
+	changes: ViewportStyle;
+	removes: ViewportStyle;
 	rendererPropertySet: RendererPropertySet;
 	isSaving: boolean;
 	viewport: number;

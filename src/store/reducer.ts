@@ -860,18 +860,20 @@ export function updateBlockChanges( state : State, action : Action ) : State {
 			let nextState : any = {};
 
 			// Set indicator for existing state changes and differences.
-			const hasChanges = changes.hasOwnProperty( clientId );
-			const hasViewportChanges = hasChanges && changes[ clientId ].hasOwnProperty( viewport );
+			const blockChanges = traverseGet( [ clientId, viewport, 'style' ].join( '.' ), cloneDeep( changes ) ) || {};
+			const hasChanges = Object.keys( blockChanges ).length ? true : false;
 
 			// If we have differences
-			if ( hasViewportChanges ) {
+			if ( hasChanges ) {
 				nextState = {
 					... state,
 					changes: {
 						... changes,
 						[ clientId ]: {
 							... changes[ clientId ],
-							[ viewport ]: getMergedAttributes( changes[ clientId ][ viewport ], { style: difference } ),
+							[ viewport ]: {
+								style: getMergedAttributes( blockChanges, difference ),
+							}
 						}
 					}
 				}
@@ -882,7 +884,9 @@ export function updateBlockChanges( state : State, action : Action ) : State {
 						... changes,
 						[ clientId ]: {
 							... changes[ clientId ],
-							[ viewport ]: { style: difference },
+							[ viewport ]: {
+								style: difference,
+							},
 						}
 					}
 				}
@@ -1070,17 +1074,29 @@ export function removeBlockSaves( state : State, action : Action ) : State {
 			const { clientId, viewport, props } = action;
 			const { saves, removes, valids } = state;
 
-			if ( saves.hasOwnProperty( clientId ) && saves[ clientId ].hasOwnProperty( viewport ) ) {
-				const blockRemoves = findRemoves( [ ... props ], saves[ clientId ][ viewport ][ 'style' ] );
+			// Set states.
+			const blockSaves = traverseGet( [ clientId, viewport, 'style' ].join( '.' ), saves ) || {};
+			const blockRemoves = traverseGet( [ clientId, viewport, 'style' ].join( '.' ), removes ) || {};
+
+			// Cleanup props from reference.
+			const propsCloned = [ ... props ];
+
+			// Set indicators.
+			const hasBlockSaves = Object.keys( blockSaves ).length ? true : false;
+			const hasBlockRemoves = Object.keys( blockRemoves ).length ? true : false;
+
+			// Check if there are blockSaves to remove.
+			if ( hasBlockSaves ) {
+				const foundRemoves = findRemoves( propsCloned, cloneDeep( blockSaves ) );
 
 				let nextRemoves = {};
-				if ( removes.hasOwnProperty( clientId ) && removes[ clientId ].hasOwnProperty( viewport ) ) {
-					nextRemoves = getMergedAttributes( removes[ clientId ][ viewport ][ 'style' ], blockRemoves );
+				if ( hasBlockRemoves ) {
+					nextRemoves = getMergedAttributes( blockRemoves, foundRemoves );
 				} else {
-					nextRemoves = blockRemoves;
+					nextRemoves = foundRemoves;
 				}
 
-				let nextState = {
+				let nextState : State = {
 					... state,
 					removes: {
 						... removes,
@@ -1168,8 +1184,8 @@ export function restoreBlockSaves( state : State, action : Action ) : State {
 			const blockRemovesStyle = cloneDeep( traverseGet( [ clientId, viewport, 'style' ].join( '.' ), removes ) );
 
 			// Set indicators.
-			const hasChanges = blockChangesStyle && Object.keys( blockChangesStyle ).length;
-			const hasRemoves = blockRemovesStyle && Object.keys( blockRemovesStyle ).length;
+			const hasChanges = blockChangesStyle && Object.keys( blockChangesStyle ).length ? true : false;
+			const hasRemoves = blockRemovesStyle && Object.keys( blockRemovesStyle ).length ? true : false;
 
 			// Check if there is an entry for clientId and viewport to remove from changes.
 			if ( hasChanges ) {
