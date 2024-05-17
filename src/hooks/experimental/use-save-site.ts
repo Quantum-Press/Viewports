@@ -1,5 +1,3 @@
-import useIsMounted from "./use-is-mounted";
-
 const {
 	data: {
 		dispatch,

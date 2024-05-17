@@ -298,6 +298,21 @@ export const inMobileRange = ( state : State ) : boolean => {
 
 
 /**
+ * Set selector to indicate block is registered by clientId.
+ *
+ * @param {State} state current
+ * @param {string} clientId
+ *
+ * @since 0.1.0
+ *
+ * @return {boolean}
+ */
+export const isRegistered = ( state : State, clientId : string ) : boolean => {
+	return state.valids.hasOwnProperty( clientId );
+}
+
+
+/**
  * Set selector to indicate hasBlockViewports.
  *
  * @param {State} state current
@@ -346,7 +361,13 @@ export const hasBlockDefaults = ( state : State, clientId : string ) : boolean =
  * @return {boolean}
  */
 export const hasBlockSaves = ( state : State, clientId : string ) : boolean => {
-	return traverseFilled( [ clientId ].join( '.' ), state.saves );
+	const saves = traverseGet( [ clientId ].join( '.' ), state.saves );
+
+	if( 1 < Object.keys( saves ).length ) {
+		return true;
+	}
+
+	return false;
 };
 
 

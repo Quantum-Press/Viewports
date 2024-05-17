@@ -7,7 +7,7 @@ import ToggleInspecting from './components/inspector/toggle-inspecting';
 
 const {
 	blockEditor: {
-		BlockControls
+		BlockControls,
 	},
 	components: {
 		ToolbarGroup,
@@ -17,11 +17,8 @@ const {
 	}
 } = window[ 'wp' ];
 
-/**
- * Filter all block registrations to add style-engine controls.
- *
- * @since 0.1.0
- */
+
+// Filter to modify block registration
 addFilter( 'blocks.registerBlockType', 'quantumpress/viewports', ( block ) => {
 
 	// Merge new attributes with the old ones.
@@ -32,20 +29,15 @@ addFilter( 'blocks.registerBlockType', 'quantumpress/viewports', ( block ) => {
 		inlineStyles: {
 			type: 'object',
 		},
+		tempId: {
+			type: 'string',
+		}
 	});
 
 	// Return a new block object.
 	return {
-
-		// Spread the settings objects to include all of the block's "old" properties.
 		... block,
-
-		/**
-		 * Override the block's edit function.
-		 *
-		 * @link https://developer.wordpress.org/block-editor/reference-guides/block-api/block-edit-save/#edit
-		 */
-		edit( props : any ) {
+		edit( props ) {
 			return (
 				<>
 					<BlockEdit block={ block } props={ props } />
@@ -60,17 +52,8 @@ addFilter( 'blocks.registerBlockType', 'quantumpress/viewports', ( block ) => {
 			);
 		},
 
-		/**
-		 * Override the block's save function.
-		 *
-		 * @link https://developer.wordpress.org/block-editor/reference-guides/block-api/block-edit-save/#edit
-		 */
-		save( props : any ) {
-			return (
-				<>
-					<BlockSave block={ block } props={ props } />
-				</>
-			);
+		save( props ) {
+			return <BlockSave block={ block } props={ props } />
 		}
-	}
-});
+	};
+} );

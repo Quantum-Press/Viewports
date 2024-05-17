@@ -30,10 +30,8 @@ export const BlockSave = ( { block, props }: { block: Attributes, props: Attribu
 	// Check whether we need to save block viewports.
 	const hasBlockViewports = store.hasBlockViewports( clientId );
 
-	// console.log( 'try save', clientId, hasBlockViewports, isSaving, isAutoSaving );
-
 	// Check whether we need to save block viewports.
-	if ( hasBlockViewports && isSaving ) {
+	if ( store.isRegistered( clientId ) && hasBlockViewports && isSaving ) {
 		const saves = store.getGeneratedBlockSaves( clientId );
 		const inlineStyle = store.getInlineStyle( clientId );
 
@@ -57,7 +55,7 @@ export const BlockSave = ( { block, props }: { block: Attributes, props: Attribu
 	}
 
 	// Check whether we need to save block custom renderer without viewports.
-	if ( ! hasBlockViewports && isSaving ) {
+	if ( store.isRegistered( clientId ) && ! hasBlockViewports && isSaving ) {
 		const defaults = store.getBlockDefaults( clientId );
 		const style = defaults.hasOwnProperty( 'style' ) ? defaults.style : {};
 		const inlineStyle = store.getInlineStyle( clientId );

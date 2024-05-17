@@ -1,8 +1,10 @@
-import { sanitizeAttributes } from '../utils/attributes';
-import { STORE_NAME } from '../store/constants';
+import { STORE_NAME } from '../store';
 
 const { isEqual, cloneDeep } = window[ 'lodash' ];
 const {
+	blockEditor: {
+		useBlockProps,
+	},
 	data: {
 		useDispatch,
 		useSelect,
@@ -10,39 +12,13 @@ const {
 		select,
 	},
 	element: {
+		useRef,
 		useLayoutEffect,
 		useEffect,
 		useState,
 		Component
 	}
 } = window[ 'wp' ];
-
-
-/**
- * Set function and var to register init process 1000ms after the last block has rendered its edit.
- *
- * @since 0.1.0
- */
-const initMap = new Map();
-let initTimeout: any;
-const registerInit = ( clientId, setTempId ) => {
-	clearTimeout( initTimeout );
-
-	initMap.set( clientId, setTempId );
-
-	initTimeout = setTimeout( () => {
-		for( let [ clientId, setTempId ] of initMap ) {
-			setTempId( false );
-		}
-
-		dispatch( STORE_NAME ).setReady();
-		dispatch( STORE_NAME ).unsetRegistering();
-
-		console.log( '%cQP-Viewports -> successfully registered', 'padding:4px 8px;background:green;color:white', [ ... initMap.keys() ] );
-
-		initMap.clear();
-	}, 1000 );
-}
 
 
 /**
@@ -61,20 +37,20 @@ const registerActivate = () => {
 
 
 /**
- * Set function to indicate a block that uses resolving.
+ * Set function and var to register init process 1000ms after the last block has rendered its edit.
  *
  * @since 0.1.0
  */
-const isResolvingBlock = ( block ) => {
-	if( 'core/navigation-link' === block.name ) {
-		return true;
-	}
+let initTimeout: any;
+const registerInit = () => {
+	clearTimeout( initTimeout );
 
-	if( 'core/navigation-submenu' === block.name ) {
-		return true;
-	}
+	initTimeout = setTimeout( () => {
+		dispatch( STORE_NAME ).setReady();
+		dispatch( STORE_NAME ).unsetRegistering();
 
-	return false;
+		console.log( '%cQP-Viewports -> successfully registered', 'padding:4px 8px;background:green;color:white' );
+	}, 1000 );
 }
 
 
@@ -86,9 +62,6 @@ const isResolvingBlock = ( block ) => {
 export default function BlockEdit( blockArgs : any ) {
 	const { block, props } = blockArgs;
 	const {
-		attributes: {
-			tempId,
-		},
 		setAttributes,
 		clientId,
 		isSelected,
@@ -121,42 +94,39 @@ export default function BlockEdit( blockArgs : any ) {
 	}, [] );
 
 	// Set useState handler.
-	const [ isResolving,                       setIsResolving ] = useState( false );
-	const [ updateTempId,                     setUpdateTempId ] = useState( false );
+	const [ updateTempId,                     setUpdateTempId ] = useState( true );
 	const [ updateSelected,                 setUpdateSelected ] = useState( false );
 	const [ updateSelectedViewport, setUpdateSelectedViewport ] = useState( false );
 
 
-	// Use useEffect to handle clientId updates when we first setup block.
-	useLayoutEffect( () => {
-		if( ( updateTempId || tempId === clientId ) && ! ( ! updateTempId && tempId === clientId ) ) {
-			return;
-		}
-
-		// Some block may use 2 initial renders to init cause of resolving processes.
-		if( ! isResolving && isResolvingBlock( block ) ) {
-			setIsResolving( true );
-			return;
-		}
-
-		console.log( 'setRegistering', clientId );
+	// Set useEffect to handle first init after render.
+	useEffect( () => {
+		attributes.tempId = '';
 
 		store.setRegistering();
 		store.registerBlockInit( clientId, attributes );
 
-		setUpdateTempId( true );
-		setAttributes( { tempId: clientId } );
-
-		registerInit( clientId, setUpdateTempId );
-	}, [ clientId ] );
+		registerInit();
+	}, [] );
 
 
-	// Use useEffect to handle tempId updates to remove update flag.
-	useLayoutEffect( () => {
-		if( updateTempId && tempId === clientId ) {
-			setUpdateTempId( false );
+	// Set useEffect to handle first init after render.
+	useEffect( () => {
+		if( '' === attributes.tempId ) {
+			return;
 		}
-	}, [ tempId ] );
+
+		if( attributes.tempId !== clientId ) {
+			console.log( 'TEEEEEEEST DER DARF NICHT MEHR LAUFEN RICHTIG????' );
+
+			store.setRegistering();
+			store.removeBlock( attributes.tempId );
+			store.registerBlockInit( clientId, attributes );
+
+			registerInit();
+		}
+
+	}, [ attributes.tempId ] );
 
 
 	// Use useEffect to handle loading updates to transition into active.
@@ -164,8 +134,6 @@ export default function BlockEdit( blockArgs : any ) {
 		if( ! isLoading ) {
 			return;
 		}
-
-		console.log( 'registerActivate', clientId );
 
 		registerActivate();
 	}, [ isLoading ] );
@@ -177,11 +145,8 @@ export default function BlockEdit( blockArgs : any ) {
 			return;
 		}
 
-		// Set storeId from tempId or clientId.
-		const storeId = tempId || clientId;
-
 		// Check for viewport settings before we replace settings for viewport.
-		const hasBlockViewports = select( STORE_NAME ).hasBlockViewports( storeId );
+		const hasBlockViewports = select( STORE_NAME ).hasBlockViewports( clientId );
 		if( ! hasBlockViewports ) {
 			return;
 		}
@@ -198,14 +163,15 @@ export default function BlockEdit( blockArgs : any ) {
 			return;
 		}
 
-		// Set storeId from tempId or clientId.
-		const storeId = tempId || clientId;
-
 		// Set valids to inject.
-		const valids = select( STORE_NAME ).getViewportBlockValids( storeId );
+		const valids = select( STORE_NAME ).getViewportBlockValids( clientId );
+		const newAttributes = {
+			... cloneDeep( valids ),
+			tempId: clientId,
+		}
 
 		// Update states.
-		setAttributes( cloneDeep( valids ) );
+		setAttributes( newAttributes );
 		setUpdateSelected( true );
 
 	}, [ updateSelectedViewport ] );
@@ -260,12 +226,12 @@ export default function BlockEdit( blockArgs : any ) {
 
 		// Here we finally indicate that we need to organize a change in datastore.
 		if( isSelected ) {
-			// console.log( 'Häääää' );
-			store.updateBlockChanges( tempId, attributes );
+			const storeId = attributes.tempId && '' !== attributes.tempId ? attributes.tempId : clientId;
+
+			store.updateBlockChanges( storeId, attributes );
 		}
 
 	}, [ attributes ] );
-
 
 	// Check if block.edit is a function or class component to return its edit function.
 	const isClassComponent = typeof block.edit === 'function' && block.edit.prototype instanceof Component;

@@ -199,12 +199,14 @@ function onSaveEntityRecordEnd( event ) {
 	}
 
 	// Get all blocks attributes and interate through to read clientId.
-	const saves = select( STORE_NAME ).getSaves();
 	const valids = select( STORE_NAME ).getViewportValids();
 	const update = {};
 
 	for( const [ clientId, attributes ] of Object.entries( valids ) ) {
-		if( saves.hasOwnProperty( clientId ) && 0 < Object.keys( saves[ clientId ] ).length ) {
+		const block = select( 'core/block-editor' ).getBlock( clientId );
+		const blockExists = !! block;
+
+		if( blockExists && clientId === block.attributes.tempId ) {
 			update[ clientId ] = {
 				tempId: clientId,
 				style: attributes[ 'style' ],
@@ -217,8 +219,8 @@ function onSaveEntityRecordEnd( event ) {
 	isRunning = false;
 
 	// Update all blocks to viewports valid attributes and unset saving.
-	dispatch( 'core/block-editor' ).updateBlockAttributes( Object.keys( update ), update, true );
 	dispatch( STORE_NAME ).unsetSaving();
+	dispatch( 'core/block-editor' ).updateBlockAttributes( Object.keys( update ), update, true );
 }
 
 
@@ -256,7 +258,12 @@ function onSavePostEnd() {
 	const update = {};
 
 	for( const [ clientId ] of Object.entries( valids ) ) {
-		update[ clientId ] = store.getViewportBlockValids( clientId );
+		const block = select( 'core/block-editor' ).getBlock( clientId );
+		const blockExists = !! block;
+
+		if( blockExists && clientId === block.attributes.tempId ) {
+			update[ clientId ] = store.getViewportBlockValids( clientId );
+		}
 	}
 
 	console.log( '%cQP-Viewports -> onSavePostEnd update', 'padding:4px 8px;background:darkgreen;color:white' );
@@ -292,7 +299,12 @@ function onAutoSavingEnd() {
 	const update = {};
 
 	for( const [ clientId ] of Object.entries( valids ) ) {
-		update[ clientId ] = store.getViewportBlockValids( clientId );
+		const block = select( 'core/block-editor' ).getBlock( clientId );
+		const blockExists = !! block;
+
+		if( blockExists && clientId === block.attributes.tempId ) {
+			update[ clientId ] = store.getViewportBlockValids( clientId );
+		}
 	}
 
 	console.log( '%cQP-Viewports: valids onAutoSavingEnd', 'padding:4px 8px;background:darkgreen;color:white' );

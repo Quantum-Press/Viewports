@@ -5,11 +5,11 @@
  *
  * @return {object} node document
  */
-export const getEditorHead = () : object => {
+export const getEditorHead = () : HTMLElement | null => {
 	if ( isSiteEditor() ) {
 		const iframe = document.querySelector( 'iframe[name="editor-canvas"]' ) as HTMLIFrameElement;
 
-		return iframe.contentWindow.document.head;
+		return iframe.contentWindow?.document.head || null;
 	}
 
 	return document.head;
@@ -44,7 +44,7 @@ export const getVersion = () : string => {
 	const parts = script.src.split( '?' );
 	const params = new URLSearchParams( '?' + parts[1] );
 
-	return params.get( 'ver' );
+	return params.get( 'ver' ) || '';
 }
 
 

@@ -1,19 +1,19 @@
+import useHighlightProperty from "./use-highlight-property";
+import useHighlightViewport from "./use-highlight-viewport";
+import useHighlight from "./use-highlight";
 import useIsMounted from "./use-is-mounted";
 import useLocalStorage from "./use-local-storage";
-import useResizeObserver from "./use-resize-observer";
 import useOverflow from "./use-overflow";
-import useHighlight from "./use-highlight";
-import useHighlightViewport from "./use-highlight-viewport";
-import useHighlightProperty from "./use-highlight-property";
+import useResizeObserver from "./use-resize-observer";
 
 export {
+	useHighlightProperty,
+	useHighlightViewport,
+	useHighlight,
 	useIsMounted,
 	useLocalStorage,
-	useResizeObserver,
 	useOverflow,
-	useHighlight,
-	useHighlightViewport,
-	useHighlightProperty,
+	useResizeObserver,
 }
 
 export type * from './use-resize-observer';
