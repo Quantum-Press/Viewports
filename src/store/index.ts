@@ -56,6 +56,14 @@ export type * from './types';
 
 
 /**
+ * Export utils.
+ *
+ * @since 0.2.7
+ */
+export * from './utils';
+
+
+/**
  * Export constants.
  *
  * @since 0.2.5

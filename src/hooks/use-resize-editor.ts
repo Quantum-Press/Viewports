@@ -5,11 +5,11 @@ import { useResizeObserver } from './';
 
 const {
 	data: {
-		dispatch,
+		useDispatch,
 		useSelect,
 	},
 	element: {
-		useEffect,
+		useLayoutEffect,
 	}
 } = window[ 'wp' ];
 
@@ -44,20 +44,24 @@ export const useResizeEditor = () => {
 		const store = select( STORE_NAME );
 
 		return {
+			isReady: store.isReady(),
 			isActive: store.isActive(),
 			viewport: store.getViewport(),
 		}
 	} );
 
+	// Set store dispatcher.
+	const dispatch = useDispatch( STORE_NAME );
+
 	// Set useEffect to recalculate sizes.
-	useEffect( () => {
+	useLayoutEffect( () => {
 		if ( isSiteEditor() ) {
 			calculateSiteEditorSize();
 		} else {
 			calculatePostEditorSize();
 		}
 
-		dispatch( STORE_NAME ).setIframeSize( resizeEditor );
+		dispatch.setIframeSize( resizeEditor );
 
 	}, [ resizeSkeleton, resizeEditor ] );
 

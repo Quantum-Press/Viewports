@@ -6,9 +6,16 @@ const {
 	}
 } = window[ 'wp' ];
 
-export function useIsMounted(): () => boolean {
+
+/**
+ * Set function to export use is mounted hook.
+ *
+ * @since 0.1.0
+ */
+export function useIsMounted() : () => boolean {
 	const isMounted = useRef( false );
 
+	// Set useEffect to handle mount and unmount.
 	useEffect( () => {
 		isMounted.current = true
 
@@ -17,6 +24,7 @@ export function useIsMounted(): () => boolean {
 		}
 	}, [] );
 
+	// Return callback for getting the current state.
 	return useCallback( () => isMounted.current, [] )
 }
 

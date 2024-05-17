@@ -248,6 +248,16 @@ export function setMobile( state : State, action : Action ) : State {
 export function setIframeSize( state : State, action : Action ) : State {
 	switch ( action.type ) {
 		case 'SET_IFRAME_SIZE' :
+			const iframeViewport = getHighestPossibleViewport( state.viewports, action.size.width );
+
+			if( state.iframeViewport !== iframeViewport ) {
+				return {
+					... state,
+					iframeSize: action.size,
+					iframeViewport,
+				};
+			}
+
 			return {
 				... state,
 				iframeSize: action.size,
@@ -481,7 +491,7 @@ export function setActive( state : State, action : Action ) : State {
 			let { viewport } = state;
 
 			if( 0 === viewport ) {
-				viewport = getHighestPossibleViewport( state.viewports );
+				viewport = getHighestPossibleViewport( state.viewports, state.iframeSize.width );
 			}
 
 			return {
@@ -652,7 +662,7 @@ export function toggleActive( state : State, action : Action ) : State {
 			let viewport = state.viewport;
 
 			if( isActive && 0 === viewport ) {
-				viewport = getHighestPossibleViewport( state.viewports );
+				viewport = getHighestPossibleViewport( state.viewports, state.iframeSize.width );
 			}
 
 			return {
@@ -763,8 +773,6 @@ export function registerBlockInit( state : State, action : Action ) : State {
 			// Find defaults and viewport saves.
 			const blockSaves = findBlockSaves( attributes );
 
-			console.log( 'blockSaves', blockSaves );
-
 			// Set initState.
 			const initState = {
 				... state,
@@ -840,15 +848,12 @@ export function updateBlockChanges( state : State, action : Action ) : State {
 		case 'UPDATE_BLOCK_CHANGES' :
 
 			// Deconstruct state and action.
-			const { isActive, isEditing, changes, valids } = state;
+			const { changes, valids } = state;
 			const { clientId, attributes } = action;
-
-			// Set viewport.
-			const viewport = isActive && isEditing ? state.viewport : 0;
 
 			// Set new generated block changes by comparing it to the actual viewport valid.
 			// Here you will get just the difference between both.
-			let difference = findBlockChanges( viewport, clientId, cloneDeep( attributes ), state );
+			const difference = findBlockChanges( clientId, cloneDeep( attributes ), state );
 
 			// Set indicator for existing differences.
 			const hasDifference = 0 < Object.entries( difference ).length;
@@ -860,7 +865,7 @@ export function updateBlockChanges( state : State, action : Action ) : State {
 			let nextState : any = {};
 
 			// Set indicator for existing state changes and differences.
-			const blockChanges = traverseGet( [ clientId, viewport, 'style' ].join( '.' ), cloneDeep( changes ) ) || {};
+			const blockChanges = traverseGet( [ clientId ].join( '.' ), cloneDeep( changes ) ) || {};
 			const hasChanges = Object.keys( blockChanges ).length ? true : false;
 
 			// If we have differences
@@ -870,10 +875,7 @@ export function updateBlockChanges( state : State, action : Action ) : State {
 					changes: {
 						... changes,
 						[ clientId ]: {
-							... changes[ clientId ],
-							[ viewport ]: {
-								style: getMergedAttributes( blockChanges, difference ),
-							}
+							... getMergedAttributes( blockChanges, difference ),
 						}
 					}
 				}
@@ -882,12 +884,7 @@ export function updateBlockChanges( state : State, action : Action ) : State {
 					... state,
 					changes: {
 						... changes,
-						[ clientId ]: {
-							... changes[ clientId ],
-							[ viewport ]: {
-								style: difference,
-							},
-						}
+						[ clientId ]: difference,
 					}
 				}
 			}
@@ -1078,16 +1075,13 @@ export function removeBlockSaves( state : State, action : Action ) : State {
 			const blockSaves = traverseGet( [ clientId, viewport, 'style' ].join( '.' ), saves ) || {};
 			const blockRemoves = traverseGet( [ clientId, viewport, 'style' ].join( '.' ), removes ) || {};
 
-			// Cleanup props from reference.
-			const propsCloned = [ ... props ];
-
 			// Set indicators.
 			const hasBlockSaves = Object.keys( blockSaves ).length ? true : false;
 			const hasBlockRemoves = Object.keys( blockRemoves ).length ? true : false;
 
 			// Check if there are blockSaves to remove.
 			if ( hasBlockSaves ) {
-				const foundRemoves = findRemoves( propsCloned, cloneDeep( blockSaves ) );
+				const foundRemoves = findRemoves( [ ... props ], cloneDeep( blockSaves ) );
 
 				let nextRemoves = {};
 				if ( hasBlockRemoves ) {
@@ -1191,7 +1185,7 @@ export function restoreBlockSaves( state : State, action : Action ) : State {
 			if ( hasChanges ) {
 
 				// Set new block removes and changes.
-				const blockRemoves = findRemoves( cloneDeep( props ), blockChangesStyle );
+				const blockRemoves = findRemoves( [ ... props ], blockChangesStyle );
 				const blockChanges = findCleanedChanges( blockChangesStyle, blockRemoves );
 
 				// Check viewport changes to update or to remove viewport changes.
@@ -1242,7 +1236,7 @@ export function restoreBlockSaves( state : State, action : Action ) : State {
 			if ( hasRemoves ) {
 
 				// Set new block removes and changes.
-				const blockRemoves = findRemoves( cloneDeep( props ), blockRemovesStyle );
+				const blockRemoves = findRemoves( [ ... props ], blockRemovesStyle );
 				const blockChanges = findCleanedChanges( blockRemovesStyle, blockRemoves );
 
 				// Check viewport removes to update or to remove viewport removes.
@@ -1482,7 +1476,7 @@ export function clearBlocks( state : State, action : Action ) : State {
  */
 export function registerRenderer( state : State, action : Action ) : State {
 	if( action.type === 'REGISTER_RENDERER' ) {
-		const { prop, callback, priority } = action;
+		const { prop, callback, priority, selectors } = action;
 
 		if ( state.renderer.hasOwnProperty( prop ) ) {
 			return {
@@ -1493,7 +1487,7 @@ export function registerRenderer( state : State, action : Action ) : State {
 						... state.renderer[ prop ],
 						[ priority ]: {
 							callback,
-							selectorPanel: action.selectorPanel,
+							selectors,
 						}
 					}
 				}
@@ -1507,7 +1501,7 @@ export function registerRenderer( state : State, action : Action ) : State {
 				[ prop ]: {
 					[ priority ]: {
 						callback,
-						selectorPanel: action.selectorPanel,
+						selectors,
 					}
 				}
 			}

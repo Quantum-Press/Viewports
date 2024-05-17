@@ -33,14 +33,14 @@ const StyleList = ({ block }) => {
 
 	// Set store dependencies.
 	const {
-		iframeSize,
+		iframeViewport,
 	} = useSelect( ( select : Function ) => {
 		const store = select( STORE_NAME );
 
 		return {
 			valids: store.getBlockValids( storeId ),
 			removes: store.getBlockRemoves( storeId ),
-			iframeSize: store.getIframeSize(),
+			iframeViewport: store.getIframeViewport(),
 		};
 	}, [] );
 
@@ -55,7 +55,7 @@ const StyleList = ({ block }) => {
 					<Style
 						clientId={ clientId }
 						spectrum={ spectrum }
-						viewport={ iframeSize.width }
+						viewport={ iframeViewport }
 					/>
 				);
 			} ) }

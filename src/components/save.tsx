@@ -217,8 +217,8 @@ function onSaveEntityRecordEnd( event ) {
 	isRunning = false;
 
 	// Update all blocks to viewports valid attributes and unset saving.
-	dispatch( STORE_NAME ).unsetSaving();
 	dispatch( 'core/block-editor' ).updateBlockAttributes( Object.keys( update ), update, true );
+	dispatch( STORE_NAME ).unsetSaving();
 }
 
 
@@ -250,18 +250,13 @@ function onSavePostEnd() {
 
 	isRunning = false;
 
-	// Get all blocks attributes and interate through to read clientId.
-	const saves = select( STORE_NAME ).getSaves();
-	const valids = select( STORE_NAME ).getViewportValids();
+	// Set block valids to iterate over clientIds.
+	const store = select( STORE_NAME );
+	const valids = store.getViewportValids();
 	const update = {};
 
-	for( const [ clientId, attributes ] of Object.entries( valids ) ) {
-		if( saves.hasOwnProperty( clientId ) && 0 < Object.keys( saves[ clientId ] ).length ) {
-			update[ clientId ] = {
-				tempId: clientId,
-				style: attributes[ 'style' ],
-			}
-		}
+	for( const [ clientId ] of Object.entries( valids ) ) {
+		update[ clientId ] = store.getViewportBlockValids( clientId );
 	}
 
 	console.log( '%cQP-Viewports -> onSavePostEnd update', 'padding:4px 8px;background:darkgreen;color:white' );
@@ -290,17 +285,14 @@ function onAutoSavingStart() {
  * @since 0.1.0
  */
 function onAutoSavingEnd() {
-	const isActive = select( STORE_NAME ).isActive();
+	const store = select( STORE_NAME );
 
-
-	// Get all blocks attributes and interate through to read clientId.
-	const valids = select( STORE_NAME ).getViewportValids();
+	// Set block valids to iterate over clientIds.
+	const valids = store.getViewportValids();
 	const update = {};
 
-	for( const [ clientId, attributes ] of Object.entries( valids ) ) {
-		if( attributes.hasOwnProperty( 'style' ) && isObject( attributes[ 'style' ] ) &&  0 !== Object.keys( attributes[ 'style' ] ).length ) {
-			update[ clientId ] = attributes;
-		}
+	for( const [ clientId ] of Object.entries( valids ) ) {
+		update[ clientId ] = store.getViewportBlockValids( clientId );
 	}
 
 	console.log( '%cQP-Viewports: valids onAutoSavingEnd', 'padding:4px 8px;background:darkgreen;color:white' );

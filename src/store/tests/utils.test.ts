@@ -15,7 +15,6 @@ import {
 	isInTabletRange,
 	isInMobileRange,
 	getHighestPossibleViewport,
-	getIframeViewport,
 	findBlockSaves,
 	clearEmptySaves,
 	findBlockChanges,
@@ -49,21 +48,6 @@ describe( 'store utils', () => {
 
 	test( 'can indicate isInMobileRange() with correct viewport', () => {
 		expect( isInMobileRange( 400 ) ).toStrictEqual( true );
-	} );
-
-	test( 'can getIframeViewport() with empty iframe', () => {
-		expect( getIframeViewport() ).toStrictEqual( 800 );
-	} );
-
-	// TODO - Can we test filled iframe?
-	test( 'can getHighestPossibleViewport() with empty iframe', () => {
-		const viewports = {
-			320: 'Mobile small',
-			768: 'Tablet', // <-- If we dont have an iframe, we return 800 ( you can see a test above ).
-			1280: 'Desktop',
-		}
-
-		expect( getHighestPossibleViewport( viewports ) ).toStrictEqual( 768 );
 	} );
 
 	test( 'can findBlockSaves() with empty attributes', () => {
@@ -442,7 +426,7 @@ describe( 'store utils', () => {
 				padding: '80px',
 			}
 		};
-		const result768 = findBlockChanges( 768, 'client-id', attributes, state );
+		const result768 = findBlockChanges( 'client-id', attributes, state );
 
 		expect( result768 ).toStrictEqual( check768 );
 	} );
@@ -529,7 +513,7 @@ describe( 'store utils', () => {
 				padding: '80px',
 			}
 		};
-		const result1280 = findBlockChanges( 1280, 'client-id', attributes, state );
+		const result1280 = findBlockChanges( 'client-id', attributes, state );
 
 		expect( result1280 ).toStrictEqual( check1280 );
 	} );
@@ -640,7 +624,7 @@ describe( 'store utils', () => {
 				padding: '80px',
 			}
 		};
-		const result1280 = findBlockChanges( 1280, 'client-id', attributes, state );
+		const result1280 = findBlockChanges( 'client-id', attributes, state );
 
 		expect( result1280 ).toStrictEqual( check1280 );
 	} );
@@ -750,7 +734,7 @@ describe( 'store utils', () => {
 				padding: '80px',
 			}
 		};
-		const result1280 = findBlockChanges( 1280, 'client-id', attributes, state );
+		const result1280 = findBlockChanges( 'client-id', attributes, state );
 
 		expect( result1280 ).toStrictEqual( check1280 );
 	} );

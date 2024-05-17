@@ -10,7 +10,7 @@ const Content = block => {
 		<div className="qp-viewports-dimension content" data-dimension="content">
 			<div className="view-label">{ 'content' }</div>
 			<div className="view-content">
-				<div className="view-center">100% x auto</div>
+				<div className="view-center">-</div>
 			</div>
 		</div>
 	);

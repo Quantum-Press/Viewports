@@ -77,7 +77,7 @@ domReady( () => {
 						}
 					}
 				} else {
-					const viewportUI = document.querySelector( '.edit-post-visual-editor__content-area iframe[name="editor-canvas"], .edit-post-visual-editor__content-area .is-desktop-preview, .edit-post-visual-editor > div:first-child:last-child .editor-styles-wrapper' );
+					const viewportUI = document.querySelector( '.edit-post-visual-editor__content-area iframe[name="editor-canvas"], .edit-post-visual-editor__content-area .is-desktop-preview, .edit-post-visual-editor > div:first-child:last-child .editor-styles-wrapper, .edit-post-visual-editor > div:first-child:last-child iframe[name="editor-canvas"]' );
 
 					if ( viewportUI ) {
 						viewportUI.before( viewportWrap );

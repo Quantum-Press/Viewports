@@ -63,7 +63,7 @@ export const Style = ( attributes ) => {
 	 * @since 0.2.5
 	 */
 	const onClickProperty = () => {
-		setHighlightProperty( spectrum.selectorPanel );
+		setHighlightProperty( spectrum.selectors.panel );
 	}
 
 
@@ -90,10 +90,10 @@ export const Style = ( attributes ) => {
 	// Render component.
 	return (
 		<div className={ classNames.join( ' ' ) } data-viewport={ spectrum.viewport }>
-			{ '' !== spectrum.media && viewport < spectrum.viewport &&
+			{ '' !== spectrum.media && viewport < spectrum.from &&
 				<div className="media">{ '@media (' + spectrum.media + ')' }</div>
 			}
-			{ '' !== spectrum.media && viewport >= spectrum.viewport &&
+			{ '' !== spectrum.media && viewport >= spectrum.from &&
 				<div className="media active">{ '@media (' + spectrum.media + ')' }</div>
 			}
 			<div className="selector-start">

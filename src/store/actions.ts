@@ -1,4 +1,4 @@
-import type { Action, Viewports } from './';
+import type { Action, Viewports, SelectorSet } from './';
 import type { Attributes } from '../utils';
 import type { Size } from '../hooks';
 
@@ -562,16 +562,16 @@ export const clearBlocks = () : Action => {
  * @param {string} prop
  * @param {Function} callback
  * @param {number} priority
- * @param {string} selectorPanel
+ * @param {SelectorSet} selectors
  *
  * @since 0.1.0
  *
  * @return {Action}
  */
-export const registerRenderer = ( prop : string, callback : Function, priority = 10, selectorPanel = '' ) : Action => ( {
+export const registerRenderer = ( prop : string, callback : Function, priority = 10, selectors = {} ) : Action => ( {
 	type: 'REGISTER_RENDERER',
 	prop,
 	callback,
 	priority,
-	selectorPanel,
+	selectors,
 } );

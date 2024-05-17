@@ -1,4 +1,6 @@
 import InspectorPortals from './components/inspector/portals';
+import IndicatorPortals from './components/indicator/portals';
+
 
 const {
 	data: {
@@ -51,6 +53,7 @@ const Portals = () : React.JSX.Element => {
 	return (
 		<>
 			<InspectorPortals />
+			<IndicatorPortals />
 		</>
 	);
 }

@@ -340,10 +340,16 @@ describe( 'store actions', () => {
 			type: 'REGISTER_RENDERER',
 			prop: 'style-key',
 			callback: callback,
-			selectorPanel: '.panel',
+			selectors: {
+				panel: '.panel',
+				label: '.label',
+			},
 			priority: 10,
 		};
-		const result = registerRenderer( 'style-key', callback, 10, '.panel' );
+		const result = registerRenderer( 'style-key', callback, 10, {
+			panel: '.panel',
+			label: '.label',
+		} );
 
 		expect( check ).toStrictEqual( result );
 	});

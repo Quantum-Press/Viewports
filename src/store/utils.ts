@@ -1,7 +1,7 @@
-import { isObject, getMergedAttributes, traverseGet } from '../utils';
+import { isObject, getMergedAttributes, traverseGet, traverseExist } from '../utils';
 import { Generator } from './generator';
 import type { Attributes } from '../utils';
-import type { Styles, SpectrumState, SpectrumProperties, State, ViewportSet, ViewportStyle } from './types';
+import type { Styles, SpectrumState, SpectrumProperties, State, ViewportStyle, ViewportStyleSet } from './types';
 
 const { isEqual, cloneDeep } = window[ 'lodash' ];
 
@@ -62,49 +62,24 @@ export const isInMobileRange = ( viewport : number ) : boolean => {
 /**
  * Set function to get the highest possible viewport for actual maxWidth.
  *
- * @since 0.1.0
- *
- * @return {integer} viewport
- */
-export const getIframeViewport = () : number => {
-
-	// Get the iframe width.
-	const iframe = document.querySelector( 'iframe[name="editor-canvas"]' );
-
-	if ( iframe ) {
-		return iframe?.getBoundingClientRect().width
-	}
-
-	const wrapper = document.querySelector( '.editor-styles-wrapper' );
-
-	if ( wrapper ) {
-		return wrapper?.getBoundingClientRect().width
-	}
-
-	return 800;
-}
-
-
-/**
- * Set function to get the highest possible viewport for actual maxWidth.
- *
  * @param {object} viewports
  *
  * @since 0.1.0
  *
  * @return {integer} highest viewport
  */
-export const getHighestPossibleViewport = ( viewports : object ) : number => {
-	const iframeWidth = getIframeViewport()
+export const getHighestPossibleViewport = ( viewports : object, width : number ) : number => {
 
 	// Iterates over the viewports and returns the highest possible viewport
 	// smaller than the iframe width.
 	let highestViewport = 0;
-	for ( const [ viewport ] of Object.entries( viewports ) ) {
-		if ( +viewport > iframeWidth ) {
+	for ( const [ viewportDirty ] of Object.entries( viewports ) ) {
+		const viewport = parseInt( viewportDirty );
+		if ( viewport > width ) {
 			break;
 		}
-		highestViewport = +viewport;
+
+		highestViewport = viewport;
 	}
 
 	return highestViewport;
@@ -271,22 +246,96 @@ export const findBlockSaves = ( attributes : Attributes ) : Attributes => {
 /**
  * Set function to find changes in block.
  *
- * @param {integer} viewport
  * @param {string}  clientId
- * @param {object}  attributes
- * @param {object}  state
+ * @param {Attributes}  attributes
+ * @param {State}  state
  *
  * @since 0.1.0
  *
- * @return {object} changes
+ * @return {ViewportStyleSet} changes
  */
-export const findBlockChanges = ( viewport : number, clientId : string, attributes : Attributes, state : State ) : Attributes => {
-	const valids = findBlockValids( clientId, state );
+export const findBlockChanges = ( clientId : string, attributes : Attributes, state : State ) : ViewportStyleSet => {
 
+	// Set states.
+	const isEditing = state.isEditing;
+	const viewport = isEditing ? state.viewport : state.iframeViewport;
+	const viewports = state.viewports;
+
+	// Set state objects to get changes from.
 	const style = traverseGet( [ 'style' ].join( '.' ), attributes ) || {};
-	const valid = traverseGet( [ viewport, 'style' ].join( '.' ), valids ) || {};
+	const valid = traverseGet( [ clientId, viewport, 'style' ].join( '.' ), state.valids ) || {};
 
-	return findObjectChanges( cloneDeep( style ), cloneDeep( valid ) );
+	// Get all changes for actual valid viewport settings.
+	const validChanges = findObjectChanges( cloneDeep( style ), cloneDeep( valid ) );
+
+	// Set initial blockChanges.
+	const blockChanges = {} as ViewportStyleSet;
+
+	// Check if we need to set on a specific viewport.
+	if( isEditing ) {
+		if( traverseExist( [ clientId, viewport, 'style' ].join( '.' ), state.changes ) ) {
+			blockChanges[ viewport ] = {
+				style: {
+					... state.changes[ clientId ][ viewport ].style,
+					... validChanges,
+				}
+			}
+		} else {
+			blockChanges[ viewport ] = {
+				style: validChanges,
+			}
+		}
+
+	} else {
+
+		// Iterate over valid changes to compare with its default viewport setting.
+		for( const property in validChanges ) {
+			if ( ! validChanges.hasOwnProperty( property ) ) {
+				continue;
+			}
+
+			let lastViewport = 0;
+
+			// Iterate over viewports to find saves viewport to map on changes.
+			for( const viewportDirty in viewports ) {
+				const compare = parseInt( viewportDirty );
+
+				if( viewport < compare ) {
+					continue;
+				}
+
+				if( traverseExist( [ clientId, compare, 'style', property ].join( '.' ), state.saves ) ) {
+					lastViewport = compare;
+				}
+
+				if( traverseExist( [ clientId, compare, 'style', property ].join( '.' ), state.changes ) ) {
+					lastViewport = compare;
+				}
+			}
+
+			if( traverseExist( [ lastViewport, 'style' ].join( '.' ), blockChanges ) ) {
+				blockChanges[ lastViewport ] = {
+					... blockChanges[ lastViewport ],
+					style: {
+						... blockChanges[ lastViewport ].style,
+						[ property ]: validChanges[ property ],
+					}
+				}
+
+				continue;
+			}
+
+			blockChanges[ lastViewport ] = {
+				... blockChanges[ lastViewport ],
+				style: {
+					[ property ]: validChanges[ property ],
+				}
+			}
+		}
+	}
+
+	// Return blockChanges per viewport.
+	return blockChanges;
 }
 
 
@@ -313,9 +362,8 @@ export const findBlockValids = ( clientId : string, state : State ) : Attributes
 	};
 
 	let last = 0;
-	for ( const [ dirty ] of Object.entries( viewports ) ) {
-		let viewport = parseInt( dirty );
-
+	for ( const [ viewportDirty ] of Object.entries( viewports ) ) {
+		const viewport = parseInt( viewportDirty );
 		const lastBlockValids = cloneDeep( blockValids[ last ] );
 
 		if ( blockSaves.hasOwnProperty( viewport ) ) {
@@ -375,9 +423,9 @@ export const findObjectChanges = ( attributes : Attributes, valids : Attributes 
 		}
 
 		if( isObject( attributeValue ) ) {
-			changes[ attributeKey ] = cloneDeep( attributeValue );
+			changes[ attributeKey ] = { ... attributeValue };
 		} else if( Array.isArray( attributeValue ) ) {
-			changes[ attributeKey ] = cloneDeep( attributeValue );
+			changes[ attributeKey ] = [ ... attributeValue ];
 		} else {
 			changes[ attributeKey ] = attributeValue;
 		}

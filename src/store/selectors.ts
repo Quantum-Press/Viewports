@@ -6,6 +6,8 @@ import type {
 	RendererPropertySet,
 	SpectrumSet,
 	InlineStyleSet,
+	ViewportStyle,
+	IndicatorSelectorSet,
 } from './types';
 
 import {
@@ -18,11 +20,12 @@ import {
 	isInTabletRange,
 	isInDesktopRange,
 	findCleanedChanges,
+	findObjectChanges,
 	clearEmptySaves,
 	clearDuplicateSaves,
 } from './utils';
 
-const { isObject } = window[ 'lodash' ];
+const { cloneDeep } = window[ 'lodash' ];
 
 /**
  * Set selector to return viewports.
@@ -109,6 +112,20 @@ export const getMobile = ( state : State ) : number => {
  */
 export const getIframeSize = ( state : State ) : Size => {
 	return state.iframeSize;
+};
+
+
+/**
+ * Set selector to return iframe viewport.
+ *
+ * @param {State} state current
+ *
+ * @since 0.2.5
+ *
+ * @return {number}
+ */
+export const getIframeViewport = ( state : State ) : number => {
+	return state.iframeViewport;
 };
 
 
@@ -611,8 +628,8 @@ export const getBlockValids = ( state : State, clientId : string ) : object => {
  * @return {object} valids for actual viewport
  */
 export const getViewportValids = ( state : State ) : object => {
-	const { valids, isActive, isEditing } = state;
-	const viewport = isActive && isEditing ? state.viewport : 0;
+	const { valids } = state;
+	const viewport = state.iframeViewport;
 	const viewportValids : Attributes = {};
 
 	for( const [ clientId, viewports ] of Object.entries( valids ) ) {
@@ -636,15 +653,38 @@ export const getViewportValids = ( state : State ) : object => {
  * @return {object} block valid
  */
 export const getViewportBlockValids = ( state : State, clientId : string ) : object => {
-	const { valids, viewport } = state;
+	const { viewports, iframeViewport, saves, changes, removes, valids } = state;
 
-	if( valids.hasOwnProperty( clientId ) ) {
-		if( valids[ clientId ].hasOwnProperty( viewport ) ) {
-			return valids[ clientId ][ viewport ];
+	const blockSaves = cloneDeep( traverseGet( [ clientId ].join( '.' ), saves ) ) || {} as ViewportStyle;
+	const blockChanges = cloneDeep( traverseGet( [ clientId ].join( '.' ), changes ) ) || {} as ViewportStyle;
+	const blockRemoves = cloneDeep( traverseGet( [ clientId ].join( '.' ), removes ) ) || {} as ViewportStyle;
+
+	const merged = findObjectChanges( getMergedAttributes( blockSaves, blockChanges ), blockRemoves );
+	const blockValids : ViewportStyle = {
+		0: {
+			style: {},
+		},
+	};
+
+	let last = 0;
+	for ( const [ viewportDirty ] of Object.entries( viewports ) ) {
+		const viewport = parseInt( viewportDirty );
+		const lastBlockValids = cloneDeep( blockValids[ last ] );
+
+		if( viewport > iframeViewport ) {
+			break;
 		}
+
+		if ( merged.hasOwnProperty( viewport ) ) {
+			blockValids[ viewport ] = getMergedAttributes( lastBlockValids, merged[ viewport ] );
+		} else {
+			blockValids[ viewport ] = lastBlockValids;
+		}
+
+		last = viewport;
 	}
 
-	return {};
+	return blockValids[ iframeViewport ];
 };
 
 
@@ -816,4 +856,56 @@ export const getSpectrumSet = ( state : State, clientId : string ) : SpectrumSet
  */
 export const getInlineStyle = ( state : State, clientId : string ) : InlineStyleSet => {
 	return state.inlineStyleSets.hasOwnProperty( clientId ) ? state.inlineStyleSets[ clientId ] : {};
+}
+
+
+/**
+ * Set selector to return inlineStyle by clientId.
+ *
+ * @param {State} state current
+ * @param {string} clientId
+ *
+ * @since 0.2.7
+ */
+export const getIndicatorSelectorSet = ( state : State, clientId : string ) : IndicatorSelectorSet => {
+	const selectorSet = {} as IndicatorSelectorSet;
+	const spectrumSet = getSpectrumSet( state, clientId );
+
+	for( let index = 0; index < spectrumSet.length; index++ ) {
+		const spectrum = spectrumSet[ index ];
+
+		if( ! spectrum.selectors.hasOwnProperty( 'label' ) ) {
+			continue;
+		}
+
+		const spectrumSelector = spectrum.selectors.label;
+
+		if( ! selectorSet.hasOwnProperty( spectrumSelector ) ) {
+			selectorSet[ spectrumSelector ] = [];
+		}
+
+		selectorSet[ spectrumSelector ].push( spectrum );
+	}
+
+	const rendererPropertySet = getRendererPropertySet( state );
+
+	for ( const property in rendererPropertySet ) {
+		const rendererSet = rendererPropertySet[ property ];
+
+		for ( const priority in rendererSet ) {
+			const renderer = rendererSet[ priority ];
+
+			if( ! renderer.selectors.hasOwnProperty( 'label' ) ) {
+				continue;
+			}
+
+			const rendererSelector = renderer.selectors.label;
+
+			if( ! selectorSet.hasOwnProperty( rendererSelector ) ) {
+				selectorSet[ rendererSelector ] = [];
+			}
+		}
+	}
+
+	return selectorSet;
 }

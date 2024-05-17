@@ -39,6 +39,7 @@ export const BlockSave = ( { block, props }: { block: Attributes, props: Attribu
 
 		// Avoid the trap of using { ...props.attributes, ...defaults }.
 		// It will destroy the connection to html comment serializer.
+		// We will reinject data after save end.
 		props.attributes.style = saves.hasOwnProperty( 0 ) ? saves[ 0 ].style : {};
 		props.attributes.viewports = Object.fromEntries(
 			Object.entries( saves ).filter( ( [ key ] ) => key !== '0' )
@@ -50,7 +51,7 @@ export const BlockSave = ( { block, props }: { block: Attributes, props: Attribu
 			props.attributes.inlineStyles = {};
 		}
 
-		console.log( '%cQP-Viewports -> SAVE_BLOCK WITH VIEWPORTS', 'padding:4px 8px;background:green;color:white', clientId, props.attributes.style, props.attributes.viewports, props.attributes.style, props.attributes.inlineStyle );
+		console.log( '%cQP-Viewports -> SAVE_BLOCK WITH VIEWPORTS', 'padding:4px 8px;background:green;color:white', clientId, props.attributes.style, props.attributes.viewports, props.attributes.inlineStyles );
 
 		dispatch( STORE_NAME ).saveBlock( clientId );
 	}

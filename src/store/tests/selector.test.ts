@@ -1577,11 +1577,17 @@ describe( 'test store selectors', () => {
 				renderer: {
 					key1: {
 						callback: callback1,
-						selectorPanel: '.panel',
+						selectors: {
+							panel: '.panel',
+							label: '.label',
+						}
 					},
 					key2: {
 						callback: callback2,
-						selectorPanel: '.panel',
+						selectors: {
+							panel: '.custom-panel',
+							label: '.custom-label',
+						}
 					},
 				},
 			} );
@@ -1589,11 +1595,17 @@ describe( 'test store selectors', () => {
 			const check = {
 				key1: {
 					callback: callback1,
-					selectorPanel: '.panel',
+					selectors: {
+						panel: '.panel',
+						label: '.label',
+					}
 				},
 				key2: {
 					callback: callback2,
-					selectorPanel: '.panel',
+					selectors: {
+						panel: '.custom-panel',
+						label: '.custom-label',
+					}
 				},
 			}
 

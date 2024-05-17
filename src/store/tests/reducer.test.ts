@@ -1916,7 +1916,10 @@ describe( 'test store reducers', () => {
 					foo: {
 						1: {
 							callback: callback1,
-							selectorPanel: '.panel',
+							selectors: {
+								panel: '.panel',
+								label: '.label',
+							}
 						}
 					}
 				}
@@ -1926,7 +1929,10 @@ describe( 'test store reducers', () => {
 				prop: 'foo',
 				callback: callback2,
 				priority: 10,
-				selectorPanel: '.custom-panel',
+				selectors: {
+					panel: '.custom-panel',
+					label: '.custom-label',
+				}
 			}
 
 			const check = {
@@ -1935,11 +1941,17 @@ describe( 'test store reducers', () => {
 					foo: {
 						1: {
 							callback: callback1,
-							selectorPanel: '.panel',
+							selectors: {
+								panel: '.panel',
+								label: '.label',
+							}
 						},
 						10: {
 							callback: callback2,
-							selectorPanel: '.custom-panel',
+							selectors: {
+								panel: '.custom-panel',
+								label: '.custom-label',
+							}
 						}
 					}
 				}
@@ -1959,7 +1971,10 @@ describe( 'test store reducers', () => {
 					foo: {
 						1: {
 							callback: callback1,
-							selectorPanel: '.panel',
+							selectors: {
+								panel: '.panel',
+								label: '.label',
+							}
 						}
 					}
 				}
@@ -1969,7 +1984,10 @@ describe( 'test store reducers', () => {
 				prop: 'foo',
 				callback: callback2,
 				priority: 1,
-				selectorPanel: '.custom-panel',
+				selectors: {
+					panel: '.custom-panel',
+					label: '.custom-label',
+				}
 			}
 
 			const check = {
@@ -1978,7 +1996,10 @@ describe( 'test store reducers', () => {
 					foo: {
 						1: {
 							callback: callback2,
-							selectorPanel: '.custom-panel',
+							selectors: {
+								panel: '.custom-panel',
+								label: '.custom-label',
+							}
 						}
 					}
 				}

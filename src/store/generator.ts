@@ -214,7 +214,10 @@ export class Generator {
 									viewport,
 									priority,
 									selector: selector,
-									selectorPanel: renderer.selectorPanel,
+									selectors: {
+										panel: renderer.selectors.hasOwnProperty( 'panel' ) ? renderer.selectors.panel : 'missing',
+										label: renderer.selectors.hasOwnProperty( 'label' ) ? renderer.selectors.label : 'missing',
+									},
 									declarations,
 									css,
 									style: {
@@ -299,7 +302,10 @@ export class Generator {
 								viewport,
 								priority: 5,
 								selector: this.selector,
-								selectorPanel: this.getSelectorPanel( property ),
+								selectors: {
+									panel: this.getSelectorPanel( property ),
+									label: this.getSelectorLabel( property ),
+								},
 								declarations: declarations,
 								css,
 								style: {
@@ -406,6 +412,32 @@ export class Generator {
 
 			case 'border':
 				selector = '.border-block-support-panel';
+				break;
+		}
+
+		return selector;
+	}
+
+
+	/**
+	 * Set method to return wp native selector panel by property.
+	 *
+	 * @since 0.2.5
+	 */
+	getSelectorLabel( property ) {
+		let selector = '';
+
+		switch ( property ) {
+			case 'dimensions':
+				selector = '.dimensions-block-support-panel .components-tools-panel-item.last .block-editor-height-control';
+				break;
+
+			case 'spacing':
+				selector = '.dimensions-block-support-panel .components-tools-panel-header';
+				break;
+
+			case 'border':
+				selector = '.border-block-support-panel .components-tools-panel-header';
 				break;
 		}
 

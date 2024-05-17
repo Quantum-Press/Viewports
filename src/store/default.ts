@@ -47,6 +47,7 @@ export const DEFAULT_STATE = {
 		width: 0,
 		height: 0,
 	},
+	iframeViewport: 0,
 	isRegistering: false,
 	isReady: false,
 	isActive: false,
