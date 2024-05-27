@@ -78,10 +78,13 @@ export interface Rule {
 	properties: CSSProperties,
 	saves: Attributes,
 	savesProperties: CSSProperties,
+	hasSaves: boolean,
 	changes: Attributes,
 	changesProperties: CSSProperties,
+	hasChanges: boolean,
 	removes: Attributes,
 	removesProperties: CSSProperties,
+	hasRemoves: boolean,
 }
 
 export type SpectrumSets = {
@@ -134,7 +137,10 @@ export type SelectorSet = {
 }
 
 export type IndicatorSelectorSet = {
-	[ key : string ] : Array<Spectrum>,
+	[ key : string ] : {
+		property: string,
+		spectrumSet: Array<Spectrum>,
+	}
 }
 
 export type State = {

@@ -99,7 +99,12 @@ export const IndicatorPortals = () => {
 	return (
 		<>
 			{ Object.keys( selectors ).map( ( selector ) => {
-				const spectrumSet = selectors[ selector ];
+				const property = selectors[ selector ].property;
+				const spectrumSet = selectors[ selector ].spectrumSet;
+
+				if( '' === selector ) {
+					return null;
+				}
 
 				// Setup targets.
 				const targets = Array.from( document.querySelectorAll( selector ) );
@@ -109,6 +114,7 @@ export const IndicatorPortals = () => {
 					return createPortal(
 						<Indicator
 							target={ target }
+							property={ property }
 							spectrumSet={ spectrumSet }
 						/>,
 						target

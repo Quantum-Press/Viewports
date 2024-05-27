@@ -108,18 +108,17 @@ export const fillEmpty = ( fill : Attributes, filler : Attributes ) : Attributes
 /**
  * Set function to check existing property by traversing path.
  *
- * @param {string} path
+ * @param {Array<string | number>} path
  * @param {object} object
  *
  * @since 0.2.5
  */
-export const traverseExist = ( path : string, object : object ) : boolean => {
-	const parts = path.split( '.' );
-	const property = parts.shift();
+export const traverseExist = ( path : Array<string | number>, object : object ) : boolean => {
+	const property = path.shift();
 
 	if( object && isObject( object ) && object.hasOwnProperty( property ) ) {
-		if( parts.length ) {
-			return traverseExist( parts.join( '.' ), object[ property ] );
+		if( path.length ) {
+			return traverseExist( path, object[ property ] );
 		}
 
 		return true;
@@ -132,12 +131,12 @@ export const traverseExist = ( path : string, object : object ) : boolean => {
 /**
  * Set function to check if object or array is filled by traversing path.
  *
- * @param {string} path
+ * @param {Array<string | number>} path
  * @param {object} object
  *
  * @since 0.2.5
  */
-export const traverseFilled = ( path : string, object : object ) : boolean => {
+export const traverseFilled = ( path : Array<string | number>, object : object ) : boolean => {
 	const value = traverseGet( path, object );
 
 	if( isObject( value ) && Object.keys( value ).length ) {
@@ -155,22 +154,22 @@ export const traverseFilled = ( path : string, object : object ) : boolean => {
 /**
  * Set function to get object value by traversing path.
  *
- * @param {string} path
+ * @param {Array<string | number>} path
  * @param {object} object
+ * @param {any} fallback
  *
  * @since 0.2.5
  */
-export const traverseGet = ( path : string, object : object ) : any => {
-	const parts = path.split( '.' );
-	const property = parts.shift();
+export const traverseGet = ( path : Array<string | number>, object : object, fallback : any = null ) : any => {
+	const property = path.shift();
 
-	if( ! parts.length && isObject( object ) && object.hasOwnProperty( property ) ) {
+	if( ! path.length && isObject( object ) && object.hasOwnProperty( property ) ) {
 		return object[ property ];
 	}
 
-	if( parts.length && isObject( object ) && object.hasOwnProperty( property ) ) {
-		return traverseGet( parts.join( '.' ), object[ property ] );
+	if( path.length && isObject( object ) && object.hasOwnProperty( property ) ) {
+		return traverseGet( path, object[ property ], fallback );
 	}
 
-	return null;
+	return fallback;
 }

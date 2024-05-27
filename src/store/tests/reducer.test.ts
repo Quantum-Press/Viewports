@@ -42,7 +42,6 @@ import {
 	toggleMobile,
 	registerBlockInit,
 	updateBlockChanges,
-	updateBlockValids,
 	removeBlock,
 	removeBlockSaves,
 	restoreBlockSaves,
@@ -1236,115 +1235,6 @@ describe( 'test store reducers', () => {
 				}
 			};
 			const result = updateBlockChanges( state, action );
-
-			expect( result ).toStrictEqual( check );
-		} );
-
-		test( 'can updateBlockValids() with defaults, saves and changes', () => {
-			const state = deepFreeze( {
-				... DEFAULT_STATE,
-				viewports: {
-					375: '',
-					768: '',
-					1280: '',
-				},
-				defaults: {
-					'client-id': {
-						style: {
-							dimensions: {
-								padding: 0,
-								margin: 0,
-							}
-						}
-					}
-				},
-				saves: {
-					'client-id': {
-						768: {
-							style: {
-								dimensions: {
-									padding: {
-										left: "20px",
-										right: "20px",
-									},
-								}
-							}
-						},
-						1280: {
-							style: {
-								dimensions: {
-									margin: {
-										top: "40px",
-										bottom: "40px",
-									},
-								}
-							}
-						}
-					}
-				},
-				changes: {
-					'client-id': {
-						1280: {
-							style: {
-								dimensions: {
-									margin: "40px",
-								}
-							}
-						}
-					}
-				}
-			} );
-			const action = {
-				type: 'UPDATE_BLOCK_VALIDS',
-				clientId: 'client-id',
-			}
-
-			const check = {
-				... state,
-				valids: {
-					'client-id': {
-						0: {
-							style: {
-								dimensions: {
-									padding: 0,
-									margin: 0,
-								}
-							}
-						},
-						375: {
-							style: {
-								dimensions: {
-									padding: 0,
-									margin: 0,
-								}
-							}
-						},
-						768: {
-							style: {
-								dimensions: {
-									padding: {
-										left: "20px",
-										right: "20px",
-									},
-									margin: 0,
-								}
-							}
-						},
-						1280: {
-							style: {
-								dimensions: {
-									padding: {
-										left: "20px",
-										right: "20px",
-									},
-									margin: "40px",
-								}
-							}
-						}
-					}
-				}
-			}
-			const result = updateBlockValids( state, action );
 
 			expect( result ).toStrictEqual( check );
 		} );

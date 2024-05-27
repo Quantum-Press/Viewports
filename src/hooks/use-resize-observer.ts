@@ -51,8 +51,10 @@ export function useResizeObserver<T extends HTMLElement = HTMLElement>(
 
 		$element.current = document.querySelector( selector );
 
-		observer.current = getObserver();
-		observer.current.observe( $element.current, { box } )
+		if( $element.current ) {
+			observer.current = getObserver();
+			observer.current.observe( $element.current, { box } )
+		}
 
 		setReset( false );
 	}, [ reset ] );

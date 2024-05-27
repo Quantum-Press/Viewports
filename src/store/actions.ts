@@ -311,6 +311,20 @@ export const unsetInspecting = () : Action => {
 
 
 /**
+ * Set Action that toggle editing indicator.
+ *
+ * @since 0.2.8
+ *
+ * @return {Action}
+ */
+export const toggleInspecting = () : Action => {
+	return {
+		type: 'TOGGLE_INSPECTING',
+	};
+}
+
+
+/**
  * Set Action that updatess inspector position.
  *
  * @param {string}
@@ -351,6 +365,20 @@ export const setEditing = () : Action => {
 export const unsetEditing = () : Action => {
 	return {
 		type: 'UNSET_EDITING',
+	};
+}
+
+
+/**
+ * Set Action that toggle editing indicator.
+ *
+ * @since 0.2.8
+ *
+ * @return {Action}
+ */
+export const toggleEditing = () : Action => {
+	return {
+		type: 'TOGGLE_EDITING',
 	};
 }
 
@@ -450,18 +478,22 @@ export const updateBlockChanges = ( clientId : string, attributes : Attributes )
 
 
 /**
- * Set Action to update block valids.
+ * Set Action to add block changes.
  *
  * @param {string} clientId
+ * @param {number} viewport
+ * @param {string} viewport
  *
- * @since 0.1.0
+ * @since 0.2.8
  *
  * @return {Action}
  */
-export const updateBlockValids = ( clientId : string ) : Action => {
+export const addBlockPropertyChanges = ( clientId : string, viewport : number, prop: string ) : Action => {
 	return {
-		type: 'UPDATE_BLOCK_VALIDS',
+		type: 'ADD_BLOCK_PROPERTY_CHANGES',
 		clientId,
+		viewport,
+		prop,
 	};
 }
 

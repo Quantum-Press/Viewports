@@ -225,7 +225,7 @@ export const clearDuplicateSaves = ( saves : Attributes ) : Attributes => {
  * @return {Attributes} saves
  */
 export const findBlockSaves = ( attributes : Attributes ) : Attributes => {
-	const style = traverseGet( 'style', attributes ) || {};
+	const style = traverseGet( [ 'style' ], attributes ) || {};
 
 	let saves = {
 		0: {
@@ -233,7 +233,7 @@ export const findBlockSaves = ( attributes : Attributes ) : Attributes => {
 		}
 	}
 
-	const viewports = traverseGet( 'viewports', attributes ) || {}
+	const viewports = traverseGet( [ 'viewports' ], attributes ) || {}
 
 	if( Object.keys( viewports ).length ) {
 		saves = getMergedAttributes( saves, cloneDeep( viewports ) );
@@ -262,8 +262,8 @@ export const findBlockChanges = ( clientId : string, attributes : Attributes, st
 	const viewports = state.viewports;
 
 	// Set state objects to get changes from.
-	const style = traverseGet( [ 'style' ].join( '.' ), attributes ) || {};
-	const valid = traverseGet( [ clientId, viewport, 'style' ].join( '.' ), state.valids ) || {};
+	const style = traverseGet( [ 'style' ], attributes ) || {};
+	const valid = traverseGet( [ clientId, viewport, 'style' ], state.valids ) || {};
 
 	// Get all changes for actual valid viewport settings.
 	const validChanges = findObjectChanges( cloneDeep( style ), cloneDeep( valid ) );
@@ -273,7 +273,7 @@ export const findBlockChanges = ( clientId : string, attributes : Attributes, st
 
 	// Check if we need to set on a specific viewport.
 	if( isEditing ) {
-		if( traverseExist( [ clientId, viewport, 'style' ].join( '.' ), state.changes ) ) {
+		if( traverseExist( [ clientId, viewport, 'style' ], state.changes ) ) {
 			blockChanges[ viewport ] = {
 				style: {
 					... state.changes[ clientId ][ viewport ].style,
@@ -304,16 +304,16 @@ export const findBlockChanges = ( clientId : string, attributes : Attributes, st
 					continue;
 				}
 
-				if( traverseExist( [ clientId, compare, 'style', property ].join( '.' ), state.saves ) ) {
+				if( traverseExist( [ clientId, compare, 'style', property ], state.saves ) ) {
 					lastViewport = compare;
 				}
 
-				if( traverseExist( [ clientId, compare, 'style', property ].join( '.' ), state.changes ) ) {
+				if( traverseExist( [ clientId, compare, 'style', property ], state.changes ) ) {
 					lastViewport = compare;
 				}
 			}
 
-			if( traverseExist( [ lastViewport, 'style' ].join( '.' ), blockChanges ) ) {
+			if( traverseExist( [ lastViewport, 'style' ], blockChanges ) ) {
 				blockChanges[ lastViewport ] = {
 					... blockChanges[ lastViewport ],
 					style: {
@@ -352,8 +352,8 @@ export const findBlockChanges = ( clientId : string, attributes : Attributes, st
 export const findBlockValids = ( clientId : string, state : State ) : Attributes => {
 	const { saves, changes, viewports } = state;
 
-	const blockSaves = traverseGet( clientId, saves ) || {};
-	const blockChanges = traverseGet( clientId, changes ) || {};
+	const blockSaves = traverseGet( [ clientId ], saves ) || {};
+	const blockChanges = traverseGet( [ clientId ], changes ) || {};
 
 	const blockValids : ViewportStyle = {
 		0: {

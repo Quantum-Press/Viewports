@@ -119,7 +119,7 @@ domReady( () => {
 
 			// Make sure the toggle UI is attached to the DOM.
 			if ( ! toggleViewWrap.isConnected ) {
-				const toggleUI = document.querySelector( '.edit-site-header-edit-mode__end, .edit-post-header__settings' );
+				const toggleUI = document.querySelector( '.edit-site-header-edit-mode__end, .edit-post-header__settings, .editor-header__settings' );
 
 				if ( toggleUI ) {
 					toggleUI.before( toggleViewWrap );

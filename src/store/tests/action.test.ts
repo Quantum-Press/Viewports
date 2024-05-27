@@ -29,7 +29,6 @@ const {
 	toggleMobile,
 	registerBlockInit,
 	updateBlockChanges,
-	updateBlockValids,
 	removeBlock,
 	removeBlockSaves,
 	restoreBlockSaves,
@@ -268,16 +267,6 @@ describe( 'store actions', () => {
 		expect( check ).toStrictEqual( result );
 	});
 
-	test( 'updateBlockValids', () => {
-		const props = {}
-		const check = {
-			type: 'UPDATE_BLOCK_VALIDS',
-			clientId: 'client-id',
-		};
-		const result = updateBlockValids( 'client-id' );
-
-		expect( check ).toStrictEqual( result );
-	});
 
 	test( 'removeBlock', () => {
 		const check = {

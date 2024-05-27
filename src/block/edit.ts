@@ -41,15 +41,28 @@ const registerActivate = () => {
  *
  * @since 0.1.0
  */
+type InitMap = {
+	[ key : string ]: Function;
+};
+
 let initTimeout: any;
-const registerInit = () => {
+let initMap = {} as InitMap;
+const registerInit = ( clientId, setAttributes ) => {
 	clearTimeout( initTimeout );
+
+	initMap[ clientId ] = setAttributes;
 
 	initTimeout = setTimeout( () => {
 		dispatch( STORE_NAME ).setReady();
 		dispatch( STORE_NAME ).unsetRegistering();
 
-		console.log( '%cQP-Viewports -> successfully registered', 'padding:4px 8px;background:green;color:white' );
+		Object.entries( initMap ).forEach( ( [ clientId, setAttributes ] ) => {
+			setAttributes( { tempId: clientId } );
+		} );
+
+		console.log( '%cQP-Viewports -> successfully registered', 'padding:4px 8px;background:green;color:white', { ... initMap } );
+
+		initMap = {};
 	}, 1000 );
 }
 
@@ -101,12 +114,12 @@ export default function BlockEdit( blockArgs : any ) {
 
 	// Set useEffect to handle first init after render.
 	useEffect( () => {
-		attributes.tempId = '';
+		attributes.tempId = clientId;
 
 		store.setRegistering();
 		store.registerBlockInit( clientId, attributes );
 
-		registerInit();
+		registerInit( clientId, setAttributes );
 	}, [] );
 
 
@@ -123,7 +136,7 @@ export default function BlockEdit( blockArgs : any ) {
 			store.removeBlock( attributes.tempId );
 			store.registerBlockInit( clientId, attributes );
 
-			registerInit();
+			registerInit( clientId, setAttributes );
 		}
 
 	}, [ attributes.tempId ] );
@@ -227,6 +240,7 @@ export default function BlockEdit( blockArgs : any ) {
 		// Here we finally indicate that we need to organize a change in datastore.
 		if( isSelected ) {
 			const storeId = attributes.tempId && '' !== attributes.tempId ? attributes.tempId : clientId;
+			console.log( 'change attributes', attributes );
 
 			store.updateBlockChanges( storeId, attributes );
 		}

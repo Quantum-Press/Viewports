@@ -346,7 +346,7 @@ export const hasBlockViewports = ( state : State, clientId : string ) : boolean 
  * @return {boolean}
  */
 export const hasBlockDefaults = ( state : State, clientId : string ) : boolean => {
-	return traverseFilled( [ clientId, 0, 'style' ].join( '.' ), state.saves );
+	return traverseFilled( [ clientId, 0, 'style' ], state.saves );
 };
 
 
@@ -361,7 +361,7 @@ export const hasBlockDefaults = ( state : State, clientId : string ) : boolean =
  * @return {boolean}
  */
 export const hasBlockSaves = ( state : State, clientId : string ) : boolean => {
-	const saves = traverseGet( [ clientId ].join( '.' ), state.saves );
+	const saves = traverseGet( [ clientId ], state.saves, {} );
 
 	if( 1 < Object.keys( saves ).length ) {
 		return true;
@@ -382,7 +382,7 @@ export const hasBlockSaves = ( state : State, clientId : string ) : boolean => {
  * @return {boolean}
  */
 export const hasBlockChanges = ( state : State, clientId : string ) : boolean => {
-	return traverseFilled( [ clientId ].join( '.' ), state.changes );
+	return traverseFilled( [ clientId ], state.changes );
 };
 
 
@@ -399,7 +399,7 @@ export const hasBlockChanges = ( state : State, clientId : string ) : boolean =>
  * @return {boolean}
  */
 export const hasBlockPropertyChanges = ( state : State, clientId : string, viewport : number, property : string ) : boolean => {
-	return traverseFilled( [ clientId, viewport, 'style', property ].join( '.' ), state.changes );
+	return traverseFilled( [ clientId, viewport, 'style', property ], state.changes );
 };
 
 
@@ -414,7 +414,7 @@ export const hasBlockPropertyChanges = ( state : State, clientId : string, viewp
  * @return {boolean}
  */
 export const hasBlockValids = ( state : State, clientId : string ) : boolean => {
-	return traverseFilled( [ clientId ].join( '.' ), state.valids );
+	return traverseFilled( [ clientId ], state.valids );
 };
 
 
@@ -429,7 +429,7 @@ export const hasBlockValids = ( state : State, clientId : string ) : boolean => 
  * @return {boolean}
  */
 export const hasBlockRemoves = ( state : State, clientId : string ) : boolean => {
-	return traverseFilled( [ clientId ].join( '.' ), state.removes );
+	return traverseFilled( [ clientId ], state.removes );
 };
 
 
@@ -446,7 +446,7 @@ export const hasBlockRemoves = ( state : State, clientId : string ) : boolean =>
  * @return {boolean}
  */
 export const hasBlockPropertyRemoves = ( state : State, clientId : string, viewport : number, property : string ) : boolean => {
-	return traverseFilled( [ clientId, viewport, 'style', property ].join( '.' ), state.removes );
+	return traverseFilled( [ clientId, viewport, 'style', property ], state.removes );
 };
 
 
@@ -475,7 +475,7 @@ export const getSaves = ( state : State ) : object => {
  * @return {object} block saves
  */
 export const getBlockSaves = ( state : State, clientId : string ) : object => {
-	return traverseGet( [ clientId ].join( '.' ), state.saves ) || {};
+	return traverseGet( [ clientId ], state.saves, {} );
 };
 
 
@@ -492,7 +492,7 @@ export const getBlockSaves = ( state : State, clientId : string ) : object => {
  * @return {object} block saves
  */
 export const getBlockPropertySaves = ( state : State, clientId : string, viewport : number, property : string ) : object => {
-	return traverseGet( [ clientId, viewport, 'style', property ].join( '.' ), state.saves ) || {};
+	return traverseGet( [ clientId, viewport, 'style', property ], state.saves, {} );
 };
 
 
@@ -510,9 +510,9 @@ export const getGeneratedBlockSaves = ( state : State, clientId : string ) : obj
 	const { saves, changes, removes, valids } = state;
 
 	// Set states.
-	let blockSaves = saves.hasOwnProperty( clientId ) ? saves[ clientId ] : {};
-	let blockChanges = changes.hasOwnProperty( clientId ) ? changes[ clientId ] : {};
-	let blockRemoves = removes.hasOwnProperty( clientId ) ? removes[ clientId ] : {};
+	let blockSaves = saves.hasOwnProperty( clientId ) ? cloneDeep( saves[ clientId ] ) : {};
+	let blockChanges = changes.hasOwnProperty( clientId ) ? cloneDeep( changes[ clientId ] ) : {};
+	let blockRemoves = removes.hasOwnProperty( clientId ) ? cloneDeep( removes[ clientId ] ) : {};
 
 	// Set indicators.
 	const hasBlockSaves = Object.keys( blockSaves ).length ? true : false;
@@ -587,7 +587,7 @@ export const getBlockChanges = ( state : State, clientId : string ) : object => 
  * @return {object} block changes
  */
 export const getBlockPropertyChanges = ( state : State, clientId : string, viewport : number, property : string ) : object => {
-	return traverseGet( [ clientId, viewport, 'style', property ].join( '.' ), state.changes ) || {};
+	return traverseGet( [ clientId, viewport, 'style', property ], state.changes, {} );
 };
 
 
@@ -602,7 +602,7 @@ export const getBlockPropertyChanges = ( state : State, clientId : string, viewp
  * @return {object} block defaults
  */
 export const getBlockDefaults = ( state : State, clientId : string ) : object => {
-	return traverseGet( [ clientId, 0 ].join( '.' ), state.saves ) || {};
+	return traverseGet( [ clientId, 0 ], state.saves, {} );
 };
 
 
@@ -676,9 +676,9 @@ export const getViewportValids = ( state : State ) : object => {
 export const getViewportBlockValids = ( state : State, clientId : string ) : object => {
 	const { viewports, iframeViewport, saves, changes, removes, valids } = state;
 
-	const blockSaves = cloneDeep( traverseGet( [ clientId ].join( '.' ), saves ) ) || {} as ViewportStyle;
-	const blockChanges = cloneDeep( traverseGet( [ clientId ].join( '.' ), changes ) ) || {} as ViewportStyle;
-	const blockRemoves = cloneDeep( traverseGet( [ clientId ].join( '.' ), removes ) ) || {} as ViewportStyle;
+	const blockSaves = cloneDeep( traverseGet( [ clientId ], saves, {} ) ) as ViewportStyle;
+	const blockChanges = cloneDeep( traverseGet( [ clientId ], changes, {} ) ) as ViewportStyle;
+	const blockRemoves = cloneDeep( traverseGet( [ clientId ], removes, {} ) ) as ViewportStyle;
 
 	const merged = findObjectChanges( getMergedAttributes( blockSaves, blockChanges ), blockRemoves );
 	const blockValids : ViewportStyle = {
@@ -753,9 +753,7 @@ export const getBlockRemoves = ( state : State, clientId : string ) : object => 
  * @return {object} block removes
  */
 export const getBlockPropertyRemoves = ( state : State, clientId : string, viewport : number, property : string ) : object => {
-	const removes = traverseGet( [ clientId, viewport, 'style', property ].join( '.' ), state.removes );
-
-	return removes ? removes : {};
+	return traverseGet( [ clientId, viewport, 'style', property ], state.removes, {} );
 };
 
 
@@ -902,30 +900,13 @@ export const getIndicatorSelectorSet = ( state : State, clientId : string ) : In
 		const spectrumSelector = spectrum.selectors.label;
 
 		if( ! selectorSet.hasOwnProperty( spectrumSelector ) ) {
-			selectorSet[ spectrumSelector ] = [];
-		}
-
-		selectorSet[ spectrumSelector ].push( spectrum );
-	}
-
-	const rendererPropertySet = getRendererPropertySet( state );
-
-	for ( const property in rendererPropertySet ) {
-		const rendererSet = rendererPropertySet[ property ];
-
-		for ( const priority in rendererSet ) {
-			const renderer = rendererSet[ priority ];
-
-			if( ! renderer.selectors.hasOwnProperty( 'label' ) ) {
-				continue;
-			}
-
-			const rendererSelector = renderer.selectors.label;
-
-			if( ! selectorSet.hasOwnProperty( rendererSelector ) ) {
-				selectorSet[ rendererSelector ] = [];
+			selectorSet[ spectrumSelector ] = {
+				property: spectrum.property,
+				spectrumSet: [],
 			}
 		}
+
+		selectorSet[ spectrumSelector ].spectrumSet.push( spectrum );
 	}
 
 	return selectorSet;

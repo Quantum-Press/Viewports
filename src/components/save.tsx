@@ -220,7 +220,7 @@ function onSaveEntityRecordEnd( event ) {
 
 	// Update all blocks to viewports valid attributes and unset saving.
 	dispatch( STORE_NAME ).unsetSaving();
-	dispatch( 'core/block-editor' ).updateBlockAttributes( Object.keys( update ), update, true );
+	// dispatch( 'core/block-editor' ).updateBlockAttributes( Object.keys( update ), update, true );
 }
 
 
@@ -270,7 +270,7 @@ function onSavePostEnd() {
 
 	// Update all blocks to viewports valid attributes and unset saving.
 	dispatch( STORE_NAME ).unsetSaving();
-	dispatch( 'core/block-editor' ).updateBlockAttributes( Object.keys( update ), update, true );
+	// dispatch( 'core/block-editor' ).updateBlockAttributes( Object.keys( update ), update, true );
 }
 
 
@@ -311,7 +311,7 @@ function onAutoSavingEnd() {
 
 	// Update all blocks to viewport valid attributes and unset saving.
 	dispatch( STORE_NAME ).unsetAutoSaving();
-	dispatch( 'core/block-editor' ).updateBlockAttributes( Object.keys( update ), update, true );
+	// dispatch( 'core/block-editor' ).updateBlockAttributes( Object.keys( update ), update, true );
 }
 
 

@@ -122,17 +122,17 @@ export class Generator {
 				for( const [ property ] of Object.entries( style ) ) {
 
 					// Set state attributes
-					const saves = cloneDeep( traverseGet( [ viewport, 'style', property ].join( '.' ), this.state.saves ) ) || {};
+					const saves = cloneDeep( traverseGet( [ viewport, 'style', property ], this.state.saves ) ) || {};
 
 					// Set state attribute changes.
-					const changes = cloneDeep( traverseGet( [ viewport, 'style', property ].join( '.' ), this.state.changes ) ) || {};
-					const removes = cloneDeep( traverseGet( [ viewport, 'style', property ].join( '.' ), this.state.removes ) ) || {};
+					const changes = cloneDeep( traverseGet( [ viewport, 'style', property ], this.state.changes ) ) || {};
+					const removes = cloneDeep( traverseGet( [ viewport, 'style', property ], this.state.removes ) ) || {};
 
 					// Set valids from saves + changes.
 					const valids = getMergedAttributes( saves, changes );
 
 					// Set renderers.
-					const rendererSet = traverseGet( property, this.state.rendererPropertySet ) as RendererSet;
+					const rendererSet = traverseGet( [ property ], this.state.rendererPropertySet ) as RendererSet;
 					const renderers = rendererSet ? Object.entries( rendererSet ) : [];
 
 					// Iterate renderers to check its css outputs for any result to store.
@@ -198,14 +198,17 @@ export class Generator {
 								// Set saves properties.
 								const savesDeclarations = Object.keys( savesCSSCollectionSet ).length ? this.getDeclarations( selector, savesCSSCollectionSet ) : '';
 								const savesProperties = '' !== savesDeclarations ? this.generateProperties( selector + '{' + savesDeclarations + ' }' ) : {};
+								const hasSaves = 0 < Object.keys( savesProperties ).length ? true : false;
 
 								// Set changes properties.
 								const changesDeclarations = Object.keys( changesCSSCollectionSet ).length ? this.getDeclarations( selector, changesCSSCollectionSet ) : '';
 								const changesProperties = '' !== changesDeclarations ? this.generateProperties( selector + '{' + changesDeclarations + ' }' ) : {};
+								const hasChanges = 0 < Object.keys( changesProperties ).length ? true : false;
 
 								// Set removes properties.
 								const removesDeclarations = Object.keys( removesCSSCollectionSet ).length ? this.getDeclarations( selector, removesCSSCollectionSet ) : '';
 								const removesProperties = '' !== removesDeclarations ? this.generateProperties( selector + '{' + removesDeclarations + ' }' ) : {};
+								const hasRemoves = 0 < Object.keys( removesProperties ).length ? true : false;
 
 								// Set rule.
 								ruleSet.push( {
@@ -226,10 +229,13 @@ export class Generator {
 									properties,
 									saves,
 									savesProperties,
+									hasSaves,
 									changes,
 									changesProperties: findObjectChanges( changesProperties, savesProperties ),
+									hasChanges,
 									removes,
 									removesProperties,
+									hasRemoves,
 								} );
 							}
 						}
@@ -286,14 +292,17 @@ export class Generator {
 							// Set saves properties.
 							const savesDeclarations = Object.keys( savesCSSCollectionSet ).length ? this.getDeclarations( selector, savesCSSCollectionSet ) : '';
 							const savesProperties = '' !== savesDeclarations ? this.generateProperties( selector + '{' + savesDeclarations + ' }' ) : {};
+							const hasSaves = 0 < Object.keys( savesProperties ).length ? true : false;
 
 							// Set changes properties.
 							const changesDeclarations = Object.keys( changesCSSCollectionSet ).length ? this.getDeclarations( selector, changesCSSCollectionSet ) : '';
 							const changesProperties = '' !== changesDeclarations ? this.generateProperties( selector + '{' + changesDeclarations + ' }' ) : {};
+							const hasChanges = 0 < Object.keys( changesProperties ).length ? true : false;
 
 							// Set removes properties.
 							const removesDeclarations = Object.keys( removesCSSCollectionSet ).length ? this.getDeclarations( selector, removesCSSCollectionSet ) : '';
 							const removesProperties = '' !== removesDeclarations ? this.generateProperties( selector + '{' + removesDeclarations + ' }' ) : {};
+							const hasRemoves = 0 < Object.keys( removesProperties ).length ? true : false;
 
 							// Set default rule.
 							ruleSet.push( {
@@ -314,10 +323,13 @@ export class Generator {
 								properties,
 								saves,
 								savesProperties,
+								hasSaves,
 								changes,
 								changesProperties,
+								hasChanges,
 								removes,
 								removesProperties,
+								hasRemoves,
 							} );
 						}
 					}

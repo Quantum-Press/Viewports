@@ -1,6 +1,6 @@
 import type { State, Action, Reducers } from './types';
 import { DEFAULT_STATE } from './default';
-import { isObject, getMergedAttributes, traverseGet } from '../utils';
+import { isObject, getMergedAttributes, traverseGet, traverseFilled } from '../utils';
 import {
 	isInMobileRange,
 	isInTabletRange,
@@ -577,6 +577,29 @@ export function unsetInspecting( state : State, action : Action ) : State {
 
 
 /**
+ * Set reducer to toggle inspecting flag.
+ *
+ * @param {State} state current
+ * @param {Action} action dispatched
+ *
+ * @since 0.2.8
+ *
+ * @return {State} updated state
+ */
+export function toggleInspecting( state : State, action : Action ) : State {
+	switch ( action.type ) {
+		case 'TOGGLE_INSPECTING' :
+			return {
+				... state,
+				isInspecting: ! state.isInspecting,
+			};
+	}
+
+	return state;
+}
+
+
+/**
  * Set reducer to set inspector position.
  *
  * @param {State} state current
@@ -638,6 +661,29 @@ export function unsetEditing( state : State, action : Action ) : State {
 			return {
 				... state,
 				isEditing: false,
+			};
+	}
+
+	return state;
+}
+
+
+/**
+ * Set reducer to toggle editing flag.
+ *
+ * @param {State} state current
+ * @param {Action} action dispatched
+ *
+ * @since 0.2.8
+ *
+ * @return {State} updated state
+ */
+export function toggleEditing( state : State, action : Action ) : State {
+	switch ( action.type ) {
+		case 'TOGGLE_EDITING' :
+			return {
+				... state,
+				isEditing: ! state.isEditing,
 			};
 	}
 
@@ -865,7 +911,7 @@ export function updateBlockChanges( state : State, action : Action ) : State {
 			let nextState : any = {};
 
 			// Set indicator for existing state changes and differences.
-			const blockChanges = traverseGet( [ clientId ].join( '.' ), cloneDeep( changes ) ) || {};
+			const blockChanges = traverseGet( [ clientId ], cloneDeep( changes ) ) || {};
 			const hasChanges = Object.keys( blockChanges ).length ? true : false;
 
 			// If we have differences
@@ -895,9 +941,9 @@ export function updateBlockChanges( state : State, action : Action ) : State {
 			// Set spectrumState for spectrumSet generation.
 			const spectrumState = {
 				valids: blockValids,
-				saves: traverseGet( clientId, nextState.saves ) || {},
-				changes: traverseGet( clientId, nextState.changes ),
-				removes: traverseGet( clientId, nextState.removes ),
+				saves: traverseGet( [ clientId ], nextState.saves ) || {},
+				changes: traverseGet( [ clientId ], nextState.changes ),
+				removes: traverseGet( [ clientId ], nextState.removes ),
 				rendererPropertySet: nextState.renderer,
 				isSaving: nextState.isSaving,
 				viewport: nextState.viewport,
@@ -939,7 +985,7 @@ export function updateBlockChanges( state : State, action : Action ) : State {
 
 
 /**
- * Set reducer to update block valids.
+ * Set reducer to add block changes.
  *
  * @param {State} state current
  * @param {Action} action dispatched
@@ -948,26 +994,91 @@ export function updateBlockChanges( state : State, action : Action ) : State {
  *
  * @return {State} updated state
  */
-export function updateBlockValids( state : State, action : Action ) : State {
+export function addBlockPropertyChanges( state : State, action : Action ) : State {
 	switch ( action.type ) {
-		case 'UPDATE_BLOCK_VALIDS' :
+		case 'ADD_BLOCK_PROPERTY_CHANGES' :
 
 			// Deconstruct state and action.
-			const { valids } = state;
-			const { clientId } = action;
+			const { changes, valids } = state;
+			const { clientId, viewport, prop } = action;
 
-			// Generate new valids from new state.
-			const blockValids = findBlockValids( clientId, state );
+			// Check if changes already filled with prop for viewport.
+			if( traverseFilled( [ clientId, viewport, 'style', prop ], changes ) ) {
+				return state;
+			}
+
+			// From now on we know that we need to merge a new property set.
+			const validStyle = traverseGet( [ clientId, viewport, 'style', prop ], valids, {} );
+
+			// Set initial nextState.
+			let nextState : any = {};
+
+			// Check if we need to merge to the deepest.
+			if( traverseFilled( [ clientId, viewport, 'style' ], changes ) ) {
+				nextState = {
+					... state,
+					changes: {
+						... changes,
+						[ clientId ]: {
+							... changes[ clientId ],
+							[ viewport ]: {
+								style: {
+									... changes[ clientId ][ viewport ][ 'style' ],
+									[ prop ]: validStyle,
+								}
+							}
+						}
+					}
+				}
+			} else {
+
+				// Check if we need to merge on clientId.
+				if( traverseFilled( [ clientId ], changes ) ) {
+					nextState = {
+						... state,
+						changes: {
+							... changes,
+							[ clientId ]: {
+								... changes[ clientId ],
+								[ viewport ]: {
+									style: {
+										[ prop ]: validStyle,
+									}
+								}
+							}
+						}
+					}
+				} else {
+
+					// Merge new clientId.
+					nextState = {
+						... state,
+						changes: {
+							... changes,
+							[ clientId ]: {
+								[ viewport ]: {
+									style: {
+										[ prop ]: validStyle,
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			// Set new generated block valids from new generated block changes.
+			const blockValids = findBlockValids( clientId, nextState );
 
 			// Set spectrumState for spectrumSet generation.
 			const spectrumState = {
 				valids: blockValids,
-				saves: traverseGet( clientId, state.saves ) || {},
-				changes: traverseGet( clientId, state.changes ),
-				removes: traverseGet( clientId, state.removes ),
-				rendererPropertySet: state.renderer,
-				isSaving: state.isSaving,
-				viewport: state.viewport,
+				saves: traverseGet( [ clientId ], nextState.saves ) || {},
+				changes: traverseGet( [ clientId ], nextState.changes ),
+				removes: traverseGet( [ clientId ], nextState.removes ),
+				rendererPropertySet: nextState.renderer,
+				isSaving: nextState.isSaving,
+				viewport: nextState.viewport,
 			};
 
 			// Deconstruct spectrumProperties.
@@ -979,7 +1090,9 @@ export function updateBlockValids( state : State, action : Action ) : State {
 
 			// Return new state.
 			return {
-				... state,
+				... nextState,
+				viewports: state.viewports,
+				lastEdit: state.lastEdit,
 				valids: {
 					... valids,
 					[ clientId ]: blockValids,
@@ -996,7 +1109,7 @@ export function updateBlockValids( state : State, action : Action ) : State {
 					... state.inlineStyleSets,
 					[ clientId ]: inlineStyle,
 				},
-			};
+			}
 	}
 
 	return state;
@@ -1072,8 +1185,8 @@ export function removeBlockSaves( state : State, action : Action ) : State {
 			const { saves, removes, valids } = state;
 
 			// Set states.
-			const blockSaves = traverseGet( [ clientId, viewport, 'style' ].join( '.' ), saves ) || {};
-			const blockRemoves = traverseGet( [ clientId, viewport, 'style' ].join( '.' ), removes ) || {};
+			const blockSaves = traverseGet( [ clientId, viewport, 'style' ], saves ) || {};
+			const blockRemoves = traverseGet( [ clientId, viewport, 'style' ], removes ) || {};
 
 			// Set indicators.
 			const hasBlockSaves = Object.keys( blockSaves ).length ? true : false;
@@ -1109,9 +1222,9 @@ export function removeBlockSaves( state : State, action : Action ) : State {
 				// Set spectrumState for spectrumSet generation.
 				const spectrumState = {
 					valids: blockValids,
-					saves: traverseGet( clientId, nextState.saves ) || {},
-					changes: traverseGet( clientId, nextState.changes ),
-					removes: traverseGet( clientId, nextState.removes ),
+					saves: traverseGet( [ clientId ], nextState.saves ) || {},
+					changes: traverseGet( [ clientId ], nextState.changes ),
+					removes: traverseGet( [ clientId ], nextState.removes ),
 					rendererPropertySet: nextState.renderer,
 					isSaving: nextState.isSaving,
 					viewport: nextState.viewport,
@@ -1174,8 +1287,8 @@ export function restoreBlockSaves( state : State, action : Action ) : State {
 			let nextState : any = { ... state };
 
 			// Set states.
-			const blockChangesStyle = cloneDeep( traverseGet( [ clientId, viewport, 'style' ].join( '.' ), changes ) );
-			const blockRemovesStyle = cloneDeep( traverseGet( [ clientId, viewport, 'style' ].join( '.' ), removes ) );
+			const blockChangesStyle = cloneDeep( traverseGet( [ clientId, viewport, 'style' ], changes ) );
+			const blockRemovesStyle = cloneDeep( traverseGet( [ clientId, viewport, 'style' ], removes ) );
 
 			// Set indicators.
 			const hasChanges = blockChangesStyle && Object.keys( blockChangesStyle ).length ? true : false;
@@ -1289,9 +1402,9 @@ export function restoreBlockSaves( state : State, action : Action ) : State {
 			// Set spectrumState for spectrumSet generation.
 			const spectrumState = {
 				valids: blockValids,
-				saves: traverseGet( clientId, nextState.saves ) || {},
-				changes: traverseGet( clientId, nextState.changes ),
-				removes: traverseGet( clientId, nextState.removes ),
+				saves: traverseGet( [ clientId ], nextState.saves ) || {},
+				changes: traverseGet( [ clientId ], nextState.changes ),
+				removes: traverseGet( [ clientId ], nextState.removes ),
 				rendererPropertySet: nextState.renderer,
 				isSaving: nextState.isSaving,
 				viewport: nextState.viewport,
@@ -1348,9 +1461,9 @@ export function saveBlock( state : State, action : Action ) : State {
 			const { saves, changes, removes, valids } = state;
 
 			// Set states.
-			let blockSaves = saves.hasOwnProperty( clientId ) ? saves[ clientId ] : {};
-			let blockChanges = changes.hasOwnProperty( clientId ) ? changes[ clientId ] : {};
-			let blockRemoves = removes.hasOwnProperty( clientId ) ? removes[ clientId ] : {};
+			let blockSaves = saves.hasOwnProperty( clientId ) ? cloneDeep( saves[ clientId ] ) : {};
+			let blockChanges = changes.hasOwnProperty( clientId ) ? cloneDeep( changes[ clientId ] ) : {};
+			let blockRemoves = removes.hasOwnProperty( clientId ) ? cloneDeep( removes[ clientId ] ) : {};
 
 			// Set indicators.
 			const hasBlockSaves = Object.keys( blockSaves ).length ? true : false;
@@ -1397,9 +1510,9 @@ export function saveBlock( state : State, action : Action ) : State {
 			// Set spectrumState for spectrumSet generation.
 			const spectrumState = {
 				valids: blockValids,
-				saves: traverseGet( clientId, nextState.saves ) || {},
-				changes: traverseGet( clientId, nextState.changes ),
-				removes: traverseGet( clientId, nextState.removes ),
+				saves: traverseGet( [ clientId ], nextState.saves ) || {},
+				changes: traverseGet( [ clientId ], nextState.changes ),
+				removes: traverseGet( [ clientId ], nextState.removes ),
 				rendererPropertySet: nextState.renderer,
 				isSaving: nextState.isSaving,
 				viewport: nextState.viewport,
@@ -1539,16 +1652,18 @@ export const combinedReducers = {
 	unsetActive,
 	setInspecting,
 	unsetInspecting,
+	toggleInspecting,
 	setInspectorPosition,
 	setEditing,
 	unsetEditing,
+	toggleEditing,
 	toggleActive,
 	toggleDesktop,
 	toggleTablet,
 	toggleMobile,
 	registerBlockInit,
 	updateBlockChanges,
-	updateBlockValids,
+	addBlockPropertyChanges,
 	removeBlock,
 	removeBlockSaves,
 	restoreBlockSaves,

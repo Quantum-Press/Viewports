@@ -174,7 +174,7 @@ export const useResizeEditor = () => {
 				// Set viewport size with scaling.
 				$iframe.style.width = viewport + 'px';
 
-				let newHeight = ( maxHeight - ( 101 + 80 ) );
+				let newHeight = ( maxHeight - ( 115 + 80 ) );
 
 				$iframe.style.height = newHeight * factorGreater + 'px';
 				$desktopPreviewContainer.style.height = newHeight + 'px';
@@ -189,7 +189,7 @@ export const useResizeEditor = () => {
 				// Set viewport size without scaling.
 				$iframe.style.width = viewport + 1 + 'px';
 
-				let newHeight = ( maxHeight - ( 101 + 80 ) );
+				let newHeight = ( maxHeight - ( 115 + 80 ) );
 
 				$iframe.style.height = newHeight + 'px';
 				$desktopPreviewContainer.style.height = newHeight + 'px';
