@@ -12,6 +12,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @class    Quantum\Viewports\Posts
  * @since    0.2.8
+ * @version  0.2.85
  * @package  Quantum\Viewports
  * @category Class
  * @author   Sebastian Buchwald // conversionmedia GmbH & Co. KG
@@ -97,6 +98,7 @@ class Posts extends Instance {
 	 * @param array (required) $block
 	 *
 	 * @since 0.2.8
+	 * @version 0.2.85
 	 */
 	public function modify_inline_styles( $block )
 	{
@@ -136,7 +138,7 @@ class Posts extends Instance {
 
 		if( isset( $engine_styles[ 'css' ] ) ) {
 			$engine_parsed = $this->parse_css( $engine_styles[ 'css' ] );
-			$merged_parsed = array_merge( $engine_parsed, $native_parsed );
+			$merged_parsed = array_merge( $native_parsed, $engine_parsed );
 			$merged_styles = $this->stringify_css( $merged_parsed );
 
 			$block[ 'innerHTML' ] = preg_replace( '/style\s*=\s*["\'][^"\']*["\']/', 'style="' . $merged_styles . ';"', $block[ 'innerContent' ] );
