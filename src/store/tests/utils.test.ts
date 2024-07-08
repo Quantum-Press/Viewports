@@ -1,9 +1,19 @@
 // Import preparement dependencies.
 import deepFreeze from 'deep-freeze';
 import * as lodash from 'lodash';
+import * as React from 'react';
+import * as data from '@wordpress/data';
+import * as element from '@wordpress/element';
+import * as styleEngine from '@wordpress/style-engine';
 
 // Extend global window object.
+global.window[ 'wp' ] = {
+	data,
+	element,
+	styleEngine
+};
 global.window[ 'lodash' ] = lodash;
+global.window[ 'React' ] = React;
 
 // Import test environment.
 import { describe, expect, test } from '@jest/globals';
@@ -426,7 +436,9 @@ describe( 'store utils', () => {
 				padding: '80px',
 			}
 		};
-		const result768 = findBlockChanges( 'client-id', attributes, state );
+
+
+		const result768 = findBlockChanges( 'client-id', attributes, state, state.viewport );
 
 		expect( result768 ).toStrictEqual( check768 );
 	} );
@@ -513,7 +525,7 @@ describe( 'store utils', () => {
 				padding: '80px',
 			}
 		};
-		const result1280 = findBlockChanges( 'client-id', attributes, state );
+		const result1280 = findBlockChanges( 'client-id', attributes, state, state.viewport );
 
 		expect( result1280 ).toStrictEqual( check1280 );
 	} );
@@ -624,7 +636,7 @@ describe( 'store utils', () => {
 				padding: '80px',
 			}
 		};
-		const result1280 = findBlockChanges( 'client-id', attributes, state );
+		const result1280 = findBlockChanges( 'client-id', attributes, state, state.viewport );
 
 		expect( result1280 ).toStrictEqual( check1280 );
 	} );
@@ -734,7 +746,7 @@ describe( 'store utils', () => {
 				padding: '80px',
 			}
 		};
-		const result1280 = findBlockChanges( 'client-id', attributes, state );
+		const result1280 = findBlockChanges( 'client-id', attributes, state, state.viewport );
 
 		expect( result1280 ).toStrictEqual( check1280 );
 	} );

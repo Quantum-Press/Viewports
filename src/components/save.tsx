@@ -198,29 +198,12 @@ function onSaveEntityRecordEnd( event ) {
 		return;
 	}
 
-	// Get all blocks attributes and interate through to read clientId.
-	const valids = select( STORE_NAME ).getViewportValids();
-	const update = {};
-
-	for( const [ clientId, attributes ] of Object.entries( valids ) ) {
-		const block = select( 'core/block-editor' ).getBlock( clientId );
-		const blockExists = !! block;
-
-		if( blockExists && clientId === block.attributes.tempId ) {
-			update[ clientId ] = {
-				tempId: clientId,
-				style: attributes[ 'style' ],
-			}
-		}
-	}
-
 	console.log( '%cQP-Viewports -> onSaveEntityRecordEnd update', 'padding:4px 8px;background:darkgreen;color:white' );
 
 	isRunning = false;
 
 	// Update all blocks to viewports valid attributes and unset saving.
 	dispatch( STORE_NAME ).unsetSaving();
-	// dispatch( 'core/block-editor' ).updateBlockAttributes( Object.keys( update ), update, true );
 }
 
 
@@ -252,25 +235,10 @@ function onSavePostEnd() {
 
 	isRunning = false;
 
-	// Set block valids to iterate over clientIds.
-	const store = select( STORE_NAME );
-	const valids = store.getViewportValids();
-	const update = {};
-
-	for( const [ clientId ] of Object.entries( valids ) ) {
-		const block = select( 'core/block-editor' ).getBlock( clientId );
-		const blockExists = !! block;
-
-		if( blockExists && clientId === block.attributes.tempId ) {
-			update[ clientId ] = store.getViewportBlockValids( clientId );
-		}
-	}
-
 	console.log( '%cQP-Viewports -> onSavePostEnd update', 'padding:4px 8px;background:darkgreen;color:white' );
 
 	// Update all blocks to viewports valid attributes and unset saving.
 	dispatch( STORE_NAME ).unsetSaving();
-	// dispatch( 'core/block-editor' ).updateBlockAttributes( Object.keys( update ), update, true );
 }
 
 
@@ -292,26 +260,10 @@ function onAutoSavingStart() {
  * @since 0.1.0
  */
 function onAutoSavingEnd() {
-	const store = select( STORE_NAME );
-
-	// Set block valids to iterate over clientIds.
-	const valids = store.getViewportValids();
-	const update = {};
-
-	for( const [ clientId ] of Object.entries( valids ) ) {
-		const block = select( 'core/block-editor' ).getBlock( clientId );
-		const blockExists = !! block;
-
-		if( blockExists && clientId === block.attributes.tempId ) {
-			update[ clientId ] = store.getViewportBlockValids( clientId );
-		}
-	}
-
 	console.log( '%cQP-Viewports: valids onAutoSavingEnd', 'padding:4px 8px;background:darkgreen;color:white' );
 
 	// Update all blocks to viewport valid attributes and unset saving.
 	dispatch( STORE_NAME ).unsetAutoSaving();
-	// dispatch( 'core/block-editor' ).updateBlockAttributes( Object.keys( update ), update, true );
 }
 
 

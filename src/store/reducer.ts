@@ -899,7 +899,8 @@ export function updateBlockChanges( state : State, action : Action ) : State {
 
 			// Set new generated block changes by comparing it to the actual viewport valid.
 			// Here you will get just the difference between both.
-			const difference = findBlockChanges( clientId, cloneDeep( attributes ), state );
+			const viewport = null !== action.viewport ? action.viewport : state.isEditing ? state.viewport : state.iframeViewport;
+			const difference = findBlockChanges( clientId, cloneDeep( attributes ), state, viewport );
 
 			// Set indicator for existing differences.
 			const hasDifference = 0 < Object.entries( difference ).length;

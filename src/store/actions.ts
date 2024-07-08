@@ -463,16 +463,18 @@ export const registerBlockInit = ( clientId : string, attributes : Attributes ) 
  *
  * @param {string} clientId
  * @param {Attributes} attributes
+ * @param {number | null} viewport
  *
  * @since 0.1.0
  *
  * @return {Action}
  */
-export const updateBlockChanges = ( clientId : string, attributes : Attributes ) : Action => {
+export const updateBlockChanges = ( clientId : string, attributes : Attributes, viewport : number = null ) : Action => {
 	return {
 		type: 'UPDATE_BLOCK_CHANGES',
 		clientId,
 		attributes,
+		viewport,
 	};
 }
 

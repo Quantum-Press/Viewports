@@ -31,8 +31,8 @@ export const isObject = ( item : any ) => item && typeof item === 'object' && ! 
  */
 export const getMergedAttributes = ( ... objects : Array<any>) => {
 	return objects.reduce( ( prev, obj ) => {
-		for( const [ key, value ] of Object.entries( obj ) ) {
-			const prevValue   = prev[ key ];
+		for( const [ key ] of Object.entries( obj ) ) {
+			const prevValue = prev[ key ];
 			const objectValue = obj[ key ];
 
 			if( isObject( prevValue ) && isObject( objectValue ) ) {

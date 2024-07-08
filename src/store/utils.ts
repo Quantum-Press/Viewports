@@ -248,17 +248,16 @@ export const findBlockSaves = ( attributes : Attributes ) : Attributes => {
  *
  * @param {string}  clientId
  * @param {Attributes}  attributes
- * @param {State}  state
+ * @param {State} state
  *
  * @since 0.1.0
  *
  * @return {ViewportStyleSet} changes
  */
-export const findBlockChanges = ( clientId : string, attributes : Attributes, state : State ) : ViewportStyleSet => {
+export const findBlockChanges = ( clientId : string, attributes : Attributes, state : State, viewport : number ) : ViewportStyleSet => {
 
 	// Set states.
 	const isEditing = state.isEditing;
-	const viewport = isEditing ? state.viewport : state.iframeViewport;
 	const viewports = state.viewports;
 
 	// Set state objects to get changes from.

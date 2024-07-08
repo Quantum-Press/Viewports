@@ -1,9 +1,19 @@
 // Import preparement dependencies.
 import deepFreeze from 'deep-freeze';
 import * as lodash from 'lodash';
+import * as React from 'react';
+import * as data from '@wordpress/data';
+import * as element from '@wordpress/element';
+import * as styleEngine from '@wordpress/style-engine';
 
 // Extend global window object.
+global.window[ 'wp' ] = {
+	data,
+	element,
+	styleEngine
+};
 global.window[ 'lodash' ] = lodash;
+global.window[ 'React' ] = React;
 
 // Import test environment.
 import { describe, expect, test } from '@jest/globals';
@@ -34,10 +44,8 @@ const {
 	getGeneratedBlockSaves,
 	getChanges,
 	getBlockChanges,
-	getBlockDefaults,
 	getValids,
 	getBlockValids,
-	getViewportValids,
 	getViewportBlockValids,
 	getRemoves,
 	getBlockRemoves,
@@ -922,48 +930,6 @@ describe( 'test store selectors', () => {
 			expect( result ).toStrictEqual( check );
 		} );
 
-		test( 'can getBlockDefaults() on emptyness', () => {
-			const state = deepFreeze( {
-				... DEFAULT_STATE,
-				changes: {},
-			} );
-
-			const check = {
-				style: {},
-			}
-
-			const result = getBlockDefaults( state, 'client-id' );
-
-			expect( result ).toStrictEqual( check );
-		} );
-
-		test( 'can getBlockDefaults() with defaults', () => {
-			const state = deepFreeze( {
-				... DEFAULT_STATE,
-				defaults: {
-					'client-id': {
-						style: {
-							dimension: {
-								padding: '20px',
-							}
-						}
-					}
-				}
-			} );
-
-			const check = {
-				style: {
-					dimension: {
-						padding: '20px',
-					}
-				}
-			}
-
-			const result = getBlockDefaults( state, 'client-id' );
-
-			expect( result ).toStrictEqual( check );
-		} );
-
 		test( 'can getValids() on emptyness', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
@@ -1136,148 +1102,6 @@ describe( 'test store selectors', () => {
 			expect( result ).toStrictEqual( check );
 		} );
 
-		test( 'can getViewportValids() on emptyness', () => {
-			const state = deepFreeze( {
-				... DEFAULT_STATE,
-				valids: {},
-			} );
-
-			const result = getViewportValids( state );
-
-			expect( result ).toStrictEqual( {} );
-		} );
-
-		test( 'can getViewportValids() from default', () => {
-			const state = deepFreeze( {
-				... DEFAULT_STATE,
-				isActive: false,
-				isEditing: false,
-				viewport: 768,
-				valids: {
-					'client-id-1': {
-						0: {},
-						375: {},
-						1360: {}
-					},
-					'client-id-2': {
-						0: {
-							style: {
-								dimensions: {
-									padding: '20px',
-								}
-							}
-						},
-						375: {},
-						768: {
-							style: {
-								dimensions: {
-									margin: '20px',
-								}
-							}
-						},
-						1360: {}
-					},
-				},
-			} );
-
-			const check = {
-				'client-id-1': {},
-				'client-id-2': {
-					style: {
-						dimensions: {
-							padding: '20px',
-						}
-					}
-				}
-			}
-
-			const result = getViewportValids( state );
-
-			expect( result ).toStrictEqual( check );
-		} );
-
-		test( 'can getViewportValids() with wrong filled valids', () => {
-			const state = deepFreeze( {
-				... DEFAULT_STATE,
-				isActive: true,
-				isEditing: true,
-				viewport: 768,
-				valids: {
-					'client-id-1': {
-						375: {},
-						1360: {}
-					},
-					'client-id-2': {
-						375: {},
-						768: {
-							style: {
-								dimensions: {
-									margin: '20px',
-								}
-							}
-						},
-						1360: {}
-					},
-				},
-			} );
-
-			const check = {
-				'client-id-2': {
-					style: {
-						dimensions: {
-							margin: '20px',
-						}
-					}
-				}
-			}
-
-			const result = getViewportValids( state );
-
-			expect( result ).toStrictEqual( check );
-		} );
-
-		test( 'can getViewportValids() with right filled valids', () => {
-			const state = deepFreeze( {
-				... DEFAULT_STATE,
-				isActive: true,
-				isEditing: true,
-				viewport: 768,
-				valids: {
-					'client-id-1': {
-						375: {},
-						768: {},
-						1360: {}
-					},
-					'client-id-2': {
-						375: {},
-						768: {
-							style: {
-								dimensions: {
-									margin: '20px',
-								}
-							}
-						},
-						1360: {}
-					},
-				},
-			} );
-
-			const check = {
-				'client-id-1': {},
-				'client-id-2': {
-					style: {
-						dimensions: {
-							margin: '20px',
-						}
-					}
-				}
-			}
-
-			const result = getViewportValids( state );
-
-			expect( result ).toStrictEqual( check );
-		} );
-
 		test( 'can getViewportBlockValids() on emptyness', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
@@ -1326,6 +1150,7 @@ describe( 'test store selectors', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				viewport: 768,
+				iframeViewport: 768,
 				valids: {
 					'client-id': {
 						375: {},

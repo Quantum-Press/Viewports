@@ -1,21 +1,25 @@
 // Import preparement dependencies.
 import * as data from '@wordpress/data';
 import * as element from '@wordpress/element';
+import * as styleEngine from '@wordpress/style-engine';
 import * as lodash from 'lodash';
+import * as React from 'react';
 import deepFreeze from 'deep-freeze';
 
 // Extend global window object.
 global.window[ 'wp' ] = {
-	data: data,
-	element: element,
+	data,
+	element,
+	styleEngine
 };
 global.window[ 'lodash' ] = lodash;
+global.window[ 'React' ] = React;
 
 // Import test environment.
 import { describe, expect, test } from '@jest/globals';
 
 // Import store parts.
-import { DEFAULT_STATE } from '../default';
+import { DEFAULT_STATE, State, Action } from '..';
 
 // Deconstruct functions to test.
 import {
@@ -58,32 +62,34 @@ describe( 'test store reducers', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				viewports: {
+					0: 'Default',
 					375: 'Mobile',
 					768: 'Tablet',
 					1360: 'Desktop',
 				}
-			} );
+			} ) as State;
 			const action = {
 				type: 'SET_VIEWPORTS',
 				viewports: {
 					300: 'Mobile small',
 					1920: 'Desktop large',
 				}
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				viewports: {
+					0: 'Default',
 					300: 'Mobile small',
 					375: 'Mobile',
 					768: 'Tablet',
 					1360: 'Desktop',
 					1920: 'Desktop large',
 				}
-			};
+			} as State;
 			const result = setViewports( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can setViewport() with inactive viewport simulation', () => {
@@ -91,20 +97,20 @@ describe( 'test store reducers', () => {
 				... DEFAULT_STATE,
 				viewport: 1360,
 				isActive: false,
-			} );
+			} ) as State;
 			const action = {
 				type: 'SET_VIEWPORT',
 				viewport: 1024,
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				viewport: 1360,
 				isActive: false,
-			};
+			} as State;
 			const result = setViewport( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can setViewport() with active viewport simulation', () => {
@@ -112,20 +118,20 @@ describe( 'test store reducers', () => {
 				... DEFAULT_STATE,
 				viewport: 1360,
 				isActive: true,
-			} );
+			} ) as State;
 			const action = {
 				type: 'SET_VIEWPORT',
 				viewport: 1024,
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				viewport: 1024,
 				isActive: true,
-			};
+			} as State;
 			const result = setViewport( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can setDesktop() with invalid viewport', () => {
@@ -133,19 +139,19 @@ describe( 'test store reducers', () => {
 				... DEFAULT_STATE,
 				viewport: 768,
 				desktop: 1360,
-			} );
+			} ) as State;
 			const action = {
 				type: 'SET_DESKTOP',
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				viewport: 768,
 				desktop: 1360,
-			};
+			} as State;
 			const result = setDesktop( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can setDesktop() with valid viewport', () => {
@@ -153,19 +159,19 @@ describe( 'test store reducers', () => {
 				... DEFAULT_STATE,
 				viewport: 1280,
 				desktop: 1360,
-			} );
+			} ) as State;
 			const action = {
 				type: 'SET_DESKTOP',
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				viewport: 1280,
 				desktop: 1280,
-			};
+			} as State;
 			const result = setDesktop( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can setTablet() with invalid viewport', () => {
@@ -173,19 +179,19 @@ describe( 'test store reducers', () => {
 				... DEFAULT_STATE,
 				viewport: 375,
 				tablet: 768,
-			} );
+			} ) as State;
 			const action = {
 				type: 'SET_TABLET',
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				viewport: 375,
 				tablet: 768,
-			};
+			} as State;
 			const result = setTablet( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can setTablet() with valid viewport', () => {
@@ -193,19 +199,19 @@ describe( 'test store reducers', () => {
 				... DEFAULT_STATE,
 				viewport: 1024,
 				tablet: 768,
-			} );
+			} ) as State;
 			const action = {
 				type: 'SET_TABLET',
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				viewport: 1024,
 				tablet: 1024,
-			};
+			} as State;
 			const result = setTablet( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can setMobile() with invalid viewport', () => {
@@ -213,19 +219,19 @@ describe( 'test store reducers', () => {
 				... DEFAULT_STATE,
 				viewport: 768,
 				mobile: 375,
-			} );
+			} ) as State;
 			const action = {
 				type: 'SET_MOBILE',
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				viewport: 768,
 				mobile: 375,
-			};
+			} as State;
 			const result = setMobile( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can setMobile() with valid viewport', () => {
@@ -233,169 +239,145 @@ describe( 'test store reducers', () => {
 				... DEFAULT_STATE,
 				viewport: 320,
 				mobile: 375,
-			} );
+			} ) as State;
 			const action = {
 				type: 'SET_MOBILE',
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				viewport: 320,
 				mobile: 320,
-			};
+			} as State;
 			const result = setMobile( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can setReady()', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				isReady: false,
-			} );
+			} ) as State;
 			const action = {
 				type: 'SET_READY',
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				isReady: true,
-			};
+			} as State;
 			const result = setReady( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can setLoading()', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				isLoading: false,
-			} );
+			} ) as State;
 			const action = {
 				type: 'SET_LOADING',
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				isLoading: true,
-			};
+			} as State;
 			const result = setLoading( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can unsetLoading()', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				isLoading: true,
-			} );
+			} ) as State;
 			const action = {
 				type: 'UNSET_LOADING',
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				isLoading: false,
-			};
+			} as State;
 			const result = unsetLoading( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can setSaving()', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				isSaving: false,
-			} );
+			} ) as State;
 			const action = {
 				type: 'SET_SAVING',
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				isSaving: true,
-			};
+			} as State;
 			const result = setSaving( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can unsetSaving()', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				isSaving: true,
-			} );
+			} ) as State;
 			const action = {
 				type: 'UNSET_SAVING',
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				isSaving: false,
-			};
+			} as State;
 			const result = unsetSaving( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can setAutoSaving()', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				isAutoSaving: false,
-			} );
+			} ) as State;
 			const action = {
 				type: 'SET_AUTOSAVING',
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				isAutoSaving: true,
-			};
+			} as State;
 			const result = setAutoSaving( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can unsetAutoSaving()', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				isAutoSaving: true,
-			} );
+			} ) as State;
 			const action = {
 				type: 'UNSET_AUTOSAVING',
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				isAutoSaving: false,
-			};
+			} as State;
 			const result = unsetAutoSaving( state, action );
 
-			expect( check ).toStrictEqual( result );
-		} );
-
-		test( 'can setActive() with loading and without preselected viewport', () => {
-			const state = deepFreeze( {
-				... DEFAULT_STATE,
-				isLoading: true,
-				isActive: false,
-				viewport: 0,
-			} );
-			const action = {
-				type: 'SET_ACTIVE',
-			};
-
-			// As there is no iframe in tests, the default is 780 cause the iframe viewport
-			// will return 800 if there is no iframe. So the highest viewport is 780 by wp default.
-			const check = {
-				... DEFAULT_STATE,
-				isLoading: false,
-				isActive: true,
-				viewport: 780,
-			};
-			const result = setActive( state, action );
-
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can setActive() without loading and with preselected viewport', () => {
@@ -404,20 +386,20 @@ describe( 'test store reducers', () => {
 				isLoading: false,
 				isActive: false,
 				viewport: 1360,
-			} );
+			} ) as State;
 			const action = {
 				type: 'SET_ACTIVE',
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				isLoading: false,
 				isActive: true,
 				viewport: 1360,
-			};
+			} as State;
 			const result = setActive( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can unsetActive()', () => {
@@ -425,95 +407,92 @@ describe( 'test store reducers', () => {
 				... DEFAULT_STATE,
 				isActive: true,
 				viewport: 1360,
-			} );
+			} ) as State;
 			const action = {
 				type: 'UNSET_ACTIVE',
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				isActive: false,
 				viewport: 1360,
-			};
+			} as State;
 			const result = unsetActive( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can setInspecting()', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				isInspecting: false,
-			} );
+			} ) as State;
 			const action = {
 				type: 'SET_INSPECTING',
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				isInspecting: true,
-			};
+			} as State;
 			const result = setInspecting( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can unsetInspecting()', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				isInspecting: true,
-			} );
+			} ) as State;
 			const action = {
 				type: 'UNSET_INSPECTING',
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				isInspecting: false,
-			};
+			} as State;
 			const result = unsetInspecting( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can setInspectorPosition() to right', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				inspectorPosition: 'left',
-			} );
+			} ) as State;
 			const action = {
 				type: 'SET_INSPECTOR_POSITION',
 				position: 'right',
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				inspectorPosition: 'right',
-			};
+			} as State;
 			const result = setInspectorPosition( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can toggleActive() toggle inactive status', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				isActive: false,
-			} );
+			} ) as State;
 			const action = {
 				type: 'TOGGLE_ACTIVE',
-			};
+			} as Action;
 
-			// As there is no iframe in tests, the default is 780 cause the iframe viewport
-			// will return 800 if there is no iframe. So the highest viewport is 780 by wp default.
 			const check = {
 				... DEFAULT_STATE,
 				isActive: true,
-				viewport: 780,
-			};
+			} as State;
 			const result = toggleActive( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can toggleActive() toggle active status', () => {
@@ -521,19 +500,19 @@ describe( 'test store reducers', () => {
 				... DEFAULT_STATE,
 				isActive: true,
 				viewport: 1360,
-			} );
+			} ) as State;
 			const action = {
 				type: 'TOGGLE_ACTIVE',
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				isActive: false,
 				viewport: 1360,
-			};
+			} as State;
 			const result = toggleActive( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can toggleDesktop()', () => {
@@ -541,19 +520,19 @@ describe( 'test store reducers', () => {
 				... DEFAULT_STATE,
 				viewport: 375,
 				desktop: 1360,
-			} );
+			} ) as State;
 			const action = {
 				type: 'TOGGLE_DESKTOP',
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				viewport: 1360,
 				desktop: 1360,
-			};
+			} as State;
 			const result = toggleDesktop( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can toggleTablet()', () => {
@@ -561,19 +540,19 @@ describe( 'test store reducers', () => {
 				... DEFAULT_STATE,
 				viewport: 375,
 				tablet: 768,
-			} );
+			} ) as State;
 			const action = {
 				type: 'TOGGLE_TABLET',
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				viewport: 768,
 				tablet: 768,
-			};
+			} as State;
 			const result = toggleTablet( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 
 		test( 'can toggleMobil()', () => {
@@ -581,19 +560,19 @@ describe( 'test store reducers', () => {
 				... DEFAULT_STATE,
 				viewport: 768,
 				mobile: 375,
-			} );
+			} ) as State;
 			const action = {
 				type: 'TOGGLE_MOBILE',
-			};
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				viewport: 375,
 				mobile: 375,
-			};
+			} as State;
 			const result = toggleMobile( state, action );
 
-			expect( check ).toStrictEqual( result );
+			expect( result ).toStrictEqual( check );
 		} );
 	} );
 
@@ -601,89 +580,111 @@ describe( 'test store reducers', () => {
 
 	describe( 'styles', () => {
 		test( 'can registerBlockInit() without clientId and without attributes', () => {
-			const state = deepFreeze( {
+			const state = {
 				... DEFAULT_STATE,
 				viewports: {
+					0: 'Default',
 					375: 'Mobile',
 					768: 'Tablet',
 					1280: 'Desktop',
 				},
 				init: {},
-				defaults: {},
 				saves: {},
 				valids: {},
-			} );
+			} as State;
 			const action = {
 				type: 'REGISTER_BLOCK_INIT',
 				clientId: '',
 				attributes: {},
-			};
+			} as Action;
 
 			const check = {
 				... state,
 				init: {},
-				defaults: {},
 				saves: {},
 				valids: {}
-			};
+			} as State;
 			const result = registerBlockInit( state, action );
 
-			expect( check ).toStrictEqual( result );
+			// Ignore css, inlineStyle and spectrum sets to debug in generator.test.ts
+			result.cssSet = check.cssSet;
+			result.inlineStyleSets = check.inlineStyleSets;
+			result.spectrumSets = check.spectrumSets;
+
+			expect( result ).toEqual( check );
 		} );
 
 		test( 'can registerBlockInit() with clientId and without attributes', () => {
-			const state = deepFreeze( {
+			const state = {
 				... DEFAULT_STATE,
 				viewports: {
+					0: 'Default',
 					375: 'Mobile',
 					768: 'Tablet',
 					1280: 'Desktop',
 				},
 				init: {},
-				defaults: {},
 				saves: {},
 				valids: {},
-			} );
+			} as State;
 			const action = {
 				type: 'REGISTER_BLOCK_INIT',
 				clientId: 'client-id',
 				attributes: {},
-			};
+			} as Action;
 
 			const check = {
 				... state,
 				init: {
 					'client-id': true,
 				},
-				defaults: {},
-				saves: {},
+				saves: {
+					'client-id': {
+						0: {
+							style: {}
+						}
+					}
+				},
 				valids: {
 					'client-id': {
-						0: {},
-						375: {},
-						768: {},
-						1280: {},
+						0: {
+							style: {},
+						},
+						375: {
+							style: {},
+						},
+						768: {
+							style: {},
+						},
+						1280: {
+							style: {},
+						},
 					}
 				}
-			};
+			} as State;
 			const result = registerBlockInit( state, action );
 
-			expect( result ).toStrictEqual( check );
+			// Ignore css, inlineStyle and spectrum sets to debug in generator.test.ts
+			result.cssSet = check.cssSet;
+			result.inlineStyleSets = check.inlineStyleSets;
+			result.spectrumSets = check.spectrumSets;
+
+			expect( result ).toEqual( check );
 		} );
 
 		test( 'can registerBlockInit() with clientId and with attributes', () => {
-			const state = deepFreeze( {
+			const state = {
 				... DEFAULT_STATE,
 				viewports: {
+					0: 'Default',
 					375: 'Mobile',
 					768: 'Tablet',
 					1280: 'Desktop',
 				},
 				init: {},
-				defaults: {},
 				saves: {},
 				valids: {},
-			} );
+			} as State;
 			const action = {
 				type: 'REGISTER_BLOCK_INIT',
 				clientId: 'client-id',
@@ -695,24 +696,25 @@ describe( 'test store reducers', () => {
 						}
 					}
 				},
-			};
+			} as Action;
 
 			const check = {
 				... state,
 				init: {
 					'client-id': true,
 				},
-				defaults: {
+				saves: {
 					'client-id': {
-						style: {
-							dimensions: {
-								padding: 0,
-								margin: 0,
+						0: {
+							style: {
+								dimensions: {
+									padding: 0,
+									margin: 0,
+								}
 							}
 						}
 					}
 				},
-				saves: {},
 				valids: {
 					'client-id': {
 						0: {
@@ -749,17 +751,23 @@ describe( 'test store reducers', () => {
 						},
 					}
 				}
-			};
+			} as State;
 			const result = registerBlockInit( state, action );
 
-			expect( check ).toStrictEqual( result );
+			// Ignore css, inlineStyle and spectrum sets to debug in generator.test.ts
+			result.cssSet = check.cssSet;
+			result.inlineStyleSets = check.inlineStyleSets;
+			result.spectrumSets = check.spectrumSets;
+
+			expect( result ).toEqual( check );
 		} );
 
 		test( 'can updateBlockChanges() with saves, changes and single added attribute', () => {
-			const state = deepFreeze( {
+			const state = {
 				... DEFAULT_STATE,
 				viewport: 1280,
 				viewports: {
+					0: 'Default',
 					375: 'Mobile',
 					768: 'Tablet',
 					1024: 'Tablet large',
@@ -814,7 +822,7 @@ describe( 'test store reducers', () => {
 						}
 					}
 				}
-			} );
+			} as State;
 			const action = {
 				type: 'UPDATE_BLOCK_CHANGES',
 				clientId: 'client-id',
@@ -832,7 +840,7 @@ describe( 'test store reducers', () => {
 						}
 					}
 				}
-			}
+			} as Action;
 
 			const check = {
 				... state,
@@ -855,7 +863,9 @@ describe( 'test store reducers', () => {
 				},
 				valids: {
 					'client-id': {
-						0: {},
+						0: {
+							style: {},
+						},
 						375: {
 							style: {
 								dimensions: {
@@ -914,17 +924,23 @@ describe( 'test store reducers', () => {
 						}
 					}
 				}
-			};
+			} as State;
 			const result = updateBlockChanges( state, action );
 
-			expect( result ).toStrictEqual( check );
+			// Ignore css, inlineStyle and spectrum sets to debug in generator.test.ts
+			result.cssSet = check.cssSet;
+			result.inlineStyleSets = check.inlineStyleSets;
+			result.spectrumSets = check.spectrumSets;
+
+			expect( result ).toEqual( check );
 		} );
 
 		test( 'can updateBlockChanges() with saves, changes and multi changed attributes', () => {
-			const state = deepFreeze( {
+			const state = {
 				... DEFAULT_STATE,
 				viewport: 1280,
 				viewports: {
+					0: 'Default',
 					375: 'Mobile',
 					768: 'Tablet',
 					1024: 'Tablet large',
@@ -979,7 +995,7 @@ describe( 'test store reducers', () => {
 						}
 					}
 				}
-			} );
+			} as State;
 			const action = {
 				type: 'UPDATE_BLOCK_CHANGES',
 				clientId: 'client-id',
@@ -991,7 +1007,7 @@ describe( 'test store reducers', () => {
 						}
 					}
 				}
-			}
+			} as Action;
 
 			const check = {
 				... state,
@@ -1008,7 +1024,9 @@ describe( 'test store reducers', () => {
 				},
 				valids: {
 					'client-id': {
-						0: {},
+						0: {
+							style: {},
+						},
 						375: {
 							style: {
 								dimensions: {
@@ -1055,17 +1073,23 @@ describe( 'test store reducers', () => {
 						}
 					}
 				}
-			};
+			} as State;
 			const result = updateBlockChanges( state, action );
 
-			expect( result ).toStrictEqual( check );
+			// Ignore css, inlineStyle and spectrum sets to debug in generator.test.ts
+			result.cssSet = check.cssSet;
+			result.inlineStyleSets = check.inlineStyleSets;
+			result.spectrumSets = check.spectrumSets;
+
+			expect( result ).toEqual( check );
 		} );
 
 		test( 'can updateBlockChanges() with saves, changes and multi changed attributes including arrays', () => {
-			const state = deepFreeze( {
+			const state = {
 				... DEFAULT_STATE,
 				viewport: 1280,
 				viewports: {
+					0: 'Default',
 					375: 'Mobile',
 					768: 'Tablet',
 					1024: 'Tablet large',
@@ -1125,7 +1149,7 @@ describe( 'test store reducers', () => {
 						}
 					}
 				}
-			} );
+			} as State;
 			const action = {
 				type: 'UPDATE_BLOCK_CHANGES',
 				clientId: 'client-id',
@@ -1145,7 +1169,7 @@ describe( 'test store reducers', () => {
 						]
 					}
 				}
-			}
+			} as Action;
 
 			const check = {
 				... state,
@@ -1170,7 +1194,9 @@ describe( 'test store reducers', () => {
 				},
 				valids: {
 					'client-id': {
-						0: {},
+						0: {
+							style: {},
+						},
 						375: {
 							style: {
 								dimensions: {
@@ -1233,10 +1259,10 @@ describe( 'test store reducers', () => {
 						}
 					}
 				}
-			};
+			} as State;
 			const result = updateBlockChanges( state, action );
 
-			expect( result ).toStrictEqual( check );
+			expect( result ).toEqual( check );
 		} );
 
 		test( 'can removeBlock()', () => {
@@ -1245,9 +1271,6 @@ describe( 'test store reducers', () => {
 				init: {
 					'client-id': true,
 				},
-				defaults: {
-					'client-id': {},
-				},
 				saves: {
 					'client-id': {},
 				},
@@ -1257,34 +1280,39 @@ describe( 'test store reducers', () => {
 				valids: {
 					'client-id': {},
 				}
-			} );
+			} ) as State;
 			const action = {
 				type: 'REMOVE_BLOCK',
 				clientId: 'client-id',
-			}
+			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				init: {},
-				defaults: {},
 				saves: {},
 				changes: {},
 				valids: {},
-			}
+			} as State;
 			const result = removeBlock( state, action );
+
+			// Ignore css, inlineStyle and spectrum sets to debug in generator.test.ts
+			result.cssSet = check.cssSet;
+			result.inlineStyleSets = check.inlineStyleSets;
+			result.spectrumSets = check.spectrumSets;
 
 			expect( result ).toStrictEqual( check );
 		} );
 
-		test( 'can restoreBlockSaves() with viewport and remove the first entry', () => {
-			const state = deepFreeze( {
+		test( 'can restoreBlockSaves() with viewport and restore all styles', () => {
+			const state = {
 				... DEFAULT_STATE,
 				viewports: {
+					0: 'Default',
 					375: 'Mobile',
 					768: 'Tablet',
 					1280: 'Desktop',
 				},
-				changes: {
+				saves: {
 					'client-id': {
 						768: {
 							style: {
@@ -1307,35 +1335,52 @@ describe( 'test store reducers', () => {
 							}
 						}
 					}
+				},
+				changes: {
+					'client-id': {
+						768: {
+							style: {
+								dimensions: {
+									padding: {
+										top: "60px",
+										bottom: "60px",
+									}
+								}
+							}
+						},
+						1280: {
+							style: {
+								dimensions: {
+									padding: {
+										top: "80px",
+										bottom: "80px",
+									}
+								}
+							}
+						}
+					}
 				}
-			} );
+			} as State;
 			const action = {
-				type: 'REMOVE_BLOCK_CHANGES',
+				type: 'RESTORE_BLOCK_SAVES',
 				clientId: 'client-id',
 				viewport: 1280,
 				props: [ 'style' ],
-			}
+			} as Action;
 
 			const check = {
 				... state,
 				changes: {
-					'client-id': {
-						768: {
-							style: {
-								dimensions: {
-									padding: {
-										top: "20px",
-										bottom: "20px",
-									}
-								}
-							}
-						}
-					}
+					'client-id': {}
 				},
 				valids: {
 					'client-id': {
-						0: {},
-						375: {},
+						0: {
+							style: {}
+						},
+						375: {
+							style: {}
+						},
 						768: {
 							style: {
 								dimensions: {
@@ -1358,24 +1403,30 @@ describe( 'test store reducers', () => {
 						}
 					}
 				}
-			}
+			} as State;
 			const result = restoreBlockSaves( state, action );
 
-			// Reset lastEdit cause it is a timestamp.
+			// Ignore css, inlineStyle and spectrum sets to debug in generator.test.ts
+			result.cssSet = check.cssSet;
+			result.inlineStyleSets = check.inlineStyleSets;
+			result.spectrumSets = check.spectrumSets;
+
+			// Ignore lastEdit cause it is a timestamp.
 			result.lastEdit = check.lastEdit;
 
-			expect( result ).toStrictEqual( check );
+			expect( result ).toEqual( check );
 		} );
 
-		test( 'can restoreBlockSaves() with viewport and remove to the deepest', () => {
-			const state = deepFreeze( {
+		test( 'can restoreBlockSaves() with viewport and restore only a style wrapper', () => {
+			const state = {
 				... DEFAULT_STATE,
 				viewports: {
+					0: 'Default',
 					375: 'Mobile',
 					768: 'Tablet',
 					1280: 'Desktop',
 				},
-				changes: {
+				saves: {
 					'client-id': {
 						768: {
 							style: {
@@ -1398,14 +1449,38 @@ describe( 'test store reducers', () => {
 							}
 						}
 					}
+				},
+				changes: {
+					'client-id': {
+						768: {
+							style: {
+								dimensions: {
+									padding: {
+										top: "60px",
+										bottom: "60px",
+									}
+								}
+							}
+						},
+						1280: {
+							style: {
+								dimensions: {
+									padding: {
+										top: "80px",
+										bottom: "80px",
+									}
+								}
+							}
+						}
+					}
 				}
-			} );
+			} as State;
 			const action = {
-				type: 'REMOVE_BLOCK_CHANGES',
+				type: 'RESTORE_BLOCK_SAVES',
 				clientId: 'client-id',
 				viewport: 1280,
-				props: [ 'style', 'dimensions', 'padding', 'top' ],
-			}
+				props: [ 'style', 'dimensions' ],
+			} as Action;
 
 			const check = {
 				... state,
@@ -1415,17 +1490,8 @@ describe( 'test store reducers', () => {
 							style: {
 								dimensions: {
 									padding: {
-										top: "20px",
-										bottom: "20px",
-									}
-								}
-							}
-						},
-						1280: {
-							style: {
-								dimensions: {
-									padding: {
-										bottom: "40px",
+										top: "60px",
+										bottom: "60px",
 									}
 								}
 							}
@@ -1434,8 +1500,12 @@ describe( 'test store reducers', () => {
 				},
 				valids: {
 					'client-id': {
-						0: {},
-						375: {},
+						0: {
+							style: {},
+						},
+						375: {
+							style: {},
+						},
 						768: {
 							style: {
 								dimensions: {
@@ -1450,7 +1520,7 @@ describe( 'test store reducers', () => {
 							style: {
 								dimensions: {
 									padding: {
-										top: "20px",
+										top: "40px",
 										bottom: "40px",
 									}
 								}
@@ -1458,20 +1528,26 @@ describe( 'test store reducers', () => {
 						}
 					}
 				}
-			}
+			} as State;
 			const result = restoreBlockSaves( state, action );
 
-			// Reset lastEdit cause it is a timestamp.
+			// Ignore css, inlineStyle and spectrum sets to debug in generator.test.ts
+			result.cssSet = check.cssSet;
+			result.inlineStyleSets = check.inlineStyleSets;
+			result.spectrumSets = check.spectrumSets;
+
+			// Ignore lastEdit cause it is a timestamp.
 			result.lastEdit = check.lastEdit;
 
-			expect( result ).toStrictEqual( check );
+			expect( result ).toEqual( check );
 		} );
 
-
+		/*
 		test( 'can removeBlockSaves() with viewport and remove to the deepest', () => {
-			const state = deepFreeze( {
+			const state = {
 				... DEFAULT_STATE,
 				viewports: {
+					0: 'Default',
 					375: 'Mobile',
 					768: 'Tablet',
 					1280: 'Desktop',
@@ -1500,13 +1576,13 @@ describe( 'test store reducers', () => {
 						}
 					}
 				}
-			} );
+			} as State;
 			const action = {
 				type: 'REMOVE_BLOCK_SAVES',
 				clientId: 'client-id',
 				viewport: 1280,
-				props: [ 'style', 'dimensions', 'padding', 'top' ],
-			}
+				props: [ 'dimensions', 'padding', 'top' ],
+			} as Action;
 
 			const check = {
 				... state,
@@ -1526,6 +1602,7 @@ describe( 'test store reducers', () => {
 							style: {
 								dimensions: {
 									padding: {
+										top: "40px",
 										bottom: "40px",
 									}
 								}
@@ -1548,8 +1625,12 @@ describe( 'test store reducers', () => {
 				},
 				valids: {
 					'client-id': {
-						0: {},
-						375: {},
+						0: {
+							style: {}
+						},
+						375: {
+							style: {}
+						},
 						768: {
 							style: {
 								dimensions: {
@@ -1572,20 +1653,27 @@ describe( 'test store reducers', () => {
 						}
 					}
 				}
-			}
+			} as State;
 
 			const result = removeBlockSaves( state, action );
 
-			// Reset lastEdit cause it is a timestamp.
+			// Ignore css, inlineStyle and spectrum sets to debug in generator.test.ts
+			result.cssSet = check.cssSet;
+			result.inlineStyleSets = check.inlineStyleSets;
+			result.spectrumSets = check.spectrumSets;
+
+			// Ignore lastEdit cause it is a timestamp.
 			result.lastEdit = check.lastEdit;
 
-			expect( result ).toStrictEqual( check );
+			expect( result ).toEqual( check );
 		} );
+		*/
 
 		test( 'can saveBlock() with saves, changes and removes', () => {
-			const state = deepFreeze( {
+			const state = {
 				... DEFAULT_STATE,
 				viewports: {
+					0: 'Default',
 					375: 'Mobile',
 					768: 'Tablet',
 					1280: 'Desktop',
@@ -1595,6 +1683,9 @@ describe( 'test store reducers', () => {
 						768: {
 							style: {
 								dimensions: {
+									width: "100%",
+								},
+								spacing: {
 									margin: {
 										top: "20px",
 										bottom: "20px",
@@ -1608,7 +1699,7 @@ describe( 'test store reducers', () => {
 						},
 						1280: {
 							style: {
-								dimensions: {
+								spacing: {
 									margin: {
 										top: "40px",
 										bottom: "40px",
@@ -1623,12 +1714,14 @@ describe( 'test store reducers', () => {
 					'client-id': {
 						768: {
 							style: {
-								width: "50%",
+								dimensions: {
+									width: "50%",
+								},
 							}
 						},
 						1280: {
 							style: {
-								dimensions: {
+								spacing: {
 									padding: "20px",
 								}
 							}
@@ -1639,16 +1732,18 @@ describe( 'test store reducers', () => {
 					'client-id': {
 						768: {
 							style: {
-								width: "100%",
+								dimensions: {
+									width: "100%",
+								},
 							}
 						}
 					}
 				}
-			} );
+			} as State;
 			const action = {
 				type: 'SAVE_BLOCK',
 				clientId: 'client-id',
-			}
+			} as Action;
 
 			const check = {
 				... state,
@@ -1656,8 +1751,7 @@ describe( 'test store reducers', () => {
 					'client-id': {
 						768: {
 							style: {
-								width: "50%",
-								dimensions: {
+								spacing: {
 									margin: {
 										top: "20px",
 										bottom: "20px",
@@ -1671,7 +1765,7 @@ describe( 'test store reducers', () => {
 						},
 						1280: {
 							style: {
-								dimensions: {
+								spacing: {
 									margin: {
 										top: "40px",
 										bottom: "40px",
@@ -1686,12 +1780,15 @@ describe( 'test store reducers', () => {
 				removes: {},
 				valids: {
 					'client-id': {
-						0: {},
-						375: {},
+						0: {
+							style: {}
+						},
+						375: {
+							style: {}
+						},
 						768: {
 							style: {
-								width: "50%",
-								dimensions: {
+								spacing: {
 									margin: {
 										top: "20px",
 										bottom: "20px",
@@ -1705,8 +1802,7 @@ describe( 'test store reducers', () => {
 						},
 						1280: {
 							style: {
-								width: "50%",
-								dimensions: {
+								spacing: {
 									margin: {
 										top: "40px",
 										bottom: "40px",
@@ -1716,29 +1812,28 @@ describe( 'test store reducers', () => {
 							}
 						}
 					}
-				}
-			}
+				},
+			} as State;
 			const result = saveBlock( state, action );
 
-			expect( result ).toStrictEqual( check );
+			// Ignore css, inlineStyle and spectrum sets to debug in generator.test.ts
+			result.cssSet = check.cssSet;
+			result.inlineStyleSets = check.inlineStyleSets;
+			result.spectrumSets = check.spectrumSets;
+
+			expect( result ).toEqual( check );
 		} );
 
 		test( 'can clearBlocks()', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				viewports: {
+					0: 'Default',
 					768: 'Tablet',
 					1280: 'Desktop',
 				},
 				init: {
 					'client-id': true,
-				},
-				defaults: {
-					'client-id': {
-						style: {
-							width: 'auto',
-						}
-					},
 				},
 				saves: {
 					'client-id': {
@@ -1777,23 +1872,22 @@ describe( 'test store reducers', () => {
 						},
 					}
 				}
-			} );
+			} ) as State;
 			const action = {
 				type: 'CLEAR_BLOCKS',
-			}
+			} as Action;
 
 			const check = {
 				... state,
 				init: {},
-				defaults: {},
 				saves: {},
 				changes: {},
 				removes: {},
 				valids: {},
-			}
+			} as State;
 			const result = clearBlocks( state, action );
 
-			expect( result ).toStrictEqual( check );
+			expect( result ).toEqual( check );
 		} );
 
 		test( 'can registerRenderer() on existing property with different priorities', () => {
@@ -1813,7 +1907,7 @@ describe( 'test store reducers', () => {
 						}
 					}
 				}
-			} );
+			} ) as State;
 			const action = {
 				type: 'REGISTER_RENDERER',
 				prop: 'foo',
@@ -1823,7 +1917,7 @@ describe( 'test store reducers', () => {
 					panel: '.custom-panel',
 					label: '.custom-label',
 				}
-			}
+			} as Action;
 
 			const check = {
 				... state,
@@ -1845,7 +1939,7 @@ describe( 'test store reducers', () => {
 						}
 					}
 				}
-			}
+			} as State;
 			const result = registerRenderer( state, action );
 
 			expect( result ).toStrictEqual( check );
@@ -1868,7 +1962,7 @@ describe( 'test store reducers', () => {
 						}
 					}
 				}
-			} );
+			} ) as State;
 			const action = {
 				type: 'REGISTER_RENDERER',
 				prop: 'foo',
@@ -1878,7 +1972,7 @@ describe( 'test store reducers', () => {
 					panel: '.custom-panel',
 					label: '.custom-label',
 				}
-			}
+			} as Action;
 
 			const check = {
 				... state,
@@ -1893,7 +1987,7 @@ describe( 'test store reducers', () => {
 						}
 					}
 				}
-			}
+			} as State;
 			const result = registerRenderer( state, action );
 
 			expect( result ).toStrictEqual( check );

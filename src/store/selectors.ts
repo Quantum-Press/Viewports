@@ -592,21 +592,6 @@ export const getBlockPropertyChanges = ( state : State, clientId : string, viewp
 
 
 /**
- * Set selector to return defaults from a single block.
- *
- * @param {State} state current
- * @param {string} clientId
- *
- * @since 0.1.0
- *
- * @return {object} block defaults
- */
-export const getBlockDefaults = ( state : State, clientId : string ) : object => {
-	return traverseGet( [ clientId, 0 ], state.saves, {} );
-};
-
-
-/**
  * Set selector to return all valids.
  *
  * @param {State} state current
@@ -640,30 +625,6 @@ export const getBlockValids = ( state : State, clientId : string ) : object => {
 
 
 /**
- * Set selector to return all valids by actual viewport.
- *
- * @param {State} state current
- *
- * @since 0.1.0
- *
- * @return {object} valids for actual viewport
- */
-export const getViewportValids = ( state : State ) : object => {
-	const { valids } = state;
-	const viewport = state.iframeViewport;
-	const viewportValids : Attributes = {};
-
-	for( const [ clientId, viewports ] of Object.entries( valids ) ) {
-		if( viewports.hasOwnProperty( viewport ) ) {
-			viewportValids[ clientId ] = viewports[ viewport ];
-		}
-	}
-
-	return viewportValids;
-};
-
-
-/**
  * Set selector to return block valids from a single block by actual viewport.
  *
  * @param {State} state current
@@ -674,7 +635,7 @@ export const getViewportValids = ( state : State ) : object => {
  * @return {object} block valid
  */
 export const getViewportBlockValids = ( state : State, clientId : string ) : object => {
-	const { viewports, iframeViewport, saves, changes, removes, valids } = state;
+	const { viewports, iframeViewport, saves, changes, removes } = state;
 
 	const blockSaves = cloneDeep( traverseGet( [ clientId ], saves, {} ) ) as ViewportStyle;
 	const blockChanges = cloneDeep( traverseGet( [ clientId ], changes, {} ) ) as ViewportStyle;

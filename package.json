@@ -1,6 +1,6 @@
 {
 	"name": "quantum-viewports",
-	"version": "0.2.85",
+	"version": "0.2.9",
 	"private": true,
 	"description": "A new responsive Gutenberg Editor experience.",
 	"author": "Sebastian Buchwald",
@@ -33,6 +33,7 @@
 		"@types/react-dom": "^18.2.7",
 		"@wordpress/data": "^9.10.0",
 		"@wordpress/element": "^5.17.0",
+		"@wordpress/style-engine": "*",
 		"babel-loader": "^9.1.3",
 		"css-loader": "^6.8.1",
 		"deep-freeze": "0.0.1",

@@ -21,7 +21,7 @@ class Blocks extends Instance {
 	/**
 	 * Method to construct.
 	 *
-	 * @since 0.2.8
+	 * @since 0.1.0
 	 */
 	protected function __construct()
 	{
@@ -32,7 +32,8 @@ class Blocks extends Instance {
 	/**
 	 * Method to set hooks.
 	 *
-	 * @since 0.2.8
+	 * @since 0.1.0
+	 * @version 0.2.8
 	 */
 	protected function set_hooks()
 	{
@@ -40,6 +41,14 @@ class Blocks extends Instance {
 		\add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_block_editor_assets' ] );
 		\add_filter( 'render_block', [ $this, 'render_block' ], 20, 2 );
 		\add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_style' ], 20 );
+
+		// Allow additional CSS properties.
+		\add_filter( 'safe_style_css', function( $styles ) {
+			$styles[] = 'display';
+			$styles[] = 'background-repeat';
+
+			return $styles;
+		} );
 	}
 
 
@@ -79,7 +88,7 @@ class Blocks extends Instance {
 	/**
 	 * Method to enqueue block editor assets.
 	 *
-	 * @since 0.2.8
+	 * @since 0.1.0
 	 */
 	public function enqueue_block_editor_assets()
 	{
@@ -106,7 +115,8 @@ class Blocks extends Instance {
 	 * @param  string (required) $block_content Rendered block content.
 	 * @param  array  (required) $block         Block object.
 	 *
-	 * @since 0.2.8
+	 * @since 0.1.0
+	 * @version 0.2.5
 	 *
 	 * @return string Filtered block content.
 	 */
@@ -159,7 +169,8 @@ class Blocks extends Instance {
 	 * @param array  (required) $inline_styles pairs viewport to css
 	 * @param string (required) $native_style
 	 *
-	 * @since 0.2.8
+	 * @since 0.1.0
+	 * @version 0.2.8
 	 *
 	 * @return string containing css
 	 */
@@ -333,7 +344,7 @@ class Blocks extends Instance {
 	/**
 	 * Method to register css.
 	 *
-	 * @since 0.2.8
+	 * @since 0.1.0
 	 */
 	protected function register_css( $css )
 	{
@@ -347,7 +358,7 @@ class Blocks extends Instance {
 	/**
 	 * Method to register style.
 	 *
-	 * @since 0.2.8
+	 * @since 0.1.0
 	 */
 	public function enqueue_style()
 	{

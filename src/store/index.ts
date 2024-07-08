@@ -54,6 +54,12 @@ register( store );
  */
 export type * from './types';
 
+/**
+ * Export utils.
+ *
+ * @since 0.2.7
+ */
+export { DEFAULT_STATE } from './default';
 
 /**
  * Export utils.
