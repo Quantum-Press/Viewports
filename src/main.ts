@@ -66,7 +66,7 @@ domReady( () => {
 			// Make sure the viewport UI is attached to the DOM.
 			if ( ! viewportWrap.isConnected ) {
 				if ( isSiteEditor() ) {
-					const viewportUI = document.querySelector( '.interface-interface-skeleton__content .edit-site-visual-editor' );
+					const viewportUI = document.querySelector( '.interface-interface-skeleton__content .edit-site-visual-editor, .interface-interface-skeleton__content .edit-post-visual-editor' );
 
 					if ( viewportUI ) {
 						viewportUI.before( viewportWrap );
@@ -93,7 +93,7 @@ domReady( () => {
 			// Make sure the viewport UI is attached to the DOM.
 			if ( ! inspectorWrap.isConnected ) {
 				if ( isSiteEditor() ) {
-					const inspectorUI = document.querySelector( '.edit-site-editor__interface-skeleton .interface-interface-skeleton__content' );
+					const inspectorUI = document.querySelector( '.edit-site-editor__interface-skeleton .interface-interface-skeleton__content, #site-editor .interface-interface-skeleton__content' );
 
 					if ( inspectorUI ) {
 						inspectorUI.before( inspectorWrap );

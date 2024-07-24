@@ -78,7 +78,7 @@ export const useResizeEditor = () => {
 		const maxWidth = $widthContainer ? $widthContainer.getBoundingClientRect().width : 0;
 
 		// Set maxHeight.
-		const $heightContainer = document.querySelector( '.edit-site-visual-editor' ) as HTMLElement;
+		const $heightContainer = document.querySelector( '.edit-site-visual-editor, .edit-post-visual-editor' ) as HTMLElement;
 		const maxHeight = $heightContainer ? $heightContainer.getBoundingClientRect().height : 0;
 
 		// Check validity.

@@ -74,6 +74,20 @@
 
 
 /**
+ * Post Editor - Fix 6.6
+ */
+.edit-post-visual-editor {
+	& > div.editor-resizable-editor {
+		& > :first-child:nth-last-child( 2 ) {
+			width: 100%;
+			flex-direction: column;
+			align-items: center;
+		}
+	}
+}
+
+
+/**
  * Site Editor - Content division.
  */
 .edit-site-editor__interface-skeleton {
@@ -1330,6 +1344,15 @@ body.is-editing-viewports {
 		width: 100%;
 		height: 100%;
 		margin: 0 auto;
+	}
+}
+
+/**
+ * iFrame Fix 6.6
+ */
+.edit-post-visual-editor {
+	iframe[name="editor-canvas"] {
+		flex-grow: 0;
 	}
 }
 
