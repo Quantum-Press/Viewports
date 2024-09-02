@@ -649,6 +649,7 @@ export const getViewportBlockValids = ( state : State, clientId : string ) : obj
 	};
 
 	let last = 0;
+
 	for ( const [ viewportDirty ] of Object.entries( viewports ) ) {
 		const viewport = parseInt( viewportDirty );
 		const lastBlockValids = cloneDeep( blockValids[ last ] );
@@ -666,7 +667,7 @@ export const getViewportBlockValids = ( state : State, clientId : string ) : obj
 		last = viewport;
 	}
 
-	return blockValids[ iframeViewport ];
+	return blockValids[ last ];
 };
 
 

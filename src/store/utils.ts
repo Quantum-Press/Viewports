@@ -1,7 +1,7 @@
 import { isObject, getMergedAttributes, traverseGet, traverseExist } from '../utils';
 import { Generator } from './generator';
 import type { Attributes } from '../utils';
-import type { Styles, SpectrumState, SpectrumProperties, State, ViewportStyle, ViewportStyleSet } from './types';
+import type { Styles, SpectrumState, SpectrumProperties, State, ViewportStyle, ViewportStyleSet, BlockDifferences } from './types';
 
 const { isEqual, cloneDeep } = window[ 'lodash' ];
 
@@ -244,31 +244,45 @@ export const findBlockSaves = ( attributes : Attributes ) : Attributes => {
 
 
 /**
- * Set function to find changes in block.
+ * Set function to find differences in block styles.
  *
- * @param {string}  clientId
- * @param {Attributes}  attributes
+ * @param {string} clientId
+ * @param {Attributes} attributes
  * @param {State} state
  *
- * @since 0.1.0
+ * @since 0.2.11
  *
- * @return {ViewportStyleSet} changes
+ * @return {BlockDifferences}
  */
-export const findBlockChanges = ( clientId : string, attributes : Attributes, state : State, viewport : number ) : ViewportStyleSet => {
+export const findBlockDifferences = ( clientId : string, attributes : Attributes, state : State, viewport : number ) : BlockDifferences => {
 
 	// Set states.
 	const isEditing = state.isEditing;
 	const viewports = state.viewports;
 
 	// Set state objects to get changes from.
-	const style = traverseGet( [ 'style' ], attributes ) || {};
-	const valid = traverseGet( [ clientId, viewport, 'style' ], state.valids ) || {};
+	const style = traverseGet( [ 'style' ], attributes, {} );
+	const valid = traverseGet( [ clientId, viewport, 'style' ], state.valids, {} );
+
+	// Cleanup style output.
+	const styleCleaned = 'undefined' !== typeof style && null !== style ? style : {};
 
 	// Get all changes for actual valid viewport settings.
-	const validChanges = findObjectChanges( cloneDeep( style ), cloneDeep( valid ) );
+	const validChanges = findObjectChanges( cloneDeep( styleCleaned ), cloneDeep( valid ) );
+	const validRemoves = findObjectChanges( cloneDeep( valid ), cloneDeep( styleCleaned ) );
 
-	// Set initial blockChanges.
+	// Filter changes by property out of removes.
+	if( 0 < Object.keys( validChanges ).length && 0 < Object.keys( validRemoves ).length ) {
+		for( const property in validChanges ) {
+			if( validRemoves.hasOwnProperty( property ) ) {
+				delete validRemoves[ property ];
+			}
+		}
+	}
+
+	// Set initial blockChanges and blockRemoves.
 	const blockChanges = {} as ViewportStyleSet;
+	const blockRemoves = {} as ViewportStyleSet;
 
 	// Check if we need to set on a specific viewport.
 	if( isEditing ) {
@@ -282,6 +296,19 @@ export const findBlockChanges = ( clientId : string, attributes : Attributes, st
 		} else {
 			blockChanges[ viewport ] = {
 				style: validChanges,
+			}
+		}
+
+		if( traverseExist( [ clientId, viewport, 'style' ], state.removes ) ) {
+			blockRemoves[ viewport ] = {
+				style: {
+					... state.removes[ clientId ][ viewport ].style,
+					... validRemoves,
+				}
+			}
+		} else {
+			blockRemoves[ viewport ] = {
+				style: validRemoves,
 			}
 		}
 
@@ -314,7 +341,6 @@ export const findBlockChanges = ( clientId : string, attributes : Attributes, st
 
 			if( traverseExist( [ lastViewport, 'style' ], blockChanges ) ) {
 				blockChanges[ lastViewport ] = {
-					... blockChanges[ lastViewport ],
 					style: {
 						... blockChanges[ lastViewport ].style,
 						[ property ]: validChanges[ property ],
@@ -325,16 +351,81 @@ export const findBlockChanges = ( clientId : string, attributes : Attributes, st
 			}
 
 			blockChanges[ lastViewport ] = {
-				... blockChanges[ lastViewport ],
 				style: {
 					[ property ]: validChanges[ property ],
 				}
 			}
 		}
+
+		// Iterate over valid removes to compare with its default viewport setting.
+		for( const property in validRemoves ) {
+			if ( ! validRemoves.hasOwnProperty( property ) ) {
+				continue;
+			}
+
+			let lastViewport = 0;
+
+			// Iterate over viewports to find saves viewport to map on removes.
+			for( const viewportDirty in viewports ) {
+				const compare = parseInt( viewportDirty );
+
+				if( viewport < compare ) {
+					continue;
+				}
+
+				if( traverseExist( [ clientId, compare, 'style', property ], state.saves ) ) {
+					lastViewport = compare;
+				}
+			}
+
+			if( traverseExist( [ lastViewport, 'style' ], blockRemoves ) ) {
+				blockRemoves[ lastViewport ] = {
+					style: {
+						... blockRemoves[ lastViewport ].style,
+						[ property ]: validRemoves[ property ],
+					}
+				}
+
+				continue;
+			}
+
+			blockRemoves[ lastViewport ] = {
+				style: {
+					[ property ]: validRemoves[ property ],
+				}
+			}
+		}
+	}
+
+	if( 0 < Object.keys( blockChanges ).length ) {
+		for( const viewportDirty in blockChanges ) {
+			if ( ! blockChanges.hasOwnProperty( viewportDirty ) ) {
+				continue;
+			}
+
+			if( 0 === Object.keys( traverseGet( [ 'style' ], blockChanges[ viewportDirty ], {} ) ).length ) {
+				delete blockChanges[ viewportDirty ];
+			}
+		}
+	}
+
+	if( 0 < Object.keys( blockRemoves ).length ) {
+		for( const viewportDirty in blockRemoves ) {
+			if ( ! blockRemoves.hasOwnProperty( viewportDirty ) ) {
+				continue;
+			}
+
+			if( 0 === Object.keys( traverseGet( [ 'style' ], blockRemoves[ viewportDirty ], {} ) ).length ) {
+				delete blockRemoves[ viewportDirty ];
+			}
+		}
 	}
 
 	// Return blockChanges per viewport.
-	return blockChanges;
+	return {
+		changes: blockChanges,
+		removes: blockRemoves,
+	}
 }
 
 
@@ -399,7 +490,7 @@ export const findBlockValids = ( clientId : string, state : State ) : Attributes
 export const findObjectChanges = ( attributes : Attributes, valids : Attributes ) : Attributes => {
 	let changes : Attributes = {};
 
-	if( null === attributes ) {
+	if( null === attributes || 'undefined' === typeof attributes ) {
 		return {};
 	}
 
@@ -431,6 +522,54 @@ export const findObjectChanges = ( attributes : Attributes, valids : Attributes 
 	}
 
 	return changes;
+}
+
+
+/**
+ * Set function to find object similarities.
+ *
+ * @param {object} attributes
+ * @param {object} valids
+ *
+ * @since 0.1.0
+ *
+ * @return {object} similarities
+ */
+export const findObjectSimilarities = ( attributes : Attributes, valids : Attributes ) : Attributes => {
+	let similarities : Attributes = {};
+
+	if( null === attributes ) {
+		return {};
+	}
+
+	// Iterate through attributes.
+	for ( const [ attributeKey, attributeValue ] of Object.entries( attributes ) ) {
+		const validValue = valids.hasOwnProperty( attributeKey ) ? valids[ attributeKey ] : undefined;
+
+		if( ! isEqual( attributeValue, validValue ) ) {
+			continue;
+		}
+
+		if ( isObject( attributeValue ) && isObject( validValue ) ) {
+			let subChanges = findObjectSimilarities( attributeValue, validValue );
+
+			if ( 0 < Object.keys( subChanges ).length ) {
+				similarities[ attributeKey ] = { ... subChanges };
+			}
+
+			continue;
+		}
+
+		if( isObject( attributeValue ) ) {
+			similarities[ attributeKey ] = { ... attributeValue };
+		} else if( Array.isArray( attributeValue ) ) {
+			similarities[ attributeKey ] = [ ... attributeValue ];
+		} else {
+			similarities[ attributeKey ] = attributeValue;
+		}
+	}
+
+	return similarities;
 }
 
 

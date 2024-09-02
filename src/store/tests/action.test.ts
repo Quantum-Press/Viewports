@@ -261,6 +261,7 @@ describe( 'store actions', () => {
 			type: 'UPDATE_BLOCK_CHANGES',
 			clientId: 'client-id',
 			attributes: attributes,
+			viewport: null,
 		};
 		const result = updateBlockChanges( 'client-id', attributes );
 

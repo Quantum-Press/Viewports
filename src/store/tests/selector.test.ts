@@ -64,6 +64,7 @@ describe( 'test store selectors', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				viewports: {
+					0: 'Default',
 					375: 'Mobile',
 					768: 'Tablet',
 					1360: 'Desktop',
@@ -71,6 +72,7 @@ describe( 'test store selectors', () => {
 			} );
 
 			const check = {
+				0: 'Default',
 				375: 'Mobile',
 				768: 'Tablet',
 				1360: 'Desktop',
@@ -1110,15 +1112,28 @@ describe( 'test store selectors', () => {
 
 			const result = getViewportBlockValids( state, 'client-id' );
 
-			expect( result ).toStrictEqual( {} );
+			const check = {
+				style: {},
+			}
+
+			expect( result ).toStrictEqual( check );
 		} );
 
-		test( 'can getViewportBlockValids() with valids and invalid viewport', () => {
+		test( 'can getViewportBlockValids() with saves and not registered iframeViewport', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
-				viewport: 820,
-				valids: {
+				viewports: {
+					0: 'Default',
+					375: 'Mobile',
+					768: 'Tablet',
+					1360: 'Desktop',
+				},
+				iframeViewport: 820,
+				saves: {
 					'client-id': {
+						0: {
+							style: {},
+						},
 						375: {},
 						768: {
 							style: {
@@ -1143,15 +1158,31 @@ describe( 'test store selectors', () => {
 
 			const result = getViewportBlockValids( state, 'client-id' );
 
-			expect( result ).toStrictEqual( {} );
+			const check = {
+				style: {
+					dimensions: {
+						padding: {
+							top: '20px',
+							bottom: '20px',
+						}
+					}
+				}
+			}
+
+			expect( result ).toStrictEqual( check );
 		} );
 
-		test( 'can getViewportBlockValids() with valids and valid viewport', () => {
+		test( 'can getViewportBlockValids() with saves + changes and valid iframeViewport', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
-				viewport: 768,
+				viewports: {
+					0: 'Default',
+					375: 'Mobile',
+					768: 'Tablet',
+					1360: 'Desktop',
+				},
 				iframeViewport: 768,
-				valids: {
+				saves: {
 					'client-id': {
 						375: {},
 						768: {
@@ -1172,6 +1203,20 @@ describe( 'test store selectors', () => {
 							}
 						}
 					}
+				},
+				changes: {
+					'client-id': {
+						768: {
+							style: {
+								dimensions: {
+									padding: {
+										top: '40px',
+										bottom: '40px',
+									}
+								}
+							}
+						}
+					}
 				}
 			} );
 
@@ -1179,8 +1224,8 @@ describe( 'test store selectors', () => {
 				style: {
 					dimensions: {
 						padding: {
-							top: '20px',
-							bottom: '20px',
+							top: '40px',
+							bottom: '40px',
 						}
 					}
 				}

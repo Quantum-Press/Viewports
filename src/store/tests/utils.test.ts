@@ -27,7 +27,7 @@ import {
 	getHighestPossibleViewport,
 	findBlockSaves,
 	clearEmptySaves,
-	findBlockChanges,
+	findBlockDifferences,
 	findObjectChanges,
 	findBlockValids,
 	findRemoves,
@@ -62,12 +62,108 @@ describe( 'store utils', () => {
 
 	test( 'can findBlockSaves() with empty attributes', () => {
 		const result = findBlockSaves( {} );
+		const check = {
+			0: {
+				style: {}
+			}
+		}
 
-		expect( result ).toStrictEqual( {} );
+		expect( result ).toStrictEqual( check );
+	} );
+
+	test( 'can findBlockSaves() with filled attributes but without leading 0 viewport', () => {
+		const saves = {
+			320: {
+				style: {
+					dimensions: {
+						padding: {
+							top: '20px',
+							bottom: '20px',
+						},
+						margin: {
+							left: '20px',
+							right: '20px',
+						},
+					},
+					test: {
+						foo: 'empty',
+						bar: {
+							filled: true,
+							empty: false,
+							value: '20px',
+						}
+					}
+				},
+			},
+			1024: {
+				style: {
+					dimensions: {
+						padding: '40px',
+						margin: '40px',
+					},
+					margin: {
+						left: '60px',
+						right: '60px',
+					}
+				},
+			},
+		};
+
+		const attributes = {
+			content: 'Text',
+			viewports: saves,
+		}
+
+		const result = findBlockSaves( attributes );
+
+		const check = {
+			0: {
+				style: {}
+			},
+			320: {
+				style: {
+					dimensions: {
+						padding: {
+							top: '20px',
+							bottom: '20px',
+						},
+						margin: {
+							left: '20px',
+							right: '20px',
+						},
+					},
+					test: {
+						foo: 'empty',
+						bar: {
+							filled: true,
+							empty: false,
+							value: '20px',
+						}
+					}
+				},
+			},
+			1024: {
+				style: {
+					dimensions: {
+						padding: '40px',
+						margin: '40px',
+					},
+					margin: {
+						left: '60px',
+						right: '60px',
+					}
+				},
+			},
+		};
+
+		expect( result ).toStrictEqual( check );
 	} );
 
 	test( 'can findBlockSaves() with filled attributes', () => {
 		const saves = {
+			0: {
+				style: {},
+			},
 			320: {
 				style: {
 					dimensions: {
@@ -110,7 +206,7 @@ describe( 'store utils', () => {
 
 		const result = findBlockSaves( attributes );
 
-		expect( result ).toStrictEqual( { 'client-id': saves } );
+		expect( result ).toStrictEqual( saves );
 	} );
 
 	test( 'can clearEmptySaves() with empty saves', () => {
@@ -174,6 +270,811 @@ describe( 'store utils', () => {
 		}
 
 		const result = clearEmptySaves( saves );
+
+		expect( result ).toStrictEqual( check );
+	} );
+
+	test( 'can findBlockDifferences() without viewport, valids or isEditing', () => {
+		const state = deepFreeze( {
+			... DEFAULT_STATE,
+			valids: {},
+		} );
+
+		const attributes = {
+			style: {
+				dimensions: {
+					padding: '80px',
+				}
+			}
+		};
+
+		const check = {
+			changes: {
+				0: {
+					style: {
+						dimensions: {
+							padding: '80px',
+						}
+					}
+				}
+			},
+			removes: {}
+		};
+
+		const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
+
+		expect( result ).toStrictEqual( check );
+	} );
+
+
+	test( 'can findBlockDifferences() without viewport or changes, but different style prop on valids for viewport 0, without isEditing', () => {
+		const state = deepFreeze( {
+			... DEFAULT_STATE,
+			valids: {
+				'client-id': {
+					0: {
+						style: {
+							width: '100%',
+						}
+					}
+				}
+			},
+			changes: {}
+		} );
+
+		const attributes = {
+			style: {
+				width: '100%',
+				dimensions: {
+					padding: '80px',
+				}
+			}
+		};
+
+		const check = {
+			changes: {
+				0: {
+					style: {
+						dimensions: {
+							padding: '80px',
+						}
+					}
+				}
+			},
+			removes: {}
+		};
+
+		const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
+
+		expect( result ).toStrictEqual( check );
+	} );
+
+
+	test( 'can findBlockDifferences() without viewport or changes, but different style prop on valids for viewport 375, without isEditing', () => {
+		const state = deepFreeze( {
+			... DEFAULT_STATE,
+			valids: {
+				'client-id': {
+					375: {
+						style: {
+							width: '100%',
+						}
+					}
+				}
+			},
+			changes: {}
+		} );
+
+		const attributes = {
+			style: {
+				dimensions: {
+					padding: '80px',
+				}
+			}
+		};
+
+		const check = {
+			changes: {
+				0: {
+					style: {
+						dimensions: {
+							padding: '80px',
+						}
+					}
+				}
+			},
+			removes: {}
+		};
+
+		const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
+
+		expect( result ).toStrictEqual( check );
+	} );
+
+
+	test( 'can findBlockDifferences() without viewport or changes, but different style prop on valids for viewport 375, with isEditing', () => {
+		const state = deepFreeze( {
+			... DEFAULT_STATE,
+			isEditing: true,
+			valids: {
+				'client-id': {
+					375: {
+						style: {
+							width: '100%',
+						}
+					}
+				}
+			},
+			changes: {}
+		} );
+
+		const attributes = {
+			style: {
+				dimensions: {
+					padding: '80px',
+				}
+			}
+		};
+
+		const check = {
+			changes: {
+				0: {
+					style: {
+						dimensions: {
+							padding: '80px',
+						}
+					}
+				}
+			},
+			removes: {}
+		};
+
+		const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
+
+		expect( result ).toStrictEqual( check );
+	} );
+
+
+	test( 'can findBlockDifferences() without changes, but with iframeViewport 375 and different style prop on valids for viewport 375, with isEditing', () => {
+		const state = deepFreeze( {
+			... DEFAULT_STATE,
+			iframeViewport: 375,
+			isEditing: true,
+			valids: {
+				'client-id': {
+					375: {
+						style: {
+							width: '100%',
+						}
+					}
+				}
+			},
+		} );
+
+		const attributes = {
+			style: {
+				width: '100%',
+				dimensions: {
+					padding: '80px',
+				}
+			}
+		};
+
+		const check = {
+			changes: {
+				375: {
+					style: {
+						dimensions: {
+							padding: '80px',
+						}
+					}
+				}
+			},
+			removes: {}
+		};
+
+		const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
+
+		expect( result ).toStrictEqual( check );
+	} );
+
+
+	test( 'can findBlockDifferences() without changes, but with iframeViewport 375 and same style prop on valids for viewport 375, with isEditing', () => {
+		const state = deepFreeze( {
+			... DEFAULT_STATE,
+			iframeViewport: 375,
+			isEditing: true,
+			valids: {
+				'client-id': {
+					375: {
+						style: {
+							dimensions: {
+								padding: '20px',
+							}
+						}
+					}
+				}
+			},
+		} );
+
+		const attributes = {
+			style: {
+				dimensions: {
+					padding: '80px',
+				}
+			}
+		};
+
+		const check = {
+			changes: {
+				375: {
+					style: {
+						dimensions: {
+							padding: '80px',
+						}
+					}
+				}
+			},
+			removes: {}
+		};
+
+		const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
+
+		expect( result ).toStrictEqual( check );
+	} );
+
+
+	test( 'can findBlockDifferences() with changes, iframeViewport 375 and different style prop on valids for viewport 375, with isEditing', () => {
+		const state = deepFreeze( {
+			... DEFAULT_STATE,
+			iframeViewport: 375,
+			isEditing: true,
+			changes: {
+				'client-id': {
+					375: {
+						style: {
+							width: '100%',
+						}
+					}
+				}
+			},
+			valids: {
+				'client-id': {
+					375: {
+						style: {
+							dimensions: {
+								padding: '20px',
+							}
+						}
+					}
+				}
+			},
+		} );
+
+		const attributes = {
+			style: {
+				dimensions: {
+					padding: '80px',
+				}
+			}
+		};
+
+		const check = {
+			changes: {
+				375: {
+					style: {
+						width: '100%',
+						dimensions: {
+							padding: '80px',
+						}
+					}
+				}
+			},
+			removes: {}
+		};
+
+		const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
+
+		expect( result ).toStrictEqual( check );
+	} );
+
+
+	test( 'can findBlockDifferences() with changes, iframeViewport 375 and same style prop on valids for viewport 375, with isEditing', () => {
+		const state = deepFreeze( {
+			... DEFAULT_STATE,
+			iframeViewport: 375,
+			isEditing: true,
+			changes: {
+				'client-id': {
+					375: {
+						style: {
+							dimensions: {
+								padding: '60px',
+							}
+						}
+					}
+				}
+			},
+			valids: {
+				'client-id': {
+					375: {
+						style: {
+							dimensions: {
+								padding: '20px',
+							}
+						}
+					}
+				}
+			},
+		} );
+
+		const attributes = {
+			style: {
+				dimensions: {
+					padding: '80px',
+				}
+			}
+		};
+
+		const check = {
+			changes: {
+				375: {
+					style: {
+						dimensions: {
+							padding: '80px',
+						}
+					}
+				}
+			},
+			removes: {}
+		};
+
+		const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
+
+		expect( result ).toStrictEqual( check );
+	} );
+
+
+	test( 'can findBlockDifferences() without changes, but with iframeViewport 375 and same array based style prop on valids for viewport 375, with isEditing', () => {
+		const state = deepFreeze( {
+			... DEFAULT_STATE,
+			iframeViewport: 375,
+			isEditing: true,
+			valids: {
+				'client-id': {
+					375: {
+						style: {
+							layers: [
+								{
+									foo: 'bar',
+								}
+							],
+						}
+					}
+				}
+			},
+		} );
+
+		const attributes = {
+			style: {
+				layers: [
+					{
+						foo: 'bar',
+					},
+					{
+						bar: 'foo',
+					}
+				],
+			}
+		};
+
+		const check = {
+			changes: {
+				375: {
+					style: {
+						layers: [
+							{
+								foo: 'bar',
+							},
+							{
+								bar: 'foo',
+							}
+						],
+					}
+				}
+			},
+			removes: {}
+		};
+
+		const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
+
+		expect( result ).toStrictEqual( check );
+	} );
+
+
+	test( 'can findBlockDifferences() without changes, but with iframeViewport 375 and same array based style prop on valids for viewport 375, with isEditing, nested object changes', () => {
+		const state = deepFreeze( {
+			... DEFAULT_STATE,
+			iframeViewport: 375,
+			isEditing: true,
+			valids: {
+				'client-id': {
+					375: {
+						style: {
+							layers: [
+								{
+									foo: 'bar',
+								}
+							],
+						}
+					}
+				}
+			},
+		} );
+
+		const attributes = {
+			style: {
+				layers: [
+					{
+						foo: 'bar',
+						bar: 'foo',
+					},
+				],
+			}
+		};
+
+		const check = {
+			changes: {
+				375: {
+					style: {
+						layers: [
+							{
+								foo: 'bar',
+								bar: 'foo',
+							},
+						],
+					}
+				}
+			},
+			removes: {}
+		};
+
+		const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
+
+		expect( result ).toStrictEqual( check );
+	} );
+
+
+	test( 'can findBlockDifferences() with changes, iframeViewport 375 and same array based style prop on valids for viewport 375, with isEditing', () => {
+		const state = deepFreeze( {
+			... DEFAULT_STATE,
+			iframeViewport: 375,
+			isEditing: true,
+			changes: {
+				'client-id': {
+					375: {
+						style: {
+							width: '100%',
+							layers: [
+								{
+									foo: 'bar',
+								},
+								{
+									bar: 'foo',
+								}
+							],
+						}
+					}
+				}
+			},
+			valids: {
+				'client-id': {
+					375: {
+						style: {
+							layers: [
+								{
+									foo: 'bar',
+								}
+							],
+						}
+					}
+				}
+			},
+		} );
+
+		const attributes = {
+			style: {
+				width: '100%',
+				layers: [
+					{
+						foo: 'bar',
+					},
+					{
+						bar: 'foo',
+					},
+					{
+						far: 'boo',
+					}
+				],
+			}
+		};
+
+		const check = {
+			changes: {
+				375: {
+					style: {
+						width: '100%',
+						layers: [
+							{
+								foo: 'bar',
+							},
+							{
+								bar: 'foo',
+							},
+							{
+								far: 'boo',
+							}
+						],
+					}
+				}
+			},
+			removes: {}
+		};
+
+		const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
+
+		expect( result ).toStrictEqual( check );
+	} );
+
+
+	test( 'can findBlockDifferences() with changes, iframeViewport 375 and same array based style prop on valids for viewport 375, with isEditing, nested object changes', () => {
+		const state = deepFreeze( {
+			... DEFAULT_STATE,
+			iframeViewport: 375,
+			isEditing: true,
+			changes: {
+				'client-id': {
+					375: {
+						style: {
+							width: '100%',
+							layers: [
+								{
+									foo: 'bar',
+								},
+								{
+									bar: 'foo',
+								}
+							],
+						}
+					}
+				}
+			},
+			valids: {
+				'client-id': {
+					375: {
+						style: {
+							layers: [
+								{
+									foo: 'bar',
+								}
+							],
+						}
+					}
+				}
+			},
+		} );
+
+		const attributes = {
+			style: {
+				width: '100%',
+				layers: [
+					{
+						foo: 'bar',
+						bar: 'foo',
+					},
+					{
+						bar: 'foo',
+					},
+				],
+			}
+		};
+
+		const check = {
+			changes: {
+				375: {
+					style: {
+						width: '100%',
+						layers: [
+							{
+								foo: 'bar',
+								bar: 'foo',
+							},
+							{
+								bar: 'foo',
+							},
+						],
+					}
+				}
+			},
+			removes: {}
+		};
+
+		const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
+
+		expect( result ).toStrictEqual( check );
+	} );
+
+
+	test( 'can findBlockDifferences() without changes, but with iframeViewport 375 and same array based style prop on valids for viewport 375, with isEditing, reversed array order', () => {
+		const state = deepFreeze( {
+			... DEFAULT_STATE,
+			iframeViewport: 375,
+			isEditing: true,
+			valids: {
+				'client-id': {
+					375: {
+						style: {
+							layers: [
+								{
+									foo: 'bar',
+								},
+								{
+									bar: 'foo',
+								}
+							],
+						}
+					}
+				}
+			},
+		} );
+
+		const attributes = {
+			style: {
+				width: '100%',
+				layers: [
+					{
+						bar: 'foo',
+					},
+					{
+						foo: 'bar',
+					}
+				],
+			}
+		};
+
+		const check = {
+			changes: {
+				375: {
+					style: {
+						width: '100%',
+						layers: [
+							{
+								bar: 'foo',
+							},
+							{
+								foo: 'bar',
+							}
+						],
+					}
+				}
+			},
+			removes: {}
+		};
+
+		const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
+
+		expect( result ).toStrictEqual( check );
+	} );
+
+
+	test( 'can findBlockDifferences() without changes or removes, but with iframeViewport 768 and same style prop on valids for viewport 768, with isEditing, removing', () => {
+		const state = deepFreeze( {
+			... DEFAULT_STATE,
+			iframeViewport: 768,
+			isEditing: true,
+			valids: {
+				'client-id': {
+					768: {
+						style: {
+							width: '100%',
+							layers: [
+								{
+									foo: 'bar',
+								},
+								{
+									bar: 'foo',
+								}
+							],
+						}
+					}
+				}
+			},
+		} );
+
+		const attributes = {
+			style: {
+				width: '100%',
+			}
+		};
+
+		const check = {
+			changes: {},
+			removes: {
+				768: {
+					style: {
+						layers: [
+							{
+								foo: 'bar',
+							},
+							{
+								bar: 'foo',
+							}
+						],
+					}
+				}
+			}
+		};
+
+		const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
+
+		expect( result ).toStrictEqual( check );
+	} );
+
+
+	test( 'can findBlockDifferences() without changes or removes, but with iframeViewport 768 and same style prop on valids for viewport 768, with isEditing, removing and changing, ', () => {
+		const state = deepFreeze( {
+			... DEFAULT_STATE,
+			iframeViewport: 768,
+			isEditing: true,
+			valids: {
+				'client-id': {
+					768: {
+						style: {
+							layers: [
+								{
+									foo: 'bar',
+								},
+								{
+									bar: 'foo',
+								}
+							],
+						}
+					}
+				}
+			},
+		} );
+
+		const attributes = {
+			style: {
+				width: '50%',
+			}
+		};
+
+		const check = {
+			changes: {
+				768: {
+					style: {
+						width: '50%',
+					}
+				}
+			},
+			removes: {
+				768: {
+					style: {
+						layers: [
+							{
+								foo: 'bar',
+							},
+							{
+								bar: 'foo',
+							}
+						],
+					}
+				}
+			}
+		};
+
+		const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
 
 		expect( result ).toStrictEqual( check );
 	} );
@@ -415,365 +1316,27 @@ describe( 'store utils', () => {
 		expect( result ).toStrictEqual( check );
 	} );
 
-	test( 'can findBlockChanges() with filled attributes and without defaults, saves and changes', () => {
-		const state = deepFreeze( {
-			... DEFAULT_STATE,
-			defaults: {},
-			saves: {},
-			changes: {}
-		} );
-
-		const attributes = {
-			style: {
-				dimensions: {
-					padding: '80px',
-				}
-			}
-		};
-
-		const check768 = {
-			dimensions: {
-				padding: '80px',
-			}
-		};
-
-
-		const result768 = findBlockChanges( 'client-id', attributes, state, state.viewport );
-
-		expect( result768 ).toStrictEqual( check768 );
-	} );
-
-	test( 'can findBlockChanges() with filled attributes and prefilled changes', () => {
-		const state = deepFreeze( {
-			... DEFAULT_STATE,
-			defaults: {
-				'client-id': {
-					style: {
-						width: '100%',
-						height: 'auto',
-						dimensions: {
-							margin: {
-								left: 0,
-								right: 0,
-							}
-						}
-					}
-				}
-			},
-			saves: {
-				'client-id': {
-					375: {
-						style: {
-							dimensions: {
-								padding: {
-									top: '40px',
-									bottom: '40px',
-								},
-								margin: {
-									left: '40px',
-									right: '40px',
-								}
-							}
-						}
-					},
-					1280: {
-						style: {
-							dimensions: {
-								padding: {
-									top: '60px',
-									bottom: '60px',
-								}
-							}
-						}
-					}
-				}
-			},
-			changes: {
-				'client-id': {
-					1280: {
-						style: {
-							height: '100vw',
-							dimensions: {
-								padding: {
-									top: '80px',
-									bottom: '80px',
-								}
-							}
-						}
-					}
-				}
-			}
-		} );
-
-		const attributes = {
-			style: {
-				width: 'auto',
-				height: '100vw',
-				dimensions: {
-					padding: '80px',
-					margin: {
-						left: '40px',
-						right: '40px',
-					}
-				}
-			}
-		};
-
-		const check1280 = {
-			width: 'auto',
-			dimensions: {
-				padding: '80px',
-			}
-		};
-		const result1280 = findBlockChanges( 'client-id', attributes, state, state.viewport );
-
-		expect( result1280 ).toStrictEqual( check1280 );
-	} );
-
-	test( 'can findBlockChanges() with filled attributes and prefilled changes including arrays', () => {
-		const state = deepFreeze( {
-			... DEFAULT_STATE,
-			viewports: {
-				375: 'Mobile',
-				1280: 'Desktop',
-			},
-			defaults: {
-				'client-id': {
-					style: {
-						width: '100%',
-						height: 'auto',
-						dimensions: {
-							margin: {
-								left: 0,
-								right: 0,
-							}
-						}
-					}
-				}
-			},
-			saves: {
-				'client-id': {
-					375: {
-						style: {
-							dimensions: {
-								padding: {
-									top: '40px',
-									bottom: '40px',
-								},
-								margin: {
-									left: '40px',
-									right: '40px',
-								}
-							}
-						}
-					},
-					1280: {
-						style: {
-							layers: [
-								{
-									foo: 'bar',
-								}
-							],
-							dimensions: {
-								padding: {
-									top: '60px',
-									bottom: '60px',
-								}
-							}
-						}
-					}
-				}
-			},
-			changes: {
-				'client-id': {
-					1280: {
-						style: {
-							dimensions: {
-								padding: {
-									top: '80px',
-									bottom: '80px',
-								}
-							}
-						}
-					}
-				}
-			}
-		} );
-
-		const attributes = {
-			style: {
-				width: 'auto',
-				height: 'auto',
-				layers: [
-					{
-						bar: 'foo',
-					},
-					{
-						foo: 'bar',
-					}
-				],
-				dimensions: {
-					padding: '80px',
-					margin: {
-						left: '40px',
-						right: '40px',
-					}
-				}
-			}
-		};
-
-		const check1280 = {
-			width: 'auto',
-			layers: [
-				{
-					bar: 'foo',
-				},
-				{
-					foo: 'bar',
-				}
-			],
-			dimensions: {
-				padding: '80px',
-			}
-		};
-		const result1280 = findBlockChanges( 'client-id', attributes, state, state.viewport );
-
-		expect( result1280 ).toStrictEqual( check1280 );
-	} );
-
-	test( 'can findBlockChanges() with filled attributes and prefilled changes including arrays reversed order', () => {
-		const state = deepFreeze( {
-			... DEFAULT_STATE,
-			defaults: {
-				'client-id': {
-					style: {
-						width: '100%',
-						height: 'auto',
-						dimensions: {
-							margin: {
-								left: 0,
-								right: 0,
-							}
-						}
-					}
-				}
-			},
-			saves: {
-				'client-id': {
-					375: {
-						style: {
-							dimensions: {
-								padding: {
-									top: '40px',
-									bottom: '40px',
-								},
-								margin: {
-									left: '40px',
-									right: '40px',
-								}
-							}
-						}
-					},
-					1280: {
-						style: {
-							layers: [
-								{
-									foo: 'bar',
-								},
-								{
-									bar: 'foo',
-								}
-							],
-							dimensions: {
-								padding: {
-									top: '60px',
-									bottom: '60px',
-								}
-							}
-						}
-					}
-				}
-			},
-			changes: {
-				'client-id': {
-					1280: {
-						style: {
-							dimensions: {
-								padding: {
-									top: '80px',
-									bottom: '80px',
-								}
-							}
-						}
-					}
-				}
-			}
-		} );
-
-		const attributes = {
-			style: {
-				width: 'auto',
-				height: 'auto',
-				layers: [
-					{
-						bar: 'foo',
-					},
-					{
-						foo: 'bar',
-					}
-				],
-				dimensions: {
-					padding: '80px',
-					margin: {
-						left: '40px',
-						right: '40px',
-					}
-				}
-			}
-		};
-
-		const check1280 = {
-			width: 'auto',
-			layers: [
-				{
-					bar: 'foo',
-				},
-				{
-					foo: 'bar',
-				}
-			],
-			dimensions: {
-				padding: '80px',
-			}
-		};
-		const result1280 = findBlockChanges( 'client-id', attributes, state, state.viewport );
-
-		expect( result1280 ).toStrictEqual( check1280 );
-	} );
-
 	test( 'can findBlockValids() with filled attributes', () => {
 		const state = deepFreeze( {
 			... DEFAULT_STATE,
-			defaults: {
-				'client-id': {
-					style: {
-						width: '100%',
-						height: 'auto',
-						dimensions: {
-							padding: {
-								left: '20px',
-								right: '20px',
-							},
-							margin: {
-								top: '0',
-								bottom: '0',
-							}
-						}
-					}
-				}
-			},
 			saves: {
 				'client-id': {
+					0: {
+						style: {
+							width: '100%',
+							height: 'auto',
+							dimensions: {
+								padding: {
+									left: '20px',
+									right: '20px',
+								},
+								margin: {
+									top: '0',
+									bottom: '0',
+								}
+							}
+						}
+					},
 					768: {
 						style: {
 							width: '50%',
@@ -810,6 +1373,7 @@ describe( 'store utils', () => {
 				}
 			},
 			viewports: {
+				0: 'Default',
 				375: 'Mobile',
 				768: 'Tablet',
 				1024: 'Tablet large',

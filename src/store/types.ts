@@ -25,6 +25,11 @@ export type ViewportStyleSet = {
 	};
 }
 
+export type BlockDifferences = {
+	changes: ViewportStyleSet,
+	removes: ViewportStyleSet,
+}
+
 export type InitSet = {
 	[ key: string ] : boolean,
 }

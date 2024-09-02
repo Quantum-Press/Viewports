@@ -8,7 +8,7 @@ import {
 	getHighestPossibleViewport,
 	findBlockSaves,
 	findBlockValids,
-	findBlockChanges,
+	findBlockDifferences,
 	findRemoves,
 	findCleanedChanges,
 	clearEmptySaves,
@@ -894,44 +894,75 @@ export function updateBlockChanges( state : State, action : Action ) : State {
 		case 'UPDATE_BLOCK_CHANGES' :
 
 			// Deconstruct state and action.
-			const { changes, valids } = state;
+			const { changes, removes, valids } = state;
 			const { clientId, attributes } = action;
 
 			// Set new generated block changes by comparing it to the actual viewport valid.
 			// Here you will get just the difference between both.
 			const viewport = null !== action.viewport ? action.viewport : state.isEditing ? state.viewport : state.iframeViewport;
-			const difference = findBlockChanges( clientId, cloneDeep( attributes ), state, viewport );
+			const differences = findBlockDifferences( clientId, cloneDeep( attributes ), state, viewport );
 
 			// Set indicator for existing differences.
-			const hasDifference = 0 < Object.entries( difference ).length;
-			if ( ! hasDifference ) {
+			const hasDifferentChanges = 0 < Object.entries( differences.changes ).length;
+			const hasDifferentRemoves = 0 < Object.entries( differences.removes ).length;
+			const hasDifferences = hasDifferentChanges || hasDifferentRemoves;
+			if ( ! hasDifferences ) {
 				return state;
 			}
 
 			// Set initial nextState.
-			let nextState : any = {};
+			let nextState : any = { ... state };
 
-			// Set indicator for existing state changes and differences.
+			// Set indicator for existing state changes.
 			const blockChanges = traverseGet( [ clientId ], cloneDeep( changes ) ) || {};
 			const hasChanges = Object.keys( blockChanges ).length ? true : false;
 
-			// If we have differences
-			if ( hasChanges ) {
-				nextState = {
-					... state,
-					changes: {
-						... changes,
-						[ clientId ]: {
-							... getMergedAttributes( blockChanges, difference ),
+			// Check if we have different changes.
+			if( hasDifferentChanges ) {
+				if ( hasChanges ) {
+					nextState = {
+						... nextState,
+						changes: {
+							... changes,
+							[ clientId ]: {
+								... getMergedAttributes( blockChanges, differences.changes ),
+							}
+						}
+					}
+				} else {
+					nextState = {
+						... nextState,
+						changes: {
+							... changes,
+							[ clientId ]: differences.changes,
 						}
 					}
 				}
-			} else {
-				nextState = {
-					... state,
-					changes: {
-						... changes,
-						[ clientId ]: difference,
+			}
+
+			// Set indicator for existing state removes.
+			const blockRemoves = traverseGet( [ clientId ], cloneDeep( removes ) ) || {};
+			const hasRemoves = Object.keys( blockRemoves ).length ? true : false;
+
+			// Check if we have different removes.
+			if( hasDifferentRemoves ) {
+				if ( hasRemoves ) {
+					nextState = {
+						... nextState,
+						removes: {
+							... removes,
+							[ clientId ]: {
+								... getMergedAttributes( blockRemoves, differences.removes ),
+							}
+						}
+					}
+				} else {
+					nextState = {
+						... nextState,
+						removes: {
+							... removes,
+							[ clientId ]: differences.removes,
+						}
 					}
 				}
 			}
@@ -1298,8 +1329,8 @@ export function restoreBlockSaves( state : State, action : Action ) : State {
 			// Check if there is an entry for clientId and viewport to remove from changes.
 			if ( hasChanges ) {
 
-				// Set new block removes and changes.
-				const blockRemoves = findRemoves( [ ... props ], blockChangesStyle );
+				// Check if we need to restore a specific key, or if we need to restore everything.
+				const blockRemoves = props.length > 0 ? findRemoves( [ ... props ], blockChangesStyle ) : blockChangesStyle;
 				const blockChanges = findCleanedChanges( blockChangesStyle, blockRemoves );
 
 				// Check viewport changes to update or to remove viewport changes.

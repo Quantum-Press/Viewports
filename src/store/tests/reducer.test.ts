@@ -47,7 +47,6 @@ import {
 	registerBlockInit,
 	updateBlockChanges,
 	removeBlock,
-	removeBlockSaves,
 	restoreBlockSaves,
 	saveBlock,
 	clearBlocks,
@@ -1262,6 +1261,11 @@ describe( 'test store reducers', () => {
 			} as State;
 			const result = updateBlockChanges( state, action );
 
+			// Ignore css, inlineStyle and spectrum sets to debug in generator.test.ts
+			result.cssSet = check.cssSet;
+			result.inlineStyleSets = check.inlineStyleSets;
+			result.spectrumSets = check.spectrumSets;
+
 			expect( result ).toEqual( check );
 		} );
 
@@ -1303,7 +1307,7 @@ describe( 'test store reducers', () => {
 			expect( result ).toStrictEqual( check );
 		} );
 
-		test( 'can restoreBlockSaves() with viewport and restore all styles', () => {
+		test( 'can restoreBlockSaves() with viewport and restore all styles by viewport', () => {
 			const state = {
 				... DEFAULT_STATE,
 				viewports: {
@@ -1314,6 +1318,9 @@ describe( 'test store reducers', () => {
 				},
 				saves: {
 					'client-id': {
+						0: {
+							style: {},
+						},
 						768: {
 							style: {
 								dimensions: {
@@ -1361,17 +1368,29 @@ describe( 'test store reducers', () => {
 					}
 				}
 			} as State;
+
 			const action = {
 				type: 'RESTORE_BLOCK_SAVES',
 				clientId: 'client-id',
 				viewport: 1280,
-				props: [ 'style' ],
+				props: [],
 			} as Action;
 
 			const check = {
 				... state,
 				changes: {
-					'client-id': {}
+					'client-id': {
+						768: {
+							style: {
+								dimensions: {
+									padding: {
+										top: "60px",
+										bottom: "60px",
+									}
+								}
+							}
+						},
+					}
 				},
 				valids: {
 					'client-id': {
@@ -1385,8 +1404,8 @@ describe( 'test store reducers', () => {
 							style: {
 								dimensions: {
 									padding: {
-										top: "20px",
-										bottom: "20px",
+										top: "60px",
+										bottom: "60px",
 									}
 								}
 							}
@@ -1395,8 +1414,8 @@ describe( 'test store reducers', () => {
 							style: {
 								dimensions: {
 									padding: {
-										top: "20px",
-										bottom: "20px",
+										top: "40px",
+										bottom: "40px",
 									}
 								}
 							}
@@ -1417,7 +1436,7 @@ describe( 'test store reducers', () => {
 			expect( result ).toEqual( check );
 		} );
 
-		test( 'can restoreBlockSaves() with viewport and restore only a style wrapper', () => {
+		test( 'can restoreBlockSaves() with viewport and restore a style property by viewport', () => {
 			const state = {
 				... DEFAULT_STATE,
 				viewports: {
@@ -1479,7 +1498,7 @@ describe( 'test store reducers', () => {
 				type: 'RESTORE_BLOCK_SAVES',
 				clientId: 'client-id',
 				viewport: 1280,
-				props: [ 'style', 'dimensions' ],
+				props: [ 'dimensions' ],
 			} as Action;
 
 			const check = {
@@ -1510,8 +1529,8 @@ describe( 'test store reducers', () => {
 							style: {
 								dimensions: {
 									padding: {
-										top: "20px",
-										bottom: "20px",
+										top: "60px",
+										bottom: "60px",
 									}
 								}
 							}
