@@ -16,12 +16,14 @@ export type ViewportSet = {
 export type ViewportStyle = {
 	[ key: number ] : {
 		style: Styles,
+		to?: number
 	}
 }
 
-export type ViewportStyleSet = {
+export type ViewportStyleSet = { // Dopplung mit ViewportStyle. Warum?
 	[ key: number ] : {
-		[ key: string ] : Styles,
+		style: Styles,
+		to?: number,
 	};
 }
 

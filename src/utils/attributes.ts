@@ -52,6 +52,32 @@ export const getMergedAttributes = ( ... objects : Array<any>) => {
 
 
 /**
+ * Set function to return merged attributes from multiple objects.
+ *
+ * @param {Array<object>} objects
+ *
+ * @since 0.2.13
+ *
+ * @return {Array<string | number>}
+ */
+export const getMergedAttributeProperties = <T extends object>( ... objects : T[] ) : Array<keyof T> => {
+
+	// Initialize a Set to store unique keys
+	const allKeys = new Set<keyof T>();
+
+	// Iterate over each object and add its keys to the Set
+	for( const obj of objects ) {
+		Object.keys( obj ).forEach( key => {
+			allKeys.add( key as keyof T );
+		} );
+	}
+
+	// Convert the Set to an Array and return it
+	return Array.from( allKeys );
+}
+
+
+/**
  * Set function to sanitize attributes.
  *
  * @param {object} attributes

@@ -2,8 +2,9 @@ import { isObject, getMergedAttributes, traverseGet, traverseExist } from '../ut
 import { Generator } from './generator';
 import type { Attributes } from '../utils';
 import type { Styles, SpectrumState, SpectrumProperties, State, ViewportStyle, ViewportStyleSet, BlockDifferences } from './types';
+import { getMergedAttributeProperties } from '../utils/attributes';
 
-const { isEqual, cloneDeep } = window[ 'lodash' ];
+const { isEqual, cloneDeep, isEmpty, isUndefined, isNull } = window[ 'lodash' ];
 
 /**
  * Set function to indicate whether given viewport is in range of desktop size.
@@ -244,188 +245,485 @@ export const findBlockSaves = ( attributes : Attributes ) : Attributes => {
 
 
 /**
+ * Set function to find highest viewport from viewportStyle.
+ *
+ * @param {string} property
+ * @param {number} actionViewport
+ * @param {ViewportStyle} viewportStyle
+ *
+ * @since 0.2.13
+ *
+ * @return {number} viewport
+ */
+export const findHighestPropertyViewportStyle = ( property : string, actionViewport: number, viewportStyle : ViewportStyle ) : number => {
+
+	// Reverse Iteration to get the latest from iframeViewport on.
+	const viewportsSaves = Object.keys( viewportStyle ).reverse();
+
+	// Iterate over changes to check property to remove.
+	for( const dirtyViewport of viewportsSaves ) {
+		let viewport = parseInt( dirtyViewport );
+
+		if( viewport > actionViewport ) {
+			continue;
+		}
+
+		if( traverseExist( [ viewport, 'style', property ], viewportStyle ) ) {
+			return viewport;
+		}
+	}
+
+	return 0;
+}
+
+
+/**
  * Set function to find differences in block styles.
  *
  * @param {string} clientId
  * @param {Attributes} attributes
  * @param {State} state
+ * @param {number} actionViewport
  *
  * @since 0.2.11
  *
  * @return {BlockDifferences}
  */
-export const findBlockDifferences = ( clientId : string, attributes : Attributes, state : State, viewport : number ) : BlockDifferences => {
+export const findBlockDifferences = ( clientId : string, attributes : Attributes, state : State, actionViewport : number ) : BlockDifferences => {
 
-	// Set states.
-	const isEditing = state.isEditing;
-	const viewports = state.viewports;
+	// Deconstruct plain from state.
+	const {
+		iframeViewport,
+		isEditing,
+	} = state;
 
-	// Set state objects to get changes from.
-	const style = traverseGet( [ 'style' ], attributes, {} );
-	const valid = traverseGet( [ clientId, viewport, 'style' ], state.valids, {} );
+	// Set selected viewport.
+	const selectedViewport = actionViewport ? actionViewport : iframeViewport ? iframeViewport : 0;
 
-	// Cleanup style output.
-	const styleCleaned = 'undefined' !== typeof style && null !== style ? style : {};
+	// Set styles from attributes.
+	const styles = cloneDeep( traverseGet( [ 'style' ], attributes, {} ) ) as Styles;
 
-	// Get all changes for actual valid viewport settings.
-	const validChanges = findObjectChanges( cloneDeep( styleCleaned ), cloneDeep( valid ) );
-	const validRemoves = findObjectChanges( cloneDeep( valid ), cloneDeep( styleCleaned ) );
+	// Set next block states.
+	const nextBlockValids = cloneDeep( traverseGet( [ clientId ], state.valids, {} ) );
+	const nextBlockChanges = cloneDeep( traverseGet( [ clientId ], state.changes, {} ) );
+	const nextBlockRemoves = cloneDeep( traverseGet( [ clientId ], state.removes, {} ) );
+	const nextBlockSaves = cloneDeep( traverseGet( [ clientId ], state.saves, {} ) );
 
-	// Filter changes by property out of removes.
-	if( 0 < Object.keys( validChanges ).length && 0 < Object.keys( validRemoves ).length ) {
-		for( const property in validChanges ) {
-			if( validRemoves.hasOwnProperty( property ) ) {
-				delete validRemoves[ property ];
-			}
-		}
-	}
 
-	// Set initial blockChanges and blockRemoves.
-	const blockChanges = {} as ViewportStyleSet;
-	const blockRemoves = {} as ViewportStyleSet;
+	/**
+	 * Set function to cleanup viewport styles.
+	 *
+	 * @since 0.2.13
+	 */
+	const cleanupViewportStyles = () => {
 
-	// Check if we need to set on a specific viewport.
-	if( isEditing ) {
-		if( traverseExist( [ clientId, viewport, 'style' ], state.changes ) ) {
-			blockChanges[ viewport ] = {
-				style: {
-					... state.changes[ clientId ][ viewport ].style,
-					... validChanges,
-				}
-			}
-		} else {
-			blockChanges[ viewport ] = {
-				style: validChanges,
-			}
-		}
+		// Set viewports to iterate over.
+		const viewportsChanges = Object.keys( nextBlockChanges );
+		const viewportsRemoves = Object.keys( nextBlockRemoves );
 
-		if( traverseExist( [ clientId, viewport, 'style' ], state.removes ) ) {
-			blockRemoves[ viewport ] = {
-				style: {
-					... state.removes[ clientId ][ viewport ].style,
-					... validRemoves,
-				}
-			}
-		} else {
-			blockRemoves[ viewport ] = {
-				style: validRemoves,
-			}
-		}
+		// Set empty result.
+		const result = {
+			changes: {},
+			removes: {},
+		} as BlockDifferences;
 
-	} else {
+		// Iterate over viewports to clear empty changes.
+		for( const viewport of viewportsChanges ) {
+			const viewportStyles = traverseGet( [ viewport, 'style' ], nextBlockChanges, undefined );
 
-		// Iterate over valid changes to compare with its default viewport setting.
-		for( const property in validChanges ) {
-			if ( ! validChanges.hasOwnProperty( property ) ) {
-				continue;
-			}
+			// Set changes if viewportStyles filled.
+			if( ! isUndefined( viewportStyles ) && ! isNull( viewportStyles ) && ( ! isObject( viewportStyles ) || ( isObject( viewportStyles ) && ! isEmpty( viewportStyles ) ) ) ) {
 
-			let lastViewport = 0;
+				if( ! traverseExist( [ clientId ], result.changes ) ) {
+					result.changes[ clientId ] = {
+						[ viewport ]: {
+							style: {
+								... viewportStyles,
+							}
+						}
+					};
 
-			// Iterate over viewports to find saves viewport to map on changes.
-			for( const viewportDirty in viewports ) {
-				const compare = parseInt( viewportDirty );
-
-				if( viewport < compare ) {
 					continue;
 				}
 
-				if( traverseExist( [ clientId, compare, 'style', property ], state.saves ) ) {
-					lastViewport = compare;
+				if( ! traverseExist( [ clientId, viewport ], result.changes ) ) {
+					result.changes[ clientId ][ viewport ] = {
+						style: viewportStyles,
+					};
+
+					continue;
 				}
 
-				if( traverseExist( [ clientId, compare, 'style', property ], state.changes ) ) {
-					lastViewport = compare;
+				result.changes[ clientId ][ viewport ][ 'style' ] = viewportStyles;
+			}
+		}
+
+		// Iterate over viewports to clear empty removes.
+		for( const viewport of viewportsRemoves ) {
+			const viewportStyles = traverseGet( [ viewport, 'style' ], nextBlockRemoves, undefined );
+
+			// Set removes if viewportStyles filled.
+			if( ! isUndefined( viewportStyles ) && ! isNull( viewportStyles ) && ( ! isObject( viewportStyles ) || ( isObject( viewportStyles ) && ! isEmpty( viewportStyles ) ) ) ) {
+
+				if( ! traverseExist( [ clientId ], result.removes ) ) {
+					result.removes[ clientId ] = {
+						[ viewport ]: {
+							style: viewportStyles,
+						}
+					};
+
+					continue;
 				}
+
+				if( ! traverseExist( [ clientId, viewport ], result.removes ) ) {
+					result.removes[ clientId ][ viewport ] = {
+						style: viewportStyles,
+					};
+
+					continue;
+				}
+
+				result.removes[ clientId ][ viewport ][ 'style' ] = viewportStyles;
+			}
+		}
+
+		// console.log( 'cleanupViewportStyles' );
+		// console.dir( result, { depth: null, colors: true } );
+
+		return result;
+	}
+
+
+	// Set viewport relating blockValids.
+	const viewportValids = traverseGet( [ selectedViewport, 'style' ], nextBlockValids, undefined ) as Styles;
+
+	// Check if we get a viewport valid.
+	if( isUndefined( viewportValids ) || isNull( viewportValids ) ) {
+		console.error( 'You tried to change styles without having a valid viewport' );
+
+		return cleanupViewportStyles();
+	}
+
+	// Set property lists.
+	const stylesPropertyList = getViewportStyleProperties( { 0: { style: styles } } );
+	const validsPropertyList = getViewportStyleProperties( nextBlockValids );
+	const removesPropertyList = getViewportStyleProperties( nextBlockRemoves );
+
+	// Set property list from valids, removes and styles.
+	const properties = Array.from( new Set( [ ... validsPropertyList, ... removesPropertyList, ... stylesPropertyList ] ) );
+	// console.log( 'properties', validsPropertyList, removesPropertyList, stylesPropertyList );
+
+
+	/**
+	 * Set function to reset property.
+	 *
+	 * @since 0.2.13
+	 */
+	const resetProperty = ( property ) => {
+
+		// Reverse Iteration to get the latest from iframeViewport on.
+		const viewportsSaves = Object.keys( nextBlockSaves ).reverse();
+
+		// Iterate over changes to check property to remove.
+		for( const viewport of viewportsSaves ) {
+
+			// Skip all viewports above iframeViewport to ignore.
+			if( parseInt( viewport ) > iframeViewport ) {
+				continue;
 			}
 
-			if( traverseExist( [ lastViewport, 'style' ], blockChanges ) ) {
-				blockChanges[ lastViewport ] = {
+			// Check if there are changes for the property.
+			let nextPropertySaves = traverseGet( [ viewport, 'style', property ], nextBlockSaves );
+			if( ! nextPropertySaves ) {
+				continue;
+			}
+
+			// Set nextBlockRemoves.
+			if( ! traverseExist( [ viewport ], nextBlockRemoves ) ) {
+				nextBlockRemoves[ viewport ] = {
 					style: {
-						... blockChanges[ lastViewport ].style,
-						[ property ]: validChanges[ property ],
+						[ property ]: nextPropertySaves,
 					}
 				}
 
 				continue;
 			}
 
-			blockChanges[ lastViewport ] = {
-				style: {
-					[ property ]: validChanges[ property ],
+			if( ! traverseExist( [ viewport, 'style' ], nextBlockRemoves ) ) {
+				nextBlockRemoves[ viewport ][ 'style' ] = {
+					[ property ]: nextPropertySaves,
 				}
-			}
-		}
 
-		// Iterate over valid removes to compare with its default viewport setting.
-		for( const property in validRemoves ) {
-			if ( ! validRemoves.hasOwnProperty( property ) ) {
 				continue;
 			}
 
-			let lastViewport = 0;
+			nextBlockRemoves[ viewport ][ 'style' ][ property ] = nextPropertySaves;
+		}
 
-			// Iterate over viewports to find saves viewport to map on removes.
-			for( const viewportDirty in viewports ) {
-				const compare = parseInt( viewportDirty );
+		// Reverse Iteration to get the latest from iframeViewport on.
+		const viewportsChanges = Object.keys( nextBlockChanges ).reverse();
 
-				if( viewport < compare ) {
-					continue;
-				}
+		// Iterate over changes to check property to remove.
+		for( const viewport of viewportsChanges ) {
 
-				if( traverseExist( [ clientId, compare, 'style', property ], state.saves ) ) {
-					lastViewport = compare;
+			// Skip all viewports above iframeViewport to ignore.
+			if( parseInt( viewport ) > iframeViewport ) {
+				continue;
+			}
+
+			// Check if there are changes for the property.
+			let nextPropertyChanges = traverseGet( [ viewport, 'style', property ], nextBlockChanges );
+			if( ! nextPropertyChanges ) {
+				continue;
+			}
+
+			// Remove property from changes.
+			delete nextBlockChanges[ viewport ][ 'style' ][ property ];
+		}
+	}
+
+
+	/**
+	 * Set function to append property value.
+	 *
+	 * @since 0.2.13
+	 */
+	const addPropertyValue = ( property, value ) => {
+		const viewport = isEditing ? iframeViewport : 0;
+		const changeValue = traverseGet( [ property ], value );
+
+		if( ! traverseExist( [ viewport ], nextBlockChanges ) ) {
+			nextBlockChanges[ viewport ] = {
+				style: {
+					[ property ]: changeValue,
 				}
 			}
 
-			if( traverseExist( [ lastViewport, 'style' ], blockRemoves ) ) {
-				blockRemoves[ lastViewport ] = {
+			return;
+		}
+
+		if( ! traverseExist( [ viewport, 'style' ], nextBlockChanges ) ) {
+			nextBlockChanges[ viewport ][ 'style' ] = {
+				[ property ]: changeValue,
+			}
+
+			return;
+		}
+
+		nextBlockChanges[ viewport ][ 'style' ][ property ] = changeValue;
+	}
+
+
+	/**
+	 * Set function to change property value.
+	 *
+	 * @since 0.2.13
+	 */
+	const changePropertyValue = ( property, value ) => {
+		const changesViewport = isEditing ? iframeViewport : findHighestPropertyViewportStyle( property, iframeViewport, nextBlockChanges );
+		const savesViewport = isEditing ? iframeViewport : findHighestPropertyViewportStyle( property, iframeViewport, nextBlockSaves );
+
+		let viewport = 0;
+		if( changesViewport >= savesViewport ) {
+			viewport = changesViewport;
+		}
+		if( savesViewport > changesViewport ) {
+			viewport = savesViewport;
+		}
+
+		const changeValue = cloneDeep( traverseGet( [ property ], value ) );
+
+		if( ! nextBlockChanges.hasOwnProperty( viewport ) ) {
+			nextBlockChanges[ viewport ] = {
+				style: {
+					[ property ]: changeValue,
+				}
+			}
+			return;
+		}
+
+		if( ! nextBlockChanges[ viewport ].hasOwnProperty( 'style' ) ) {
+			nextBlockChanges[ viewport ][ 'style' ] = {
+				[ property ]: changeValue,
+			}
+			return;
+		}
+
+		const nextChanges = nextBlockChanges[ viewport ][ 'style' ][ property ];
+
+		if( isObject( nextChanges ) && isObject( changeValue ) ) {
+			nextBlockChanges[ viewport ][ 'style' ][ property ] = getMergedAttributes( nextBlockChanges[ viewport ][ 'style' ][ property ], changeValue );
+			return;
+		}
+
+		nextBlockChanges[ viewport ][ 'style' ][ property ] = changeValue;
+	}
+
+
+	/**
+	 * Set function to remove property value.
+	 *
+	 * @since 0.2.13
+	 */
+	const removePropertyValue = ( property, value ) => {
+		const removeValue = traverseGet( [ property ], value );
+
+		// Reverse Iteration to get the latest from iframeViewport on.
+		const viewportsChanges = Object.keys( nextBlockChanges ).reverse();
+
+		// Iterate over changes to check property to remove.
+		for( const viewport of viewportsChanges ) {
+
+			// Skip all viewports above iframeViewport to ignore.
+			if( parseInt( viewport ) > iframeViewport ) {
+				continue;
+			}
+
+			// Check if there are changes for the property.
+			let nextPropertyChanges = traverseGet( [ viewport, 'style', property ], nextBlockChanges, undefined );
+			if( ! nextPropertyChanges ) {
+				continue;
+			}
+
+			nextPropertyChanges = findObjectChanges( { [ property ]: nextPropertyChanges }, { [ property ]: removeValue } );
+
+			nextBlockChanges[ viewport ][ 'style' ][ property ] = nextPropertyChanges[ property ];
+		}
+
+		// Reverse Iteration to get the latest from iframeViewport on.
+		const viewportsSaves = Object.keys( nextBlockSaves ).reverse();
+
+		// Iterate over changes to check property to remove.
+		for( const viewport of viewportsSaves ) {
+
+			// Skip all viewports above iframeViewport to ignore.
+			if( parseInt( viewport ) > iframeViewport ) {
+				continue;
+			}
+
+			// Check if there are changes for the property.
+			let nextPropertySaves = traverseGet( [ viewport, 'style', property ], nextBlockSaves );
+			if( ! nextPropertySaves ) {
+				continue;
+			}
+
+			// Set nextBlockRemoves.
+			if( ! traverseExist( [ viewport ], nextBlockRemoves ) ) {
+				nextBlockRemoves[ viewport ] = {
 					style: {
-						... blockRemoves[ lastViewport ].style,
-						[ property ]: validRemoves[ property ],
+						[ property ]: fillObjectProperties( removeValue, nextPropertySaves ),
 					}
 				}
 
 				continue;
 			}
 
-			blockRemoves[ lastViewport ] = {
-				style: {
-					[ property ]: validRemoves[ property ],
+			if( ! traverseExist( [ viewport, 'style' ], nextBlockRemoves ) ) {
+				nextBlockRemoves[ viewport ][ 'style' ] = {
+					[ property ]: fillObjectProperties( removeValue, nextPropertySaves ),
 				}
-			}
-		}
-	}
 
-	if( 0 < Object.keys( blockChanges ).length ) {
-		for( const viewportDirty in blockChanges ) {
-			if ( ! blockChanges.hasOwnProperty( viewportDirty ) ) {
 				continue;
 			}
 
-			if( 0 === Object.keys( traverseGet( [ 'style' ], blockChanges[ viewportDirty ], {} ) ).length ) {
-				delete blockChanges[ viewportDirty ];
-			}
+			nextBlockRemoves[ viewport ][ 'style' ][ property ] = fillObjectProperties( removeValue, nextPropertySaves );
 		}
 	}
 
-	if( 0 < Object.keys( blockRemoves ).length ) {
-		for( const viewportDirty in blockRemoves ) {
-			if ( ! blockRemoves.hasOwnProperty( viewportDirty ) ) {
+
+	/**
+	 * Set function to fill object properties from another object.
+	 *
+	 * @since 0.2.13
+	 */
+	const fillObjectProperties = ( fillObject, getObject ) => {
+
+		// Iterate through fillObject to fill it with data from getObject.
+		for ( const [ property, fillValue ] of Object.entries( fillObject ) ) {
+
+			// Check if we get at least any value from getObject.
+			const getValue = traverseGet( [ property ], getObject, undefined );
+			if( isUndefined( getValue ) ) {
 				continue;
 			}
 
-			if( 0 === Object.keys( traverseGet( [ 'style' ], blockRemoves[ viewportDirty ], {} ) ).length ) {
-				delete blockRemoves[ viewportDirty ];
+			// Check if both values needs to get filled recursively.
+			if ( isObject( fillValue ) && isObject( getValue ) ) {
+
+				let subFills = fillObjectProperties( fillValue, getValue );
+
+				if ( 0 < Object.keys( subFills ).length ) {
+					fillObject[ property ] = { ... subFills };
+				}
+
+				continue;
 			}
+
+			fillObject[ property ] = getValue;
+		}
+
+		return fillObject;
+	}
+
+
+	// Iterate over properties to compare to each state.
+	for( let index = 0; index < properties.length; index++ ) {
+		const property = properties[ index ];
+
+		// Set values by property for each blockState.
+		const stylesValue = cloneDeep( traverseGet( [ property ], styles, undefined ) );
+		const validsValue = cloneDeep( traverseGet( [ property ], viewportValids, undefined ) );
+
+		// Set flags to indicate define.
+		const definedStyles = ! isUndefined( stylesValue ) && ! isNull( stylesValue ) && ( ! isObject( stylesValue ) || ( isObject( stylesValue ) && ! isEmpty( stylesValue ) ) );
+		const definedValids = ! isUndefined( validsValue ) && ! isNull( validsValue ) && ( ! isObject( validsValue ) || ( isObject( validsValue ) && ! isEmpty( validsValue ) ) );
+
+		// If both is undefined, the properties origin is the remove state, so we continue to next property.
+		if( ! definedStyles && ! definedValids ) {
+			// console.log( 'skip not defined', property, stylesValue, validsValue );
+			continue;
+		}
+
+		// If only validsValue is defined, this seems to be a full reset of the property.
+		if( ! definedStyles ) {
+			resetProperty( property );
+			// console.log( 'resetProperty', property, { nextBlockRemoves, nextBlockChanges } );
+			continue;
+		}
+
+		// Find object changes between style and valid state in both directions to also find removings from valids.
+		const changeDifferenceValue = findObjectChanges( { [ property ]: stylesValue }, { [ property ]: validsValue } );
+		const removeDifferenceValue = findObjectChanges( { [ property ]: validsValue }, { [ property ]: stylesValue } );
+
+		// If both difference values are empty, we can skip.
+		if(
+			isEmpty( changeDifferenceValue ) &&
+			isEmpty( removeDifferenceValue )
+		) {
+			// console.log( 'skip emtpy differences', changeDifferenceValue, removeDifferenceValue );
+			continue;
+		}
+
+		// If only styleValue is defined, this seems to be new set.
+		if( ! definedValids ) {
+			addPropertyValue( property, changeDifferenceValue );
+			// console.log( 'addPropertyValue', property, changeDifferenceValue );
+			continue;
+		};
+
+		if( isEmpty( changeDifferenceValue ) ) {
+			removePropertyValue( property, removeDifferenceValue );
+			// console.log( 'remove property', property, changeDifferenceValue, removeDifferenceValue );
+			continue;
+		} else {
+			changePropertyValue( property, changeDifferenceValue );
+			// console.log( 'change property', property, changeDifferenceValue, removeDifferenceValue );
+			continue;
 		}
 	}
 
-	// Return blockChanges per viewport.
-	return {
-		changes: blockChanges,
-		removes: blockRemoves,
-	}
+	// Cleanup before return.
+	return cleanupViewportStyles();
 }
 
 
@@ -526,54 +824,6 @@ export const findObjectChanges = ( attributes : Attributes, valids : Attributes 
 
 
 /**
- * Set function to find object similarities.
- *
- * @param {object} attributes
- * @param {object} valids
- *
- * @since 0.1.0
- *
- * @return {object} similarities
- */
-export const findObjectSimilarities = ( attributes : Attributes, valids : Attributes ) : Attributes => {
-	let similarities : Attributes = {};
-
-	if( null === attributes ) {
-		return {};
-	}
-
-	// Iterate through attributes.
-	for ( const [ attributeKey, attributeValue ] of Object.entries( attributes ) ) {
-		const validValue = valids.hasOwnProperty( attributeKey ) ? valids[ attributeKey ] : undefined;
-
-		if( ! isEqual( attributeValue, validValue ) ) {
-			continue;
-		}
-
-		if ( isObject( attributeValue ) && isObject( validValue ) ) {
-			let subChanges = findObjectSimilarities( attributeValue, validValue );
-
-			if ( 0 < Object.keys( subChanges ).length ) {
-				similarities[ attributeKey ] = { ... subChanges };
-			}
-
-			continue;
-		}
-
-		if( isObject( attributeValue ) ) {
-			similarities[ attributeKey ] = { ... attributeValue };
-		} else if( Array.isArray( attributeValue ) ) {
-			similarities[ attributeKey ] = [ ... attributeValue ];
-		} else {
-			similarities[ attributeKey ] = attributeValue;
-		}
-	}
-
-	return similarities;
-}
-
-
-/**
  * Set function to find removes by keys array.
  *
  * @param {array}  keys
@@ -665,3 +915,34 @@ export const getSpectrumProperties = ( clientId : string, state : SpectrumState 
 		inlineStyle: generator.getInlineStyle(),
 	}
 }
+
+
+/**
+ * Set function to return propertyList from viewportStyle.
+ *
+ * @param {viewportStyle} viewportStyle
+ *
+ * @since 0.2.13
+ *
+ * @return {Array<string | number>}
+ */
+export const getViewportStyleProperties = ( viewportStyle: ViewportStyle ) : Array<string | number> => {
+
+	// Initialize a Set to store unique keys
+	const allKeys = new Set<string | number>();
+
+	// Iterate over each style within the viewport
+	for( const styleKey in viewportStyle ) {
+		if( viewportStyle.hasOwnProperty( styleKey ) ) {
+			const styleObject = viewportStyle[ styleKey ].style;
+
+			// Get all the properties from the Styles object and add to the Set
+			Object.keys( styleObject ).forEach( ( key ) => {
+				allKeys.add( key );
+			} );
+		}
+	}
+
+	// Convert the Set to an Array and return it
+	return Array.from( allKeys );
+};

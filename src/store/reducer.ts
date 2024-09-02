@@ -1,6 +1,6 @@
 import type { State, Action, Reducers } from './types';
 import { DEFAULT_STATE } from './default';
-import { isObject, getMergedAttributes, traverseGet, traverseFilled } from '../utils';
+import { isObject, getMergedAttributes, traverseGet, traverseFilled, traverseExist } from '../utils';
 import {
 	isInMobileRange,
 	isInTabletRange,
@@ -900,70 +900,44 @@ export function updateBlockChanges( state : State, action : Action ) : State {
 			// Set new generated block changes by comparing it to the actual viewport valid.
 			// Here you will get just the difference between both.
 			const viewport = null !== action.viewport ? action.viewport : state.isEditing ? state.viewport : state.iframeViewport;
-			const differences = findBlockDifferences( clientId, cloneDeep( attributes ), state, viewport );
 
-			// Set indicator for existing differences.
-			const hasDifferentChanges = 0 < Object.entries( differences.changes ).length;
-			const hasDifferentRemoves = 0 < Object.entries( differences.removes ).length;
-			const hasDifferences = hasDifferentChanges || hasDifferentRemoves;
-			if ( ! hasDifferences ) {
-				return state;
-			}
+			// Set differences resulting from new attribute state.
+			const differences = findBlockDifferences( clientId, cloneDeep( attributes ), state, viewport );
+			const blockChanges = differences.changes;
+			const blockRemoves = differences.removes;
+			const hasChanges = traverseExist( [ clientId ], blockChanges );
+			const hasRemoves = traverseExist( [ clientId ], blockRemoves );
 
 			// Set initial nextState.
 			let nextState : any = { ... state };
 
-			// Set indicator for existing state changes.
-			const blockChanges = traverseGet( [ clientId ], cloneDeep( changes ) ) || {};
-			const hasChanges = Object.keys( blockChanges ).length ? true : false;
-
-			// Check if we have different changes.
-			if( hasDifferentChanges ) {
-				if ( hasChanges ) {
-					nextState = {
-						... nextState,
-						changes: {
-							... changes,
-							[ clientId ]: {
-								... getMergedAttributes( blockChanges, differences.changes ),
-							}
-						}
+			// Set new changes state.
+			if( hasChanges ) {
+				nextState = {
+					... nextState,
+					changes: {
+						... changes,
+						[ clientId ]: traverseGet( [ clientId ], blockChanges ),
 					}
-				} else {
-					nextState = {
-						... nextState,
-						changes: {
-							... changes,
-							[ clientId ]: differences.changes,
-						}
-					}
+				}
+			} else {
+				if( traverseExist( [ clientId ], changes ) ) {
+					delete nextState.changes[ clientId ];
 				}
 			}
 
-			// Set indicator for existing state removes.
-			const blockRemoves = traverseGet( [ clientId ], cloneDeep( removes ) ) || {};
-			const hasRemoves = Object.keys( blockRemoves ).length ? true : false;
-
-			// Check if we have different removes.
-			if( hasDifferentRemoves ) {
-				if ( hasRemoves ) {
-					nextState = {
-						... nextState,
-						removes: {
-							... removes,
-							[ clientId ]: {
-								... getMergedAttributes( blockRemoves, differences.removes ),
-							}
-						}
+			// Set new removes state.
+			if( hasRemoves ) {
+				nextState = {
+					... nextState,
+					removes: {
+						... removes,
+						[ clientId ]: traverseGet( [ clientId ], blockRemoves ),
 					}
-				} else {
-					nextState = {
-						... nextState,
-						removes: {
-							... removes,
-							[ clientId ]: differences.removes,
-						}
-					}
+				}
+			} else {
+				if( traverseExist( [ clientId ], removes ) ) {
+					delete nextState.removes[ clientId ];
 				}
 			}
 

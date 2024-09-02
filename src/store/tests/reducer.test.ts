@@ -764,14 +764,60 @@ describe( 'test store reducers', () => {
 		test( 'can updateBlockChanges() with saves, changes and single added attribute', () => {
 			const state = {
 				... DEFAULT_STATE,
-				viewport: 1280,
+				iframeViewport: 1280,
 				viewports: {
 					0: 'Default',
 					375: 'Mobile',
 					768: 'Tablet',
-					1024: 'Tablet large',
 					1280: 'Desktop',
-					1920: 'Desktop large',
+				},
+				valids: {
+					'client-id': {
+						375: {
+							style: {
+								dimensions: {
+									padding: {
+										top: '10px',
+										bottom: '10px',
+									},
+								}
+							}
+						},
+						768: {
+							style: {
+								dimensions: {
+									padding: {
+										top: '20px',
+										bottom: '20px',
+									},
+								}
+							}
+						},
+						1280: {
+							style: {
+								dimensions: {
+									padding: {
+										top: '40px',
+										bottom: '40px',
+									},
+								}
+							}
+						}
+					}
+				},
+				changes: {
+					'client-id': {
+						1280: {
+							style: {
+								dimensions: {
+									padding: {
+										top: '40px',
+										bottom: '40px',
+									},
+								}
+							}
+						}
+					}
 				},
 				saves: {
 					'client-id': {
@@ -807,21 +853,8 @@ describe( 'test store reducers', () => {
 						}
 					}
 				},
-				changes: {
-					'client-id': {
-						1280: {
-							style: {
-								dimensions: {
-									padding: {
-										top: '40px',
-										bottom: '40px',
-									},
-								}
-							}
-						}
-					}
-				}
 			} as State;
+
 			const action = {
 				type: 'UPDATE_BLOCK_CHANGES',
 				clientId: 'client-id',
@@ -871,7 +904,7 @@ describe( 'test store reducers', () => {
 									padding: {
 										top: '10px',
 										bottom: '10px',
-									}
+									},
 								}
 							}
 						},
@@ -881,34 +914,11 @@ describe( 'test store reducers', () => {
 									padding: {
 										top: '20px',
 										bottom: '20px',
-									}
-								}
-							}
-						},
-						1024: {
-							style: {
-								dimensions: {
-									padding: {
-										top: '20px',
-										bottom: '20px',
-									}
+									},
 								}
 							}
 						},
 						1280: {
-							style: {
-								dimensions: {
-									padding: {
-										top: '40px',
-										bottom: '40px',
-									},
-									margin: {
-										bottom: "80px",
-									}
-								}
-							}
-						},
-						1920: {
 							style: {
 								dimensions: {
 									padding: {
@@ -937,14 +947,60 @@ describe( 'test store reducers', () => {
 		test( 'can updateBlockChanges() with saves, changes and multi changed attributes', () => {
 			const state = {
 				... DEFAULT_STATE,
-				viewport: 1280,
+				iframeViewport: 1280,
 				viewports: {
 					0: 'Default',
 					375: 'Mobile',
 					768: 'Tablet',
-					1024: 'Tablet large',
 					1280: 'Desktop',
-					1920: 'Desktop large',
+				},
+				valids: {
+					'client-id': {
+						375: {
+							style: {
+								dimensions: {
+									padding: {
+										top: '10px',
+										bottom: '10px',
+									},
+								}
+							}
+						},
+						768: {
+							style: {
+								dimensions: {
+									padding: {
+										top: '20px',
+										bottom: '20px',
+									},
+								}
+							}
+						},
+						1280: {
+							style: {
+								dimensions: {
+									padding: {
+										top: '40px',
+										bottom: '40px',
+									},
+								}
+							}
+						}
+					}
+				},
+				changes: {
+					'client-id': {
+						1280: {
+							style: {
+								dimensions: {
+									padding: {
+										top: '40px',
+										bottom: '40px',
+									},
+								}
+							}
+						}
+					}
 				},
 				saves: {
 					'client-id': {
@@ -980,21 +1036,8 @@ describe( 'test store reducers', () => {
 						}
 					}
 				},
-				changes: {
-					'client-id': {
-						1280: {
-							style: {
-								dimensions: {
-									padding: {
-										top: '40px',
-										bottom: '40px',
-									},
-								}
-							}
-						}
-					}
-				}
 			} as State;
+
 			const action = {
 				type: 'UPDATE_BLOCK_CHANGES',
 				clientId: 'client-id',
@@ -1032,7 +1075,7 @@ describe( 'test store reducers', () => {
 									padding: {
 										top: '10px',
 										bottom: '10px',
-									}
+									},
 								}
 							}
 						},
@@ -1042,28 +1085,11 @@ describe( 'test store reducers', () => {
 									padding: {
 										top: '20px',
 										bottom: '20px',
-									}
-								}
-							}
-						},
-						1024: {
-							style: {
-								dimensions: {
-									padding: {
-										top: '20px',
-										bottom: '20px',
-									}
+									},
 								}
 							}
 						},
 						1280: {
-							style: {
-								dimensions: {
-									padding: "80px",
-								}
-							}
-						},
-						1920: {
 							style: {
 								dimensions: {
 									padding: "80px",
@@ -1086,14 +1112,73 @@ describe( 'test store reducers', () => {
 		test( 'can updateBlockChanges() with saves, changes and multi changed attributes including arrays', () => {
 			const state = {
 				... DEFAULT_STATE,
-				viewport: 1280,
+				iframeViewport: 1280,
 				viewports: {
 					0: 'Default',
 					375: 'Mobile',
 					768: 'Tablet',
-					1024: 'Tablet large',
 					1280: 'Desktop',
-					1920: 'Desktop large',
+				},
+				valids: {
+					'client-id': {
+						0: {
+							style: {},
+						},
+						375: {
+							style: {
+								dimensions: {
+									padding: {
+										top: '10px',
+										bottom: '10px',
+									},
+								}
+							}
+						},
+						768: {
+							style: {
+								dimensions: {
+									padding: {
+										top: '20px',
+										bottom: '20px',
+									},
+								}
+							}
+						},
+						1280: {
+							style: {
+								dimensions: {
+									padding: {
+										top: '40px',
+										bottom: '40px',
+									},
+								},
+								layers: [
+									{
+										foo: 'bar'
+									}
+								]
+							}
+						}
+					}
+				},
+				changes: {
+					'client-id': {
+						1280: {
+							style: {
+								dimensions: {
+									padding: {
+										top: '40px',
+										bottom: '40px',
+									},
+								},
+								layers: [
+									{
+										foo: 'bar'
+									}
+								]
+							}
+						}
+					}
 				},
 				saves: {
 					'client-id': {
@@ -1129,25 +1214,6 @@ describe( 'test store reducers', () => {
 						}
 					}
 				},
-				changes: {
-					'client-id': {
-						1280: {
-							style: {
-								dimensions: {
-									padding: {
-										top: '40px',
-										bottom: '40px',
-									},
-								},
-								layers: [
-									{
-										foo: 'bar'
-									}
-								]
-							}
-						}
-					}
-				}
 			} as State;
 			const action = {
 				type: 'UPDATE_BLOCK_CHANGES',
@@ -1216,16 +1282,6 @@ describe( 'test store reducers', () => {
 								}
 							}
 						},
-						1024: {
-							style: {
-								dimensions: {
-									padding: {
-										top: '20px',
-										bottom: '20px',
-									}
-								}
-							}
-						},
 						1280: {
 							style: {
 								dimensions: {
@@ -1241,21 +1297,6 @@ describe( 'test store reducers', () => {
 								]
 							}
 						},
-						1920: {
-							style: {
-								dimensions: {
-									padding: "80px",
-								},
-								layers: [
-									{
-										foo: 'bar',
-									},
-									{
-										bar: 'foo',
-									}
-								]
-							}
-						}
 					}
 				}
 			} as State;
@@ -1560,133 +1601,6 @@ describe( 'test store reducers', () => {
 
 			expect( result ).toEqual( check );
 		} );
-
-		/*
-		test( 'can removeBlockSaves() with viewport and remove to the deepest', () => {
-			const state = {
-				... DEFAULT_STATE,
-				viewports: {
-					0: 'Default',
-					375: 'Mobile',
-					768: 'Tablet',
-					1280: 'Desktop',
-				},
-				saves: {
-					'client-id': {
-						768: {
-							style: {
-								dimensions: {
-									padding: {
-										top: "20px",
-										bottom: "20px",
-									}
-								}
-							}
-						},
-						1280: {
-							style: {
-								dimensions: {
-									padding: {
-										top: "40px",
-										bottom: "40px",
-									}
-								}
-							}
-						}
-					}
-				}
-			} as State;
-			const action = {
-				type: 'REMOVE_BLOCK_SAVES',
-				clientId: 'client-id',
-				viewport: 1280,
-				props: [ 'dimensions', 'padding', 'top' ],
-			} as Action;
-
-			const check = {
-				... state,
-				saves: {
-					'client-id': {
-						768: {
-							style: {
-								dimensions: {
-									padding: {
-										top: "20px",
-										bottom: "20px",
-									}
-								}
-							}
-						},
-						1280: {
-							style: {
-								dimensions: {
-									padding: {
-										top: "40px",
-										bottom: "40px",
-									}
-								}
-							}
-						}
-					}
-				},
-				removes: {
-					'client-id': {
-						1280: {
-							style: {
-								dimensions: {
-									padding: {
-										top: "40px",
-									}
-								}
-							}
-						}
-					}
-				},
-				valids: {
-					'client-id': {
-						0: {
-							style: {}
-						},
-						375: {
-							style: {}
-						},
-						768: {
-							style: {
-								dimensions: {
-									padding: {
-										top: "20px",
-										bottom: "20px",
-									}
-								}
-							}
-						},
-						1280: {
-							style: {
-								dimensions: {
-									padding: {
-										top: "20px",
-										bottom: "40px",
-									}
-								}
-							}
-						}
-					}
-				}
-			} as State;
-
-			const result = removeBlockSaves( state, action );
-
-			// Ignore css, inlineStyle and spectrum sets to debug in generator.test.ts
-			result.cssSet = check.cssSet;
-			result.inlineStyleSets = check.inlineStyleSets;
-			result.spectrumSets = check.spectrumSets;
-
-			// Ignore lastEdit cause it is a timestamp.
-			result.lastEdit = check.lastEdit;
-
-			expect( result ).toEqual( check );
-		} );
-		*/
 
 		test( 'can saveBlock() with saves, changes and removes', () => {
 			const state = {
