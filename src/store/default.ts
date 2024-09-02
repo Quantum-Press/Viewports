@@ -1,5 +1,11 @@
 import type { State } from './types';
 
+const {
+	styleEngine: {
+		compileCSS,
+	}
+} = window[ 'wp' ];
+
 /**
  * The default store settings
  *
@@ -67,7 +73,35 @@ export const DEFAULT_STATE = {
 	valids: {},
 	inspect: false,
 	lastEdit: 0,
-	renderer: {},
+	renderer: {
+		dimensions: {
+			5: {
+				callback: compileCSS,
+				selectors: {
+					label: '.dimensions-block-support-panel .components-tools-panel-item.last .block-editor-height-control',
+					panel: '.dimensions-block-support-panel .components-tools-panel-item.last',
+				},
+			}
+		},
+		spacing: {
+			5: {
+				callback: compileCSS,
+				selectors: {
+					label: '.dimensions-block-support-panel .components-tools-panel-header',
+					panel: '.dimensions-block-support-panel .components-tools-panel-item.tools-panel-item-spacing',
+				},
+			}
+		},
+		border: {
+			5: {
+				callback: compileCSS,
+				selectors: {
+					label: '.border-block-support-panel .components-tools-panel-header',
+					panel: '.border-block-support-panel',
+				},
+			}
+		},
+	},
 	cssSet: {},
 	ruleSets: {},
 	spectrumSets: {},

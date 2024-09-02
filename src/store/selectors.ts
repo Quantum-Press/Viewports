@@ -852,23 +852,62 @@ export const getIndicatorSelectorSet = ( state : State, clientId : string ) : In
 	const selectorSet = {} as IndicatorSelectorSet;
 	const spectrumSet = getSpectrumSet( state, clientId );
 
-	for( let index = 0; index < spectrumSet.length; index++ ) {
-		const spectrum = spectrumSet[ index ];
+	const rendererPropertySet = getRendererPropertySet( state );
 
-		if( ! spectrum.selectors.hasOwnProperty( 'label' ) ) {
+	// Iterate over all renderer property sets.
+	for( const property in rendererPropertySet ) {
+		if( ! rendererPropertySet.hasOwnProperty( property ) ) {
 			continue;
 		}
 
-		const spectrumSelector = spectrum.selectors.label;
+		const rendererSet = rendererPropertySet[ property ];
 
-		if( ! selectorSet.hasOwnProperty( spectrumSelector ) ) {
-			selectorSet[ spectrumSelector ] = {
-				property: spectrum.property,
-				spectrumSet: [],
+		// Iterate over all callbacks by priority.
+		for( const priorityDirty in rendererSet ) {
+			if( ! rendererSet.hasOwnProperty( priorityDirty ) ) {
+				continue;
+			}
+
+			// Cleanup to number.
+			const priority = parseInt( priorityDirty );
+
+			// Try to get selector from renderer.
+			const renderer = rendererSet[ priority ];
+
+			if( ! renderer.selectors.hasOwnProperty( 'label' ) ) {
+				continue;
+			}
+
+			// Set label.
+			const selectorLabel = renderer.selectors.label;
+
+			// Set empty spectrum to fill, if available.
+			let spectrum = null;
+
+			// Iterate over spectrumSets, to search the result of renderer.
+			for( let index = 0; index < spectrumSet.length; index++ ) {
+				const check = spectrumSet[ index ];
+
+				// Continue as long as we find the property and priority.
+				if( property === check.property && priority === check.priority ) {
+					spectrum = check;
+					break;
+				}
+			}
+
+			// Set selectorSet if not already set.
+			if( ! selectorSet.hasOwnProperty( selectorLabel ) ) {
+				selectorSet[ selectorLabel ] = {
+					property,
+					spectrumSet: [],
+				}
+			}
+
+			// Check if we found a spectrum.
+			if( null !== spectrum ) {
+				selectorSet[ selectorLabel ].spectrumSet.push( spectrum );
 			}
 		}
-
-		selectorSet[ spectrumSelector ].spectrumSet.push( spectrum );
 	}
 
 	return selectorSet;

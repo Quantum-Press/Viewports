@@ -11,7 +11,6 @@ const {
 		Popover,
 	},
 	data: {
-		useSelect,
 		select,
 		dispatch,
 	},
@@ -353,7 +352,6 @@ const Indicator = ( { target, property, spectrumSet } : { target: Element, prope
 	const classNamesMobile = getClassName( 'mobile' );
 	const classNamesTablet = getClassName( 'tablet' );
 	const classNamesDesktop = getClassName( 'desktop' );
-
 
 	// Render component.
 	return (

@@ -1885,6 +1885,18 @@ svg.logo {
 
 
 /**
+ * Visualizer - General.
+ */
+.block-editor__spacing-visualizer {
+	transition: opacity 0.2s ease 0.1s;
+
+	&:not( .hovered ) {
+		opacity: 0;
+	}
+}
+
+
+/**
  * Indicator - General.
  */
 .interface-interface-skeleton__sidebar {

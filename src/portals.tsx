@@ -29,7 +29,7 @@ let portalRoot : any = false;
 const portalHandler = () => {
 
 	// Set portalUI to check.
-	const portalUI = document.querySelector( '.edit-site-editor__interface-skeleton .interface-interface-skeleton__content, .edit-post-layout .interface-interface-skeleton__content' );
+	const portalUI = document.querySelector( '.edit-site-editor__interface-skeleton .interface-interface-skeleton__content, .edit-post-layout .interface-interface-skeleton__content, .interface-interface-skeleton__content' );
 
 	// Set portalUI into dom to render.
 	if ( portalUI ) {

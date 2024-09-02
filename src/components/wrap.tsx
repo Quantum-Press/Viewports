@@ -7,6 +7,7 @@ import Topbar from './topbar';
 import Viewports from './viewports';
 import Keyframes from './keyframes';
 import Editing from './editing';
+import Visualizer from '../block/visualizer';
 
 const {
 	data: {
@@ -45,6 +46,7 @@ export default function Wrap() {
 			<Viewports />
 			<Keyframes />
 			<Editing />
+			<Visualizer />
 		</>
 	);
 }

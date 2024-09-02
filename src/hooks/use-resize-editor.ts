@@ -9,6 +9,7 @@ const {
 		useSelect,
 	},
 	element: {
+		useState,
 		useLayoutEffect,
 	}
 } = window[ 'wp' ];
@@ -21,6 +22,9 @@ const {
  */
 export const useResizeEditor = () => {
 
+	// Set resize info
+	const [ resizeScale, setResizeScale ] = useState( 1 );
+
 	// Set resize states.
 	const resizeSkeleton = useResizeObserver( {
 		selector: '.interface-interface-skeleton__content',
@@ -31,6 +35,7 @@ export const useResizeEditor = () => {
 		box: 'border-box',
 	} );
 
+	// Set passive resize state.
 	const resizeWrap = useResizeObserver( {
 		selector: '.edit-post-visual-editor, .edit-site-visual-editor',
 		box: 'border-box',
@@ -75,7 +80,7 @@ export const useResizeEditor = () => {
 
 		// Set maxWidth.
 		const $widthContainer = document.querySelector( '.interface-interface-skeleton__content .components-resizable-box__container' ) as HTMLElement;
-		const maxWidth = $widthContainer ? $widthContainer.getBoundingClientRect().width : 0;
+		const maxWidth = $widthContainer ? $widthContainer.getBoundingClientRect().width - 80 : 0;
 
 		// Set maxHeight.
 		const $heightContainer = document.querySelector( '.edit-site-visual-editor, .edit-post-visual-editor' ) as HTMLElement;
@@ -91,11 +96,11 @@ export const useResizeEditor = () => {
 
 		// Check if we need to set active viewport.
 		if ( isActive ) {
-			if ( viewport > ( maxWidth - 80 ) ) {
+			if ( viewport > maxWidth ) {
 
 				// Set factors.
-				const factorSmaller = ( maxWidth - 80 ) / viewport;
-				const factorGreater = viewport / ( maxWidth - 80 );
+				const factorSmaller = maxWidth / viewport;
+				const factorGreater = viewport / maxWidth;
 
 				// Set viewport size with scaling.
 				$iframe.style.width = viewport + 'px';
@@ -107,6 +112,9 @@ export const useResizeEditor = () => {
 				$iframe.style.margin = '40px';
 				$iframe.style.transform = 'scale(' + factorSmaller + ')';
 				$iframe.style.transformOrigin = 'top left';
+
+				// Update resize scale.
+				setResizeScale( factorSmaller );
 
 			} else {
 
@@ -120,6 +128,9 @@ export const useResizeEditor = () => {
 				$iframe.style.margin = '40px auto';
 				$iframe.style.transform = 'scale(1)';
 				$iframe.style.transformOrigin = 'top center';
+
+				// Update resize scale.
+				setResizeScale( 1 );
 			}
 		} else {
 
@@ -132,6 +143,9 @@ export const useResizeEditor = () => {
 			// Reset position.
 			$iframe.style.margin = '0';
 			$iframe.style.transform = 'scale(1)';
+
+			// Update resize scale.
+			setResizeScale( 1 );
 		}
 	}
 
@@ -184,6 +198,9 @@ export const useResizeEditor = () => {
 				$iframe.style.transform = 'scale(' + factorSmaller + ')';
 				$iframe.style.transformOrigin = 'top center';
 
+				// Update resize scale.
+				setResizeScale( factorSmaller );
+
 			} else {
 
 				// Set viewport size without scaling.
@@ -198,6 +215,9 @@ export const useResizeEditor = () => {
 				$iframe.style.margin = '40px auto';
 				$iframe.style.transform = 'scale(1)';
 				$iframe.style.transformOrigin = 'top center';
+
+				// Update resize scale.
+				setResizeScale( 1 );
 			}
 		} else {
 
@@ -214,10 +234,17 @@ export const useResizeEditor = () => {
 			// Reset position.
 			$iframe.style.margin = '0';
 			$iframe.style.transform = 'scale(1)';
+
+			// Update resize scale.
+			setResizeScale( 1 );
 		}
 	}
 
-	return [ resizeEditor, resizeSkeleton ];
+	return {
+		editor: resizeEditor,
+		skeleton: resizeSkeleton,
+		scale: resizeScale,
+	};
 }
 
 export default useResizeEditor;

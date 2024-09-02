@@ -140,26 +140,22 @@ export class Generator {
 
 						// Set valids simulation object.
 						const validsSimulation = {
-							... style,
 							[ property ]: valids,
 						}
 
 						// Set saves simulation object.
 						const savesSimulation = {
-							... style,
 							[ property ]: saves,
 						}
 
 						// Set changes simulation object.
 						const changesSimulation = {
-							... style,
 							[ property ]: getMergedAttributes( saves, changes ),
 						}
 
 						// Set removes simulation object.
 						const removesSimulation = {
-							... style,
-							[ property ]: removes, // #TODO weakspot see changesSimulation above.
+							[ property ]: removes,
 						}
 
 						// Iterate over renderers to store its rules.
@@ -239,99 +235,6 @@ export class Generator {
 								} );
 							}
 						}
-
-					} else {
-
-						// Set valids simulation object.
-						const validsSimulation = {
-							[ property ]: valids,
-						}
-
-						// Set saves simulation object.
-						const savesSimulation = {
-							[ property ]: saves,
-						}
-
-						// Set changes simulation object.
-						const changesSimulation = {
-							[ property ]: changes,
-						}
-
-						// Set removes simulation object.
-						const removesSimulation = {
-							[ property ]: removes,
-						}
-
-						// Set valids results of custom renderer callback and get its parts.
-						const validsCSS = compileCSS( validsSimulation, options );
-						const validsCSSCollectionSet = '' !== validsCSS ? this.getCSSCollectionSet( validsCSS ) : [];
-
-						// Set saves results of custom renderer callback and get its parts.
-						const savesCSS = Object.keys( savesSimulation ).length ? compileCSS( savesSimulation, options ) : '';
-						const savesCSSCollectionSet = '' !== savesCSS ? this.getCSSCollectionSet( savesCSS ) : [];
-
-						// Set changes results of custom renderer callback and get its parts.
-						const changesCSS = Object.keys( savesSimulation ).length ? compileCSS( changesSimulation, options ) : '';
-						const changesCSSCollectionSet = '' !== changesCSS ? this.getCSSCollectionSet( changesCSS ) : [];
-
-						// Set removes results of custom renderer callback and get its parts.
-						const removesCSS = Object.keys( savesSimulation ).length ? compileCSS( removesSimulation, options ) : '';
-						const removesCSSCollectionSet = '' !== removesCSS ? this.getCSSCollectionSet( removesCSS ) : [];
-
-						// Iterate over collectionSet to generate ruleSets
-						for( let index = 0; index < validsCSSCollectionSet.length; index++ ) {
-							const {
-								selector,
-								declarations,
-							} = validsCSSCollectionSet[ index ];
-
-							// Set valid css.
-							const css = selector + '{' + declarations + '}'.replace( /\s/g, '' );
-							const properties = this.generateProperties( css );
-
-							// Set saves properties.
-							const savesDeclarations = Object.keys( savesCSSCollectionSet ).length ? this.getDeclarations( selector, savesCSSCollectionSet ) : '';
-							const savesProperties = '' !== savesDeclarations ? this.generateProperties( selector + '{' + savesDeclarations + ' }' ) : {};
-							const hasSaves = 0 < Object.keys( savesProperties ).length ? true : false;
-
-							// Set changes properties.
-							const changesDeclarations = Object.keys( changesCSSCollectionSet ).length ? this.getDeclarations( selector, changesCSSCollectionSet ) : '';
-							const changesProperties = '' !== changesDeclarations ? this.generateProperties( selector + '{' + changesDeclarations + ' }' ) : {};
-							const hasChanges = 0 < Object.keys( changesProperties ).length ? true : false;
-
-							// Set removes properties.
-							const removesDeclarations = Object.keys( removesCSSCollectionSet ).length ? this.getDeclarations( selector, removesCSSCollectionSet ) : '';
-							const removesProperties = '' !== removesDeclarations ? this.generateProperties( selector + '{' + removesDeclarations + ' }' ) : {};
-							const hasRemoves = 0 < Object.keys( removesProperties ).length ? true : false;
-
-							// Set default rule.
-							ruleSet.push( {
-								type: 'wp',
-								property,
-								viewport,
-								priority: 5,
-								selector: this.selector,
-								selectors: {
-									panel: this.getSelectorPanel( property ),
-									label: this.getSelectorLabel( property ),
-								},
-								declarations: declarations,
-								css,
-								style: {
-									[ property ]: valids,
-								},
-								properties,
-								saves,
-								savesProperties,
-								hasSaves,
-								changes,
-								changesProperties,
-								hasChanges,
-								removes,
-								removesProperties,
-								hasRemoves,
-							} );
-						}
 					}
 				}
 
@@ -402,58 +305,6 @@ export class Generator {
 		}
 
 		return '';
-	}
-
-
-	/**
-	 * Set method to return wp native selector panel by property.
-	 *
-	 * @since 0.2.5
-	 */
-	getSelectorPanel( property ) {
-		let selector = '';
-
-		switch ( property ) {
-			case 'dimensions':
-				selector = '.dimensions-block-support-panel .components-tools-panel-item.last';
-				break;
-
-			case 'spacing':
-				selector = '.dimensions-block-support-panel .components-tools-panel-item.tools-panel-item-spacing';
-				break;
-
-			case 'border':
-				selector = '.border-block-support-panel';
-				break;
-		}
-
-		return selector;
-	}
-
-
-	/**
-	 * Set method to return wp native selector panel by property.
-	 *
-	 * @since 0.2.5
-	 */
-	getSelectorLabel( property ) {
-		let selector = '';
-
-		switch ( property ) {
-			case 'dimensions':
-				selector = '.dimensions-block-support-panel .components-tools-panel-item.last .block-editor-height-control';
-				break;
-
-			case 'spacing':
-				selector = '.dimensions-block-support-panel .components-tools-panel-header';
-				break;
-
-			case 'border':
-				selector = '.border-block-support-panel .components-tools-panel-header';
-				break;
-		}
-
-		return selector;
 	}
 
 

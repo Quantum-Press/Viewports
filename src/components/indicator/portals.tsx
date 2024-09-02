@@ -1,21 +1,16 @@
 import Indicator from './';
 import { STORE_NAME } from '../../store';
-import { svgs } from '../svgs';
+import useEditorSidebar from '../../hooks/use-editor-sidebar';
 
 const {
-	components: {
-		Button,
-	},
 	data: {
 		useSelect,
 		select,
-		dispatch,
 	},
 	element: {
-		useEffect,
-		useLayoutEffect,
-		useState,
 		createPortal,
+		useEffect,
+		useState,
 	},
 	i18n: {
 		__,
@@ -32,13 +27,13 @@ const {
  */
 export const IndicatorPortals = () => {
 
-	// Set reset state to handle manual updates.
+	// Set dependency to editor sidebar.
+	const [ tab ] = useEditorSidebar();
 	const [ reset, setReset ] = useState( false );
 
-	// Set states.
+	// Set dependency to stores.
 	const {
 		clientId,
-		iframeViewport,
 	} = useSelect( ( select : Function ) => {
 		const selected = select( 'core/block-editor' ).getSelectedBlock();
 		const clientId = selected ? selected.clientId : null;
@@ -52,40 +47,14 @@ export const IndicatorPortals = () => {
 		}
 	}, [] );
 
-
-	/**
-	 * Set function to fire on toggle sidebar.
-	 *
-	 * @since 0.2.7
-	 */
-	const onSidebarToggle = () => {
-		setReset( true );
-	}
-
-
-	// Set useEffect to handle mount + unmount.
+	// Set useEffect to handle tab changes.
 	useEffect( () => {
 		if( ! reset ) {
-			return;
+			setReset( true );
+		} else {
+			setReset( false );
 		}
-
-		setReset( false );
-
-	}, [ reset ] );
-
-
-	// Set useEffect to handle mount + unmount.
-	useEffect( () => {
-		setTimeout( () => {
-			const sidebarToggle = document.querySelector( '.block-editor-block-inspector__tabs button[aria-controls$="-styles-view"]' );
-
-			if( sidebarToggle ) {
-				sidebarToggle.removeEventListener( 'click', onSidebarToggle );
-				sidebarToggle.addEventListener( 'click', onSidebarToggle );
-			}
-		}, 1 );
-	}, [ iframeViewport, clientId ] );
-
+	}, [ tab ] );
 
 	// Check if we have a clientId.
 	if( ! clientId ) {
