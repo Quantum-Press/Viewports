@@ -1,6 +1,6 @@
 import type { State, Action, Reducers } from './types';
 import { DEFAULT_STATE } from './default';
-import { isObject, getMergedAttributes, traverseGet, traverseFilled, traverseExist } from '../utils';
+import { getMergedAttributes, traverseGet, traverseFilled, traverseExist } from '../utils';
 import {
 	isInMobileRange,
 	isInTabletRange,

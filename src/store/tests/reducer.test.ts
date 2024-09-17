@@ -2,8 +2,6 @@
 import * as data from '@wordpress/data';
 import * as element from '@wordpress/element';
 import * as styleEngine from '@wordpress/style-engine';
-import * as lodash from 'lodash';
-import * as React from 'react';
 import deepFreeze from 'deep-freeze';
 
 // Extend global window object.
@@ -12,8 +10,6 @@ global.window[ 'wp' ] = {
 	element,
 	styleEngine
 };
-global.window[ 'lodash' ] = lodash;
-global.window[ 'React' ] = React;
 
 // Import test environment.
 import { describe, expect, test } from '@jest/globals';

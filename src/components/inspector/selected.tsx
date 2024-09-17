@@ -5,9 +5,6 @@ import Accordion from '../accordion';
 import Dimensions from '../dimensions';
 
 const {
-	element: {
-		useEffect,
-	},
 	i18n: {
 		__,
 	}

@@ -1,4 +1,4 @@
-import type { Action, Viewports, SelectorSet } from './';
+import type { Action, Viewports } from './';
 import type { Attributes } from '../utils';
 import type { Size } from '../hooks';
 

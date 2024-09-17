@@ -13,9 +13,9 @@ import type {
 	InlineStyleSet,
 } from '../store';
 import { getMergedAttributes, traverseGet } from '../utils';
-import { findObjectChanges } from './utils';
+import { findObjectChanges, findObjectDifferences } from './utils';
 
-const { isEqual, cloneDeep } = window[ 'lodash' ];
+const { isEqual, isEmpty, isObject, cloneDeep } = window[ 'lodash' ];
 const {
 	styleEngine: {
 		compileCSS,
@@ -97,15 +97,20 @@ export class Generator {
 			selector: this.selector
 		};
 
-		// Set block valids from store to build rules from.
-		const valids = cloneDeep( this.state.valids ) as ViewportStyle;
+		// Set combined valids + removes from store to build rules from.
+		let combined = {} as ViewportStyle;
+		if( isObject( this.state.valids ) && isObject( this.state.removes ) ) {
+			combined = getMergedAttributes( cloneDeep( this.state.removes ), cloneDeep( this.state.valids ) ) as ViewportStyle;
+		} else {
+			combined = cloneDeep( this.state.valids );
+		}
 
 		// Set initial states.
 		const ruleSet = [] as RuleSet;
 		let prevStyle = {} as Styles;
 
 		// Iterate over block valids.
-		Object.entries( valids ).forEach( ( [ viewportDirty, { style } ] ) => {
+		Object.entries( combined ).forEach( ( [ viewportDirty, { style } ] ) => {
 
 			// Cleanup viewport.
 			const viewport = parseInt( viewportDirty )
@@ -121,12 +126,10 @@ export class Generator {
 				// Iterate over properties to render settings seperately.
 				for( const [ property ] of Object.entries( style ) ) {
 
-					// Set state attributes
-					const saves = cloneDeep( traverseGet( [ viewport, 'style', property ], this.state.saves ) ) || {};
-
-					// Set state attribute changes.
-					const changes = cloneDeep( traverseGet( [ viewport, 'style', property ], this.state.changes ) ) || {};
-					const removes = cloneDeep( traverseGet( [ viewport, 'style', property ], this.state.removes ) ) || {};
+					// Set state attributes.
+					const saves = cloneDeep( traverseGet( [ viewport, 'style', property ], this.state.saves, {} ) );
+					const changes = cloneDeep( traverseGet( [ viewport, 'style', property ], this.state.changes, {} ) );
+					const removes = cloneDeep( traverseGet( [ viewport, 'style', property ], this.state.removes, {} ) );
 
 					// Set valids from saves + changes.
 					const valids = getMergedAttributes( saves, changes );
@@ -138,9 +141,24 @@ export class Generator {
 					// Iterate renderers to check its css outputs for any result to store.
 					if( renderers.length ) {
 
+						let combined = {};
+
+						if( isEmpty( valids ) && ! isEmpty( removes ) ) {
+							combined = removes;
+						} else if( ! isEmpty( valids ) && isEmpty( removes ) || ! isEmpty( valids ) && ! isEmpty( removes ) && isEqual( valids, removes ) ) {
+							combined = valids;
+						} else if( ! isEmpty( valids ) && ! isEmpty( removes ) && ! isEqual( valids, removes ) ) {
+							combined = getMergedAttributes( removes, valids );
+						}
+
+						// Set combined simulation object.
+						const combinedSimulation = {
+							[ property ]: combined,
+						}
+
 						// Set valids simulation object.
 						const validsSimulation = {
-							[ property ]: valids,
+							[ property ]: findObjectDifferences( valids, removes ),
 						}
 
 						// Set saves simulation object.
@@ -150,7 +168,7 @@ export class Generator {
 
 						// Set changes simulation object.
 						const changesSimulation = {
-							[ property ]: getMergedAttributes( saves, changes ),
+							[ property ]: changes,
 						}
 
 						// Set removes simulation object.
@@ -163,6 +181,10 @@ export class Generator {
 
 							// Cleanup priorityDirty.
 							const priority = parseInt( priorityDirty );
+
+							// Set combined results of custom renderer callback and get its parts.
+							const combinedCSS = Object.keys( valids ).length ? renderer.callback( combinedSimulation, options, this.state.isSaving ) : '';
+							const combinedCSSCollectionSet = '' !== combinedCSS ? this.getCSSCollectionSet( combinedCSS ) : [];
 
 							// Set valids results of custom renderer callback and get its parts.
 							const validsCSS = Object.keys( valids ).length ? renderer.callback( validsSimulation, options, this.state.isSaving ) : '';
@@ -181,15 +203,31 @@ export class Generator {
 							const removesCSSCollectionSet = '' !== removesCSS ? this.getCSSCollectionSet( removesCSS ) : [];
 
 							// Iterate over collectionSet to generate ruleSets
-							for( let index = 0; index < validsCSSCollectionSet.length; index++ ) {
-								const {
+							for( let index = 0; index < combinedCSSCollectionSet.length; index++ ) {
+
+								// Set default selector.
+								let {
 									selector,
-									declarations,
-								} = validsCSSCollectionSet[ index ];
+									declarations: combinedDeclarations,
+								} = combinedCSSCollectionSet[ index ];
+								let declarations = '';
+
+								// Set declarations from valids when selectors are the same.
+								for( let index = 0; index < validsCSSCollectionSet.length; index++ ) {
+									const {
+										selector: checkSelector,
+										declarations: checkDeclarations,
+									} = validsCSSCollectionSet[ index ];
+
+									if( selector === checkSelector ) {
+										declarations = checkDeclarations;
+										break;
+									}
+								}
 
 								// Set valid css.
 								const css = selector + '{' + declarations + '}';
-								const properties = this.generateProperties( css );
+								const properties = this.generateProperties( selector + '{' + combinedDeclarations + '}' );
 
 								// Set saves properties.
 								const savesDeclarations = Object.keys( savesCSSCollectionSet ).length ? this.getDeclarations( selector, savesCSSCollectionSet ) : '';
@@ -540,7 +578,7 @@ export class Generator {
 				// console.log( 'prev', prev, rule );
 
 				// Check if there is a difference between last and actual css.
-				if ( isEqual( prev.css, rule.css ) ) {
+				if ( isEqual( prev.properties, rule.properties ) ) {
 					return true;
 				}
 
@@ -580,7 +618,7 @@ export class Generator {
 					}
 
 				// Check if we need to add the spectrum to min.
-				} else if ( '' !== rule.css && ! isEqual( prev.css, rule.css ) ) {
+				} else if ( '' !== rule.css && ! isEqual( prev.properties, rule.properties ) ) {
 
 					// Set viewport if not already did.
 					if ( ! min.hasOwnProperty( rule.viewport ) ) {

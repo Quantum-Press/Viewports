@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @class    Quantum\Viewports\Posts
  * @since    0.2.8
- * @version  0.2.85
+ * @version  0.2.14
  * @package  Quantum\Viewports
  * @category Class
  * @author   Sebastian Buchwald // conversionmedia GmbH & Co. KG
@@ -98,7 +98,7 @@ class Posts extends Instance {
 	 * @param array (required) $block
 	 *
 	 * @since 0.2.8
-	 * @version 0.2.85
+	 * @version 0.2.14
 	 */
 	public function modify_inline_styles( $block )
 	{
@@ -141,10 +141,36 @@ class Posts extends Instance {
 			$merged_parsed = array_merge( $native_parsed, $engine_parsed );
 			$merged_styles = $this->stringify_css( $merged_parsed );
 
-			$block[ 'innerHTML' ] = preg_replace( '/style\s*=\s*["\'][^"\']*["\']/', 'style="' . $merged_styles . ';"', $block[ 'innerContent' ] );
+			$replaced = false;
+			$block['innerHTML'] = preg_replace_callback(
+				'/style\s*=\s*["\'][^"\']*["\']/',
+				function( $matches ) use ( &$replaced, $merged_styles ) {
+					if( ! $replaced ) {
+						$replaced = true;
+						return 'style="' . $merged_styles . ';"';
+					}
+
+					return $matches[0];
+				},
+				$block[ 'innerHTML' ],
+				1
+			);
 
 			if( isset( $block[ 'innerContent' ][ 0 ] ) ) {
-				$block[ 'innerContent' ][ 0 ] = preg_replace( '/style\s*=\s*["\'][^"\']*["\']/', 'style="' . $merged_styles . ';"', $block[ 'innerContent' ][ 0 ] );
+				$replaced = false;
+
+				$block[ 'innerContent' ][ 0 ] = preg_replace_callback(
+					'/style\s*=\s*["\'][^"\']*["\']/',
+					function( $matches ) use ( &$replaced, $merged_styles ) {
+						if( ! $replaced ) {
+							$replaced = true;
+							return 'style="' . $merged_styles . ';"';
+						}
+						return $matches[ 0 ];
+					},
+					$block[ 'innerContent' ][ 0 ],
+					1
+				);
 			}
 		}
 

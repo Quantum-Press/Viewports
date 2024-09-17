@@ -8,6 +8,7 @@ import {
 	traverseGet,
 } from "./attributes";
 import type { Attributes } from "./attributes";
+import { debug } from "./debug";
 import {
 	isSiteEditor,
 	getVersion,
@@ -26,6 +27,7 @@ export {
 	traverseExist,
 	traverseFilled,
 	traverseGet,
+	debug,
 	isSiteEditor,
 	getVersion,
 	openSidebar,

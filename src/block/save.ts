@@ -1,5 +1,6 @@
 import type { Attributes } from '../utils';
 import { STORE_NAME } from '../store/constants';
+import { debug } from '../utils';
 
 const {
 	data: {
@@ -32,10 +33,13 @@ export const BlockSave = ( { block, props }: { block: Attributes, props: Attribu
 
 	// Check whether we need to save block viewports.
 	if ( store.isRegistered( clientId ) && hasBlockViewports && isSaving ) {
+
+		// Hier ein mtime in JS einbauen.
 		const saves = store.getGeneratedBlockSaves( clientId );
 		const inlineStyle = store.getInlineStyle( clientId );
 
 		props.attributes.viewports = saves;
+		// Hier ein mtime in JS einbauen. - End.
 
 		if ( Object.keys( inlineStyle ).length ) {
 			props.attributes.inlineStyles = inlineStyle;
@@ -43,7 +47,16 @@ export const BlockSave = ( { block, props }: { block: Attributes, props: Attribu
 			props.attributes.inlineStyles = {};
 		}
 
-		console.log( '%cQP-Viewports -> SAVE_BLOCK WITH VIEWPORTS', 'padding:4px 8px;background:green;color:white', clientId, props.attributes.viewports, props.attributes.inlineStyles );
+		debug(
+			'log',
+			'save',
+			'block with viewports',
+			{
+				clientId,
+				viewports: props.attributes.viewports,
+				inlineStyles: props.attributes.inlineStyles,
+			}
+		);
 
 		dispatch( STORE_NAME ).saveBlock( clientId );
 
@@ -62,7 +75,15 @@ export const BlockSave = ( { block, props }: { block: Attributes, props: Attribu
 			props.attributes.inlineStyles = {};
 		}
 
-		// console.log( '%cQP-Viewports -> SAVE_BLOCK WITHOUT VIEWPORTS	', 'padding:4px 8px;background:green;color:white', clientId, props.attributes );
+		debug(
+			'log',
+			'save',
+			'block without viewports',
+			{
+				clientId,
+				attributes: props.attributes
+			}
+		);
 
 		return block.save( props );
 	}
@@ -80,12 +101,19 @@ export const BlockSave = ( { block, props }: { block: Attributes, props: Attribu
 			props.attributes.inlineStyles = {};
 		}
 
-		console.log( '%cQP-Viewports -> AUTOSAVE_BLOCK', 'padding:4px 8px;background:green;color:white', clientId, clientId, props.attributes.viewports, props.attributes.inlineStyles );
+		debug(
+			'log',
+			'autosave',
+			'block with viewports',
+			{
+				clientId,
+				viewports: props.attributes.viewports,
+				inlineStyles: props.attributes.inlineStyles,
+			}
+		);
 
 		return block.save( props );
 	}
-
-	// console.log( 'skip all', clientId, props.attributes, store.isRegistered( clientId ) );
 
 	return block.save( props );
 }

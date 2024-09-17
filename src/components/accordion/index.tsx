@@ -1,5 +1,3 @@
-import { useLocalStorage } from '../../hooks';
-
 const {
 	components: {
 		Icon,

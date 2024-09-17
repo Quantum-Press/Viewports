@@ -10,7 +10,7 @@ const path = require( 'path' );
 module.exports = ( env ) => ( {
 	devtool: env.production ? undefined : 'source-map',
 	mode: env.production ? 'production' : 'development',
-	entry: './src/main.ts',
+	entry: [ './src/main.ts' ],
 	module: {
 		rules: [
 			{

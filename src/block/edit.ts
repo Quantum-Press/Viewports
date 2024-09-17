@@ -1,4 +1,5 @@
 import { STORE_NAME } from '../store';
+import { debug } from '../utils';
 
 const { isEqual, cloneDeep } = window[ 'lodash' ];
 const {
@@ -60,7 +61,12 @@ const registerInit = ( clientId, setAttributes ) => {
 			setAttributes( { tempId: clientId } );
 		} );
 
-		console.log( '%cQP-Viewports -> successfully registered', 'padding:4px 8px;background:green;color:white', { ... initMap } );
+		debug(
+			'log',
+			'edit',
+			'successfully registered',
+			initMap
+		)
 
 		initMap = {};
 	}, 1000 );
@@ -130,7 +136,7 @@ export default function BlockEdit( blockArgs : any ) {
 		}
 
 		if( attributes.tempId !== clientId ) {
-			console.log( 'TEEEEEEEST DER DARF NICHT MEHR LAUFEN RICHTIG????' );
+			console.error( 'This task should not run!' );
 
 			store.setRegistering();
 			store.removeBlock( attributes.tempId );
@@ -212,27 +218,23 @@ export default function BlockEdit( blockArgs : any ) {
 
 		// Skip on save.
 		if( isSaving || isAutoSaving ) {
-			// console.log( 'isSaving' );
 			return;
 		}
 
 		// Skip and reset on updateTempId to ignore just the init rerender.
 		if( updateTempId ) {
-			// console.log( 'updateTempId' );
 			setUpdateTempId( false );
 			return;
 		}
 
 		// Skip and reset on changing iframe size to ignore just the update rerender.
 		if( updateSelectedViewport ) {
-			// console.log( 'setUpdateSelectedViewport' );
 			setUpdateSelectedViewport( false );
 			return;
 		}
 
 		// Skip and reset on changing selected block to ignore just the update rereder.
 		if( updateSelected ) {
-			// console.log( 'updateSelected' );
 			setUpdateSelected( false );
 			return;
 		}
@@ -240,7 +242,13 @@ export default function BlockEdit( blockArgs : any ) {
 		// Here we finally indicate that we need to organize a change in datastore.
 		if( isSelected ) {
 			const storeId = attributes.tempId && '' !== attributes.tempId ? attributes.tempId : clientId;
-			console.log( 'change attributes', attributes );
+
+			debug(
+				'log',
+				'edit',
+				'change attributes',
+				attributes
+			);
 
 			store.updateBlockChanges( storeId, attributes );
 		}

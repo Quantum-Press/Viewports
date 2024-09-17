@@ -1,16 +1,14 @@
 import { STORE_NAME } from '../store';
+import { debug } from '../utils';
 
 const {
 	data: {
-		select,
 		dispatch,
 	},
 	element: {
 		useEffect,
 	}
 } = window[ 'wp' ];
-
-const { isObject } = window[ 'lodash' ];
 
 /**
  * Global dirty and save states.
@@ -29,17 +27,7 @@ let oldAutosave : Function;
  * @param detail Additional data passed to subscribers
  */
 function dispatchEvent( name : string, detail : any ) {
-	// if( 0 < name.indexOf( '-before' ) ) {
-	// 	console.log( '%c' + name, 'padding:4px 8px;background:orange;color:white' );
-	// 	console.log( detail );
-	// }
-
 	document.body.dispatchEvent( new CustomEvent( name, { detail } ) );
-
-	// if( 0 < name.indexOf( '-after' ) ) {
-	// 	console.log( '%c' + name, 'padding:4px 8px;background:orange;color:white' );
-	// 	console.log( detail );
-	// }
 }
 
 
@@ -170,7 +158,12 @@ function onSaveEntityRecordStart( event ) {
 		id,
 	} } = event.detail;
 
-	console.log( `%cQP-Viewports -> onSaveEntityRecordStart -> ${ name } -> ${ id }`, 'padding:4px 8px;background:darkgreen;color:white' );
+	debug(
+		'log',
+		'save',
+		'onSaveEntityRecordStart',
+		`${ name } -> ${ id }`
+	);
 
 	const saveKey = name + '-' + id;
 
@@ -188,7 +181,12 @@ function onSaveEntityRecordStart( event ) {
 function onSaveEntityRecordEnd( event ) {
 	const { type, id } = event.detail;
 
-	console.log( `%cQP-Viewports -> onSaveEntityRecordEnd -> ${ type } -> ${ id }`, 'padding:4px 8px;background:darkgreen;color:white' );
+	debug(
+		'log',
+		'save',
+		'onSaveEntityRecordEnd',
+		`${ name } -> ${ id }`
+	);
 
 	const saveKey = type + '-' + id;
 
@@ -198,7 +196,12 @@ function onSaveEntityRecordEnd( event ) {
 		return;
 	}
 
-	console.log( '%cQP-Viewports -> onSaveEntityRecordEnd update', 'padding:4px 8px;background:darkgreen;color:white' );
+	debug(
+		'log',
+		'save',
+		'onSaveEntityRecordEnd unsetSaving',
+		`${ name } -> ${ id }`
+	);
 
 	isRunning = false;
 
@@ -212,12 +215,16 @@ function onSaveEntityRecordEnd( event ) {
  *
  * @since 0.1.0
  */
-function onSavePostStart( event ) {
+function onSavePostStart() {
 	if( isAutosaving ) {
 		return;
 	}
 
-	console.log( '%cQP-Viewports -> onSavePostStart', 'padding:4px 8px;background:darkgreen;color:white' );
+	debug(
+		'log',
+		'save',
+		'onSavePostStart',
+	);
 
 	dispatch( STORE_NAME ).setSaving();
 }
@@ -235,7 +242,11 @@ function onSavePostEnd() {
 
 	isRunning = false;
 
-	console.log( '%cQP-Viewports -> onSavePostEnd update', 'padding:4px 8px;background:darkgreen;color:white' );
+	debug(
+		'log',
+		'save',
+		'onSavePostEnd',
+	);
 
 	// Update all blocks to viewports valid attributes and unset saving.
 	dispatch( STORE_NAME ).unsetSaving();
@@ -248,7 +259,11 @@ function onSavePostEnd() {
  * @since 0.1.0
  */
 function onAutoSavingStart() {
-	console.log( '%cQP-Viewports: onAutoSavingStart', 'padding:4px 8px;background:darkgreen;color:white' );
+	debug(
+		'log',
+		'save',
+		'onAutoSavingStart',
+	);
 
 	dispatch( STORE_NAME ).setAutoSaving();
 }
@@ -260,7 +275,11 @@ function onAutoSavingStart() {
  * @since 0.1.0
  */
 function onAutoSavingEnd() {
-	console.log( '%cQP-Viewports: valids onAutoSavingEnd', 'padding:4px 8px;background:darkgreen;color:white' );
+	debug(
+		'log',
+		'save',
+		'onAutoSavingEnd',
+	);
 
 	// Update all blocks to viewport valid attributes and unset saving.
 	dispatch( STORE_NAME ).unsetAutoSaving();

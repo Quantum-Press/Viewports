@@ -2,7 +2,6 @@ import { isObject, getMergedAttributes, traverseGet, traverseExist } from '../ut
 import { Generator } from './generator';
 import type { Attributes } from '../utils';
 import type { Styles, SpectrumState, SpectrumProperties, State, ViewportStyle, ViewportStyleSet, BlockDifferences } from './types';
-import { getMergedAttributeProperties } from '../utils/attributes';
 
 const { isEqual, cloneDeep, isEmpty, isUndefined, isNull } = window[ 'lodash' ];
 
@@ -301,13 +300,13 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
 	const selectedViewport = actionViewport ? actionViewport : iframeViewport ? iframeViewport : 0;
 
 	// Set styles from attributes.
-	const styles = cloneDeep( traverseGet( [ 'style' ], attributes, {} ) ) as Styles;
+	const styles = cloneDeep( traverseGet( [ 'style' ], attributes) ) || {} as Styles;
 
 	// Set next block states.
-	const nextBlockValids = cloneDeep( traverseGet( [ clientId ], state.valids, {} ) );
-	const nextBlockChanges = cloneDeep( traverseGet( [ clientId ], state.changes, {} ) );
-	const nextBlockRemoves = cloneDeep( traverseGet( [ clientId ], state.removes, {} ) );
-	const nextBlockSaves = cloneDeep( traverseGet( [ clientId ], state.saves, {} ) );
+	const nextBlockValids = cloneDeep( traverseGet( [ clientId ], state.valids ) ) || {};
+	const nextBlockChanges = cloneDeep( traverseGet( [ clientId ], state.changes ) ) || {};
+	const nextBlockRemoves = cloneDeep( traverseGet( [ clientId ], state.removes ) ) || {};
+	const nextBlockSaves = cloneDeep( traverseGet( [ clientId ], state.saves ) ) || {};
 
 
 	/**
@@ -484,37 +483,6 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
 
 
 	/**
-	 * Set function to append property value.
-	 *
-	 * @since 0.2.13
-	 */
-	const addPropertyValue = ( property, value ) => {
-		const viewport = isEditing ? iframeViewport : 0;
-		const changeValue = traverseGet( [ property ], value );
-
-		if( ! traverseExist( [ viewport ], nextBlockChanges ) ) {
-			nextBlockChanges[ viewport ] = {
-				style: {
-					[ property ]: changeValue,
-				}
-			}
-
-			return;
-		}
-
-		if( ! traverseExist( [ viewport, 'style' ], nextBlockChanges ) ) {
-			nextBlockChanges[ viewport ][ 'style' ] = {
-				[ property ]: changeValue,
-			}
-
-			return;
-		}
-
-		nextBlockChanges[ viewport ][ 'style' ][ property ] = changeValue;
-	}
-
-
-	/**
 	 * Set function to change property value.
 	 *
 	 * @since 0.2.13
@@ -523,6 +491,7 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
 		const changesViewport = isEditing ? iframeViewport : findHighestPropertyViewportStyle( property, iframeViewport, nextBlockChanges );
 		const savesViewport = isEditing ? iframeViewport : findHighestPropertyViewportStyle( property, iframeViewport, nextBlockSaves );
 
+		// Set highest viewport valid for propery.
 		let viewport = 0;
 		if( changesViewport >= savesViewport ) {
 			viewport = changesViewport;
@@ -531,32 +500,56 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
 			viewport = savesViewport;
 		}
 
-		const changeValue = cloneDeep( traverseGet( [ property ], value ) );
+		// Set value to cut with into states.
+		let changeValue = traverseGet( [ property ], value );
 
-		if( ! nextBlockChanges.hasOwnProperty( viewport ) ) {
-			nextBlockChanges[ viewport ] = {
-				style: {
-					[ property ]: changeValue,
+		// Set values from removes.
+		let removeValue = traverseGet( [ viewport, 'style', property ], nextBlockRemoves );
+
+		// Check if we need to kill removes occuring in changeValue.
+		if( ! isNull( removeValue ) ) {
+			removeValue = findObjectDifferences( removeValue, changeValue );
+
+			if( ! isEmpty( removeValue ) ) {
+				nextBlockRemoves[ viewport ][ 'style' ][ property ] = removeValue;
+			} else {
+				delete nextBlockRemoves[ viewport ][ 'style' ][ property ];
+			}
+
+			// Set values from saves.
+			let saveValue = traverseGet( [ viewport, 'style', property ], nextBlockSaves );
+			if( ! isNull( saveValue ) ) {
+				changeValue = findObjectChanges( changeValue, saveValue );
+
+				if( isEmpty( changeValue ) ) {
+					changeValue = saveValue;
 				}
 			}
-			return;
 		}
 
-		if( ! nextBlockChanges[ viewport ].hasOwnProperty( 'style' ) ) {
-			nextBlockChanges[ viewport ][ 'style' ] = {
-				[ property ]: changeValue,
+		if( ! isEmpty( changeValue ) ) {
+			if( ! nextBlockChanges.hasOwnProperty( viewport ) ) {
+				nextBlockChanges[ viewport ] = {
+					style: {
+						[ property ]: changeValue,
+					}
+				}
+			} else {
+				if( ! nextBlockChanges[ viewport ].hasOwnProperty( 'style' ) ) {
+					nextBlockChanges[ viewport ][ 'style' ] = {
+						[ property ]: changeValue,
+					}
+				} else {
+					const nextChanges = nextBlockChanges[ viewport ][ 'style' ][ property ];
+
+					if( isObject( nextChanges ) && isObject( changeValue ) ) {
+						nextBlockChanges[ viewport ][ 'style' ][ property ] = getMergedAttributes( nextBlockChanges[ viewport ][ 'style' ][ property ], changeValue );
+					} else {
+						nextBlockChanges[ viewport ][ 'style' ][ property ] = changeValue;
+					}
+				}
 			}
-			return;
 		}
-
-		const nextChanges = nextBlockChanges[ viewport ][ 'style' ][ property ];
-
-		if( isObject( nextChanges ) && isObject( changeValue ) ) {
-			nextBlockChanges[ viewport ][ 'style' ][ property ] = getMergedAttributes( nextBlockChanges[ viewport ][ 'style' ][ property ], changeValue );
-			return;
-		}
-
-		nextBlockChanges[ viewport ][ 'style' ][ property ] = changeValue;
 	}
 
 
@@ -680,14 +673,13 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
 
 		// If both is undefined, the properties origin is the remove state, so we continue to next property.
 		if( ! definedStyles && ! definedValids ) {
-			// console.log( 'skip not defined', property, stylesValue, validsValue );
+			console.log( '! definedStyles && ! definedValids', property );
 			continue;
 		}
 
 		// If only validsValue is defined, this seems to be a full reset of the property.
 		if( ! definedStyles ) {
 			resetProperty( property );
-			// console.log( 'resetProperty', property, { nextBlockRemoves, nextBlockChanges } );
 			continue;
 		}
 
@@ -700,24 +692,17 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
 			isEmpty( changeDifferenceValue ) &&
 			isEmpty( removeDifferenceValue )
 		) {
-			// console.log( 'skip emtpy differences', changeDifferenceValue, removeDifferenceValue );
+			// console.log( 'empty changeDifferenceValue & removeDifferenceValue', property, changeDifferenceValue, removeDifferenceValue, stylesValue, validsValue );
 			continue;
 		}
 
-		// If only styleValue is defined, this seems to be new set.
-		if( ! definedValids ) {
-			addPropertyValue( property, changeDifferenceValue );
-			// console.log( 'addPropertyValue', property, changeDifferenceValue );
-			continue;
-		};
-
 		if( isEmpty( changeDifferenceValue ) ) {
 			removePropertyValue( property, removeDifferenceValue );
-			// console.log( 'remove property', property, changeDifferenceValue, removeDifferenceValue );
+			// console.log( 'remove property', property, changeDifferenceValue, removeDifferenceValue, nextBlockChanges, nextBlockRemoves );
 			continue;
 		} else {
 			changePropertyValue( property, changeDifferenceValue );
-			// console.log( 'change property', property, changeDifferenceValue, removeDifferenceValue );
+			// console.log( 'change property', property, changeDifferenceValue, removeDifferenceValue, nextBlockChanges );
 			continue;
 		}
 	}
@@ -738,10 +723,11 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
  * @return {object} valids
  */
 export const findBlockValids = ( clientId : string, state : State ) : Attributes => {
-	const { saves, changes, viewports } = state;
+	const { saves, changes, removes, viewports } = state;
 
 	const blockSaves = traverseGet( [ clientId ], saves ) || {};
 	const blockChanges = traverseGet( [ clientId ], changes ) || {};
+	const blockRemoves = traverseGet( [ clientId ], removes ) || {};
 
 	const blockValids : ViewportStyle = {
 		0: {
@@ -750,21 +736,26 @@ export const findBlockValids = ( clientId : string, state : State ) : Attributes
 	};
 
 	let last = 0;
-	for ( const [ viewportDirty ] of Object.entries( viewports ) ) {
+	for( const [ viewportDirty ] of Object.entries( viewports ) ) {
 		const viewport = parseInt( viewportDirty );
 		const lastBlockValids = cloneDeep( blockValids[ last ] );
 
-		if ( blockSaves.hasOwnProperty( viewport ) ) {
-			if ( blockChanges.hasOwnProperty( viewport ) ) {
-				blockValids[ viewport ] = getMergedAttributes( lastBlockValids, blockSaves[ viewport ], blockChanges[ viewport ] );
-			} else {
-				blockValids[ viewport ] = getMergedAttributes( lastBlockValids, blockSaves[ viewport ] );
-			}
+		if( blockSaves.hasOwnProperty( viewport ) && blockChanges.hasOwnProperty( viewport ) ) {
+			blockValids[ viewport ] = getMergedAttributes( lastBlockValids, blockSaves[ viewport ], blockChanges[ viewport ] );
+		} else if( blockSaves.hasOwnProperty( viewport ) && ! blockChanges.hasOwnProperty( viewport ) ) {
+			blockValids[ viewport ] = getMergedAttributes( lastBlockValids, blockSaves[ viewport ] );
+		} else if( ! blockSaves.hasOwnProperty( viewport ) && blockChanges.hasOwnProperty( viewport ) ) {
+			blockValids[ viewport ] = getMergedAttributes( lastBlockValids, blockChanges[ viewport ] );
 		} else {
-			if ( blockChanges.hasOwnProperty( viewport ) ) {
-				blockValids[ viewport ] = getMergedAttributes( lastBlockValids, blockChanges[ viewport ] );
-			} else {
-				blockValids[ viewport ] = lastBlockValids;
+			blockValids[ viewport ] = lastBlockValids;
+		}
+
+		// At last we filter out difference between valids and removes.
+		if( blockRemoves.hasOwnProperty( viewport ) ) {
+			blockValids[ viewport ] = findObjectDifferences( blockValids[ viewport ], blockRemoves[ viewport ] );
+
+			if( isEmpty( blockValids[ viewport ] ) ) {
+				blockValids[ viewport ] = { style: {} };
 			}
 		}
 
@@ -821,6 +812,50 @@ export const findObjectChanges = ( attributes : Attributes, valids : Attributes 
 
 	return changes;
 }
+
+
+type DeepPartial<T> = T extends (infer U)[] // Falls T ein Array ist
+  ? DeepPartial<U>[] // Wendet DeepPartial rekursiv auf den Typ der Elemente an
+  : T extends object // Falls T ein Objekt ist
+  ? { [K in keyof T]?: DeepPartial<T[K]> } // Wendet DeepPartial auf alle Schlüssel an
+  : T; // Andernfalls gibt den Typ selbst zurück
+
+/**
+ * Funktion zur Ermittlung von Unterschieden zwischen zwei Objekten.
+ *
+ * @param {T} obj1 - Erstes Objekt
+ * @param {T} obj2 - Zweites Objekt
+ * @param {T} hard - Harter Vergleich zwischen
+ *
+ * @since 0.2.14
+ *
+ * @return {DeepPartial<T>} - Unterschiede zwischen obj1 und obj2
+ */
+export const findObjectDifferences = <T extends Record<string, any> | any[]>( obj1: T, obj2: T, hard: boolean = false ): DeepPartial<T> => {
+
+	// Typanpassung für result, um es als DeepPartial<T> zu behandeln.
+	const result = (Array.isArray(obj1) ? [] : {}) as DeepPartial<T>;
+
+	for( const key in obj1 ) {
+		if( obj1.hasOwnProperty( key ) ) {
+			if( obj2.hasOwnProperty( key ) ) {
+				if( typeof obj1[ key ] === 'object' && obj1[ key ] !== null && typeof obj2[ key ] === 'object' && obj2[ key ] !== null ) {
+					const diff = findObjectDifferences( obj1[ key ], obj2[ key ] );
+
+					if( Object.keys( diff ).length > 0 ) {
+						( result as any )[ key ] = diff;
+					}
+				} else if( hard && obj1[ key ] !== obj2[ key ] ) {
+					( result as any) [ key ] = obj1[ key ];
+				}
+			} else {
+				( result as any) [ key ] = obj1[ key ];
+			}
+		}
+	}
+
+	return result;
+};
 
 
 /**

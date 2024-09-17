@@ -2,7 +2,6 @@ import './editor.scss';
 import './store/index';
 import './register';
 
-import { STORE_NAME } from './store/constants';
 import { isSiteEditor } from './utils/editor';
 import portalHandler from './portals';
 import Wrap from './components/wrap';
@@ -11,7 +10,6 @@ import ToggleView from './components/toggle-view';
 
 const {
 	data: {
-		dispatch,
 		subscribe,
 	},
 	domReady,

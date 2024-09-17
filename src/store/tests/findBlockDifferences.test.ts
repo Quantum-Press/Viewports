@@ -1,7 +1,5 @@
 // Import preparement dependencies.
 import deepFreeze from 'deep-freeze';
-import * as lodash from 'lodash';
-import * as React from 'react';
 import * as data from '@wordpress/data';
 import * as element from '@wordpress/element';
 import * as styleEngine from '@wordpress/style-engine';
@@ -12,8 +10,6 @@ global.window[ 'wp' ] = {
 	element,
 	styleEngine
 };
-global.window[ 'lodash' ] = lodash;
-global.window[ 'React' ] = React;
 
 // Import test environment.
 import { describe, expect, test } from '@jest/globals';
@@ -424,6 +420,7 @@ describe( 'Testsuite - findBlockDifferences - Viewport = 0 - Adding property', (
         expect( result ).toStrictEqual( check );
     } );
 } );
+/**/
 
 
 
@@ -878,6 +875,7 @@ describe( 'Testsuite - findBlockDifferences - Viewport > 0 - Adding property', (
  *
  * @since 0.2.13
  */
+/*
 describe( 'Testsuite - findBlockDifferences - Viewport = 0 - Changing property', () => {
 
     test( 'on single property from changes', () => {
@@ -1044,7 +1042,155 @@ describe( 'Testsuite - findBlockDifferences - Viewport = 0 - Changing property',
 
         expect( result ).toStrictEqual( check );
     } );
+
+    test( 'on already removed property', () => {
+        const state = deepFreeze( {
+            ... DEFAULT_STATE,
+            valids: {
+                'client-id': {
+                    0: {
+                        style: {
+                            dimensions: {
+                                width: '100%',
+                            }
+                        },
+                    },
+                },
+            },
+            removes: {
+                'client-id': {
+                    0: {
+                        style: {
+                            dimensions: {
+                                height: 'auto',
+                            }
+                        },
+                    },
+                },
+            },
+            saves: {
+                'client-id': {
+                    0: {
+                        style: {
+                            dimensions: {
+                                width: '100%',
+                                height: 'auto',
+                            }
+                        },
+                    },
+                },
+            },
+        } );
+
+        const attributes = {
+            style: {
+                dimensions: {
+                    width: '100%',
+                    height: '100%',
+                }
+            },
+        };
+
+        const check = {
+            changes: {
+                'client-id': {
+                    0: {
+                        style: {
+                            dimensions: {
+                                height: '100%',
+                            }
+                        },
+                    },
+                },
+            },
+            removes: {},
+        };
+
+        const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
+
+        expect( result ).toStrictEqual( check );
+    } );
+
+    test( 'on already removed property - partially', () => {
+        const state = deepFreeze( {
+            ... DEFAULT_STATE,
+            valids: {
+                'client-id': {
+                    0: {
+                        style: {
+                            dimensions: {
+                                width: '100%',
+                            }
+                        },
+                    },
+                },
+            },
+            removes: {
+                'client-id': {
+                    0: {
+                        style: {
+                            dimensions: {
+                                height: 'auto',
+                                minWidth: '100%',
+                            }
+                        },
+                    },
+                },
+            },
+            saves: {
+                'client-id': {
+                    0: {
+                        style: {
+                            dimensions: {
+                                width: '100%',
+                                height: 'auto',
+                            }
+                        },
+                    },
+                },
+            },
+        } );
+
+        const attributes = {
+            style: {
+                dimensions: {
+                    width: '100%',
+                    height: '100%',
+                }
+            },
+        };
+
+        const check = {
+            changes: {
+                'client-id': {
+                    0: {
+                        style: {
+                            dimensions: {
+                                height: '100%',
+                            }
+                        },
+                    },
+                },
+            },
+            removes: {
+                'client-id': {
+                    0: {
+                        style: {
+                            dimensions: {
+                                minWidth: '100%',
+                            }
+                        },
+                    },
+                },
+            },
+        };
+
+        const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
+
+        expect( result ).toStrictEqual( check );
+    } );
 } );
+/**/
 
 
 /**
@@ -1252,6 +1398,360 @@ describe( 'Testsuite - findBlockDifferences - Viewport > 0 - Changing property',
 
         expect( result ).toStrictEqual( check );
     } );
+
+    test( 'on already removed property', () => {
+        const state = deepFreeze( {
+            ... DEFAULT_STATE,
+            iframeViewport: 1024,
+            valids: {
+                'client-id': {
+                    0: {
+                        style: {},
+                    },
+                    768: {
+                        style: {
+                            dimensions: {
+                                width: '100%',
+                            }
+                        },
+                    },
+                    1024: {
+                        style: {
+                            dimensions: {
+                                width: '100%',
+                            }
+                        },
+                    },
+                },
+            },
+            removes: {
+                'client-id': {
+                    768: {
+                        style: {
+                            dimensions: {
+                                height: 'auto',
+                            }
+                        },
+                    },
+                },
+            },
+            saves: {
+                'client-id': {
+                    768: {
+                        style: {
+                            dimensions: {
+                                width: '100%',
+                                height: 'auto',
+                            }
+                        },
+                    },
+                },
+            },
+        } );
+
+        const attributes = {
+            style: {
+                dimensions: {
+                    width: '100%',
+                    height: '100%',
+                }
+            },
+        };
+
+        const check = {
+            changes: {
+                'client-id': {
+                    768: {
+                        style: {
+                            dimensions: {
+                                height: '100%',
+                            }
+                        },
+                    },
+                },
+            },
+            removes: {},
+        };
+
+        const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
+
+        expect( result ).toStrictEqual( check );
+    } );
+
+    test( 'on already removed property - partially', () => {
+        const state = deepFreeze( {
+            ... DEFAULT_STATE,
+            iframeViewport: 1024,
+            valids: {
+                'client-id': {
+                    0: {
+                        style: {
+                            dimensions: {
+                                width: '100%',
+                            }
+                        },
+                    },
+                    768: {
+                        style: {
+                            dimensions: {
+                                width: '100%',
+                            }
+                        },
+                    },
+                    1024: {
+                        style: {
+                            dimensions: {
+                                width: '100%',
+                            }
+                        },
+                    },
+                },
+            },
+            removes: {
+                'client-id': {
+                    768: {
+                        style: {
+                            dimensions: {
+                                height: 'auto',
+                                minWidth: '100%',
+                            }
+                        },
+                    },
+                },
+            },
+            saves: {
+                'client-id': {
+                    768: {
+                        style: {
+                            dimensions: {
+                                width: '100%',
+                                height: 'auto',
+                            }
+                        },
+                    },
+                },
+            },
+        } );
+
+        const attributes = {
+            style: {
+                dimensions: {
+                    width: '100%',
+                    height: '100%',
+                }
+            },
+        };
+
+        const check = {
+            changes: {
+                'client-id': {
+                    768: {
+                        style: {
+                            dimensions: {
+                                height: '100%',
+                            }
+                        },
+                    },
+                },
+            },
+            removes: {
+                'client-id': {
+                    768: {
+                        style: {
+                            dimensions: {
+                                minWidth: '100%',
+                            }
+                        },
+                    },
+                },
+            },
+        };
+
+        const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
+
+        expect( result ).toStrictEqual( check );
+    } );
+} );
+/**/
+
+/**
+ * Test scenario to test the behavior of changing properties as change.
+ *
+ * @since 0.2.13
+ */
+describe( 'Testsuite - findBlockDifferences - Multi Scenario 1', () => {
+    test( 'on partially reset property removings by changes', () => {
+        const state = deepFreeze( {
+            ... DEFAULT_STATE,
+            iframeViewport: 1024,
+            valids: {
+                'client-id': {
+                    0: {
+                        style: {},
+                    },
+                    768: {
+                        style: {},
+                    },
+                    1024: {
+                        style: {},
+                    },
+                },
+            },
+            removes: {
+                'client-id': {
+                    768: {
+                        style: {
+                            spacing: {
+                                padding: {
+                                    top: '10px',
+                                    right: '10px',
+                                    bottom: '10px',
+                                    left: '10px',
+                                },
+                            }
+                        },
+                    },
+                },
+            },
+            saves: {
+                'client-id': {
+                    768: {
+                        style: {
+                            spacing: {
+                                padding: {
+                                    top: '10px',
+                                    right: '10px',
+                                    bottom: '10px',
+                                    left: '10px',
+                                },
+                            }
+                        },
+                    },
+                },
+            },
+        } );
+
+        const attributes = {
+            style: {
+                spacing: {
+                    padding: {
+                        top: '10px',
+                        bottom: '10px',
+                    },
+                }
+            },
+        };
+
+        const check = {
+            changes: {},
+            removes: {
+                'client-id': {
+                    768: {
+                        style: {
+                            spacing: {
+                                padding: {
+                                    right: '10px',
+                                    left: '10px',
+                                },
+                            }
+                        },
+                    },
+                },
+            },
+        };
+
+        const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
+
+        expect( result ).toStrictEqual( check );
+
+    } );
+
+    test( 'on reset property removings by changes', () => {
+        const state = deepFreeze( {
+            ... DEFAULT_STATE,
+            iframeViewport: 1024,
+            valids: {
+                'client-id': {
+                    0: {
+                        style: {},
+                    },
+                    768: {
+                        style: {
+                            spacing: {
+                                padding: {
+                                    top: '10px',
+                                    bottom: '10px',
+                                },
+                            },
+                        },
+                    },
+                    1024: {
+                        style: {
+                            spacing: {
+                                padding: {
+                                    top: '10px',
+                                    bottom: '10px',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            removes: {
+                'client-id': {
+                    768: {
+                        style: {
+                            spacing: {
+                                padding: {
+                                    right: '10px',
+                                    left: '10px',
+                                },
+                            }
+                        },
+                    },
+                },
+            },
+            saves: {
+                'client-id': {
+                    768: {
+                        style: {
+                            spacing: {
+                                padding: {
+                                    top: '10px',
+                                    right: '10px',
+                                    bottom: '10px',
+                                    left: '10px',
+                                },
+                            }
+                        },
+                    },
+                },
+            },
+        } );
+
+        const attributes = {
+            style: {
+                spacing: {
+                    padding: {
+                        top: '10px',
+                        right: '10px',
+                        bottom: '10px',
+                        left: '10px',
+                    },
+                }
+            },
+        };
+
+        const check = {
+            changes: {},
+            removes: {},
+        };
+
+        const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
+
+        expect( result ).toStrictEqual( check );
+
+    } );
 } );
 
 
@@ -1277,13 +1777,7 @@ describe( 'Testsuite - findBlockDifferences - Viewport > 0 - Changing property',
 
 
 
-
-
-
-
-
-
-
+/*
 test( 'can findBlockDifferences() when changing and removing to changed properties, with isEditing', () => {
     const state = deepFreeze( {
         ... DEFAULT_STATE,

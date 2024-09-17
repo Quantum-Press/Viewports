@@ -6,9 +6,6 @@ const {
 		select,
 		useSelect,
 	},
-	element: {
-		useEffect,
-	}
 } = window[ 'wp' ];
 
 /**
