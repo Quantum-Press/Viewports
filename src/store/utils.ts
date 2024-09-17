@@ -277,6 +277,63 @@ export const findHighestPropertyViewportStyle = ( property : string, actionViewp
 
 
 /**
+ * Set function to cleanu an object.
+ *
+ * @param {T} obj
+ *
+ * @since 0.2.15
+ *
+ * @return {T}
+ */
+export const cleanupObject = <T extends object>( obj : T ) : T => {
+	for( const [ property, value ] of Object.entries( obj ) ) {
+		if( isNull( value ) || isUndefined( value ) ) {
+			delete obj[ property ];
+			continue;
+		}
+
+		if( isObject( value ) ) {
+			obj[ property ] = cleanupObject( value );
+		} else if( Array.isArray( value ) ) {
+			obj[ property ] = cleanupArray( value );
+		}
+	}
+
+	return obj;
+}
+
+
+/**
+ * Set function to cleanup an array.
+ *
+ * @param {T} arr
+ *
+ * @since 0.2.15
+ *
+ * @return {T}
+ */
+export const cleanupArray = <T extends Array<any>>( arr : T ) : T => {
+	for( let i = 0; i < arr.length; i++ ) {
+		const value = arr[ i ];
+
+		if( isNull( value ) || isUndefined( value ) ) {
+			continue;
+		}
+
+		if( isObject( value ) ) {
+			arr[ i ] = cleanupObject( value );
+		} else if( Array.isArray( value ) ) {
+			arr[ i ] = cleanupArray( value );
+		} else {
+			arr[ i ] = value;
+		}
+	}
+
+	return arr;
+}
+
+
+/**
  * Set function to find differences in block styles.
  *
  * @param {string} clientId
@@ -386,10 +443,7 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
 			}
 		}
 
-		// console.log( 'cleanupViewportStyles' );
-		// console.dir( result, { depth: null, colors: true } );
-
-		return result;
+		return cleanupObject( result );
 	}
 
 
@@ -504,14 +558,16 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
 		let changeValue = traverseGet( [ property ], value );
 
 		// Set values from removes.
-		let removeValue = traverseGet( [ viewport, 'style', property ], nextBlockRemoves );
+		let changesValue = traverseGet( [ viewport, 'style', property ], nextBlockChanges );
+		let removesValue = traverseGet( [ viewport, 'style', property ], nextBlockRemoves );
+		let savesValue = traverseGet( [ viewport, 'style', property ], nextBlockSaves );
 
 		// Check if we need to kill removes occuring in changeValue.
-		if( ! isNull( removeValue ) ) {
-			removeValue = findObjectDifferences( removeValue, changeValue );
+		if( ! isNull( removesValue ) ) {
+			removesValue = findObjectDifferences( removesValue, changeValue );
 
-			if( ! isEmpty( removeValue ) ) {
-				nextBlockRemoves[ viewport ][ 'style' ][ property ] = removeValue;
+			if( ! isEmpty( removesValue ) ) {
+				nextBlockRemoves[ viewport ][ 'style' ][ property ] = removesValue;
 			} else {
 				delete nextBlockRemoves[ viewport ][ 'style' ][ property ];
 			}
@@ -519,12 +575,18 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
 			// Set values from saves.
 			let saveValue = traverseGet( [ viewport, 'style', property ], nextBlockSaves );
 			if( ! isNull( saveValue ) ) {
-				changeValue = findObjectChanges( changeValue, saveValue );
+				changeValue = findChanges( changeValue, saveValue );
 
 				if( isEmpty( changeValue ) ) {
 					changeValue = saveValue;
 				}
 			}
+		}
+
+		if( ! isEmpty( changesValue ) ) {
+			changeValue = findChanges( changeValue, changesValue );
+		} else if( ! isEmpty( savesValue ) ) {
+			changeValue = findChanges( changeValue, savesValue );
 		}
 
 		if( ! isEmpty( changeValue ) ) {
@@ -580,7 +642,11 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
 
 			nextPropertyChanges = findObjectChanges( { [ property ]: nextPropertyChanges }, { [ property ]: removeValue } );
 
-			nextBlockChanges[ viewport ][ 'style' ][ property ] = nextPropertyChanges[ property ];
+			if( nextPropertyChanges.hasOwnProperty( property ) ) {
+				nextBlockChanges[ viewport ][ 'style' ][ property ] = nextPropertyChanges[ property ];
+			} else {
+				delete nextBlockChanges[ viewport ][ 'style' ][ property ];
+			}
 		}
 
 		// Reverse Iteration to get the latest from iframeViewport on.
@@ -594,7 +660,7 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
 				continue;
 			}
 
-			// Check if there are changes for the property.
+			// Check if there are savess for the property.
 			let nextPropertySaves = traverseGet( [ viewport, 'style', property ], nextBlockSaves );
 			if( ! nextPropertySaves ) {
 				continue;
@@ -673,12 +739,13 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
 
 		// If both is undefined, the properties origin is the remove state, so we continue to next property.
 		if( ! definedStyles && ! definedValids ) {
-			console.log( '! definedStyles && ! definedValids', property );
+			// console.log( '! definedStyles && ! definedValids', property );
 			continue;
 		}
 
 		// If only validsValue is defined, this seems to be a full reset of the property.
 		if( ! definedStyles ) {
+			// console.log( 'resetProperty', property );
 			resetProperty( property );
 			continue;
 		}
@@ -702,7 +769,7 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
 			continue;
 		} else {
 			changePropertyValue( property, changeDifferenceValue );
-			// console.log( 'change property', property, changeDifferenceValue, removeDifferenceValue, nextBlockChanges );
+			// console.log( 'change property', property, changeDifferenceValue, removeDifferenceValue, nextBlockChanges, nextBlockSaves );
 			continue;
 		}
 	}
@@ -764,6 +831,29 @@ export const findBlockValids = ( clientId : string, state : State ) : Attributes
 
 	return blockValids;
 }
+
+
+/**
+ * General function to find changes between two values (arrays or objects).
+ *
+ * @param {any} current - The current value state.
+ * @param {any} original - The original value state.
+ *
+ * @since 0.2.15
+ *
+ * @return {any} changes - Detected changes.
+ */
+const findChanges = ( current: any, original: any ) : any => {
+	if( Array.isArray( current ) && Array.isArray( original ) ) {
+		return [ ... current ];
+	} else if ( isObject( current ) && isObject( original ) ) {
+		return findObjectChanges( current, original );
+	} else if ( ! isEqual( current, original ) ) {
+		return current; // Primitive or non-equal types
+	}
+
+	return undefined; // No changes detected
+};
 
 
 /**
@@ -834,7 +924,7 @@ type DeepPartial<T> = T extends (infer U)[] // Falls T ein Array ist
 export const findObjectDifferences = <T extends Record<string, any> | any[]>( obj1: T, obj2: T, hard: boolean = false ): DeepPartial<T> => {
 
 	// Typanpassung für result, um es als DeepPartial<T> zu behandeln.
-	const result = (Array.isArray(obj1) ? [] : {}) as DeepPartial<T>;
+	const result = ( Array.isArray( obj1 ) ? [] : {} ) as DeepPartial<T>;
 
 	for( const key in obj1 ) {
 		if( obj1.hasOwnProperty( key ) ) {
@@ -846,10 +936,10 @@ export const findObjectDifferences = <T extends Record<string, any> | any[]>( ob
 						( result as any )[ key ] = diff;
 					}
 				} else if( hard && obj1[ key ] !== obj2[ key ] ) {
-					( result as any) [ key ] = obj1[ key ];
+					( result as any ) [ key ] = obj1[ key ];
 				}
 			} else {
-				( result as any) [ key ] = obj1[ key ];
+				( result as any ) [ key ] = obj1[ key ];
 			}
 		}
 	}

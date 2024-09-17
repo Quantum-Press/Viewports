@@ -2,25 +2,25 @@ import type { Attributes } from '../utils';
 import type { Size } from '../hooks';
 
 export type Styles = {
-	[ key: string ] : string | number | object | Array<any> | Styles,
+	[ key: string ] : any,
 }
 
 export type Viewports = {
 	[ key: number ] : string,
 }
 
-export type ViewportSet = {
+export type ViewportSet = { // clientViewportSets?
 	[ key: string ] : ViewportStyle,
 }
 
-export type ViewportStyle = {
+export type ViewportStyle = { // Das müsste dann nur noch das object repräsentieren. ViewportStyleSet?
 	[ key: number ] : {
 		style: Styles,
 		to?: number
 	}
 }
 
-export type ViewportStyleSet = { // Dopplung mit ViewportStyle. Warum?
+export type ViewportStyleSet = { // Dopplung mit ViewportStyle. Warum? Wenn clientViewportSets dann müsste das hier bleiben. ViewportStyleSets?
 	[ key: number ] : {
 		style: Styles,
 		to?: number,

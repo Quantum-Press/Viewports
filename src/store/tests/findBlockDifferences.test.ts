@@ -27,6 +27,7 @@ import {
  *
  * @since 0.2.13
  */
+/**/ /* /**/
 describe( 'Testsuite - findBlockDifferences - Viewport = 0 - Adding property', () => {
 
     test( 'on empty states', () => {
@@ -430,6 +431,7 @@ describe( 'Testsuite - findBlockDifferences - Viewport = 0 - Adding property', (
  *
  * @since 0.2.13
  */
+/**/ /* /**/
 describe( 'Testsuite - findBlockDifferences - Viewport > 0 - Adding property', () => {
 
     test( 'on empty states', () => {
@@ -867,7 +869,7 @@ describe( 'Testsuite - findBlockDifferences - Viewport > 0 - Adding property', (
         expect( result ).toStrictEqual( check );
     } );
 } );
-
+/**/
 
 /**
  * Test scenario to test the behavior of changing properties as change.
@@ -875,7 +877,7 @@ describe( 'Testsuite - findBlockDifferences - Viewport > 0 - Adding property', (
  *
  * @since 0.2.13
  */
-/*
+/**/ /* /**/
 describe( 'Testsuite - findBlockDifferences - Viewport = 0 - Changing property', () => {
 
     test( 'on single property from changes', () => {
@@ -1199,6 +1201,7 @@ describe( 'Testsuite - findBlockDifferences - Viewport = 0 - Changing property',
  *
  * @since 0.2.13
  */
+/**/ /* /**/
 describe( 'Testsuite - findBlockDifferences - Viewport > 0 - Changing property', () => {
 
     test( 'on single property from changes', () => {
@@ -1579,6 +1582,7 @@ describe( 'Testsuite - findBlockDifferences - Viewport > 0 - Changing property',
  *
  * @since 0.2.13
  */
+/**/ /* /**/
 describe( 'Testsuite - findBlockDifferences - Multi Scenario 1', () => {
     test( 'on partially reset property removings by changes', () => {
         const state = deepFreeze( {
@@ -1777,7 +1781,7 @@ describe( 'Testsuite - findBlockDifferences - Multi Scenario 1', () => {
 
 
 
-/*
+/**/ /* /**/
 test( 'can findBlockDifferences() when changing and removing to changed properties, with isEditing', () => {
     const state = deepFreeze( {
         ... DEFAULT_STATE,

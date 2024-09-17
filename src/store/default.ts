@@ -74,6 +74,24 @@ export const DEFAULT_STATE = {
 	inspect: false,
 	lastEdit: 0,
 	renderer: {
+		background: {
+			5: {
+				callback: compileCSS,
+				selectors: {
+					label: '.background-block-support-panel .components-tools-panel-header',
+					panel: '.background-block-support-panel',
+				},
+			}
+		},
+		border: {
+			5: {
+				callback: compileCSS,
+				selectors: {
+					label: '.border-block-support-panel .components-tools-panel-header',
+					panel: '.border-block-support-panel',
+				},
+			}
+		},
 		dimensions: {
 			5: {
 				callback: compileCSS,
@@ -89,15 +107,6 @@ export const DEFAULT_STATE = {
 				selectors: {
 					label: '.dimensions-block-support-panel .components-tools-panel-header',
 					panel: '.dimensions-block-support-panel .components-tools-panel-item.tools-panel-item-spacing',
-				},
-			}
-		},
-		border: {
-			5: {
-				callback: compileCSS,
-				selectors: {
-					label: '.border-block-support-panel .components-tools-panel-header',
-					panel: '.border-block-support-panel',
 				},
 			}
 		},
