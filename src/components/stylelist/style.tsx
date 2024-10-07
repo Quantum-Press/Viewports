@@ -87,6 +87,10 @@ export const Style = ( attributes ) => {
 	}
 
 
+	// Set clientId shorthand to replace in selector.
+	const clientIdSplit = spectrum.selector.split( '-' );
+	const clientIdShort = clientIdSplit.shift() + '-' + clientIdSplit.shift();
+
 	// Render component.
 	return (
 		<div className={ classNames.join( ' ' ) } data-viewport={ spectrum.viewport }>
@@ -97,7 +101,8 @@ export const Style = ( attributes ) => {
 				<div className="media active">{ '@media (' + spectrum.media + ')' }</div>
 			}
 			<div className="selector-start">
-				{ spectrum.selector + ' {' }
+				{ spectrum.selector.replace( '#block-' + clientId, clientIdShort ) }
+				<br/>{ "{" }
 			</div>
 			<div className="actions">
 				<Button
@@ -108,7 +113,7 @@ export const Style = ( attributes ) => {
 				<div className="state-actions">
 					{ canRestore && <Button
 						className="restore"
-						icon="update"
+						icon="undo"
 						onClick={ onClickRestore }
 					/> }
 					{ canRemove && <Button

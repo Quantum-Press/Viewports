@@ -1,6 +1,6 @@
 import { STORE_NAME } from '../../store';
 import { getVersion } from '../../utils';
-import { svgs } from '../svgs';
+import { logo } from '../svgs';
 
 const {
 	components: {
@@ -40,7 +40,7 @@ const Foot = () => {
 		<div className="qp-viewports-inspector-foot">
 			<Button
 				className="qp-viewports-link"
-				icon={ svgs.logo }
+				icon={ logo }
 				text={ __( 'Quantum Viewports - Version', 'quantum-viewports' ) + ' ' + version }
 			/>
 		</div>

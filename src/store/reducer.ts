@@ -2,6 +2,9 @@ import type { State, Action, Reducers } from './types';
 import { DEFAULT_STATE } from './default';
 import { getMergedAttributes, traverseGet, traverseFilled, traverseExist } from '../utils';
 import {
+	mobileDefaultViewport,
+	tabletDefaultViewport,
+	desktopDefaultViewport,
 	isInMobileRange,
 	isInTabletRange,
 	isInDesktopRange,
@@ -13,7 +16,10 @@ import {
 	findCleanedChanges,
 	clearEmptySaves,
 	clearDuplicateSaves,
-	getSpectrumProperties
+	getSpectrumProperties,
+	getPrevViewport,
+	getNextViewport,
+	getViewports,
 } from './utils';
 
 const { isEqual, cloneDeep } = window[ 'lodash' ];
@@ -58,17 +64,54 @@ export function setViewports( state : State , action : Action ) : State {
 export function setViewport( state : State, action : Action ) : State {
 	switch ( action.type ) {
 		case 'SET_VIEWPORT' :
-			let viewport = action.viewport;
-
-			if( ! state.isActive ) {
-				let wrap = document.querySelector( '.interface-interface-skeleton__content' );
-				viewport = wrap ? wrap.getBoundingClientRect().width : state.viewport;
-			}
-
 			return {
 				... state,
-				viewport: viewport,
+				viewport: action.viewport,
 			};
+	}
+
+	return state;
+}
+
+
+/**
+ * Set reducer to update viewport by viewportType.
+ *
+ * @param {State} state current
+ * @param {Action} action dispatched
+ *
+ * @since 0.2.16
+ *
+ * @return {State} updated state
+ */
+export function setViewportType( state : State, action : Action ) : State {
+	switch ( action.type ) {
+		case 'SET_VIEWPORT_TYPE' :
+			let viewportType = action.viewportType;
+
+			if( viewportType === 'mobile' ) {
+				return {
+					... state,
+					isActive: ! state.isActive ? true : true,
+					viewport: mobileDefaultViewport,
+				}
+			}
+
+			if( viewportType === 'tablet' ) {
+				return {
+					... state,
+					isActive: ! state.isActive ? true : true,
+					viewport: tabletDefaultViewport,
+				}
+			}
+
+			if( viewportType === 'desktop' ) {
+				return {
+					... state,
+					isActive: ! state.isActive ? true : true,
+					viewport: desktopDefaultViewport,
+				}
+			}
 	}
 
 	return state;
@@ -81,33 +124,89 @@ export function setViewport( state : State, action : Action ) : State {
  * @param {State} state current
  * @param {Action} action dispatched
  *
- * @since 0.1.0
+ * @since 0.2.16
  *
  * @return {State} updated state
  */
 export function setPrevViewport( state : State, action : Action ) : State {
 	switch ( action.type ) {
 		case 'SET_PREV_VIEWPORT' :
-			let last = 0;
+			switch ( action.viewportType ) {
+				case '' :
+					const prev = getPrevViewport( state.viewport, state.viewports );
 
-			for( const [ dirtyViewport ] of Object.entries( state.viewports ) ) {
-				const viewport = parseInt( dirtyViewport );
+					return {
+						... state,
+						viewport: prev !== 0 ? prev : state.viewport,
+					};
 
-				if( state.viewport === viewport ) {
-					break;
-				}
+				case 'mobile' :
+					const mobileViewports = getViewports( 'mobile', state.viewports );
 
-				last = viewport;
+					if( isInMobileRange( state.viewport ) ) {
+						const prev = getPrevViewport( state.viewport, mobileViewports );
+						const lastMobileViewport = Object.keys( mobileViewports )
+							.map( Number ) // Keys to number.
+							.sort( ( a, b ) => a - b ) // Sort numeric
+							.pop();
+
+						return {
+							... state,
+							viewport: prev !== 0 ? prev : lastMobileViewport,
+						};
+
+					} else {
+						return {
+							... state,
+							viewport: mobileDefaultViewport,
+						}
+					}
+
+				case 'tablet' :
+					const tabletViewports = getViewports( 'tablet', state.viewports );
+
+					if( isInTabletRange( state.viewport ) ) {
+						const prev = getPrevViewport( state.viewport, tabletViewports );
+						const lastTabletViewport = Object.keys( tabletViewports )
+							.map( Number ) // Keys to number.
+							.sort( ( a, b ) => a - b ) // Sort numeric
+							.pop();
+
+						return {
+							... state,
+							viewport: prev !== state.viewport ? prev : lastTabletViewport,
+						};
+
+					} else {
+						return {
+							... state,
+							viewport: tabletDefaultViewport,
+						}
+					}
+
+
+				case 'desktop' :
+					const desktopViewports = getViewports( 'desktop', state.viewports );
+
+					if( isInDesktopRange( state.viewport ) ) {
+						const prev = getPrevViewport( state.viewport, desktopViewports );
+						const firstDesktopViewport = Object.keys( desktopViewports )
+							.map( Number ) // Keys to number.
+							.sort( ( a, b ) => a - b ) // Sort numeric
+							.shift();
+
+						return {
+							... state,
+							viewport: prev !== state.viewport ? prev : firstDesktopViewport,
+						};
+
+					} else {
+						return {
+							... state,
+							viewport: desktopDefaultViewport,
+						}
+					}
 			}
-
-			if( last === 0 ) {
-				return state;
-			}
-
-			return {
-				... state,
-				viewport: last,
-			};
 	}
 
 	return state;
@@ -127,27 +226,82 @@ export function setPrevViewport( state : State, action : Action ) : State {
 export function setNextViewport( state : State, action : Action ) : State {
 	switch ( action.type ) {
 		case 'SET_NEXT_VIEWPORT' :
-			let next = 0;
+			switch ( action.viewportType ) {
+				case '' :
+					const next = getNextViewport( state.viewport, state.viewports );
 
-			for( const [ dirtyViewport ] of Object.entries( state.viewports ) ) {
-				const viewport = parseInt( dirtyViewport );
+					return {
+						... state,
+						viewport: next !== 0 ? next : state.viewport,
+					};
 
-				next = viewport;
+				case 'mobile' :
+					const mobileViewports = getViewports( 'mobile', state.viewports );
 
-				if( state.viewport < viewport ) {
-					break;
-				}
+					if( isInMobileRange( state.viewport ) ) {
+						const next = getNextViewport( state.viewport, mobileViewports );
+						const firstMobileViewport = Object.keys( mobileViewports )
+							.map( Number ) // Keys to number.
+							.sort( ( a, b ) => a - b ) // Sort numeric
+							.shift();
 
+						return {
+							... state,
+							viewport: next !== state.viewport ? next : firstMobileViewport,
+						};
+
+					} else {
+						return {
+							... state,
+							viewport: mobileDefaultViewport,
+						}
+					}
+
+				case 'tablet' :
+					const tabletViewports = getViewports( 'tablet', state.viewports );
+
+					if( isInTabletRange( state.viewport ) ) {
+						const next = getNextViewport( state.viewport, tabletViewports );
+						const firstTabletViewport = Object.keys( tabletViewports )
+							.map( Number ) // Keys to number.
+							.sort( ( a, b ) => a - b ) // Sort numeric
+							.shift();
+
+						return {
+							... state,
+							viewport: next !== state.viewport ? next : firstTabletViewport,
+						};
+
+					} else {
+						return {
+							... state,
+							viewport: tabletDefaultViewport,
+						}
+					}
+
+
+				case 'desktop' :
+					const desktopViewports = getViewports( 'desktop', state.viewports );
+
+					if( isInDesktopRange( state.viewport ) ) {
+						const next = getNextViewport( state.viewport, desktopViewports );
+						const firstDesktopViewport = Object.keys( desktopViewports )
+							.map( Number ) // Keys to number.
+							.sort( ( a, b ) => a - b ) // Sort numeric
+							.shift();
+
+						return {
+							... state,
+							viewport: next !== state.viewport ? next : firstDesktopViewport,
+						};
+
+					} else {
+						return {
+							... state,
+							viewport: desktopDefaultViewport,
+						}
+					}
 			}
-
-			if( next === state.viewport ) {
-				return state;
-			}
-
-			return {
-				... state,
-				viewport: next,
-			};
 	}
 
 	return state;
@@ -1639,6 +1793,7 @@ export function registerRenderer( state : State, action : Action ) : State {
 export const combinedReducers = {
 	setViewports,
 	setViewport,
+	setViewportType,
 	setPrevViewport,
 	setNextViewport,
 	setDesktop,

@@ -2701,14 +2701,26 @@ test( 'can findBlockDifferences() when removing parts of changes and adding remo
 } );
 
 
-test( 'can findBlockDifferences() when removing an entire property, with isEditing', () => {
+test( 'can findBlockDifferences() when removing an entire property from changes and saves', () => {
     const state = deepFreeze( {
         ... DEFAULT_STATE,
-        iframeViewport: 768,
+        iframeViewport: 1024,
         isEditing: true,
         valids: {
             'client-id': {
                 768: {
+                    style: {
+                        dimensions: {
+                            padding: {
+                                top: '20px',
+                                right: '20px',
+                                bottom: '20px',
+                                left: '20px',
+                            }
+                        }
+                    }
+                },
+                1024: {
                     style: {
                         dimensions: {
                             padding: {
@@ -2726,6 +2738,187 @@ test( 'can findBlockDifferences() when removing an entire property, with isEditi
             'client-id': {
                 768: {
                     style: {
+                        dimensions: {
+                            padding: {
+                                top: '20px',
+                                right: '20px',
+                                bottom: '20px',
+                                left: '20px',
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        saves: {
+            'client-id': {
+                768: {
+                    style: {
+                        dimensions: {
+                            padding: {
+                                top: '10px',
+                                right: '10px',
+                                bottom: '10px',
+                                left: '10px',
+                            }
+                        }
+                    }
+                }
+            }
+        },
+    } );
+
+    const attributes = {
+        style: {}
+    };
+
+    const check = {
+        changes: {},
+        removes: {
+            'client-id': {
+                768: {
+                    style: {
+                        dimensions: {
+                            padding: {
+                                top: '10px',
+                                right: '10px',
+                                bottom: '10px',
+                                left: '10px',
+                            }
+                        }
+                    }
+                }
+            }
+        },
+    };
+
+    const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
+
+    expect( result ).toStrictEqual( check );
+} );
+
+
+test( 'can findBlockDifferences() when removing an entire property from changes and saves, with isEditing', () => {
+    const state = deepFreeze( {
+        ... DEFAULT_STATE,
+        iframeViewport: 1024,
+        isEditing: true,
+        valids: {
+            'client-id': {
+                768: {
+                    style: {
+                        dimensions: {
+                            padding: {
+                                top: '20px',
+                                right: '20px',
+                                bottom: '20px',
+                                left: '20px',
+                            }
+                        }
+                    }
+                },
+                1024: {
+                    style: {
+
+                        dimensions: {
+                            padding: {
+                                top: '20px',
+                                right: '20px',
+                                bottom: '20px',
+                                left: '20px',
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        changes: {
+            'client-id': {
+                768: {
+                    style: {
+                        dimensions: {
+                            padding: {
+                                top: '20px',
+                                right: '20px',
+                                bottom: '20px',
+                                left: '20px',
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        saves: {
+            'client-id': {
+                768: {
+                    style: {
+                        dimensions: {
+                            padding: {
+                                top: '10px',
+                                right: '10px',
+                                bottom: '10px',
+                                left: '10px',
+                            }
+                        }
+                    }
+                }
+            }
+        },
+    } );
+
+    const attributes = {
+        style: {}
+    };
+
+    const check = {
+        changes: {},
+        removes: {
+            'client-id': {
+                768: {
+                    style: {
+                        dimensions: {
+                            padding: {
+                                top: '10px',
+                                right: '10px',
+                                bottom: '10px',
+                                left: '10px',
+                            }
+                        }
+                    }
+                }
+            }
+        },
+    };
+
+    const result = findBlockDifferences( 'client-id', attributes, state, state.iframeViewport );
+
+    expect( result ).toStrictEqual( check );
+} );
+
+
+test( 'can findBlockDifferences() when removing an entire property from only saves', () => {
+    const state = deepFreeze( {
+        ... DEFAULT_STATE,
+        iframeViewport: 1024,
+        isEditing: true,
+        valids: {
+            'client-id': {
+                768: {
+                    style: {
+
+                        dimensions: {
+                            padding: {
+                                top: '20px',
+                                right: '20px',
+                                bottom: '20px',
+                                left: '20px',
+                            }
+                        }
+                    }
+                },
+                1024: {
+                    style: {
+
                         dimensions: {
                             padding: {
                                 top: '20px',

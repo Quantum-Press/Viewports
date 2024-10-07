@@ -1,4 +1,4 @@
-import type { Action, Viewports } from './';
+import type { Action, Viewports, ViewportType } from './';
 import type { Attributes } from '../utils';
 import type { Size } from '../hooks';
 
@@ -38,18 +38,35 @@ export const setViewport = ( viewport : number ) : Action => {
 
 
 /**
- * Set Action that updates to prev viewport.
+ * Set Action that updates viewportType.
  *
- * @param {number} viewport
+ * @param {ViewportType} viewportType
  *
  * @since 0.1.0
  *
  * @return {Action}
  */
-export const setPrevViewport = ( viewport : number ) : Action => {
+export const setViewportType = ( viewportType : ViewportType ) : Action => {
+	return {
+		type: 'SET_VIEWPORT_TYPE',
+		viewportType,
+	};
+}
+
+
+/**
+ * Set Action that updates to prev viewport.
+ *
+ * @param {ViewportType} viewportType
+ *
+ * @since 0.1.0
+ *
+ * @return {Action}
+ */
+export const setPrevViewport = ( viewportType : ViewportType = '' ) : Action => {
 	return {
 		type: 'SET_PREV_VIEWPORT',
-		viewport,
+		viewportType,
 	};
 }
 
@@ -57,16 +74,16 @@ export const setPrevViewport = ( viewport : number ) : Action => {
 /**
  * Set Action that updates to next viewport.
  *
- * @param {number} viewport
+ * @param {ViewportType} viewportType
  *
  * @since 0.1.0
  *
  * @return {Action}
  */
-export const setNextViewport = ( viewport : number ) : Action => {
+export const setNextViewport = ( viewportType : ViewportType = '' ) : Action => {
 	return {
 		type: 'SET_NEXT_VIEWPORT',
-		viewport,
+		viewportType,
 	};
 }
 

@@ -1,6 +1,6 @@
 import { STORE_NAME } from '../../store';
 import { useLocalStorage } from '../../hooks';
-import ToggleInspecting from './toggle-inspecting';
+import ToggleInspecting from '../toggle/inspecting';
 
 const {
 	components: {
@@ -115,7 +115,7 @@ const Head = () => {
 	return (
 		<div className="qp-viewports-inspector-head">
 			<ToggleInspecting
-				text={ __( 'Inspector', 'quantum-viewports' ) }
+				forceShow={ true }
 			/>
 			<Button
 				className="qp-viewports-inspector-position"

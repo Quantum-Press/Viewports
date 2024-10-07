@@ -1,14 +1,18 @@
-import { STORE_NAME } from '../store';
-import { svgs } from './svgs';
+import { STORE_NAME } from '../../store';
+import { view } from '../svgs';
 
 const {
 	components: {
 		Button,
+		Icon,
 	},
 	data: {
 		useSelect,
 		useDispatch,
 	},
+	i18n: {
+		__,
+	}
 } = window[ 'wp' ];
 
 /**
@@ -18,7 +22,7 @@ const {
  *
  * @since 0.1.0
  */
-const ToggleView = () => {
+const ToggleView = ( { text, showText } ) => {
 
 	// Set dispatch.
 	const dispatch = useDispatch( STORE_NAME );
@@ -28,30 +32,15 @@ const ToggleView = () => {
 		const store = select( STORE_NAME );
 
 		return {
-			isRegistering: store.isRegistering(),
-			isReady: store.isReady(),
 			isActive: store.isActive(),
-			isLoading: store.isLoading(),
-			isSaving: store.isSaving(),
 		}
 	}, [] );
 
 	// Set classNames for toggle.
 	let classNamesToggle = 'qp-viewports-toggle-view';
-	if ( props.isRegistering ) {
-		classNamesToggle = classNamesToggle + ' registering';
-	}
-	if ( props.isReady ) {
-		classNamesToggle = classNamesToggle + ' ready';
-	}
+
 	if ( props.isActive ) {
 		classNamesToggle = classNamesToggle + ' active';
-	}
-	if ( props.isLoading ) {
-		classNamesToggle = classNamesToggle + ' loading';
-	}
-	if ( props.isSaving ) {
-		classNamesToggle = classNamesToggle + ' saving';
 	}
 
 	// Render component.
@@ -59,8 +48,11 @@ const ToggleView = () => {
 		<Button
 			className={ classNamesToggle }
 			onClick={ ! props.isActive ? dispatch.setLoading : dispatch.unsetActive }
-			icon={ svgs.view }
-		/>
+			label={ __( 'View mode', 'quantum-viewports' ) }
+			text={ text && showText ? text : '' }
+			icon={ view }
+		>
+		</Button>
 	);
 }
 

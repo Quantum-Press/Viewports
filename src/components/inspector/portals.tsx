@@ -1,9 +1,10 @@
 import { STORE_NAME } from '../../store';
-import { svgs } from '../svgs';
+import { inspect } from '../svgs';
 
 const {
 	components: {
 		Button,
+		Icon,
 	},
 	data: {
 		useSelect,
@@ -182,10 +183,11 @@ export const InspectorPortals = () => {
 					<Button
 						key={ index }
 						className={ classNames }
-						icon={ svgs.inspect }
 						label={ __( 'Inspect styles', 'quantum-viewports' ) }
 						onClick={ onClickInspect }
-					/>,
+					>
+						<Icon icon={ inspect } />
+					</Button>,
 					$target
 				);
 			})}

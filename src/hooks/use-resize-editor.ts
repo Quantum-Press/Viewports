@@ -1,7 +1,7 @@
 
 import { STORE_NAME } from '../store';
 import { isSiteEditor } from '../utils';
-import { useResizeObserver } from './';
+import { useResizeObserver, useDeviceType } from './';
 
 const {
 	data: {
@@ -24,6 +24,9 @@ export const useResizeEditor = () => {
 
 	// Set resize info
 	const [ resizeScale, setResizeScale ] = useState( 1 );
+
+	// Set useDeviceType.
+	useDeviceType();
 
 	// Set resize states.
 	const resizeSkeleton = useResizeObserver( {
@@ -52,6 +55,7 @@ export const useResizeEditor = () => {
 			isReady: store.isReady(),
 			isActive: store.isActive(),
 			viewport: store.getViewport(),
+			isRegistering: store.isRegistering(),
 		}
 	} );
 
@@ -111,7 +115,7 @@ export const useResizeEditor = () => {
 				// Set positioning.
 				$iframe.style.margin = '40px';
 				$iframe.style.transform = 'scale(' + factorSmaller + ')';
-				$iframe.style.transformOrigin = 'top left';
+				$iframe.style.transformOrigin = 'top center';
 
 				// Update resize scale.
 				setResizeScale( factorSmaller );
@@ -164,6 +168,9 @@ export const useResizeEditor = () => {
 		// Set maxWidth.
 		const $desktopPreviewContainer =  document.querySelector( '.edit-post-visual-editor__content-area .is-desktop-preview, .edit-post-visual-editor > div:first-child:last-child' ) as HTMLElement;
 		const maxWidth = $desktopPreviewContainer ? $desktopPreviewContainer.getBoundingClientRect().width - 80 : 0;
+
+		// Set widthcontainer.
+		const $widthContainer = document.querySelector( '.interface-interface-skeleton__content .components-resizable-box__container' ) as HTMLElement;
 
 		// Set maxHeight.
 		const $contentContainer = document.querySelector( '.edit-post-visual-editor, .edit-post-visual-editor__content-area' ) as HTMLElement;
@@ -229,6 +236,10 @@ export const useResizeEditor = () => {
 				$contentContainer.style.height = 'auto';
 			} else {
 				$desktopPreviewContainer.style.height = 'auto';
+			}
+
+			if( $widthContainer ) {
+				$widthContainer.style.height = maxHeight + 'px';
 			}
 
 			// Reset position.

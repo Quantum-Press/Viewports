@@ -83,6 +83,7 @@ export const IndicatorPortals = () => {
 					return createPortal(
 						<Indicator
 							target={ target }
+							storeId={ clientId }
 							property={ property }
 							spectrumSet={ spectrumSet }
 						/>,

@@ -1,6 +1,8 @@
-import type { SpectrumSet } from '../../store';
-import { isInMobileRange, isInTabletRange, isInDesktopRange, STORE_NAME } from '../../store';
-import { svgs } from '../svgs';
+import type { SpectrumSet, ViewportType } from '../../store';
+import { isInMobileRange, isInTabletRange, isInDesktopRange, STORE_NAME, hasSpectrumSetViewportType, getInRange } from '../../store';
+import { Pointer } from './pointer';
+import { IndicatorControls } from './controls';
+import { desktop, mobile, tablet } from '../svgs';
 
 const {
 	components: {
@@ -13,10 +15,10 @@ const {
 	data: {
 		select,
 		dispatch,
+		useSelect,
 	},
 	element: {
 		useEffect,
-		useRef,
 		useState,
 	},
 	i18n: {
@@ -30,26 +32,35 @@ const {
  *
  * @since 0.2.7
  */
-const Indicator = ( { target, property, spectrumSet } : { target: Element, property: string, spectrumSet : SpectrumSet } ) => {
+const Indicator = ( { target, storeId, property, spectrumSet } : { target: Element, storeId: string, property: string, spectrumSet : SpectrumSet } ) => {
 
 	// Set panel element.
 	const panel = target.closest( '.components-tools-panel' );
 
-	// Set popover states and ref.
-	const [ isOpen, setIsOpen ] = useState( false );
-	const [ step, setStep ] = useState( 'main' );
-	const buttonRef = useRef<HTMLButtonElement>(null);
+	// Set spectrumSet indicators.
+	const hasTabletSpectrum = spectrumSet.length ? hasSpectrumSetViewportType( 'tablet', spectrumSet ) : false;
+	const hasDesktopSpectrum = spectrumSet.length ? hasSpectrumSetViewportType( 'desktop', spectrumSet ) : false;
 
+	// Extract use select depending properties.
+	const {
+		isActive,
+		isEditing,
+		isInspecting,
+		iframeViewport,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
 
-	// Set useEffect to handle mount - unmount.
-	useEffect( () => {
-		panel.classList.add( 'is-indicating' );
-
-		return () => {
-			panel.classList.remove( 'is-indicating' );
+		return {
+			isActive: store.isActive(),
+			isEditing: store.isEditing(),
+			isInspecting: store.isInspecting(),
+			viewport: store.getViewport(),
+			iframeViewport: store.getIframeViewport(),
 		}
-	}, [] );
+ 	} );
 
+	// Set visibility state of controls.
+	const [ isVisible, setIsVisible ] = useState( false );
 
 	// Set useEffect to handle changes in spectrumSet.
 	useEffect( () => {
@@ -65,176 +76,32 @@ const Indicator = ( { target, property, spectrumSet } : { target: Element, prope
 	/**
 	 * Set function to handle toggle.
 	 *
-	 * @since 0.2.8
+	 * @since 0.2.16
 	 */
-	const handleToggle = () => setIsOpen( 'main' !== step ? ! isOpen : true );
+	const handleClick = ( viewportType : ViewportType ) => {
+		if( isActive ) {
+			if(
+				( 'mobile' === viewportType && ! isInMobileRange( iframeViewport ) ) ||
+				( 'tablet' === viewportType && ! isInTabletRange( iframeViewport ) ) ||
+				( 'desktop' === viewportType && ! isInDesktopRange( iframeViewport ) )
+			) {
+				dispatch( STORE_NAME ).setViewportType( viewportType );
 
+				if( ! isVisible ) {
+					setIsVisible( true );
+				}
 
-	/**
-	 * Set function to handle close.
-	 *
-	 * @since 0.2.8
-	 */
-	const handleClose = () => {
-		setStep( 'main' );
-		setIsOpen( false );
-	};
-
-
-	/**
-	 * Set function to handle back.
-	 *
-	 * @since 0.2.8
-	 */
-	const handleBack = () => {
-		setStep( 'main' );
-		setIsOpen( true );
-	};
-
-
-	/**
-	 * Set function to handle main action.
-	 *
-	 * @since 0.2.8
-	 */
-	const handleMainAction = (action: string) => {
-		switch ( action ) {
-			case 'manage':
-				setIsOpen( true );
-				setStep( 'manage' );
-
-			case 'remove':
-				setIsOpen( true );
-				// dispatch( STORE_NAME ).removeBlockProperty();
-				break;
-
-			case 'restore':
-				setIsOpen( true );
-				// dispatch( STORE_NAME ).restoreBlockProperty();
-				break;
-
-			case 'inspect':
-				dispatch( STORE_NAME ).toggleInspecting();
-				break;
-
-			case 'edit':
-				dispatch( STORE_NAME ).setActive();
-				dispatch( STORE_NAME ).toggleEditing();
-				break;
-
-			default:
-				break;
+			} else if( ! isVisible ) {
+				setIsVisible( true );
+			} else {
+				setIsVisible( false );
+				dispatch( STORE_NAME ).unsetActive();
+			}
+		} else {
+			dispatch( STORE_NAME ).setActive();
+			dispatch( STORE_NAME ).setViewportType( viewportType );
+			setIsVisible( true );
 		}
-	};
-
-
-	/**
-	 * Set function to handle viewport action.
-	 *
-	 * @since 0.2.8
-	 */
-	const handleViewportAction = ( viewport : number ) => {
-		const {
-			clientId,
-		} = select( 'core/block-editor' ).getSelectedBlock();
-
-		dispatch( STORE_NAME ).addBlockPropertyChanges( clientId, viewport, property );
-		handleClose(); // Hier das Popover schließen
-	}
-
-
-	/**
-	 * Set function to render main menu items.
-	 *
-	 * @since 0.2.8
-	 */
-	const renderMainMenuItems = () => (
-		<>
-			<MenuItem className="close" onClick={ handleClose }>
-				<Icon icon="no-alt"/>
-			</MenuItem>
-			<MenuGroup label={ __( 'Style actions', 'quantum-viewports' ) }>
-				<MenuItem className="indicator-action manage" onClick={ () => handleMainAction( 'manage' ) }>
-					<Icon icon="admin-settings"/>
-					{ __( 'Manage styles', 'quantum-viewports' ) }
-				</MenuItem>
-				<MenuItem className="indicator-action remove" onClick={ () => handleMainAction( 'remove' ) }>
-					<Icon icon="trash"/>
-					{ __( 'Remove all styles', 'quantum-viewports' ) }
-				</MenuItem>
-				<MenuItem className="indicator-action restore" onClick={ () => handleMainAction( 'restore' ) }>
-					<Icon icon="update"/>
-					{ __( 'Restore all styles', 'quantum-viewports' ) }
-				</MenuItem>
-			</MenuGroup>
-			<MenuGroup label={ __( 'Editor actions', 'quantum-viewports' ) }>
-				<MenuItem className="indicator-action inspect" onClick={ () => handleMainAction( 'inspect' ) }>
-					<Icon icon={ svgs.inspect }/>
-					{ __( 'Inspect', 'quantum-viewports' ) }
-				</MenuItem>
-				<MenuItem className="indicator-action edit" onClick={ () => handleMainAction( 'edit' ) }>
-					<Icon icon={ svgs.edit }/>
-					{ __( 'Permanently', 'quantum-viewports' ) }
-				</MenuItem>
-			</MenuGroup>
-		</>
-	);
-
-
-	/**
-	 * Set function to render viewport menu items.
-	 *
-	 * @since 0.2.8
-	 */
-	const renderViewportMenuItems = () => {
-		const viewports = select( STORE_NAME ).getViewports();
-		const iframeViewport = select( STORE_NAME ).getIframeViewport();
-		const blocked = spectrumSet.map( spectrum => spectrum.hasChanges ? spectrum.from : 0 );
-
-		return (
-			<>
-				<MenuItem className="close" onClick={ handleBack }>
-					<Icon icon="no-alt"/>
-				</MenuItem>
-
-				<MenuGroup label={ __( 'Manage styles', 'quantum-viewports' ) }>
-					{ Object.keys( viewports ).map( viewportDirty => {
-						const viewport = parseInt( viewportDirty );
-
-						// Check if viewport is 0 to continue.
-						if( 0 === viewport ) {
-							return null;
-						}
-
-						// Check if viewport is already blocked to set icon.
-						let isBlocked = false;
-						if( -1 < blocked.indexOf( viewport ) ) {
-							isBlocked = true;
-						}
-
-						// Set label
-						let label = '';
-						if( isInMobileRange( viewport ) ) {
-							label = __( 'Mobile', 'quantum-viewports' );
-						}
-						if( isInTabletRange( viewport ) ) {
-							label = __( 'Tablet', 'quantum-viewports' );
-						}
-						if( isInDesktopRange( viewport ) ) {
-							label = __( 'Desktop', 'quantum-viewports' );
-						}
-
-						return(
-							<MenuItem className="indicator-action viewport" onClick={ () => handleViewportAction( viewport ) }>
-								{ isBlocked && <Icon icon="yes-alt" /> }
-								{ ! isBlocked && <Icon icon="marker" /> }
-								{ viewport + 'px - ' + label }
-							</MenuItem>
-						);
-					} ) }
-				</MenuGroup>
-			</>
-		);
 	}
 
 
@@ -251,11 +118,11 @@ const Indicator = ( { target, property, spectrumSet } : { target: Element, prope
 		const className = [ size ];
 
 		switch ( size ) {
-			case 'global':
+			case 'mobile' :
 				for( let index = 0; index < spectrumSet.length; index++ ) {
 					const spectrum = spectrumSet[ index ];
 
-					if( 0 === spectrum.from ) {
+					if( 0 === spectrum.from || isInMobileRange( spectrum.from ) ) {
 						if( spectrum.hasSaves ) {
 							className.push( 'has-saves' );
 						}
@@ -274,30 +141,7 @@ const Indicator = ( { target, property, spectrumSet } : { target: Element, prope
 
 				break;
 
-			case 'mobile':
-				for( let index = 0; index < spectrumSet.length; index++ ) {
-					const spectrum = spectrumSet[ index ];
-
-					if( 0 !== spectrum.from && isInMobileRange( spectrum.from ) ) {
-						if( spectrum.hasSaves ) {
-							className.push( 'has-saves' );
-						}
-
-						if( spectrum.hasRemoves ) {
-							className.push( 'has-removes' );
-						}
-
-						if( spectrum.hasChanges ) {
-							className.push( 'has-changes' );
-						}
-
-						break;
-					}
-				}
-
-				break;
-
-			case 'tablet':
+			case 'tablet' :
 				for( let index = 0; index < spectrumSet.length; index++ ) {
 					const spectrum = spectrumSet[ index ];
 
@@ -320,7 +164,7 @@ const Indicator = ( { target, property, spectrumSet } : { target: Element, prope
 
 				break;
 
-			case 'desktop':
+			case 'desktop' :
 				for( let index = 0; index < spectrumSet.length; index++ ) {
 					const spectrum = spectrumSet[ index ];
 
@@ -348,52 +192,90 @@ const Indicator = ( { target, property, spectrumSet } : { target: Element, prope
 	}
 
 	// Set classNames for each viewport wrap size.
-	const classNamesGlobal = getClassName( 'global' );
 	const classNamesMobile = getClassName( 'mobile' );
 	const classNamesTablet = getClassName( 'tablet' );
 	const classNamesDesktop = getClassName( 'desktop' );
 
+	// Set active viewportType.
+	const viewportType = isInDesktopRange( iframeViewport ) ? 'desktop' : isInTabletRange( iframeViewport ) ? 'tablet' : isInMobileRange( iframeViewport ) ? 'mobile' : 'desktop';
+
 	// Render component.
 	return (
-		<div className="qp-viewports-indicator">
-			<Button
-				ref={ buttonRef }
-				className="qp-viewports-indicator-button"
-				onClick={ handleToggle }
-				aria-expanded={ isOpen }
-				aria-haspopup="true"
+		<>
+			<div
+				className="qp-viewports-indicator-wrap"
 			>
-				<Icon
-					className={ classNamesGlobal }
-					icon="admin-site-alt3"
-				/>
-				<Icon
-					className={ classNamesMobile }
-					icon="smartphone"
-				/>
-				<Icon
-					className={ classNamesTablet }
-					icon="tablet"
-				/>
-				<Icon
-					className={ classNamesDesktop }
-					icon="desktop"
-				/>
-				{ isOpen && (
-					<Popover
-						className="qp-viewports-indicator-popover"
-						onClose={ handleClose }
-						anchorRef={ buttonRef.current }
-						position="bottom right"
-						focusOnMount={ false }
+				<div className="qp-viewports-indicator">
+					<Button
+						className="indicator mobile"
+						onClick={ () => {
+							handleClick( 'mobile' );
+						} }
 					>
-						{ step === 'main' && renderMainMenuItems() }
-						{ step === 'manage' && renderViewportMenuItems() }
-					</Popover>
-				) }
-
-			</Button>
-		</div>
+						<Icon
+							className={ classNamesMobile }
+							icon={ mobile }
+						/>
+					</Button>
+					<Pointer
+						viewportType="mobile"
+						isEditing={ isEditing }
+						iframeViewport={ iframeViewport }
+						hasTabletSpectrum={ hasTabletSpectrum }
+						hasDesktopSpectrum={ hasDesktopSpectrum }
+					/>
+				</div>
+				<div className="qp-viewports-indicator">
+					<Button
+						className="indicator tablet"
+						onClick={ () => {
+							handleClick( 'tablet' );
+						} }
+					>
+						<Icon
+							className={ classNamesTablet }
+							icon={ tablet }
+						/>
+					</Button>
+					<Pointer
+						viewportType="tablet"
+						isEditing={ isEditing }
+						iframeViewport={ iframeViewport }
+						hasTabletSpectrum={ hasTabletSpectrum }
+						hasDesktopSpectrum={ hasDesktopSpectrum }
+					/>
+				</div>
+				<div className="qp-viewports-indicator">
+					<Button
+						className="indicator desktop"
+						onClick={ () => {
+							handleClick( 'desktop' );
+						} }
+					>
+						<Icon
+							className={ classNamesDesktop }
+							icon={ desktop }
+						/>
+					</Button>
+					<Pointer
+						viewportType="desktop"
+						isEditing={ isEditing }
+						iframeViewport={ iframeViewport }
+						hasTabletSpectrum={ hasTabletSpectrum }
+						hasDesktopSpectrum={ hasDesktopSpectrum }
+					/>
+				</div>
+				{ ! isInspecting && <IndicatorControls
+					isVisible={ isVisible }
+					setIsVisible={ setIsVisible }
+					isEditing={ isEditing }
+					storeId={ storeId }
+					viewportType={ viewportType }
+					iframeViewport={ iframeViewport }
+					spectrumSet={ spectrumSet }
+				/> }
+			</div>
+		</>
 	);
 }
 

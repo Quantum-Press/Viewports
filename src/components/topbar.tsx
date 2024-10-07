@@ -1,11 +1,12 @@
 import { useLongPress } from '../utils';
 import { STORE_NAME } from '../store';
-import ToggleEditing from './toggle-editing';
-import ToggleInspecting from './inspector/toggle-inspecting';
+import { mobile, tablet, desktop } from './svgs';
+import ToggleInspecting from './toggle/inspecting';
 
 const {
 	components: {
 		Button,
+		Icon,
 	},
 	data: {
 		useSelect,
@@ -127,10 +128,8 @@ const Topbar = () => {
 	return (
 		<div className="qp-viewports-topbar">
 			<div className="qp-viewports-actions left">
-				{ ! props.isInspecting && 'left' === props.inspectorPosition && ( <ToggleInspecting /> ) }
-				<ToggleEditing
-					text={ __( 'Viewport', 'quantum-viewports' ) }
-				/>
+				{ ! props.isInspecting && 'left' === props.inspectorPosition && ( <ToggleInspecting showText={ true } forceShow={ true } /> ) }
+				<span className="chosen-zoom">Zoom: { zoom.toString().replace( '.', ',' ) }%</span>
 			</div>
 			<div className="qp-viewports-shorthands">
 				<Button
@@ -140,19 +139,22 @@ const Topbar = () => {
 				/>
 				<Button
 					className={ classNamesMobile }
-					icon="smartphone"
 					{ ... mobileEvents }
-				/>
+				>
+					<Icon icon={ mobile }/>
+				</Button>
 				<Button
 					className={ classNamesTablet }
-					icon="tablet"
 					{ ... tabletEvents }
-				/>
+				>
+					<Icon icon={ tablet }/>
+				</Button>
 				<Button
 					className={ classNamesDesktop }
-					icon="desktop"
 					{ ... desktopEvents }
-				/>
+				>
+					<Icon icon={ desktop }/>
+				</Button>
 				<Button
 					className={ classNamesNext }
 					icon="arrow-right"
@@ -160,8 +162,7 @@ const Topbar = () => {
 				/>
 			</div>
 			<div className="qp-viewports-actions right">
-				<span className="chosen-zoom">Zoom: { zoom.toString().replace( '.', ',' ) }%</span>
-				{ ! props.isInspecting && 'right' === props.inspectorPosition && ( <ToggleInspecting /> ) }
+				{ ! props.isInspecting && 'right' === props.inspectorPosition && ( <ToggleInspecting showText={ true } forceShow={ true } /> ) }
 			</div>
 		</div>
 	);

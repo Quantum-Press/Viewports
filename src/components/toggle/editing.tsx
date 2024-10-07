@@ -1,5 +1,5 @@
-import { STORE_NAME } from '../store';
-import { svgs } from './svgs';
+import { STORE_NAME } from '../../store';
+import { edit } from '../svgs';
 
 const {
 	components: {
@@ -24,6 +24,7 @@ const ToggleEdit = ( props ) => {
 	// Deconstruct props.
 	const {
 		text,
+		showText,
 	} = props;
 
 	// Set state dependency.
@@ -68,10 +69,10 @@ const ToggleEdit = ( props ) => {
 	return (
 		<Button
 			className={ classNames }
-			icon={ svgs.edit }
-			label={ __( 'Edit viewport settings', 'quantum-viewports' ) }
+			icon={ edit }
+			label={ __( 'Edit viewport mode', 'quantum-viewports' ) }
 			onClick={ onClick }
-			text={ text && isEditing ? text : '' }
+			text={ text && showText ? text : '' }
 		/>
 	);
 }

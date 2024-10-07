@@ -1,5 +1,5 @@
 import { STORE_NAME } from '../../store';
-import { svgs } from '../svgs';
+import { inspect } from '../svgs';
 
 const {
 	components: {
@@ -22,23 +22,42 @@ const {
  *
  * @since 0.2.1
  */
-const ToggleInspecting = ( props ) => {
-
-	// Deconstruct props.
-	const {
-		text,
-	} = props;
+const ToggleInspecting = ( { showText = true, forceShow = false } : { showText?: boolean, forceShow?: boolean } ) => {
 
 	// Set states.
 	const {
+		spectrumSet,
 		isInspecting,
 	} = useSelect( ( select : Function ) => {
 		const store = select( STORE_NAME );
+		const selected = select( 'core/block-editor' ).getSelectedBlock();
+
+		if( ! selected ) {
+			return {
+				spectrumSet: {},
+				isInspecting: store.isInspecting(),
+			}
+		}
+
+		const {
+			clientId,
+			attributes: {
+				tempId,
+			}
+		} = selected;
+
+		const storeId = tempId ? tempId : clientId as string;
 
 		return {
+			spectrumSet: store.getSpectrumSet( storeId ),
 			isInspecting: store.isInspecting(),
 		}
 	}, [] );
+
+	// Break if there is no spectrumSet registered to selected block.
+	if( 0 === Object.keys( spectrumSet ).length && ! forceShow ) {
+		return null;
+	}
 
 	/**
 	 * Set function to fire on click inspect to trigger ui.
@@ -63,10 +82,10 @@ const ToggleInspecting = ( props ) => {
 	return (
 		<Button
 			className={ classNames }
-			icon={ svgs.inspect }
+			icon={ inspect }
 			label={ __( 'Inspect styles', 'quantum-viewports' ) }
 			onClick={ onClickInspect }
-			text={ text ? text : '' }
+			text={ showText ? __( 'Inspector', 'quantum-viewports' ) : '' }
 		/>
 	);
 }

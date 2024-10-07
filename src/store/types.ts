@@ -5,11 +5,13 @@ export type Styles = {
 	[ key: string ] : any,
 }
 
+export type ViewportType = 'desktop' | 'tablet' | 'mobile' | '';
+
 export type Viewports = {
 	[ key: number ] : string,
 }
 
-export type ViewportSet = { // clientViewportSets?
+export type clientViewportSets = {
 	[ key: string ] : ViewportStyle,
 }
 
@@ -168,10 +170,10 @@ export type State = {
 	tablet: number,
 	mobile: number,
 	init: InitSet,
-	saves: ViewportSet,
-	changes: ViewportSet,
-	removes: ViewportSet,
-	valids: ViewportSet,
+	saves: clientViewportSets,
+	changes: clientViewportSets,
+	removes: clientViewportSets,
+	valids: clientViewportSets,
 	inspect: object | boolean,
 	lastEdit: number,
 	renderer: RendererPropertySet,
@@ -186,6 +188,7 @@ export type Action = {
 	clientId?: string,
 	viewports?: Viewports,
 	viewport?: number,
+	viewportType?: ViewportType,
 	size?: Size,
 	attributes?: Attributes,
 	props?: Array<string>,

@@ -1,9 +1,19 @@
 import { isObject, getMergedAttributes, traverseGet, traverseExist } from '../utils';
 import { Generator } from './generator';
 import type { Attributes } from '../utils';
-import type { Styles, SpectrumState, SpectrumProperties, State, ViewportStyle, ViewportStyleSet, BlockDifferences } from './types';
+import type { Styles, SpectrumState, SpectrumProperties, State, ViewportStyle, ViewportStyleSet, BlockDifferences, Viewports, ViewportType, SpectrumSet } from './types';
 
 const { isEqual, cloneDeep, isEmpty, isUndefined, isNull } = window[ 'lodash' ];
+
+export const mobileDefaultViewport = 375;
+
+export const tabletDefaultViewport = 768;
+
+export const desktopDefaultViewport = 1360;
+
+export const tabletBreakpoint = 540;
+
+export const desktopBreakpoint = 1280;
 
 /**
  * Set function to indicate whether given viewport is in range of desktop size.
@@ -15,7 +25,7 @@ const { isEqual, cloneDeep, isEmpty, isUndefined, isNull } = window[ 'lodash' ];
  * @return {boolean} indication
  */
 export const isInDesktopRange = ( viewport : number ) : boolean => {
-	if ( viewport >= 1280 ) {
+	if ( viewport >= desktopBreakpoint ) {
 		return true;
 	}
 
@@ -33,7 +43,7 @@ export const isInDesktopRange = ( viewport : number ) : boolean => {
  * @return {boolean} indication
  */
 export const isInTabletRange = ( viewport : number ) : boolean => {
-	if ( viewport >= 540 && viewport <= 1279 ) {
+	if ( viewport >= tabletBreakpoint && viewport <= ( desktopBreakpoint - 1 ) ) {
 		return true;
 	}
 
@@ -51,11 +61,120 @@ export const isInTabletRange = ( viewport : number ) : boolean => {
  * @return {boolean} indication
  */
 export const isInMobileRange = ( viewport : number ) : boolean => {
-	if ( viewport <= 539 ) {
+	if ( viewport <= ( tabletBreakpoint - 1 ) ) {
 		return true;
 	}
 
 	return false;
+}
+
+
+/**
+ * Set function to get the prev viewport from viewports.
+ *
+ * @param {integer} viewport
+ * @param {integer} viewports
+ *
+ * @since 0.2.16
+ *
+ * @return {number}
+ */
+export const getPrevViewport = ( viewport : number, viewports : Viewports ) : number => {
+	let last = 0;
+
+	for( const [ dirtyViewport ] of Object.entries( viewports ) ) {
+		const checkViewport = parseInt( dirtyViewport );
+
+		if( viewport === checkViewport ) {
+			break;
+		}
+
+		last = checkViewport;
+	}
+
+	return last;
+}
+
+
+/**
+ * Set function to get the next viewport from viewports.
+ *
+ * @param {integer} viewport
+ * @param {integer} viewports
+ *
+ * @since 0.2.16
+ *
+ * @return {number}
+ */
+export const getNextViewport = ( viewport : number, viewports : Viewports ) : number => {
+	let next = 0;
+
+	for( const [ dirtyViewport ] of Object.entries( viewports ) ) {
+		const checkViewport = parseInt( dirtyViewport );
+
+		next = checkViewport;
+
+		if( viewport < checkViewport ) {
+			break;
+		}
+	}
+
+	return next;
+}
+
+
+/**
+ * Set function to get the prev viewport from viewports.
+ *
+ * @param {ViewportType} viewportType
+ * @param {Viewports} viewports
+ *
+ * @since 0.2.16
+ *
+ * @return {Viewports}
+ */
+export const getViewports = ( viewportType : ViewportType, viewports : Viewports ) : Viewports => {
+	const cleaned = {};
+
+	switch( viewportType ) {
+		case '' :
+			return viewports;
+
+		case 'mobile' :
+			for( const [ dirtyViewport, viewportLabel ] of Object.entries( viewports ) ) {
+				const viewport = parseInt( dirtyViewport );
+
+				if( 0 !== viewport && isInMobileRange( viewport ) ) {
+					cleaned[ viewport ] = viewportLabel
+				}
+			}
+
+			break;
+
+		case 'tablet' :
+			for( const [ dirtyViewport, viewportLabel ] of Object.entries( viewports ) ) {
+				const viewport = parseInt( dirtyViewport );
+
+				if( isInTabletRange( viewport ) ) {
+					cleaned[ viewport ] = viewportLabel
+				}
+			}
+
+			break;
+
+		case 'desktop' :
+			for( const [ dirtyViewport, viewportLabel ] of Object.entries( viewports ) ) {
+				const viewport = parseInt( dirtyViewport );
+
+				if( isInDesktopRange( viewport ) ) {
+					cleaned[ viewport ] = viewportLabel
+				}
+			}
+
+			break;
+	}
+
+	return cleaned;
 }
 
 
@@ -83,6 +202,65 @@ export const getHighestPossibleViewport = ( viewports : object, width : number )
 	}
 
 	return highestViewport;
+}
+
+
+/**
+ * Set function to return in range function for given viewportType.
+ *
+ * @param {ViewportType} viewportType
+ *
+ * @since 0.2.16
+ *
+ * @return {Function}
+ */
+export const getInRange = ( viewportType : ViewportType ) : Function => {
+	let inRange = null;
+
+	switch( viewportType ) {
+		case 'mobile' :
+			inRange = isInMobileRange;
+			break;
+
+		case 'tablet' :
+			inRange = isInTabletRange;
+			break;
+
+		case 'desktop' :
+			inRange = isInDesktopRange;
+			break;
+	}
+
+	return inRange;
+}
+
+
+
+/**
+ * Set function to indicate whether spectrumSet has given viewportType.
+ *
+ * @param {ViewportType} viewportType
+ * @param {SpectrumSet} spectrumSet
+ *
+ * @since 0.2.16
+ *
+ * @return {boolean}
+ */
+export const hasSpectrumSetViewportType = ( viewportType : ViewportType, spectrumSet : SpectrumSet ) =>  {
+	const inRange = getInRange( viewportType );
+
+	let hasSpectrumSet = false;
+
+	for( let index = 0; index < spectrumSet.length; index++ ) {
+		const spectrum = spectrumSet[ index ];
+
+		if( inRange( spectrum.from ) ) {
+			hasSpectrumSet = true;
+			break;
+		}
+	}
+
+	return hasSpectrumSet;
 }
 
 

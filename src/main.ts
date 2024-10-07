@@ -6,7 +6,6 @@ import { isSiteEditor } from './utils/editor';
 import portalHandler from './portals';
 import Wrap from './components/wrap';
 import Inspector from './components/inspector';
-import ToggleView from './components/toggle-view';
 
 const {
 	data: {
@@ -31,11 +30,6 @@ let viewportRoot : any = false;
 const inspectorWrap = document.createElement( 'div' );
 inspectorWrap.id = 'qp-viewports-inspector-wrap';
 let inspectorRoot : any = false;
-
-const toggleViewWrap = document.createElement( 'div' );
-toggleViewWrap.id = 'qp-viewports-toggle-view-wrap';
-let toggleRoot : any = false;
-let toggleElement : any = false;
 
 
 /**
@@ -111,22 +105,6 @@ domReady( () => {
 							inspectorRoot = createRoot( inspectorWrap );
 							inspectorRoot.render( createElement( Inspector ) );
 						}
-					}
-				}
-			}
-
-			// Make sure the toggle UI is attached to the DOM.
-			if ( ! toggleViewWrap.isConnected ) {
-				const toggleUI = document.querySelector( '.edit-site-header-edit-mode__end, .edit-post-header__settings, .editor-header__settings' );
-
-				if ( toggleUI ) {
-					toggleUI.before( toggleViewWrap );
-
-					if ( ! toggleRoot ) {
-						toggleRoot = createRoot( toggleViewWrap );
-						toggleElement = createElement( ToggleView );
-
-						toggleRoot.render( toggleElement );
 					}
 				}
 			}

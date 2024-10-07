@@ -2,6 +2,7 @@ import useResizeEditor from '../hooks/use-resize-editor';
 import { useLocalStorage } from '../hooks';
 import { STORE_NAME } from '../store';
 import Save from './save';
+import Preview from './preview';
 import Body from './body';
 import Topbar from './topbar';
 import Viewports from './viewports';
@@ -36,10 +37,11 @@ export default function Wrap() {
 	// Set useLayoutEffect to handle on mount with runtime state.
 	useLayoutEffect( () => {
 		dispatch( STORE_NAME ).setInspectorPosition( position );
-	}, [] )
+	}, [] );
 
 	return (
 		<>
+			<Preview />
 			<Body />
 			<Save />
 			<Topbar />

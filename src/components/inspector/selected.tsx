@@ -1,6 +1,6 @@
 import { useOverflow, useLocalStorage } from '../../hooks';
 
-import StyleList from './stylelist';
+import { BlockStyleList } from '../stylelist';
 import Accordion from '../accordion';
 import Dimensions from '../dimensions';
 
@@ -46,9 +46,7 @@ const Selected = ({ block }) => {
 					setIsOpen={ setIsOpenStyles }
 					label={ __( 'Styles', 'quantum-viewports' ) }
 				>
-					<StyleList
-						block={ block }
-					/>
+					<BlockStyleList />
 				</Accordion>
 			</div>
 		</div>

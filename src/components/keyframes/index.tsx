@@ -1,12 +1,16 @@
-import type { Attributes } from '../../utils';
-import { isObject, getMergedAttributes } from '../../utils';
-import { STORE_NAME } from '../../store';
+import { SpectrumSet, STORE_NAME } from '../../store';
 import { useHighlight, useHighlightViewport } from '../../hooks';
+import { keyframe as iconKeyframe } from '../svgs';
+import { KeyframeControls } from './controls';
 
 const {
+	components: {
+		Button,
+		Icon,
+	},
 	data: {
+		select,
 		useSelect,
-		dispatch,
 	},
 	element: {
 		useEffect,
@@ -14,11 +18,140 @@ const {
 	}
 } = window[ 'wp' ];
 
+const {
+	isEqual
+} = window[ 'lodash' ];
+
 interface Frame {
 	size: number;
 	position: string;
 	viewport: number;
 }
+
+const generateKeyframes = ( props ) => {
+
+	// Set keyframes default.
+	let keyframes = [
+		{
+			viewport: 0,
+			size: 0,
+			position: 'center',
+			hasChanges: false,
+			hasRemoves: false,
+			hasSaves: false,
+			spectrumSet: [],
+		}
+	];
+
+	// Set lastFrom.
+	let lastFrom = 0;
+
+	// Check spectrumSet to iterate.
+	if( props.spectrumSet.length ) {
+		props.spectrumSet.forEach( ( spectrum ) => {
+
+			// Extract first keyframe to check what to do.
+			let first = keyframes.shift();
+
+			// Check if we need to update center keyframe.
+			if( 0 === first.viewport && 'center' === first.position ) {
+
+				// Set a new keyframe.
+				let keyframe = {
+					viewport: spectrum.from,
+					size: ( ( spectrum.from - first.viewport ) / 2 ),
+					hasChanges: spectrum.hasChanges,
+					hasRemoves: spectrum.hasRemoves,
+					hasSaves: spectrum.hasSaves,
+					spectrumSet: [ spectrum ],
+				};
+
+				// Check if the spectrum is also running on viewport 0 to update center keyframe.
+				if( 0 === spectrum.viewport ) {
+					first.hasChanges = first.hasChanges ? true : spectrum.hasChanges;
+					first.hasRemoves = first.hasRemoves ? true : spectrum.hasRemoves;
+					first.hasSaves = first.hasSaves ? true : spectrum.hasSaves;
+					first.spectrumSet.push( spectrum );
+				}
+
+				// Add keyframe and update lastFrom.
+				keyframes = [ { position: 'first', ... keyframe }, first, { position: 'last', ... keyframe } ];
+				lastFrom = spectrum.from;
+
+				return true;
+			}
+
+			// Check if we need to update viewport 0 keyframes.
+			if( 0 === first.viewport && 0 === spectrum.from && 'center' !== first.position ) {
+
+				// Update all 3 keyframes handling viewport 0.
+				first.hasChanges = first.hasChanges ? true : spectrum.hasChanges;
+				first.hasRemoves = first.hasRemoves ? true : spectrum.hasRemoves;
+				first.hasSaves = first.hasSaves ? true : spectrum.hasSaves;
+				first.spectrumSet.push( spectrum );
+
+				// Add keyframe and update lastFrom.
+				keyframes = [ { ... first, position: 'first',  }, { ... first, position: 'center' }, { ... first, position: 'last' } ];
+				lastFrom = spectrum.from;
+
+				return true;
+			}
+
+			// Check if we need to update first and last keyframe.
+			if( spectrum.from === lastFrom ) {
+
+				// Extract first and last keyframe to update.
+				const last = keyframes.pop();
+
+				// Update first keyframes.
+				first.hasChanges = first.hasChanges ? true : spectrum.hasChanges;
+				first.hasRemoves = first.hasRemoves ? true : spectrum.hasRemoves;
+				first.hasSaves = first.hasSaves ? true : spectrum.hasSaves;
+				first.spectrumSet.push( spectrum );
+
+				// Update last keyframe.
+				last.hasChanges = last.hasChanges ? true : spectrum.hasChanges;
+				last.hasRemoves = last.hasRemoves ? true : spectrum.hasRemoves;
+				last.hasSaves = last.hasSaves ? true : spectrum.hasSaves;
+				last.spectrumSet.push( spectrum );
+
+				// Update keyframes.
+				keyframes = [ first, ... keyframes, last ];
+				lastFrom = spectrum.from;
+
+			} else {
+
+				// Set a new keyframe.
+				let keyframe = {
+					viewport: spectrum.from,
+					size: 80,
+					hasChanges: spectrum.hasChanges,
+					hasRemoves: spectrum.hasRemoves,
+					hasSaves: spectrum.hasSaves,
+					spectrumSet: [ spectrum ],
+				};
+
+				// Extract first and last keyframe to update.
+				const last = keyframes.pop();
+
+				if( 0 === first.viewport && 'center' !== first.position ) {
+					first.size = ( ( spectrum.from - first.viewport ) / 2 ) - 2;
+					last.size = ( ( spectrum.from - first.viewport ) / 2 ) - 2;
+				} else {
+					first.size = ( ( spectrum.from - first.viewport ) / 2 );
+					last.size = ( ( spectrum.from - first.viewport ) / 2 );
+				}
+
+				keyframes = [ { position: 'first', ... keyframe }, first, ... keyframes, last, { position: 'last', ... keyframe } ];
+				lastFrom = spectrum.from;
+			}
+		} );
+	}
+
+	return keyframes;
+}
+
+
 
 /**
  * Set component to render keyframes ui.
@@ -28,39 +161,84 @@ interface Frame {
 const Keyframes = () => {
 
 	// Set states.
-	const props = useSelect( ( select : Function ) => {
-		const blockEditor = select( 'core/block-editor' );
+	const props : {
+		storeId: string,
+		viewport: number,
+		iframeSize: number,
+		iframeViewport: number,
+		isActive: boolean,
+		spectrumSet: SpectrumSet,
+	} = useSelect( ( select : Function ) => {
 		const store = select( STORE_NAME );
+		const selected = select( 'core/block-editor' ).getSelectedBlock();
+
+		if( ! selected ) {
+			return {
+				spectrumSet: {},
+				isInspecting: store.isInspecting(),
+			}
+		}
+
+		const {
+			clientId,
+			attributes: {
+				tempId,
+			}
+		} = selected;
+
+		const storeId = tempId ? tempId : clientId as string;
 
 		return {
-			saves: store.getSaves(),
-			changes: store.getChanges(),
-			removes: store.getRemoves(),
+			storeId,
 			viewport: store.getViewport(),
 			iframeSize: store.getIframeSize(),
+			iframeViewport: store.getIframeViewport(),
 			viewports: store.getViewports(),
 			isActive: store.isActive(),
 			isInspecting: store.isInspecting(),
-			selected: blockEditor.getSelectedBlock(),
-		};
+			spectrumSet: store.getSpectrumSet( storeId ),
+		}
 	}, [] );
 
-	// Set highlight hook.
+	// Set highlight hooks.
 	const [ highlight, setHighlight ] = useHighlight();
-
-	// Set highlightViewport hook.
 	const [ highlightViewport, sethighlightViewport ] = useHighlightViewport();
 
-	// Set useState to handle inspect viewport.
+	// Set useState to handle highlights on keyframe.
 	const [ highlighted, setHighlighted ] = useState( false );
 
 	// Set useState to handle hover pairing.
 	const [ hover, setHover ] = useState( false );
 
-	// Set useEffect to rerender on size changes.
-	useEffect(() => {
-		// Silencio.
-	}, [ props.iframeSize, props.isInspecting ] );
+	// Set useState to handle hover pairing.
+	const [ visibleControls, setVisibleControls ] = useState( [] );
+
+	/**
+	 * Set function to fire on click open.
+	 *
+	 * @since 0.1.0
+	 */
+	const onClickKeyframe = ( { target }, keyframe ) => {
+		if( ! target.classList.contains( 'qp-keyframe' ) ) {
+			target = target.closest( '.qp-keyframe' );
+		}
+
+		if( ! target ) {
+			return;
+		}
+
+		const newControls = [ ... visibleControls ];
+
+		// Check if keyframe is inside, to remove.
+		const removeIndex = visibleControls.findIndex( obj => isEqual( obj, keyframe ) );
+		if( -1 !== removeIndex ) {
+			newControls.splice( removeIndex, 1 );
+		} else {
+			newControls.push( keyframe );
+		}
+
+		setVisibleControls( newControls );
+	}
 
 	// Set useEffect to set Highligh on size changes.
 	useEffect( () => {
@@ -75,7 +253,7 @@ const Keyframes = () => {
 	}, [ highlighted ] );
 
 	// Return instant if is not active.
-	if( false === props.isActive ) {
+	if( ! select( STORE_NAME ).isActive() ) {
 		return null;
 	}
 
@@ -83,59 +261,8 @@ const Keyframes = () => {
 	const $ui = document.querySelector( '.interface-interface-skeleton__content .components-resizable-box__container, .edit-post-visual-editor .edit-post-visual-editor__content-area, .edit-post-visual-editor > div:first-child:last-child' );
 	const uiWidth = $ui ? $ui.getBoundingClientRect().width - 80 : 0;
 
-	// Set defaults.
-	let saves : Attributes = {};
-	let changes : Attributes = {}
-	let removes : Attributes = {}
-
-	// Check whether we selected a single block to show its valids.
-	if( null !== props.selected ) {
-		const tempId = props.selected.attributes.tempId;
-
-		if( props.saves.hasOwnProperty( tempId ) && isObject( props.saves[ tempId ] ) && 0 < Object.entries( props.saves[ tempId ] ).length ) {
-			saves[ tempId ] = props.saves[ tempId ];
-		}
-
-		if( props.changes.hasOwnProperty( tempId ) && isObject( props.changes[ tempId ] ) && 0 < Object.entries( props.changes[ tempId ] ).length ) {
-			changes[ tempId ] = props.changes[ tempId ];
-		}
-
-		if( props.removes.hasOwnProperty( tempId ) && isObject( props.removes[ tempId ] ) && 0 < Object.entries( props.removes[ tempId ] ).length ) {
-			removes[ tempId ] = props.removes[ tempId ];
-		}
-	}
-
-	// Set merged result of saves and changes.
-	var merged : Attributes = getMergedAttributes( saves, changes, removes );
-
-	// console.log( 'KEYFRAMES', saves, changes, removes );
-
-	// Set keyframes to render.
-	const keyframes : Attributes = {};
-	for( const [ clientId, viewports ] of Object.entries( merged ) ) {
-		keyframes[ clientId ] = [ { viewport: -1, size: 80, position: 'center' } ];
-
-		for( const [ dirty ] of Object.entries( viewports ) ) {
-			let viewport = parseInt( dirty );
-			let first = keyframes[ clientId ].shift();
-			let keyframe = { viewport: viewport, size: 0 }
-
-			if( 0 === keyframes[ clientId ].length ) {
-				first.size = viewport - 3;
-
-				keyframes[ clientId ] = [ { position: 'first', ... keyframe }, first, { position: 'last', ... keyframe } ];
-			} else {
-				first.size = (( viewport - first.viewport ) / 2 );
-				first.position = 'first';
-
-				let last = keyframes[ clientId ].pop();
-				last.size = (( viewport - first.viewport ) / 2 );
-				last.position = 'last';
-
-				keyframes[ clientId ] = [ { position: 'first', ... keyframe }, first, ... keyframes[ clientId ], last, { position: 'last', ... keyframe } ];
-			}
-		}
-	}
+	// Set keyframes.
+	const keyframes = generateKeyframes( props );
 
 
 	/**
@@ -147,17 +274,15 @@ const Keyframes = () => {
 		const { size, position, viewport } = frame;
 		const zoom = uiWidth / props.viewport;
 
-		// console.log( frame );
+		if( 'center' === position ) {
+			return 0;
+		}
 
 		if( props.viewport >= ( uiWidth ) ) {
 			if( 0 === size ) {
 				let tempSize = ( props.viewport - viewport ) / 2;
 
 				return zoom * tempSize + 40;
-			}
-
-			if( 'center' === position ) {
-				return Math.round( ( zoom * size ) * 10 ) / 10;
 			}
 
 			return Math.round( ( zoom * size ) * 10 ) / 10;
@@ -172,32 +297,6 @@ const Keyframes = () => {
 
 
 	/**
-	 * Set function to fire on click open.
-	 *
-	 * @since 0.1.0
-	 */
-	const onClickKeyframe = ( { target } : any ) => {
-		if( ! target.classList.contains( 'qp-keyframe' ) ) {
-			target = target.closest( '.qp-keyframe' );
-		}
-
-		var {
-			dataset: {
-				viewport,
-			}
-		} = target;
-
-		viewport = parseInt( viewport );
-
-		if( viewport > 0 ) {
-			dispatch( STORE_NAME ).setInspecting();
-
-			setHighlighted( viewport );
-		}
-	}
-
-
-	/**
 	 * Set function to fire on mouse over.
 	 *
 	 * @since 0.1.0
@@ -207,14 +306,17 @@ const Keyframes = () => {
 			target = target.closest( '.qp-keyframe' );
 		}
 
+		if( ! target ) {
+			return;
+		}
+
 		const {
 			dataset: {
-				clientid,
 				viewport,
 			}
 		} = target;
 
-		setHover({ clientId: clientid, viewport: parseInt( viewport ) });
+		setHover({ viewport: parseInt( viewport ) });
 	}
 
 
@@ -234,90 +336,77 @@ const Keyframes = () => {
 	 * @since 0.1.0
 	 */
 	return (
-		<div
-			key={ `qp-keyframes` }
-			className="qp-keyframes"
-		>
-			{ Object.entries( keyframes ).map( ( keyframe : Array<any>) => {
-				const clientId = keyframe[0];
-				const frames = keyframe[1];
+		<div className="qp-keyframes">
+			<div className="qp-keyframes-wrap">
+				{ keyframes.map( ( keyframe, index ) => {
 
-				return (
-					<div
-						key={ `qp-keyframes-client-${ clientId }` }
-						className="qp-keyframes-client"
-					>
+					// Set active / non-active.
+					var classNames = `qp-keyframe-${ props.viewport } qp-keyframe ${ keyframe.position }`;
+					if( props.viewport === keyframe.viewport ) {
+						classNames = classNames + ' active';
+					}
+
+					// Set removed indicator.
+					if( keyframe.hasRemoves ) {
+						classNames = classNames + ' removed';
+					}
+
+					// Set changes indicator.
+					if( keyframe.hasChanges ) {
+						classNames = classNames + ' changes';
+					}
+
+					// Set hover pairing indicator.
+					if( hover.viewport === keyframe.viewport ) {
+						classNames = classNames + ' hover';
+					}
+
+					const isControlling = visibleControls.some( obj => isEqual( obj, keyframe ) );
+					if( isControlling ) {
+						classNames = classNames + ' controlling';
+					}
+
+					// Set calculated width.
+					const width = calculateWidth( keyframe );
+
+					// Render keyframe.
+					return (
 						<div
-							key={ `qp-keyframes-wrap-${ clientId }` }
-							className="qp-keyframes-wrap"
+							key={ `qp-keyframe-${ props.viewport }-${ index }` }
+							className={ classNames }
+							style={{
+								width: `${ width }px`,
+							}}
+							data-viewport={ keyframe.viewport }
+							onMouseOver={ onMouseOver }
+							onMouseOut={ onMouseOut }
 						>
-							{ Object.entries( frames ).map( ( frame : Array<any>, index ) => {
-								const { viewport, position } = frame[1];
-
-								// Set active / non-active.
-								var classNames = `qp-keyframe-${ viewport } qp-keyframe ${ position }`;
-								if( props.viewport === viewport ) {
-									classNames = classNames + ' active';
-								}
-
-								// Set saves indicator.
-								var hasSaves = saves.hasOwnProperty( clientId ) && saves[ clientId ].hasOwnProperty( viewport ) && 0 < Object.keys( saves[ clientId ][ viewport ] ).length;
-
-								// Set changes indicator.
-								var hasChanges = changes.hasOwnProperty( clientId ) && changes[ clientId ].hasOwnProperty( viewport ) && 0 < Object.keys( changes[ clientId ][ viewport ] ).length;
-
-								// Set removes indicator.
-								var hasRemoves = removes.hasOwnProperty( clientId ) && removes[ clientId ].hasOwnProperty( viewport ) && 0 < Object.keys( removes[ clientId ][ viewport ] ).length;
-
-								// Set removed indicator.
-								if( ! hasSaves && hasRemoves && ! hasChanges ) {
-									classNames = classNames + ' removed';
-								}
-
-								// Set changes indicator.
-								if( hasSaves && ( hasChanges || hasRemoves ) ) {
-									classNames = classNames + ' changes';
-								}
-
-								// Set new indicator.
-								if( ! hasSaves && hasChanges ) {
-									classNames = classNames + ' new';
-								}
-
-								// Set hover pairing indicator.
-								if( hover && hover.clientId === clientId && hover.viewport === viewport ) {
-									classNames = classNames + ' hover';
-								}
-
-								// Set calculated width.
-								const width = calculateWidth( frame[1] );
-
-								// Render keyframe.
-								return (
-									<div
-										key={ `qp-keyframe-${clientId}-${viewport}-${index}` }
-										className={ classNames }
-										style={{
-											width: `${ width }px`,
-										}}
-										data-viewport={ viewport }
-										data-clientid={ clientId }
-										onMouseOver={ onMouseOver }
-										onMouseOut={ onMouseOut }
-										onClick={ onClickKeyframe }
+							{ ( ( 'center' === keyframe.position && 0 < keyframe.spectrumSet.length ) || ( 'center' !== keyframe.position && 0 < keyframe.spectrumSet.length && 0 < keyframe.viewport ) ) &&
+								<>
+									<Button
+										key={ `qp-keyframe-marker-${ keyframe.viewport }-${ index }` }
+										className="marker"
+										onClick={ ( event ) => {
+											onClickKeyframe( event, keyframe )
+										} }
 									>
-										{ 'last' === position && ( hasChanges || hasRemoves ) &&
-											<div key={ `qp-keyframe-marker-${clientId}-${viewport}-${index}` } className="marker"></div>
-										}
-									</div>
-								);
-							}) }
+										<Icon icon={ iconKeyframe } />
+									</Button>
+									<KeyframeControls
+										visibleControls={ visibleControls }
+										setVisibleControls={ setVisibleControls }
+										storeId={ props.storeId }
+										iframeViewport={ props.iframeViewport }
+										keyframe={ keyframe }
+									/>
+								</>
+							}
 						</div>
-					</div>
-				);
-			}) }
+					);
+				} ) }
+			</div>
 		</div>
 	)
 }
 
-export default Keyframes
+export default Keyframes;

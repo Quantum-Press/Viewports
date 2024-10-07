@@ -66,10 +66,10 @@ const registerInit = ( clientId, setAttributes ) => {
 			'edit',
 			'successfully registered',
 			initMap
-		)
+		);
 
 		initMap = {};
-	}, 1000 );
+	}, 300 );
 }
 
 

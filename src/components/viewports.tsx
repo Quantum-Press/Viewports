@@ -26,6 +26,7 @@ const Viewports = () => {
 			isActive: store.isActive(),
 			isInspecting: store.isInspecting(),
 			iframeSize: store.getIframeSize(),
+			currentPost: select( 'core/editor' ).getCurrentPost(),
 		}
 	}, [] );
 
