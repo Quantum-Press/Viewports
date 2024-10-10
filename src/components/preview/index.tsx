@@ -1,6 +1,6 @@
 import { useResizeEditor } from "../../hooks/use-resize-editor";
 import ToggleView from '../toggle/view';
-import ToggleEdit from '../toggle/editing';
+import ToggleEdit from '../toggle/edit';
 import { STORE_NAME } from "../../store";
 
 const {
@@ -20,7 +20,7 @@ const {
 } = window['wp'];
 
 const buttonSelector = '.editor-header__settings .editor-preview-dropdown button';
-const menugroupSelector = '.components-dropdown-menu__popover .components-menu-group:last-child';
+const menugroupSelector = '.components-dropdown-menu__popover .components-menu-group:first-child';
 const injectedSelector = '.components-dropdown-menu__popover .qp-viewports-injected-preview';
 
 
@@ -36,14 +36,8 @@ const Portal = ( { setInjected } ) => {
 
 	return (
 		<>
-			<ToggleView
-				text={ __( 'mode: ', 'qp-viewports' ) }
-				showText={ true }
-			/>
-			<ToggleEdit
-				text={ __( 'mode: ', 'qp-viewports' ) }
-				showText={ true }
-			/>
+			<ToggleEdit />
+			<ToggleView />
 		</>
 	);
 }
@@ -158,7 +152,7 @@ export const Preview = () => {
 		const newElement = document.createElement( 'div' );
 		newElement.classList.add( 'qp-viewports-injected-preview' );
 
-		$menugroup.before( newElement );
+		$menugroup.after( newElement );
 
 		$injected = document.querySelector( injectedSelector );
 	}

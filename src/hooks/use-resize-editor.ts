@@ -48,6 +48,7 @@ export const useResizeEditor = () => {
 	const {
 		isActive,
 		viewport,
+		isReady,
 	} = useSelect( select => {
 		const store = select( STORE_NAME );
 
@@ -61,19 +62,6 @@ export const useResizeEditor = () => {
 
 	// Set store dispatcher.
 	const dispatch = useDispatch( STORE_NAME );
-
-	// Set useEffect to recalculate sizes.
-	useLayoutEffect( () => {
-		if ( isSiteEditor() ) {
-			calculateSiteEditorSize();
-		} else {
-			calculatePostEditorSize();
-		}
-
-		dispatch.setIframeSize( resizeEditor );
-
-	}, [ resizeSkeleton, resizeEditor ] );
-
 
 	/**
 	 * Set function to calculate siteEditor size.
@@ -249,6 +237,26 @@ export const useResizeEditor = () => {
 			// Update resize scale.
 			setResizeScale( 1 );
 		}
+	}
+
+	// Set useEffect to recalculate sizes.
+	useLayoutEffect( () => {
+		if ( isSiteEditor() ) {
+			calculateSiteEditorSize();
+		} else {
+			calculatePostEditorSize();
+		}
+
+		dispatch.setIframeSize( resizeEditor );
+
+	}, [ resizeSkeleton, resizeEditor ] );
+
+	if( ! isReady ) {
+		return {
+			editor: resizeEditor,
+			skeleton: resizeSkeleton,
+			scale: resizeScale,
+		};
 	}
 
 	return {

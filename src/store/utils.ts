@@ -1,19 +1,21 @@
-import { isObject, getMergedAttributes, traverseGet, traverseExist } from '../utils';
+import {
+	isObject,
+	getMergedAttributes,
+	traverseGet,
+	traverseExist,
+} from '../utils';
+import {
+	mobileDefaultViewport,
+	tabletDefaultViewport,
+	desktopDefaultViewport,
+	tabletBreakpoint,
+	desktopBreakpoint,
+} from './default';
 import { Generator } from './generator';
 import type { Attributes } from '../utils';
 import type { Styles, SpectrumState, SpectrumProperties, State, ViewportStyle, ViewportStyleSet, BlockDifferences, Viewports, ViewportType, SpectrumSet } from './types';
 
 const { isEqual, cloneDeep, isEmpty, isUndefined, isNull } = window[ 'lodash' ];
-
-export const mobileDefaultViewport = 375;
-
-export const tabletDefaultViewport = 768;
-
-export const desktopDefaultViewport = 1360;
-
-export const tabletBreakpoint = 540;
-
-export const desktopBreakpoint = 1280;
 
 /**
  * Set function to indicate whether given viewport is in range of desktop size.
@@ -345,6 +347,14 @@ export const clearEmptyProperties = ( properties : Styles ) : Styles => {
 				// Set key value pairs.
 				cleared[ property ][ key ] = value;
 			}
+
+			continue;
+		}
+
+		// Set property if not empty.
+		// #TODO Monitor if there will be arrays to iterate over.
+		if( ! isEmpty( styles ) ) {
+			cleared[ property ] = styles;
 		}
 	}
 

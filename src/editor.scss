@@ -213,7 +213,11 @@ body.is-right-inspector {
 }
 body.post-php {
 	#qp-viewports-inspector-wrap {
-		height: calc( 100% - 45px );
+		height: 100%;
+
+		.qp-viewports-inspector-foot {
+			bottom: 0;
+		}
 	}
 }
 .qp-viewports-inspector {
@@ -341,7 +345,7 @@ body.is-active-viewports {
 		height: 100%;
 
 		.qp-viewports-inspector-selected-wrap {
-			height: calc( 100% - 26px );
+			height: calc( 100% - 80px );
 
 			&.overflow {
 				overflow-y: scroll;
@@ -413,6 +417,28 @@ body.is-active-viewports {
 	}
 }
 
+
+/**
+ * Inspector - ToggleEdit.
+ */
+.qp-viewports-inspector-body {
+	.qp-viewports-toggle-edit {
+		padding: 14px;
+		margin-bottom: 6px;
+		border-bottom: 1px solid #919191;
+		color: #919191;
+		cursor: pointer;
+
+		&:hover {
+			color: #fff;
+		}
+
+		.components-flex {
+			flex-direction: row-reverse;
+			justify-content: space-between;
+		}
+	}
+}
 
 /**
  * Inspector - BlockList.
@@ -1102,7 +1128,7 @@ table.block-editor-list-view-tree {
 		display: flex;
 		flex-direction: row;
 		align-items: center;
-		width: 160px;
+		width: 200px;
 		padding: 0 4px;
 
 		&.right {
@@ -1485,127 +1511,23 @@ body.is-active-viewports {
  * Injected Preview.
  */
 .qp-viewports-injected-preview {
-	display: flex;
-	gap: 20px;
 	border-top: 1px solid #ccc;
 	border-bottom: 1px solid #ccc;
 	margin: 0 -8px 0 -8px;
-	padding: 8px;
+	padding: 8px 16px;
 
-	button {
-		width: 100%;
-		height: 35px;
-		padding: 6px 8px !important;
-		justify-content: flex-start !important;
-		text-align: left;
+	&:last-child {
+		margin-bottom: -9px;
+	}
 
-		svg {
-			width: 24px !important;
-			height: 24px !important;
-		}
+	.qp-viewports-toggle-edit,
+	.qp-viewports-toggle-view {
+		padding: 8px 0;
+		margin: 0;
 
-		&:hover {
-			color: #fff;
-
-			svg.view {
-				.cls-1 {
-					stroke: var( --wp-admin-theme-color-darker-20 );
-				}
-
-				.cls-2 {
-					fill: var( --wp-admin-theme-color-darker-20 );;
-				}
-
-				.cls-3 {
-					stroke: var( --wp-admin-theme-color-darker-20 );
-					opacity: 1;
-				}
-			}
-
-			svg.edit {
-				.cls-1 {
-					stroke: var( --wp-admin-theme-color-darker-20 );
-				}
-
-				.cls-2 {
-					fill: var( --wp-admin-theme-color-darker-20 );
-				}
-
-				.cls-3 {
-					stroke: var( --wp-admin-theme-color-darker-20 );
-					opacity: 1;
-				}
-			}
-		}
-
-		&.is-editing,
-		&.active {
-			background: #212124;
-			color: #fff;
-
-			svg.view {
-				.cls-1 {
-					stroke: var( --wp-admin-theme-color );
-				}
-
-				.cls-2 {
-					fill: #fff;
-				}
-
-				.cls-3 {
-					stroke: var( --wp-admin-theme-color );
-					opacity: 1;
-				}
-			}
-
-			svg.edit {
-				.cls-1 {
-					stroke: var( --wp-admin-theme-color );
-				}
-
-				.cls-2 {
-					fill: #fff;
-				}
-
-				.cls-3 {
-					stroke: var( --wp-admin-theme-color );
-					opacity: 1;
-				}
-			}
-
-			&:hover {
-				color: #fff;
-
-				svg.view {
-					.cls-1 {
-						stroke: #fff;
-					}
-
-					.cls-2 {
-						fill: #fff;
-					}
-
-					.cls-3 {
-						stroke: #fff;
-						opacity: 1;
-					}
-				}
-
-				svg.edit {
-					.cls-1 {
-						stroke: #fff;
-					}
-
-					.cls-2 {
-						fill: #fff;
-					}
-
-					.cls-3 {
-						stroke: #fff;
-						opacity: 1;
-					}
-				}
-			}
+		.components-flex {
+			flex-direction: row-reverse;
+			justify-content: space-between;
 		}
 	}
 }
@@ -2055,10 +1977,6 @@ svg.keyframe {
 		fill: transparent;
 	}
 
-	.cls-inner {
-		fill: transparent;
-	}
-
 	.cls-outer {
 		fill: currentColor;
 	}
@@ -2165,30 +2083,29 @@ svg.keyframe {
 				&:last-child {
 					button {
 						border-radius: 0 3px 3px 0 !important;
-						border-right: 1px solid #212121 !important;
+						border-right: 1px solid #949494 !important;
 					}
 				}
 
 				& > svg,
 				& > .dashicon {
 					position: absolute;
-					width: 100%;
+					display: block;
+					left: -1px;
+					right: 0;
+					height: auto;
 					text-align: center;
-					font-size: 22px;
-					height: 18px;
-					padding-right: 2px;
-					color: #333;
-
-					&.is-editing {
-						color: var( --wp-admin-theme-color );
-					}
+					font-size: 16px;
+					height: auto;
+					width: auto;
+					color: #949494;
 
 					&.dashicons-arrow-up {
-						bottom: -13px;
+						bottom: -5px;
 					}
 
 					&.dashicons-arrow-down {
-						top: -18px;
+						top: -6px;
 					}
 				}
 
@@ -2202,7 +2119,7 @@ svg.keyframe {
 					min-width: 30px;
 					padding: 0;
 					color: #919191;
-					border: 1px solid #212121 !important;
+					border: 1px solid #949494 !important;
 					border-right: none !important;
 					border-radius: 0 !important;
 
@@ -2214,28 +2131,88 @@ svg.keyframe {
 						&.global {
 							margin-top: 1px;
 						}
+					}
+				}
 
-						&.has-saves,
-						&.has-saves * {
+				&.is-active {
+					button {
+						background-color: #212121;
+						border-color: #212121 !important;
+						color: #fff;
+					}
+
+					& > svg,
+					& > .dashicon {
+						color: #fff;
+					}
+				}
+
+				&.is-editing {
+					button {
+						border-color: var( --wp-admin-theme-color ) !important;
+					}
+
+					&.is-active {
+						button {
+							background-color: var( --wp-admin-theme-color ) !important;
 							color: #fff;
 						}
 
-						&.has-changes,
-						&.has-changes * {
-							color: var( --wp-admin-theme-color );
+						& > svg,
+						& > .dashicon {
+							color: #fff;
 						}
+					}
 
-						&.has-removes,
-						&.has-removes * {
-							color: var( --wp--preset--color--vivid-red );
-						}
+					& > svg,
+					& > .dashicon {
+						color: var( --wp-admin-theme-color );
+					}
+				}
 
-						&.active,
-						&.active * {
-							&::after {
-								content: '';
-								display: block;
-							}
+				&.has-changes {
+					&::after {
+						content: "";
+						position: absolute;
+						bottom: -12px;
+						left: 0;
+						display: block;
+						width: 8px;
+						height: 8px;
+						background: var( --wp-admin-theme-color );
+						border-radius: 5px 0px 5px 5px;
+						transform: rotate(-45deg);
+					}
+				}
+
+				&.has-removes {
+					&::before {
+						content: "";
+						position: absolute;
+						bottom: -12px;
+						right: 0;
+						display: block;
+						width: 8px;
+						height: 8px;
+						background: var( --wp--preset--color--vivid-red );
+						border-radius: 5px 0px 5px 5px;
+						transform: rotate(-45deg);
+					}
+				}
+
+				&.has-saves {
+					button {
+						&::after {
+							content: "";
+							position: absolute;
+							bottom: -12px;
+							left: 50%;
+							display: block;
+							width: 8px;
+							height: 8px;
+							background: #949494;
+							border-radius: 5px 0px 5px 5px;
+							transform: translateX( -50% ) rotate( -45deg );
 						}
 					}
 				}
@@ -2261,57 +2238,21 @@ svg.keyframe {
 		display: flex;
 		border-bottom: 1px solid #919191;
 
-		button.qp-viewports-toggle-editing {
-			width: calc( 100% - 2px );
-			margin: 1px;
+		.qp-viewports-toggle-edit {
+			width: calc( 100% - 40px );
+			padding: 14px;
+			margin: 0;
 			color: #919191;
-
-			svg.edit {
-				height: 27px;
-				width: 27px;
-			}
-
-			.cls-1, .cls-3 {
-				stroke: #919191;
-			}
-
-			.cls-2 {
-				fill: #919191;
-			}
+			cursor: pointer;
 
 			&:hover {
 				color: #fff;
-
-				.cls-1, .cls-3 {
-					stroke: #fff;
-				}
-
-				.cls-2 {
-					fill: #fff;
-				}
-			}
-
-			&.is-editing {
-				color: #fff;
-
-				.cls-1, .cls-3 {
-					stroke: var( --wp-admin-theme-color-darker-20 );
-				}
-
-				.cls-2 {
-					fill: #fff;
-				}
-
-				&:hover {
-					.cls-1, .cls-3 {
-						stroke: #fff;
-					}
-				}
 			}
 		}
 
 		button.close {
-			width: 42px;
+			width: 44px;
+			height: 44px;
 			margin: 1px;
 			color: #919191;
 

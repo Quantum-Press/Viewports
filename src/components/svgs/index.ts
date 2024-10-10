@@ -1,5 +1,7 @@
+export { default as color } from './color';
 export { default as edit } from './edit';
 export { default as desktop } from './desktop';
+export { default as indicator } from './indicator';
 export { default as inspect } from './inspect';
 export { default as keyframe } from './keyframe';
 export { default as logo } from './logo';

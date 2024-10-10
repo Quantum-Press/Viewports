@@ -67,11 +67,16 @@ const generateKeyframes = ( props ) => {
 				};
 
 				// Check if the spectrum is also running on viewport 0 to update center keyframe.
-				if( 0 === spectrum.viewport ) {
+				if( 0 === spectrum.from ) {
 					first.hasChanges = first.hasChanges ? true : spectrum.hasChanges;
 					first.hasRemoves = first.hasRemoves ? true : spectrum.hasRemoves;
 					first.hasSaves = first.hasSaves ? true : spectrum.hasSaves;
 					first.spectrumSet.push( spectrum );
+				}
+
+				// Check if the first center keyframe needs an update in size.
+				if( 0 < spectrum.from ) {
+					first.size = spectrum.from;
 				}
 
 				// Add keyframe and update lastFrom.
@@ -274,7 +279,7 @@ const Keyframes = () => {
 		const { size, position, viewport } = frame;
 		const zoom = uiWidth / props.viewport;
 
-		if( 'center' === position ) {
+		if( 'center' === position && size === 0 ) {
 			return 0;
 		}
 

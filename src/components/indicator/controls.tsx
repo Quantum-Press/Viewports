@@ -1,6 +1,6 @@
 import { isInTabletRange, isInDesktopRange, getInRange, SpectrumSet, ViewportType, STORE_NAME } from '../../store';
 import { StyleList } from '../stylelist';
-import ToggleEditing from '../toggle/editing';
+import ToggleEdit from '../toggle/edit';
 
 const {
 	components: {
@@ -78,10 +78,7 @@ export const IndicatorControls = ( {
 			} }
 		>
 			<div className="qp-viewports-indicator-controls-head">
-				<ToggleEditing
-					text={ `Viewport mode: ${ isEditing ? 'On' : 'Off' }` }
-					showText={ true }
-				/>
+				<ToggleEdit />
 				<Button
 					className="close"
 					onClick={ () => { setIsVisible( false ) } }

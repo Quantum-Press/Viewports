@@ -882,7 +882,7 @@ export const getIndicatorSelectorSet = ( state : State, clientId : string ) : In
 			const selectorLabel = renderer.selectors.label;
 
 			// Set empty spectrum to fill, if available.
-			let spectrum = null;
+			let collected = [];
 
 			// Iterate over spectrumSets, to search the result of renderer.
 			for( let index = 0; index < spectrumSet.length; index++ ) {
@@ -890,8 +890,7 @@ export const getIndicatorSelectorSet = ( state : State, clientId : string ) : In
 
 				// Continue as long as we find the property and priority.
 				if( property === check.property && priority === check.priority ) {
-					spectrum = check;
-					break;
+					collected.push( check );
 				}
 			}
 
@@ -904,8 +903,8 @@ export const getIndicatorSelectorSet = ( state : State, clientId : string ) : In
 			}
 
 			// Check if we found a spectrum.
-			if( null !== spectrum ) {
-				selectorSet[ selectorLabel ].spectrumSet.push( spectrum );
+			if( collected.length ) {
+				selectorSet[ selectorLabel ].spectrumSet = collected;
 			}
 		}
 	}

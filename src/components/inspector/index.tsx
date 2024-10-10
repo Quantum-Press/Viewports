@@ -23,12 +23,14 @@ const Inspector = () => {
 	const {
 		isActive,
 		isInspecting,
+		isSaving,
 	} = useSelect( ( select : Function ) => {
 		const store = select( STORE_NAME );
 
 		return {
 			isActive: store.isActive(),
 			isInspecting: store.isInspecting(),
+			isSaving: store.isSaving(),
 		}
 	}, [] );
 

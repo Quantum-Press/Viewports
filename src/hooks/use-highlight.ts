@@ -1,6 +1,9 @@
 import { scrollParent } from '../utils';
 
 const {
+	dom: {
+		focus,
+	},
 	element: {
 		useEffect,
 		useState,
@@ -29,9 +32,17 @@ export function useHighlight() {
 
 		// Set scrolled indicator.
 		let scrolled = false;
+		let focusElement = null;
 
 		// Highlight elements.
 		elements.forEach( element => {
+			if( null === focusElement ) {
+				const focusableElement = element.querySelector( 'input, select, textarea, button, a, [tabindex]:not([tabindex="-1"])' );
+				if ( focusableElement ) {
+					focusElement = focusableElement;
+				}
+			}
+
 			if( ! scrolled ) {
 				scrollParent( element );
 				scrolled = true;
@@ -40,6 +51,11 @@ export function useHighlight() {
 			// Reset highlighted elements after a timeout.
 			element.classList.add( 'is-highlighted' );
 		} );
+
+		// Focus on the next button or input.
+		if( focusElement ) {
+			focusElement.focus();
+		}
 
 		// Set timeout to wait for rendered components to scroll into.
 		setTimeout( () => {

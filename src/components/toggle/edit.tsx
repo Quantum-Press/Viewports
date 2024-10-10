@@ -1,9 +1,8 @@
 import { STORE_NAME } from '../../store';
-import { edit } from '../svgs';
 
 const {
 	components: {
-		Button,
+		ToggleControl,
 	},
 	data: {
 		dispatch,
@@ -19,13 +18,7 @@ const {
  *
  * @since 0.1.0
  */
-const ToggleEdit = ( props ) => {
-
-	// Deconstruct props.
-	const {
-		text,
-		showText,
-	} = props;
+const ToggleEdit = () => {
 
 	// Set state dependency.
 	const {
@@ -46,7 +39,7 @@ const ToggleEdit = ( props ) => {
 	 *
 	 * @since 0.2.3
 	 */
-	const onClick = () => {
+	const onChange = () => {
 		if( ! isActive ) {
 			dispatcher.setEditing();
 			dispatcher.setLoading();
@@ -60,19 +53,18 @@ const ToggleEdit = ( props ) => {
 	}
 
 	// Set classNames by states.
-	const classNames = [ 'qp-viewports-toggle-editing' ];
+	const classNames = [ 'qp-viewports-toggle-edit' ];
 	if( isEditing ) {
 		classNames.push( 'is-editing' );
 	}
 
 	// Render component.
 	return (
-		<Button
+		<ToggleControl
 			className={ classNames }
-			icon={ edit }
-			label={ __( 'Edit viewport mode', 'quantum-viewports' ) }
-			onClick={ onClick }
-			text={ text && showText ? text : '' }
+			label={ __( 'Edit on Viewport', 'quantum-viewports' ) }
+			onChange={ onChange }
+			checked={ isEditing }
 		/>
 	);
 }

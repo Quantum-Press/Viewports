@@ -44,10 +44,9 @@ export function useDeviceType() {
 	const storeDispatch = useDispatch( STORE_NAME );
 	const editorDispatch = useDispatch( 'core/editor' );
 
-	useLayoutEffect( () => {
+	useEffect( () => {
 		if( ignore ) {
 			setIgnore( false );
-			return;
 		}
 
 		if( 'desktop' === sanitizedDeviceType && sanitizedDeviceType !== prevDeviceType ) {
@@ -64,6 +63,8 @@ export function useDeviceType() {
 			setPrevDeviceType( sanitizedDeviceType );
 			storeDispatch.setViewportType( sanitizedDeviceType );
 		}
+
+		// console.log( 'changed deviceType', ignore );
 
 	}, [ deviceType ] );
 
@@ -83,9 +84,11 @@ export function useDeviceType() {
 			editorDispatch.setDeviceType( 'Mobile' );
 		}
 
+		// console.log( 'changed viewport', ignore );
+
 	}, [ viewport ] );
 
-	useLayoutEffect( () => {
+	useEffect( () => {
 		if( viewport !== prevViewport && ! isActive && isInDesktopRange( viewport ) && deviceType !== 'Desktop' ) {
 			setIgnore( true );
 			editorDispatch.setDeviceType( 'Desktop' );
@@ -101,13 +104,19 @@ export function useDeviceType() {
 			editorDispatch.setDeviceType( 'Mobile' );
 		}
 
+		// console.log( 'changed iframeViewport', ignore );
+
 	}, [ iframeViewport ] );
 
-	useLayoutEffect( () => {
+	/*
+	useEffect( () => {
 		if( ignore ) {
 			setIgnore( false );
 		}
 	}, [ ignore ] );
+	*/
+
+	// console.log( 'return', viewport, iframeViewport, deviceType, ignore );
 
 	// Return state and setter.
 	return [];

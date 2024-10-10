@@ -5,6 +5,8 @@ import {
 	mobileDefaultViewport,
 	tabletDefaultViewport,
 	desktopDefaultViewport,
+} from './default';
+import {
 	isInMobileRange,
 	isInTabletRange,
 	isInDesktopRange,
@@ -64,9 +66,15 @@ export function setViewports( state : State , action : Action ) : State {
 export function setViewport( state : State, action : Action ) : State {
 	switch ( action.type ) {
 		case 'SET_VIEWPORT' :
+			const smallestViewport = Math.min( ... Object.keys( state.viewports )
+				.map( Number ) // convert keys to numbers
+				.filter( key => key !== 0 ) // exclude zero
+			);
+
 			return {
 				... state,
 				viewport: action.viewport,
+				isEditing: action.viewport === smallestViewport ? false : true,
 			};
 	}
 
@@ -89,10 +97,16 @@ export function setViewportType( state : State, action : Action ) : State {
 		case 'SET_VIEWPORT_TYPE' :
 			let viewportType = action.viewportType;
 
+			const smallestViewport = Math.min( ... Object.keys( state.viewports )
+				.map( Number ) // convert keys to numbers
+				.filter( key => key !== 0 ) // exclude zero
+			);
+
 			if( viewportType === 'mobile' ) {
 				return {
 					... state,
-					isActive: ! state.isActive ? true : true,
+					isActive: true,
+					isEditing: smallestViewport === mobileDefaultViewport ? false : true,
 					viewport: mobileDefaultViewport,
 				}
 			}
@@ -100,7 +114,8 @@ export function setViewportType( state : State, action : Action ) : State {
 			if( viewportType === 'tablet' ) {
 				return {
 					... state,
-					isActive: ! state.isActive ? true : true,
+					isActive: true,
+					isEditing: true,
 					viewport: tabletDefaultViewport,
 				}
 			}
@@ -108,7 +123,8 @@ export function setViewportType( state : State, action : Action ) : State {
 			if( viewportType === 'desktop' ) {
 				return {
 					... state,
-					isActive: ! state.isActive ? true : true,
+					isActive: true,
+					isEditing: true,
 					viewport: desktopDefaultViewport,
 				}
 			}
@@ -133,12 +149,21 @@ export function setPrevViewport( state : State, action : Action ) : State {
 		case 'SET_PREV_VIEWPORT' :
 			switch ( action.viewportType ) {
 				case '' :
+					const smallestViewport = Math.min( ... Object.keys( state.viewports )
+						.map( Number ) // convert keys to numbers
+						.filter( key => key !== 0 ) // exclude zero
+					);
 					const prev = getPrevViewport( state.viewport, state.viewports );
 
-					return {
-						... state,
-						viewport: prev !== 0 ? prev : state.viewport,
-					};
+					if( prev > 0 ) {
+						return {
+							... state,
+							isEditing: prev === smallestViewport ? false : true,
+							viewport: prev !== 0 ? prev : state.viewport,
+						};
+					} else {
+						return state;
+					}
 
 				case 'mobile' :
 					const mobileViewports = getViewports( 'mobile', state.viewports );
@@ -232,6 +257,7 @@ export function setNextViewport( state : State, action : Action ) : State {
 
 					return {
 						... state,
+						isEditing: true,
 						viewport: next !== 0 ? next : state.viewport,
 					};
 
@@ -648,11 +674,17 @@ export function setActive( state : State, action : Action ) : State {
 				viewport = getHighestPossibleViewport( state.viewports, state.iframeSize.width );
 			}
 
+			const smallestViewport = Math.min( ... Object.keys( state.viewports )
+				.map( Number ) // convert keys to numbers
+				.filter( key => key !== 0 ) // exclude zero
+			);
+
 			return {
 				... state,
-				isActive:   true,
-				isLoading:  false,
-				viewport:   viewport,
+				isActive: true,
+				isLoading: false,
+				isEditing: viewport === smallestViewport ? false : true,
+				viewport: viewport,
 			};
 	}
 
@@ -865,9 +897,15 @@ export function toggleActive( state : State, action : Action ) : State {
 				viewport = getHighestPossibleViewport( state.viewports, state.iframeSize.width );
 			}
 
+			const smallestViewport = Math.min( ... Object.keys( state.viewports )
+				.map( Number ) // convert keys to numbers
+				.filter( key => key !== 0 ) // exclude zero
+			);
+
 			return {
 				... state,
 				isActive: isActive,
+				isEditing: viewport === smallestViewport ? false : true,
 				viewport: viewport,
 			};
 	}
@@ -891,6 +929,7 @@ export function toggleDesktop( state : State, action : Action ) : State {
 		case 'TOGGLE_DESKTOP' :
 			return {
 				... state,
+				isEditing: true,
 				viewport: state.desktop,
 			};
 	}
@@ -914,6 +953,7 @@ export function toggleTablet( state : State, action : Action ) : State {
 		case 'TOGGLE_TABLET' :
 			return {
 				... state,
+				isEditing: true,
 				viewport: state.tablet,
 			};
 	}
@@ -935,8 +975,14 @@ export function toggleTablet( state : State, action : Action ) : State {
 export function toggleMobile( state : State, action : Action ) : State {
 	switch ( action.type ) {
 		case 'TOGGLE_MOBILE' :
+			const smallestViewport = Math.min( ... Object.keys( state.viewports )
+				.map( Number ) // convert keys to numbers
+				.filter( key => key !== 0 ) // exclude zero
+			);
+
 			return {
 				... state,
+				isEditing: state.mobile === smallestViewport ? false : true,
 				viewport: state.mobile,
 			};
 	}

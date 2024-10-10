@@ -115,10 +115,18 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 	 * @return {string}
 	 */
 	const getClassName = ( size ) : string => {
-		const className = [ size ];
+		const className = [ 'qp-viewports-indicator', size ];
 
 		switch ( size ) {
 			case 'mobile' :
+				if( isActive && isInMobileRange( iframeViewport ) ) {
+					className.push( 'is-active' );
+				}
+
+				if( isEditing ) {
+					className.push( 'is-editing' );
+				}
+
 				for( let index = 0; index < spectrumSet.length; index++ ) {
 					const spectrum = spectrumSet[ index ];
 
@@ -134,16 +142,26 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 						if( spectrum.hasChanges ) {
 							className.push( 'has-changes' );
 						}
-
-						break;
 					}
 				}
 
 				break;
 
 			case 'tablet' :
+				if( isActive && isInTabletRange( iframeViewport ) ) {
+					className.push( 'is-active' );
+				}
+
+				if( isEditing ) {
+					className.push( 'is-editing' );
+				}
+
 				for( let index = 0; index < spectrumSet.length; index++ ) {
 					const spectrum = spectrumSet[ index ];
+
+					if( isInMobileRange( spectrum.from ) ) {
+						continue;
+					}
 
 					if( isInTabletRange( spectrum.from ) ) {
 						if( spectrum.hasSaves ) {
@@ -157,16 +175,26 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 						if( spectrum.hasChanges ) {
 							className.push( 'has-changes' );
 						}
-
-						break;
 					}
 				}
 
 				break;
 
 			case 'desktop' :
+				if( isActive && isInDesktopRange( iframeViewport ) ) {
+					className.push( 'is-active' );
+				}
+
+				if( isEditing ) {
+					className.push( 'is-editing' );
+				}
+
 				for( let index = 0; index < spectrumSet.length; index++ ) {
 					const spectrum = spectrumSet[ index ];
+
+					if( isInMobileRange( spectrum.from ) || isInTabletRange( spectrum.from ) ) {
+						continue;
+					}
 
 					if( isInDesktopRange( spectrum.from ) ) {
 						if( spectrum.hasSaves ) {
@@ -180,8 +208,6 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 						if( spectrum.hasChanges ) {
 							className.push( 'has-changes' );
 						}
-
-						break;
 					}
 				}
 
@@ -201,81 +227,71 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 
 	// Render component.
 	return (
-		<>
-			<div
-				className="qp-viewports-indicator-wrap"
-			>
-				<div className="qp-viewports-indicator">
-					<Button
-						className="indicator mobile"
-						onClick={ () => {
-							handleClick( 'mobile' );
-						} }
-					>
-						<Icon
-							className={ classNamesMobile }
-							icon={ mobile }
-						/>
-					</Button>
-					<Pointer
-						viewportType="mobile"
-						isEditing={ isEditing }
-						iframeViewport={ iframeViewport }
-						hasTabletSpectrum={ hasTabletSpectrum }
-						hasDesktopSpectrum={ hasDesktopSpectrum }
-					/>
-				</div>
-				<div className="qp-viewports-indicator">
-					<Button
-						className="indicator tablet"
-						onClick={ () => {
-							handleClick( 'tablet' );
-						} }
-					>
-						<Icon
-							className={ classNamesTablet }
-							icon={ tablet }
-						/>
-					</Button>
-					<Pointer
-						viewportType="tablet"
-						isEditing={ isEditing }
-						iframeViewport={ iframeViewport }
-						hasTabletSpectrum={ hasTabletSpectrum }
-						hasDesktopSpectrum={ hasDesktopSpectrum }
-					/>
-				</div>
-				<div className="qp-viewports-indicator">
-					<Button
-						className="indicator desktop"
-						onClick={ () => {
-							handleClick( 'desktop' );
-						} }
-					>
-						<Icon
-							className={ classNamesDesktop }
-							icon={ desktop }
-						/>
-					</Button>
-					<Pointer
-						viewportType="desktop"
-						isEditing={ isEditing }
-						iframeViewport={ iframeViewport }
-						hasTabletSpectrum={ hasTabletSpectrum }
-						hasDesktopSpectrum={ hasDesktopSpectrum }
-					/>
-				</div>
-				{ ! isInspecting && <IndicatorControls
-					isVisible={ isVisible }
-					setIsVisible={ setIsVisible }
+		<div className="qp-viewports-indicator-wrap">
+			<div className={ classNamesMobile }>
+				<Pointer
+					viewportType="mobile"
 					isEditing={ isEditing }
-					storeId={ storeId }
-					viewportType={ viewportType }
 					iframeViewport={ iframeViewport }
-					spectrumSet={ spectrumSet }
-				/> }
+					hasTabletSpectrum={ hasTabletSpectrum }
+					hasDesktopSpectrum={ hasDesktopSpectrum }
+				/>
+				<Button
+					onClick={ () => {
+						handleClick( 'mobile' );
+					} }
+				>
+					<Icon
+						icon={ mobile }
+					/>
+				</Button>
 			</div>
-		</>
+			<div className={ classNamesTablet }>
+				<Pointer
+					viewportType="tablet"
+					isEditing={ isEditing }
+					iframeViewport={ iframeViewport }
+					hasTabletSpectrum={ hasTabletSpectrum }
+					hasDesktopSpectrum={ hasDesktopSpectrum }
+				/>
+				<Button
+					onClick={ () => {
+						handleClick( 'tablet' );
+					} }
+				>
+					<Icon
+						icon={ tablet }
+					/>
+				</Button>
+			</div>
+			<div className={ classNamesDesktop }>
+				<Pointer
+					viewportType="desktop"
+					isEditing={ isEditing }
+					iframeViewport={ iframeViewport }
+					hasTabletSpectrum={ hasTabletSpectrum }
+					hasDesktopSpectrum={ hasDesktopSpectrum }
+				/>
+				<Button
+					onClick={ () => {
+						handleClick( 'desktop' );
+					} }
+				>
+					<Icon
+						icon={ desktop }
+					/>
+				</Button>
+			</div>
+			{ ! isInspecting && <IndicatorControls
+				isVisible={ isVisible }
+				setIsVisible={ setIsVisible }
+				isEditing={ isEditing }
+				storeId={ storeId }
+				viewportType={ viewportType }
+				iframeViewport={ iframeViewport }
+				spectrumSet={ spectrumSet }
+			/> }
+		</div>
 	);
 }
 

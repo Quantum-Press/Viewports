@@ -87,10 +87,6 @@ export const Pointer = memo( ( { viewportType, isEditing, iframeViewport, hasTab
 	return (
 		<>
 			<Icon
-				icon="arrow-up"
-				className={ shouldRenderIcons.editing ? 'is-editing' : '' }
-			/>
-			<Icon
 				icon="arrow-down"
 				className={ shouldRenderIcons.editing ? 'is-editing' : '' }
 			/>

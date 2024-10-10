@@ -28,13 +28,35 @@ class CSS_Renderer extends Instance {
 	protected $html_processed = null;
 
 	/**
+	 * Property contains nested_html blocks.
+	 *
+	 * @var array
+	 *
+	 * @since 0.2.17
+	 */
+	protected $nested_html_blocks = [];
+
+
+	/**
 	 * Method to construct.
 	 *
 	 * @since 0.2.15
 	 */
 	protected function __construct()
 	{
+		$this->set_nested_html_blocks();
 		$this->set_hooks();
+	}
+
+
+	/**
+	 * Method to set ignore_properties.
+	 *
+	 * @since 0.2.17
+	 */
+	protected function set_nested_html_blocks()
+	{
+		$this->nested_html_blocks = \apply_filters( 'quantum_viewports_nested_html_blocks', [ 'core/image' ] );
 	}
 
 
@@ -73,6 +95,11 @@ class CSS_Renderer extends Instance {
 		// Set html_processed from block_html and skip to first tag.
 		$this->html_processed = new \WP_HTML_Tag_Processor( $block_html );
 		$this->html_processed->next_tag();
+
+		// Jump over the first html element when its a nested html block.
+		if( in_array( $block[ 'blockName' ], $this->nested_html_blocks ) ) {
+			$this->html_processed->next_tag();
+		}
 
 		// Set viewport styles to check if we need to change block_html and register css.
 		$viewport_stylesets = $this->get_viewport_stylesets( $block_html, $inline_styles );

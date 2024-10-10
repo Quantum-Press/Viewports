@@ -1,10 +1,97 @@
-import type { State } from './types';
+import type { State, Viewports, ViewportsConfig } from './types';
 
 const {
 	styleEngine: {
 		compileCSS,
 	}
 } = window[ 'wp' ];
+
+declare const qpViewportsConfig: ViewportsConfig | undefined;
+
+function getViewports() : Viewports {
+	if ( typeof qpViewportsConfig === 'undefined' ) {
+		return {
+			1920: 'Quantum - Desktop large',
+			1360: 'Quantum - Desktop small',
+			780: 'Wordpress - Tablet',
+			360: 'Wordpress - Mobile',
+			0: 'Default',
+		};
+	}
+
+	if( 'pro' === qpViewportsConfig.distribution ) {
+		return {
+			3440: 'Quantum - Desktop xxlarge',
+			2560: 'Quantum - Desktop xlarge',
+			1920: 'Quantum - Desktop large',
+			1650: 'Quantum - Desktop medium',
+			1360: 'Quantum - Desktop small',
+			1280: 'Quantum - Desktop tiny',
+			1180: 'Quantum - Tablet xlarge',
+			1024: 'Quantum - Tablet large',
+			820: 'Quantum - Tablet medium',
+			768: 'Quantum - Tablet small',
+			540: 'Quantum - Tablet tiny',
+			425: 'Quantum - Mobile large',
+			375: 'Quantum - Mobile medium',
+			320: 'Quantum - Mobile small',
+			0: 'Default',
+		}
+	}
+
+	return {
+		1920: 'Quantum - Desktop large',
+		1360: 'Quantum - Desktop small',
+		780: 'Wordpress - Tablet',
+		360: 'Wordpress - Mobile',
+		0: 'Default',
+	};
+}
+
+
+function getDesktopViewport() : number {
+	return 1360;
+}
+
+function getTabletViewport() : number {
+	if ( typeof qpViewportsConfig === 'undefined' ) {
+		return 780;
+	}
+
+	if( 'pro' === qpViewportsConfig.distribution ) {
+		return 768;
+	}
+
+	return 780;
+}
+
+function getMobileViewport() : number {
+	if ( typeof qpViewportsConfig === 'undefined' ) {
+		return 360;
+	}
+
+	if( 'pro' === qpViewportsConfig.distribution ) {
+		return 320;
+	}
+
+	return 360;
+}
+
+
+function getDesktopBreakpoint() : number {
+	return 1360;
+}
+function getTabletBreakpoint() : number {
+	if ( typeof qpViewportsConfig === 'undefined' ) {
+		return 780;
+	}
+
+	if( 'pro' === qpViewportsConfig.distribution ) {
+		return 540;
+	}
+
+	return 780;
+}
 
 /**
  * The default store settings
@@ -29,25 +116,7 @@ const {
  * @property {object}        renderer       Object with property key based style renderer functions
  */
 export const DEFAULT_STATE = {
-	viewports: {
-		3440: 'Quantum - Desktop xxlarge',
-		2560: 'Quantum - Desktop xlarge',
-		1920: 'Quantum - Desktop large',
-		1650: 'Quantum - Desktop medium',
-		1360: 'Quantum - Desktop small',
-		1280: 'Quantum - Desktop tiny',
-		1180: 'Quantum - Tablet xlarge',
-		1024: 'Quantum - Tablet large',
-		820: 'Quantum - Tablet medium',
-		780: 'Wordpress - Tablet',
-		768: 'Quantum - Tablet small',
-		540: 'Quantum - Tablet tiny',
-		425: 'Quantum - Mobile large',
-		375: 'Quantum - Mobile medium',
-		360: 'Wordpress - Mobile',
-		320: 'Quantum - Mobile small',
-		0: 'Default',
-	},
+	viewports: getViewports(),
 	viewport: 0,
 	iframeSize: {
 		width: 0,
@@ -63,9 +132,9 @@ export const DEFAULT_STATE = {
 	isSaving: false,
 	isAutoSaving: false,
 	isLoading: false,
-	desktop: 1360,
-	tablet: 768,
-	mobile: 375,
+	desktop: getDesktopViewport(),
+	tablet: getTabletViewport(),
+	mobile: getMobileViewport(),
 	init: {},
 	saves: {},
 	changes: {},
@@ -101,6 +170,15 @@ export const DEFAULT_STATE = {
 				},
 			}
 		},
+		shadow: {
+			5: {
+				callback: compileCSS,
+				selectors: {
+					label: '.border-block-support-panel .components-tools-panel-header',
+					panel: '.border-block-support-panel',
+				},
+			}
+		},
 		spacing: {
 			5: {
 				callback: compileCSS,
@@ -117,3 +195,10 @@ export const DEFAULT_STATE = {
 	inlineStyleSets: {},
 
 } as State;
+
+export const mobileDefaultViewport = getMobileViewport();
+export const tabletDefaultViewport = getTabletViewport();
+export const desktopDefaultViewport = getDesktopViewport();
+
+export const tabletBreakpoint = getTabletBreakpoint();
+export const desktopBreakpoint = getDesktopBreakpoint();

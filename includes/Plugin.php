@@ -73,6 +73,15 @@ class Plugin extends Instance {
 			[ 'wp-blocks', 'wp-edit-post', 'wp-element', 'wp-i18n', 'lodash' ],
 			QUANTUM_VIEWPORTS_VERSION
 		);
+
+		\wp_localize_script(
+			'qp-viewports-scripts',
+			'qpViewportsConfig',
+			[
+				'distribution' => defined( 'VIEWPORTS_PRO' ) && 'true' === VIEWPORTS_PRO ? 'pro' : 'lite',
+				'version' => QUANTUM_VIEWPORTS_VERSION,
+			]
+		);
 		\wp_enqueue_script( 'qp-viewports-scripts' );
 
 		\wp_enqueue_style(

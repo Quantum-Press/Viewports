@@ -1,8 +1,6 @@
 import BlockEdit from './block/edit';
 import BlockSave from './block/save';
 import BlockStyle from './block/style';
-
-import ToggleEdit from './components/toggle/editing';
 import ToggleInspecting from './components/toggle/inspecting';
 
 const {
@@ -47,7 +45,6 @@ addFilter( 'blocks.registerBlockType', 'quantumpress/viewports', ( block ) => {
 							<ToggleInspecting
 								showText={ false }
 							/>
-							<ToggleEdit />
 						</ToolbarGroup>
 					</BlockControls>
 				</>

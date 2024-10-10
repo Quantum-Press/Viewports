@@ -1,6 +1,12 @@
 import type { Attributes } from '../utils';
 import type { Size } from '../hooks';
 
+export type ViewportsConfig = {
+	distribution: string;
+	version: string;
+}
+
+
 export type Styles = {
 	[ key: string ] : any,
 }
