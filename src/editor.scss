@@ -2021,8 +2021,6 @@ svg.keyframe {
 .interface-interface-skeleton__sidebar {
 	.components-tools-panel {
 		&.has-viewports {
-			border-color: var( --wp-admin-theme-color );
-
 			.components-tools-panel-header {
 				button.indicator {
 					background: #212124;
@@ -2216,6 +2214,22 @@ svg.keyframe {
 						}
 					}
 				}
+			}
+		}
+	}
+}
+
+
+// Special case for min-height positioning.
+.interface-interface-skeleton__sidebar {
+	.dimensions-block-support-panel {
+		fieldset.block-editor-height-control {
+			position: relative;
+
+			.qp-viewports-indicator-wrap {
+				position: absolute;
+				top: -32px;
+				right: 0;
 			}
 		}
 	}

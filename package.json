@@ -1,6 +1,6 @@
 {
 	"name": "quantum-viewports",
-	"version": "0.2.17",
+	"version": "0.2.17.1",
 	"private": true,
 	"description": "A new responsive Gutenberg Editor experience.",
 	"author": "Sebastian Buchwald",
