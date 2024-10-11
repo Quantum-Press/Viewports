@@ -24,7 +24,6 @@ const menugroupSelector = '.components-dropdown-menu__popover .components-menu-g
 const injectedSelector = '.components-dropdown-menu__popover .qp-viewports-injected-preview';
 
 
-
 const Portal = ( { setInjected } ) => {
 	useEffect( () => {
 		return () => {
@@ -44,6 +43,15 @@ const Portal = ( { setInjected } ) => {
 
 
 /**
+ * Check if we are in the template edit mode (canvas=edit) and in the site-editor
+ */
+const isInEditMode = () => {
+	const urlParams = new URLSearchParams(window.location.search);
+	return window.location.pathname.includes('/wp-admin/site-editor.php') && urlParams.get('canvas') === 'edit';
+}
+
+
+/**
  * Set function to return overflow hook
  *
  * @since 0.2.16
@@ -51,6 +59,22 @@ const Portal = ( { setInjected } ) => {
 export const Preview = () => {
 	const [ injected, setInjected ] = useState( false );
 	const [ reset, setReset ] = useState( false );
+	const [ isEditMode, setIsEditMode ] = useState( isInEditMode() );
+
+	// Observer for URL changes
+	useEffect( () => {
+		const observer = new MutationObserver(() => {
+			setIsEditMode(isInEditMode());
+		});
+
+		// Observe changes in the URL
+		observer.observe(document.querySelector('body'), { childList: true, subtree: true });
+
+		// Cleanup the observer on component unmount
+		return () => {
+			observer.disconnect();
+		};
+	}, [] );
 
 	useEffect( () => {
 		setTimeout( () => {
@@ -59,7 +83,6 @@ export const Preview = () => {
 			}
 		}, 1 );
 	}, [ injected ] );
-
 
 	useEffect( () => {
 		if( ! reset ) {
@@ -139,7 +162,7 @@ export const Preview = () => {
 			removeEvent();
 			document.removeEventListener( 'focusout', handleFocusOut );
 		};
-	}, [ addEvent, removeEvent, handleFocusOut ] );
+	}, [ addEvent, removeEvent, handleFocusOut, isEditMode ] );
 
 	if( ! injected ) {
 		return null;
