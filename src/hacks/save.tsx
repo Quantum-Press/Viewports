@@ -140,8 +140,6 @@ function newAutosave( state : any ) {
 
 /**
  * Set saveMap to check the last save end call.
- *
- * @since 0.1.0
  */
 const saveMap = new Map();
 
@@ -150,8 +148,6 @@ const saveMap = new Map();
  * Set function to fire on saving start.
  *
  * @param {object} event
- *
- * @since 0.1.0
  */
 function onSaveEntityRecordStart( event ) {
 	const { name, record: {
@@ -175,8 +171,6 @@ function onSaveEntityRecordStart( event ) {
 
 /**
  * Set function to fire on saving end.
- *
- * @since 0.1.0
  */
 function onSaveEntityRecordEnd( event ) {
 	const { type, id } = event.detail;
@@ -212,8 +206,6 @@ function onSaveEntityRecordEnd( event ) {
 
 /**
  * Set function to fire on savePost start.
- *
- * @since 0.1.0
  */
 function onSavePostStart() {
 	if( isAutosaving ) {
@@ -232,8 +224,6 @@ function onSavePostStart() {
 
 /**
  * Set function to fire on savePost end.
- *
- * @since 0.1.0
  */
 function onSavePostEnd() {
 	if( isAutosaving ) {
@@ -255,8 +245,6 @@ function onSavePostEnd() {
 
 /**
  * Set function to fire on saving start.
- *
- * @since 0.1.0
  */
 function onAutoSavingStart() {
 	debug(
@@ -271,8 +259,6 @@ function onAutoSavingStart() {
 
 /**
  * Set function to fire on autosaving end.
- *
- * @since 0.1.0
  */
 function onAutoSavingEnd() {
 	debug(
@@ -288,15 +274,11 @@ function onAutoSavingEnd() {
 
 /**
  * Export component that fires events for dirty and saving state changes.
- *
- * @since 0.1.0
  */
 export default function Save() {
 
 	/**
 	 * Set useEffect to handle onMount event registration onMount and onUnmount.
-	 *
-	 * @since 0.1.0
 	 */
 	useEffect( () => {
 		document.body.addEventListener( 'qp-saveEntityRecord-before', onSaveEntityRecordStart );

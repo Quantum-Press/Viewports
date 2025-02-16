@@ -96,6 +96,7 @@ body.is-active-viewports {
 		overflow: visible;
 
 		.block-editor-iframe__scale-container {
+			display: flex;
 			height: auto;
 			flex-direction: column;
 			align-items: center;
@@ -875,6 +876,7 @@ body.is-active-viewports {
 	}
 
 	.media {
+		width: 100%;
 		color: #919191;
 
 		&.active {
@@ -883,7 +885,9 @@ body.is-active-viewports {
 	}
 
 	.selector-start {
-		width: 50%;
+		margin-top: 1px;
+		flex-grow: 1;
+		flex-shrink: 1;
 	}
 
 	.actions {

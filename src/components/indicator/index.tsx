@@ -29,8 +29,6 @@ const {
 
 /**
  * Set component const to export inspector ui.
- *
- * @since 0.2.7
  */
 const Indicator = ( { target, storeId, property, spectrumSet } : { target: Element, storeId: string, property: string, spectrumSet : SpectrumSet } ) => {
 
@@ -75,8 +73,6 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 
 	/**
 	 * Set function to handle toggle.
-	 *
-	 * @since 0.2.16
 	 */
 	const handleClick = ( viewportType : ViewportType ) => {
 		if( isActive ) {
@@ -109,8 +105,6 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 	 * Set function to return className by size.
 	 *
 	 * @param {string} size
-	 *
-	 * @since 0.2.7
 	 *
 	 * @return {string}
 	 */

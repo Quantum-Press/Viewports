@@ -25,8 +25,6 @@ const {
  *
  * @param {ViewportType} viewportType - The current viewport type.
  *
- * @since 0.2.16
- *
  * @returns {JSX.Element | null} - The rendered component or null if conditions aren't met.
  */
 export const IndicatorControls = ( {

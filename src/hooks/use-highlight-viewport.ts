@@ -11,8 +11,6 @@ const {
 
 /**
  * Set function to return highlight viewport hook.
- *
- * @since 0.2.5
  */
 export function useHighlightViewport() {
 

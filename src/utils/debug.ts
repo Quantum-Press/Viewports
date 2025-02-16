@@ -15,8 +15,6 @@ interface DebugOptions {
 /**
  * Set function to check if debugging is enabled via URL parameter.
  *
- * @since 0.2.14
- *
  * @return {boolean} whether debug is enabled
  */
 function isDebugEnabled() : boolean {
@@ -34,8 +32,6 @@ function isDebugEnabled() : boolean {
 
 /**
  * Set function to check which sections have debugging enabled
- *
- * @since 0.2.14
  *
  * @return {DebugSection[] | true} list of sections to debug or all
  */
@@ -75,8 +71,6 @@ const debugOptions: DebugOptions = {
  * @param {DebugSection} section
  * @param {DebugTitle} title
  * @param {any} message
- *
- * @since 0.2.14
  *
  * @return {void}
  */

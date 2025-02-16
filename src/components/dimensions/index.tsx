@@ -16,8 +16,6 @@ const {
 
 /**
  * Set component const to export Dimensions UI.
- *
- * @since 0.2.3
  */
 const Dimensions = () => {
 

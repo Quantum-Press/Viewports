@@ -95,13 +95,13 @@ describe( 'test store reducers', () => {
 			} ) as State;
 			const action = {
 				type: 'SET_VIEWPORT',
-				viewport: 1024,
+				viewport: 1360,
 			} as Action;
 
 			const check = {
 				... DEFAULT_STATE,
 				viewport: 1360,
-				isActive: false,
+				isEditing: true,
 			} as State;
 			const result = setViewport( state, action );
 
@@ -123,6 +123,7 @@ describe( 'test store reducers', () => {
 				... DEFAULT_STATE,
 				viewport: 1024,
 				isActive: true,
+				isEditing: true,
 			} as State;
 			const result = setViewport( state, action );
 
@@ -152,7 +153,7 @@ describe( 'test store reducers', () => {
 		test( 'can setDesktop() with valid viewport', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
-				viewport: 1280,
+				viewport: 1920,
 				desktop: 1360,
 			} ) as State;
 			const action = {
@@ -161,8 +162,8 @@ describe( 'test store reducers', () => {
 
 			const check = {
 				... DEFAULT_STATE,
-				viewport: 1280,
-				desktop: 1280,
+				viewport: 1920,
+				desktop: 1920,
 			} as State;
 			const result = setDesktop( state, action );
 
@@ -212,8 +213,8 @@ describe( 'test store reducers', () => {
 		test( 'can setMobile() with invalid viewport', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
-				viewport: 768,
-				mobile: 375,
+				viewport: 780,
+				mobile: 360,
 			} ) as State;
 			const action = {
 				type: 'SET_MOBILE',
@@ -221,8 +222,8 @@ describe( 'test store reducers', () => {
 
 			const check = {
 				... DEFAULT_STATE,
-				viewport: 768,
-				mobile: 375,
+				viewport: 780,
+				mobile: 360,
 			} as State;
 			const result = setMobile( state, action );
 
@@ -390,6 +391,7 @@ describe( 'test store reducers', () => {
 				... DEFAULT_STATE,
 				isLoading: false,
 				isActive: true,
+				isEditing: true,
 				viewport: 1360,
 			} as State;
 			const result = setActive( state, action );
@@ -484,6 +486,7 @@ describe( 'test store reducers', () => {
 			const check = {
 				... DEFAULT_STATE,
 				isActive: true,
+				isEditing: true,
 			} as State;
 			const result = toggleActive( state, action );
 
@@ -503,6 +506,7 @@ describe( 'test store reducers', () => {
 			const check = {
 				... DEFAULT_STATE,
 				isActive: false,
+				isEditing: true,
 				viewport: 1360,
 			} as State;
 			const result = toggleActive( state, action );
@@ -522,6 +526,7 @@ describe( 'test store reducers', () => {
 
 			const check = {
 				... DEFAULT_STATE,
+				isEditing: true,
 				viewport: 1360,
 				desktop: 1360,
 			} as State;
@@ -542,6 +547,7 @@ describe( 'test store reducers', () => {
 
 			const check = {
 				... DEFAULT_STATE,
+				isEditing: true,
 				viewport: 768,
 				tablet: 768,
 			} as State;
@@ -550,7 +556,7 @@ describe( 'test store reducers', () => {
 			expect( result ).toStrictEqual( check );
 		} );
 
-		test( 'can toggleMobil()', () => {
+		test( 'can toggleMobile()', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
 				viewport: 768,
@@ -562,6 +568,7 @@ describe( 'test store reducers', () => {
 
 			const check = {
 				... DEFAULT_STATE,
+				isEditing: true,
 				viewport: 375,
 				mobile: 375,
 			} as State;
@@ -1828,11 +1835,13 @@ describe( 'test store reducers', () => {
 				renderer: {
 					foo: {
 						1: {
+							type: "custom",
 							callback: callback1,
 							selectors: {
 								panel: '.panel',
 								label: '.label',
-							}
+							},
+							mapping: {},
 						}
 					}
 				}
@@ -1853,18 +1862,22 @@ describe( 'test store reducers', () => {
 				renderer: {
 					foo: {
 						1: {
+							type: "custom",
 							callback: callback1,
 							selectors: {
 								panel: '.panel',
 								label: '.label',
-							}
+							},
+							mapping: {},
 						},
 						10: {
+							type: "custom",
 							callback: callback2,
 							selectors: {
 								panel: '.custom-panel',
 								label: '.custom-label',
-							}
+							},
+							mapping: {},
 						}
 					}
 				}
@@ -1908,11 +1921,13 @@ describe( 'test store reducers', () => {
 				renderer: {
 					foo: {
 						1: {
+							type: "custom",
 							callback: callback2,
 							selectors: {
 								panel: '.custom-panel',
 								label: '.custom-label',
-							}
+							},
+							mapping: {},
 						}
 					}
 				}

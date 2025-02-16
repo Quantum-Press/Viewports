@@ -2,8 +2,6 @@ import { getFilledStyles, getFormattedStyles } from './utils';
 
 /**
  * Function to render padding interface.
- *
- * @since 0.2.3
  */
 const Padding = ({ block }) => {
 

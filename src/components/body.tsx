@@ -8,8 +8,6 @@ const {
 
 /**
  * Export component that fires events for dirty and saving state changes.
- *
- * @since 0.1.0
  */
 export default function Body() {
 

@@ -14,8 +14,6 @@ const {
 
 /**
  * Set function to return overflow hook
- *
- * @since 0.2.16
  */
 export function useDeviceType() {
 

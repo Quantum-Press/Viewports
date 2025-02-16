@@ -12,8 +12,6 @@ const {
 
 /**
  * Set component const to export selected ui.
- *
- * @since 0.2.4
  */
 const Selected = ({ block }) => {
 

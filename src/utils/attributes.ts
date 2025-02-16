@@ -1,7 +1,11 @@
+const {
+	get,
+	set,
+} = window[ 'lodash' ];
+
+
 /**
  * Set interface for Attributes.
- *
- * @since 0.1.0
  */
 export type Attributes = {
 	[ key: string ] : any;
@@ -13,8 +17,6 @@ export type Attributes = {
  *
  * @param {any} item
  *
- * @since 0.1.0
- *
  * @return {boolean}
  */
 export const isObject = ( item : any ) => item && typeof item === 'object' && ! Array.isArray( item );
@@ -24,8 +26,6 @@ export const isObject = ( item : any ) => item && typeof item === 'object' && ! 
  * Set function to return merged attributes.
  *
  * @param {array} objects
- *
- * @since 0.1.0
  *
  * @return {object}
  */
@@ -52,13 +52,11 @@ export const getMergedAttributes = ( ... objects : Array<any>) => {
 
 
 /**
- * Set function to return merged attributes from multiple objects.
+ * Set function to return merged properties from multiple objects.
  *
- * @param {Array<object>} objects
+ * @param {T[]} objects
  *
- * @since 0.2.13
- *
- * @return {Array<string | number>}
+ * @return {Array<keyof T>}
  */
 export const getMergedAttributeProperties = <T extends object>( ... objects : T[] ) : Array<keyof T> => {
 
@@ -80,11 +78,9 @@ export const getMergedAttributeProperties = <T extends object>( ... objects : T[
 /**
  * Set function to sanitize attributes.
  *
- * @param {object} attributes
+ * @param {Attributes} attributes
  *
- * @since 0.1.0
- *
- * @return {object}
+ * @return {Attributes}
  */
 export const sanitizeAttributes = ( attributes : Attributes ) : Attributes => {
 	const sanitized : Attributes = {};
@@ -102,12 +98,10 @@ export const sanitizeAttributes = ( attributes : Attributes ) : Attributes => {
 /**
  * Set function to fill empty attributes for false attributes.
  *
- * @param {object} fill
- * @param {object} filler
+ * @param {Attributes} fill
+ * @param {Attributes} filler
  *
- * @since 0.1.0
- *
- * @return {object}
+ * @return {Attributes}
  */
 export const fillEmpty = ( fill : Attributes, filler : Attributes ) : Attributes => {
 	const filled : Attributes = {};
@@ -137,7 +131,7 @@ export const fillEmpty = ( fill : Attributes, filler : Attributes ) : Attributes
  * @param {Array<string | number>} path
  * @param {object} object
  *
- * @since 0.2.5
+ * @return {boolean}
  */
 export const traverseExist = ( path : Array<string | number>, object : object ) : boolean => {
 	const property = path.shift();
@@ -160,7 +154,7 @@ export const traverseExist = ( path : Array<string | number>, object : object ) 
  * @param {Array<string | number>} path
  * @param {object} object
  *
- * @since 0.2.5
+ * @return {boolean}
  */
 export const traverseFilled = ( path : Array<string | number>, object : object ) : boolean => {
 	const value = traverseGet( path, object );
@@ -184,7 +178,7 @@ export const traverseFilled = ( path : Array<string | number>, object : object )
  * @param {object} object
  * @param {any} fallback
  *
- * @since 0.2.5
+ * @return {any}
  */
 export const traverseGet = ( path : Array<string | number>, object : object, fallback : any = null ) : any => {
 	const property = path.shift();
@@ -198,4 +192,28 @@ export const traverseGet = ( path : Array<string | number>, object : object, fal
 	}
 
 	return fallback;
+}
+
+
+/**
+ * Set function to return a copy of the specified property object
+ * filtered by the given property paths array.
+ *
+ * @param {any} obj The extraction target
+ * @param {string} path A list of paths to extract from the given properties
+ *
+ * @return {object} containing the extracted properties
+ */
+export const ensureObjectPath = ( obj : any, path : string ) : object => {
+	const value = {};
+	const pathTokens = path.split( '.' );
+	const ref = get( obj, pathTokens, value );
+
+	if( ref !== value ) {
+		return ref;
+	}
+
+	set( obj, pathTokens, value );
+
+	return value;
 }

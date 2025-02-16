@@ -10,8 +10,6 @@ const {
 
 /**
  * Set function to return overflow hook
- *
- * @since 0.2.12
  */
 export function useEditorSidebar() {
 
@@ -45,8 +43,6 @@ export function useEditorSidebar() {
 
 	/**
 	 * Set function to return active tab name.
-	 *
-	 * @since 0.2.12
 	 */
 	const getActiveTab = () => {
 		if( document.querySelectorAll( selectorTabSettings + '[data-active-item]' ).length ) {
@@ -78,8 +74,6 @@ export function useEditorSidebar() {
 
 	/**
 	 * Set function to handle event register.
-	 *
-	 * @since 0.2.12
 	 */
 	const setEvents = () => {
 		const settings = document.querySelector( selectorTabSettings );
@@ -97,8 +91,6 @@ export function useEditorSidebar() {
 
 	/**
 	 * Set function to handle click.
-	 *
-	 * @since 0.2.12
 	 */
 	const handleTabClick = () => {
 		setTab( getActiveTab() );

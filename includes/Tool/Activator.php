@@ -11,7 +11,6 @@ defined( 'ABSPATH' ) || exit;
  * This class handles plugin activation hook call.
  *
  * @class    Quantum\Viewports\Tool\Activator
- * @since    0.1.0
  * @package  Quantum\Viewports\Tool
  * @category Class
  * @author   Sebastian Buchwald // conversionmedia GmbH & Co. KG
@@ -20,8 +19,6 @@ class Activator {
 
 	/**
 	 * Static Method to init plugin activation.
-	 *
-	 * @since 0.1.0
 	 *
 	 * @static
 	 */

@@ -11,8 +11,6 @@ const {
 
 /**
  * Set component const to export sidebar control-edit ui.
- *
- * @since 0.2.2
  */
 const Body = () => {
 

@@ -15,8 +15,6 @@ const {
 
 /**
  * Set function to render blockEdit wrapped in a higher order component, depending on viewports changes.
- *
- * @since 0.2.12
  */
 export default function Visualizer() {
 

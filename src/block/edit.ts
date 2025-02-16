@@ -24,8 +24,6 @@ const {
 
 /**
  * Set function and var to register activation process 1000ms after the last block loaded.
- *
- * @since 0.1.0
  */
 let activeTimeout: any;
 const registerActivate = () => {
@@ -39,8 +37,6 @@ const registerActivate = () => {
 
 /**
  * Set function and var to register init process 1000ms after the last block has rendered its edit.
- *
- * @since 0.1.0
  */
 type InitMap = {
 	[ key : string ]: Function;
@@ -75,12 +71,11 @@ const registerInit = ( clientId, setAttributes ) => {
 
 /**
  * Set function to render blockEdit wrapped in a higher order component, depending on viewports changes.
- *
- * @since 0.1.0
  */
 export default function BlockEdit( blockArgs : any ) {
 	const { block, props } = blockArgs;
 	const {
+		name: blockName,
 		setAttributes,
 		clientId,
 		isSelected,
@@ -119,11 +114,11 @@ export default function BlockEdit( blockArgs : any ) {
 
 
 	// Set useEffect to handle first init after render.
-	useEffect( () => {
+	useLayoutEffect( () => {
 		attributes.tempId = clientId;
 
 		store.setRegistering();
-		store.registerBlockInit( clientId, attributes );
+		store.registerBlockInit( clientId, blockName, attributes );
 
 		registerInit( clientId, setAttributes );
 	}, [] );
@@ -140,7 +135,7 @@ export default function BlockEdit( blockArgs : any ) {
 
 			store.setRegistering();
 			store.removeBlock( attributes.tempId );
-			store.registerBlockInit( clientId, attributes );
+			store.registerBlockInit( clientId, blockName, attributes );
 
 			registerInit( clientId, setAttributes );
 		}
@@ -208,7 +203,7 @@ export default function BlockEdit( blockArgs : any ) {
 	}, [ updateSelected ] );
 
 
-	// Use useEffect to handle attribute changes.
+	// Use useEffect to handle style attribute changes.
 	useLayoutEffect( () => {
 
 		// Skip if there is no attribute.
@@ -240,20 +235,18 @@ export default function BlockEdit( blockArgs : any ) {
 		}
 
 		// Here we finally indicate that we need to organize a change in datastore.
-		if( isSelected ) {
-			const storeId = attributes.tempId && '' !== attributes.tempId ? attributes.tempId : clientId;
+		const storeId = attributes.tempId && '' !== attributes.tempId ? attributes.tempId : clientId;
 
-			debug(
-				'log',
-				'edit',
-				'change attributes',
-				attributes
-			);
+		debug(
+			'log',
+			'edit',
+			'change attributes',
+			attributes
+		);
 
-			store.updateBlockChanges( storeId, attributes );
-		}
+		store.updateBlockChanges( storeId, blockName, attributes );
 
-	}, [ attributes ] );
+	}, [ attributes?.style ] );
 
 	// Check if block.edit is a function or class component to return its edit function.
 	const isClassComponent = typeof block.edit === 'function' && block.edit.prototype instanceof Component;

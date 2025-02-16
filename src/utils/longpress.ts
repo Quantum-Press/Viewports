@@ -13,8 +13,6 @@ const {
  * @param  {boolean}  options.shouldPreventDefault [description]
  * @param  {integer}  options.delay                [description]
  *
- * @since 0.1.0
- *
  * @return {object}
  */
 export const useLongPress = ( onLongPress: Function, onClick: Function, { shouldPreventDefault = true, delay = 300 } = {} ) => {
@@ -63,8 +61,6 @@ export const useLongPress = ( onLongPress: Function, onClick: Function, { should
  *
  * @param {object} event
  *
- * @since 0.1.0
- *
  * @return {boolean}
  */
 const isTouchEvent = ( event : Event ) => {
@@ -76,8 +72,6 @@ const isTouchEvent = ( event : Event ) => {
  * Set function to prevent default event bubbling.
  *
  * @param {object} event
- *
- * @since 0.1.0
  *
  * @return {boolean}
  */

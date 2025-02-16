@@ -24,8 +24,6 @@ const {
 
 /**
  * Set function to return blocklist rows.
- *
- * @since 0.2.1
  */
 const getBlocklistRows = () => {
 	return document.querySelectorAll( 'table.block-editor-list-view-tree tr.block-editor-list-view-leaf td.block-editor-list-view-block__menu-cell' );
@@ -36,8 +34,6 @@ const getBlocklistRows = () => {
  * Set component const to export inspector blocklist ui.
  *
  * @param object props
- *
- * @since 0.2.1
  */
 export const InspectorPortals = () => {
 	const [ reset, setReset ] = useState( false );
@@ -67,8 +63,6 @@ export const InspectorPortals = () => {
 
 	/**
 	 * Set function to find parent of given node by selector.
-	 *
-	 * @since 0.2.2
 	 */
 	const findParentBySelector = ( node: Element, selector: string ) : Element | null => {
 		let currentElement: Element | null = node.parentElement;
@@ -85,8 +79,6 @@ export const InspectorPortals = () => {
 
 	/**
 	 * Set function to fire on click expander to reset component.
-	 *
-	 * @since 0.2.1
 	 */
 	const onClickExpander = () => {
 		setReset( true );
@@ -94,8 +86,6 @@ export const InspectorPortals = () => {
 
 	/**
 	 * Set function to fire on click inspect to trigger ui.
-	 *
-	 * @since 0.2.1
 	 */
 	const onClickInspect = ( event ) => {
 		const parent = findParentBySelector( event.target, '.block-editor-list-view-leaf' );

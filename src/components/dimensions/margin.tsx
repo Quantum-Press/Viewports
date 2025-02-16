@@ -2,8 +2,6 @@ import { getFilledStyles, getFormattedStyles } from './utils';
 
 /**
  * Function to render margin interface.
- *
- * @since 0.2.3
  */
 const Margin = ({ block }) => {
 

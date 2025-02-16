@@ -24,8 +24,6 @@ const {
  * Set function to render a style component for given spectrum.
  *
  * @param {object}
- *
- * @since 0.2.2
  */
 export const Style = ( attributes ) => {
 
@@ -59,8 +57,6 @@ export const Style = ( attributes ) => {
 
 	/**
 	 * Set function to fire on click property.
-	 *
-	 * @since 0.2.5
 	 */
 	const onClickProperty = () => {
 		setHighlightProperty( spectrum.selectors.panel );
@@ -69,21 +65,17 @@ export const Style = ( attributes ) => {
 
 	/**
 	 * Set function to fire on click remove.
-	 *
-	 * @since 0.2.5
 	 */
 	const onClickRemove = () => {
-		dispatch( STORE_NAME ).removeBlockSaves( clientId, [ spectrum.property ], spectrum.viewport );
+		dispatch( STORE_NAME ).removeBlockSaves( clientId, spectrum.blockName, [ spectrum.property ], spectrum.viewport );
 	}
 
 
 	/**
 	 * Set function to fire on click remove.
-	 *
-	 * @since 0.2.5
 	 */
 	const onClickRestore = () => {
-		dispatch( STORE_NAME ).restoreBlockSaves( clientId, [ spectrum.property ], spectrum.viewport );
+		dispatch( STORE_NAME ).restoreBlockSaves( clientId, spectrum.blockName, [ spectrum.property ], spectrum.viewport );
 	}
 
 

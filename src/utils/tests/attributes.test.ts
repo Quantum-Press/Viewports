@@ -15,8 +15,6 @@ describe( 'attribute utils', () => {
 
 	/**
 	 * Set tests for getMergedAttributes
-	 *
-	 * @since 0.1.0
 	 */
 	test( 'can getMergedAttributes() with empty objects', () => {
 		expect( getMergedAttributes( {}, {} ) ).toStrictEqual( {} );
@@ -161,8 +159,6 @@ describe( 'attribute utils', () => {
 
 	/**
 	 * Set tests for sanitizeAttributes.
-	 *
-	 * @since 0.1.0
 	 */
 	test( 'sanitizeAttributes:: test empty object', () => {
 		expect( sanitizeAttributes( {} ) ).toStrictEqual( {} );
@@ -183,8 +179,6 @@ describe( 'attribute utils', () => {
 
 	/**
 	 * Set tests for fillEmpty.
-	 *
-	 * @since 0.1.0
 	 */
 	test( 'fillEmpty:: test empty object', () => {
 		expect( fillEmpty( {}, {} ) ).toStrictEqual( {} );

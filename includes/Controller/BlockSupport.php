@@ -6,22 +6,17 @@ namespace Quantum\Viewports\Controller;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Blocks class.
+ * This class handles block support attributes and styles.
  *
- * This class handles block manipulations.
- *
- * @class    Quantum\Viewports\Blocks
- * @since    0.2.15
+ * @class    Quantum\Viewports\BlockSupport
  * @package  Quantum\Viewports
  * @category Class
  * @author   Sebastian Buchwald // conversionmedia GmbH & Co. KG
  */
-class Blocks extends Instance {
+class BlockSupport extends Instance {
 
 	/**
 	 * Method to construct.
-	 *
-	 * @since 0.2.15
 	 */
 	protected function __construct()
 	{
@@ -31,13 +26,11 @@ class Blocks extends Instance {
 
 	/**
 	 * Method to set hooks.
-	 *
-	 * @since 0.2.15
 	 */
 	protected function set_hooks()
 	{
-		\add_filter( 'register_block_type_args', [ $this, 'register_block_type_args' ], 10, 2 );
-		\add_filter( 'safe_style_css', [ $this, 'safe_style_css' ], 10, 1 );
+		\add_filter( 'register_block_type_args', [ $this, 'registerBlockTypeArgs' ], 10, 2 );
+		\add_filter( 'safe_style_css', [ $this, 'safeStyleCSS' ], 10, 1 );
 	}
 
 
@@ -46,11 +39,9 @@ class Blocks extends Instance {
 	 *
 	 * @param object (required) $block_type containing base config
 	 *
-	 * @since 0.2.15
-	 *
 	 * @return object containing filtered block_type
 	 */
-	public function register_block_type_args( $args, $block_type )
+	public function registerBlockTypeArgs( $args, $block_type )
 	{
 		if ( ! isset( $args[ 'attributes' ][ 'viewports' ] ) ) {
 			$args[ 'attributes' ][ 'viewports' ] = [
@@ -79,11 +70,9 @@ class Blocks extends Instance {
 	 *
 	 * @param array $styles
 	 *
-	 * @since 0.2.15
-	 *
 	 * @return array
 	 */
-	public function safe_style_css( $styles )
+	public function safeStyleCSS( $styles )
 	{
 		$styles[] = 'display';
 		$styles[] = 'background-repeat';

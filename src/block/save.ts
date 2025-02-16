@@ -12,11 +12,10 @@ const {
 
 /**
  * Set function to render blockSave wrapped in a higher order component.
- *
- * @since 0.1.0
  */
 export const BlockSave = ( { block, props }: { block: Attributes, props: Attributes } ) => {
 	const clientId = props.attributes.tempId;
+	const { name: blockName } = block;
 	const store = select( STORE_NAME );
 
 	// At first we block core/group and the first save render to compare differences.
@@ -58,7 +57,7 @@ export const BlockSave = ( { block, props }: { block: Attributes, props: Attribu
 			}
 		);
 
-		dispatch( STORE_NAME ).saveBlock( clientId );
+		dispatch( STORE_NAME ).saveBlock( clientId, blockName );
 
 		return block.save( props );
 	}

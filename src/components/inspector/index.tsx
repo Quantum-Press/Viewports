@@ -14,8 +14,6 @@ const {
 
 /**
  * Set component const to export inspector ui.
- *
- * @since 0.2.2
  */
 const Inspector = () => {
 

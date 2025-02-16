@@ -1,7 +1,15 @@
-import reducer from './reducer';
+import { ensureObjectPath } from '../utils/attributes';
+import reducerManager from './reducer';
 import * as selectors from './selectors';
 import * as actions from './actions';
 import { STORE_NAME } from './constants';
+
+const {
+	reducer,
+	addReducer
+} = reducerManager;
+console.log( ensureObjectPath( window, 'qp.viewports.addReducer' ) );
+Object.assign( ensureObjectPath( window, 'qp.viewports.addReducer' ), addReducer );
 
 const {
 	data: {
@@ -15,8 +23,6 @@ const {
  * Set data store configuration.
  *
  * @see https://github.com/WordPress/gutenberg/blob/HEAD/packages/data/README.md#registerStore
- *
- * @since 0.1.0
  */
 export const storeConfig = {
 	reducer,
@@ -29,8 +35,6 @@ export const storeConfig = {
  * Set created redux store.
  *
  * @see https://github.com/WordPress/gutenberg/blob/HEAD/packages/data/README.md#createReduxStore
- *
- * @since 0.1.0
  */
 export const store = createReduxStore( STORE_NAME, {
 	... storeConfig,
@@ -41,44 +45,26 @@ export const store = createReduxStore( STORE_NAME, {
  * Register created store.
  *
  * @see https://github.com/WordPress/gutenberg/blob/HEAD/packages/data/README.md#createReduxStore
- *
- * @since 0.1.0
  */
 register( store );
 
-
 /**
  * Export store types.
- *
- * @since 0.2.3
  */
 export type * from './types';
 
 /**
- * Export utils.
- *
- * @since 0.2.7
+ * Export constants.
  */
 export { DEFAULT_STATE } from './default';
-
-/**
- * Export utils.
- *
- * @since 0.2.7
- */
-export * from './utils';
-
-
-/**
- * Export constants.
- *
- * @since 0.2.5
- */
 export { STORE_NAME } from './constants';
 
 /**
+ * Export utils.
+ */
+export * from './utils';
+
+/**
  * Export generator.
- *
- * @since 0.2.5
  */
 export { Generator } from './generator';

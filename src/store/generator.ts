@@ -17,19 +17,13 @@ import { getMergedAttributes, traverseGet } from '../utils';
 import { findObjectChanges, findObjectDifferences } from './utils';
 
 const { isEqual, isEmpty, isObject, cloneDeep } = window[ 'lodash' ];
-const {
-	styleEngine: {
-		compileCSS,
-	}
-} = window[ 'wp' ];
 
 /**
  * Set class to handle style generation by block attributes.
- *
- * @since 0.2.5
  */
 export class Generator {
 	clientId: string;
+	blockName: string;
 	selector: string;
 	state: SpectrumState;
 	ruleSet: RuleSet;
@@ -43,14 +37,18 @@ export class Generator {
 	 * Set constructor to build object.
 	 *
 	 * @param clientId
+	 * @param blockName
 	 * @param state
-	 *
-	 * @since 0.2.5
 	 */
-	constructor( clientId : string, state : SpectrumState ) {
+	constructor(
+		clientId : string,
+		blockName : string,
+		state : SpectrumState
+	) {
 
 		// Set properties.
 		this.clientId = clientId;
+		this.blockName = blockName;
 		this.selector = '#block-' + clientId;
 		this.state = state;
 
@@ -74,8 +72,6 @@ export class Generator {
 
 	/**
 	 * Set method to return rules.
-	 *
-	 * @since 0.2.5
 	 */
 	getRuleSet() {
 		if( null === this.ruleSet ) {
@@ -88,8 +84,6 @@ export class Generator {
 
 	/**
 	 * Set method to generate ruleSet.
-	 *
-	 * @since 0.2.5
 	 */
 	generateRuleSet() {
 
@@ -247,6 +241,10 @@ export class Generator {
 								}
 							}
 
+							if( renderer.mapping.hasOwnProperty( this.blockName ) ) {
+								selector = selector + ' ' + renderer.mapping[ this.blockName ];
+							}
+
 							// Set valid css.
 							const css = selector + '{' + declarations + '}';
 							const properties = this.generateProperties( selector + '{' + combinedDeclarations + '}' );
@@ -275,11 +273,12 @@ export class Generator {
 
 							// Set rule.
 							ruleSet.push( {
-								type: 'custom',
+								type: renderer.type,
+								blockName: this.blockName,
 								property,
 								viewport,
 								priority,
-								selector: selector,
+								selector,
 								selectors: {
 									panel: renderer.selectors.hasOwnProperty( 'panel' ) ? renderer.selectors.panel : 'missing',
 									label: renderer.selectors.hasOwnProperty( 'label' ) ? renderer.selectors.label : 'missing',
@@ -322,8 +321,6 @@ export class Generator {
 
 	/**
 	 * Set method to return SelectorSet from CSS string.
-	 *
-	 * @since 0.2.5
 	 */
 	getCSSCollectionSet( baseCSS : string ) : CSSCollectionSet {
 		const CSSCollectionSet = [] as CSSCollectionSet;
@@ -362,8 +359,6 @@ export class Generator {
 
 	/**
 	 * Set method to return wp native selector panel by property.
-	 *
-	 * @since 0.2.5
 	 */
 	getDeclarations( selector : string, collectionSet : CSSCollectionSet ) : string {
 		for( let index = 0; index < collectionSet.length; index++ ) {
@@ -380,8 +375,6 @@ export class Generator {
 
 	/**
 	 * Set method to generate properties from css string.
-	 *
-	 * @since 0.2.5
 	 */
 	generateProperties( css ) : CSSProperties {
 
@@ -423,8 +416,6 @@ export class Generator {
 
 	/**
 	 * Set method to return properties from ruleSet.
-	 *
-	 * @since 0.2.5
 	 */
 	getRuleSetProperties() {
 		if( null === this.properties ) {
@@ -437,8 +428,6 @@ export class Generator {
 
 	/**
 	 * Set method to return properties from ruleSet.
-	 *
-	 * @since 0.2.5
 	 */
 	createRuleSetProperties() {
 
@@ -457,8 +446,6 @@ export class Generator {
 
 	/**
 	 * Set method to return viewports from ruleSet.
-	 *
-	 * @since 0.2.5
 	 */
 	getRuleSetViewports() {
 		if( null === this.viewports ) {
@@ -471,8 +458,6 @@ export class Generator {
 
 	/**
 	 * Set method to return viewports from ruleSet.
-	 *
-	 * @since 0.2.5
 	 */
 	createRuleSetViewports() {
 
@@ -491,8 +476,6 @@ export class Generator {
 
 	/**
 	 * Set method to getCSS.
-	 *
-	 * @since 0.2.5
 	 */
 	getCSSViewportSet() {
 		if( null === this.css ) {
@@ -505,8 +488,6 @@ export class Generator {
 
 	/**
 	 * Set method to generate css.
-	 *
-	 * @since 0.2.5
 	 */
 	generateCSSViewportSet() {
 
@@ -553,8 +534,6 @@ export class Generator {
 
 	/**
 	 * Set method to collapse a viewportStyleSet.
-	 *
-	 * @since 0.2.15
 	 */
 	collapseViewportStyleSet( viewportStyleSet : ViewportStyleSet, tillViewport : number ) {
 		const stylesToMerge: Styles[] = [];
@@ -573,8 +552,6 @@ export class Generator {
 
 	/**
 	 * Set method to return spectrum set.
-	 *
-	 * @since 0.2.5
 	 */
 	getSpectrumSet() {
 		if( null === this.spectrumSet ) {
@@ -587,8 +564,6 @@ export class Generator {
 
 	/**
 	 * Set method to generate spectrum set.
-	 *
-	 * @since 0.2.5
 	 */
 	generateSpectrumSet() {
 
@@ -751,8 +726,6 @@ export class Generator {
 
 	/**
 	 * Set method to get inlineStyle.
-	 *
-	 * @since 0.2.5
 	 */
 	getInlineStyle() {
 		if( null === this.inlineStyle ) {
@@ -765,8 +738,6 @@ export class Generator {
 
 	/**
 	 * Set method to generate inlineStyle.
-	 *
-	 * @since 0.2.5
 	 */
 	generateInlineStyle() {
 		const spectrumSet = this.getSpectrumSet();

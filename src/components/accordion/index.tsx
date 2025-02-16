@@ -13,8 +13,6 @@ interface AccordionProps {
 
 /**
  * Set function to return Accordion component.
- *
- * @since 0.2.3
  */
 const Accordion: React.FC<AccordionProps> = ({
 	isOpen,
@@ -31,8 +29,6 @@ const Accordion: React.FC<AccordionProps> = ({
 
 	/**
 	 * Set function to fire on click accordion.
-	 *
-	 * @since 0.2.3
 	 */
 	const onClick = () => {
 		setIsOpen( ! isOpen );

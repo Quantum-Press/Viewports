@@ -15,8 +15,6 @@ const {
 
 /**
  * Set component const to export toggle edit ui.
- *
- * @since 0.1.0
  */
 const ToggleEdit = () => {
 
@@ -36,8 +34,6 @@ const ToggleEdit = () => {
 
 	/**
 	 * Set function to fire on click.
-	 *
-	 * @since 0.2.3
 	 */
 	const onChange = () => {
 		if( ! isActive ) {

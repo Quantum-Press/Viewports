@@ -23,8 +23,6 @@ let portalRoot : any = false;
 
 /**
  * Set function const to export portal handler.
- *
- * @since 0.2.1
  */
 const portalHandler = () => {
 
@@ -46,8 +44,6 @@ const portalHandler = () => {
 
 /**
  * Set function const to export portals component.
- *
- * @since 0.2.1
  */
 const Portals = () : React.JSX.Element => {
 	return (

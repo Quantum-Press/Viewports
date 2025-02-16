@@ -5,9 +5,6 @@ import {
 	traverseExist,
 } from '../utils';
 import {
-	mobileDefaultViewport,
-	tabletDefaultViewport,
-	desktopDefaultViewport,
 	tabletBreakpoint,
 	desktopBreakpoint,
 } from './default';
@@ -15,14 +12,18 @@ import { Generator } from './generator';
 import type { Attributes } from '../utils';
 import type { Styles, SpectrumState, SpectrumProperties, State, ViewportStyle, ViewportStyleSet, BlockDifferences, Viewports, ViewportType, SpectrumSet } from './types';
 
-const { isEqual, cloneDeep, isEmpty, isUndefined, isNull } = window[ 'lodash' ];
+const {
+	isEqual,
+	cloneDeep,
+	isEmpty,
+	isUndefined,
+	isNull
+} = window[ 'lodash' ];
 
 /**
  * Set function to indicate whether given viewport is in range of desktop size.
  *
  * @param {integer} viewport
- *
- * @since 0.1.0
  *
  * @return {boolean} indication
  */
@@ -40,8 +41,6 @@ export const isInDesktopRange = ( viewport : number ) : boolean => {
  *
  * @param {integer} viewport
  *
- * @since 0.1.0
- *
  * @return {boolean} indication
  */
 export const isInTabletRange = ( viewport : number ) : boolean => {
@@ -57,8 +56,6 @@ export const isInTabletRange = ( viewport : number ) : boolean => {
  * Set function to indicate whether given viewport is in range of mobile size.
  *
  * @param {integer} viewport
- *
- * @since 0.1.0
  *
  * @return {boolean} indication
  */
@@ -76,8 +73,6 @@ export const isInMobileRange = ( viewport : number ) : boolean => {
  *
  * @param {integer} viewport
  * @param {integer} viewports
- *
- * @since 0.2.16
  *
  * @return {number}
  */
@@ -104,8 +99,6 @@ export const getPrevViewport = ( viewport : number, viewports : Viewports ) : nu
  * @param {integer} viewport
  * @param {integer} viewports
  *
- * @since 0.2.16
- *
  * @return {number}
  */
 export const getNextViewport = ( viewport : number, viewports : Viewports ) : number => {
@@ -130,8 +123,6 @@ export const getNextViewport = ( viewport : number, viewports : Viewports ) : nu
  *
  * @param {ViewportType} viewportType
  * @param {Viewports} viewports
- *
- * @since 0.2.16
  *
  * @return {Viewports}
  */
@@ -185,8 +176,6 @@ export const getViewports = ( viewportType : ViewportType, viewports : Viewports
  *
  * @param {object} viewports
  *
- * @since 0.1.0
- *
  * @return {integer} highest viewport
  */
 export const getHighestPossibleViewport = ( viewports : object, width : number ) : number => {
@@ -211,8 +200,6 @@ export const getHighestPossibleViewport = ( viewports : object, width : number )
  * Set function to return in range function for given viewportType.
  *
  * @param {ViewportType} viewportType
- *
- * @since 0.2.16
  *
  * @return {Function}
  */
@@ -244,8 +231,6 @@ export const getInRange = ( viewportType : ViewportType ) : Function => {
  * @param {ViewportType} viewportType
  * @param {SpectrumSet} spectrumSet
  *
- * @since 0.2.16
- *
  * @return {boolean}
  */
 export const hasSpectrumSetViewportType = ( viewportType : ViewportType, spectrumSet : SpectrumSet ) =>  {
@@ -270,8 +255,6 @@ export const hasSpectrumSetViewportType = ( viewportType : ViewportType, spectru
  * Set function to clear empty saves.
  *
  * @param {object} saves
- *
- * @since 0.1.0
  *
  * @return {object} cleaned
  */
@@ -314,8 +297,6 @@ export const clearEmptySaves = ( saves : Attributes ) : Attributes => {
  * Set function to clear empty properties.
  *
  * @param {object} saves
- *
- * @since 0.2.5
  *
  * @return {object} cleaned
  */
@@ -367,8 +348,6 @@ export const clearEmptyProperties = ( properties : Styles ) : Styles => {
  *
  * @param {object} saves
  *
- * @since 0.1.0
- *
  * @return {object} cleaned
  */
 export const clearDuplicateSaves = ( saves : Attributes ) : Attributes => {
@@ -408,8 +387,6 @@ export const clearDuplicateSaves = ( saves : Attributes ) : Attributes => {
  * @param {string} clientId
  * @param {object} attributes
  *
- * @since 0.1.0
- *
  * @return {Attributes} saves
  */
 export const findBlockSaves = ( attributes : Attributes ) : Attributes => {
@@ -437,8 +414,6 @@ export const findBlockSaves = ( attributes : Attributes ) : Attributes => {
  * @param {string} property
  * @param {number} actionViewport
  * @param {ViewportStyle} viewportStyle
- *
- * @since 0.2.13
  *
  * @return {number} viewport
  */
@@ -469,8 +444,6 @@ export const findHighestPropertyViewportStyle = ( property : string, actionViewp
  *
  * @param {T} obj
  *
- * @since 0.2.15
- *
  * @return {T}
  */
 export const cleanupObject = <T extends object>( obj : T ) : T => {
@@ -495,8 +468,6 @@ export const cleanupObject = <T extends object>( obj : T ) : T => {
  * Set function to cleanup an array.
  *
  * @param {T} arr
- *
- * @since 0.2.15
  *
  * @return {T}
  */
@@ -529,8 +500,6 @@ export const cleanupArray = <T extends Array<any>>( arr : T ) : T => {
  * @param {State} state
  * @param {number} actionViewport
  *
- * @since 0.2.11
- *
  * @return {BlockDifferences}
  */
 export const findBlockDifferences = ( clientId : string, attributes : Attributes, state : State, actionViewport : number ) : BlockDifferences => {
@@ -556,8 +525,6 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
 
 	/**
 	 * Set function to cleanup viewport styles.
-	 *
-	 * @since 0.2.13
 	 */
 	const cleanupViewportStyles = () => {
 
@@ -657,8 +624,6 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
 
 	/**
 	 * Set function to reset property.
-	 *
-	 * @since 0.2.13
 	 */
 	const resetProperty = ( property ) => {
 
@@ -726,8 +691,6 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
 
 	/**
 	 * Set function to change property value.
-	 *
-	 * @since 0.2.13
 	 */
 	const changePropertyValue = ( property, value ) => {
 		const changesViewport = isEditing ? iframeViewport : findHighestPropertyViewportStyle( property, iframeViewport, nextBlockChanges );
@@ -805,8 +768,6 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
 
 	/**
 	 * Set function to remove property value.
-	 *
-	 * @since 0.2.13
 	 */
 	const removePropertyValue = ( property, value ) => {
 		const removeValue = traverseGet( [ property ], value );
@@ -880,8 +841,6 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
 
 	/**
 	 * Set function to fill object properties from another object.
-	 *
-	 * @since 0.2.13
 	 */
 	const fillObjectProperties = ( fillObject, getObject ) => {
 
@@ -973,8 +932,6 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
  * @param {string} clientId
  * @param {object} state
  *
- * @since 0.1.0
- *
  * @return {object} valids
  */
 export const findBlockValids = ( clientId : string, state : State ) : Attributes => {
@@ -1027,8 +984,6 @@ export const findBlockValids = ( clientId : string, state : State ) : Attributes
  * @param {any} current - The current value state.
  * @param {any} original - The original value state.
  *
- * @since 0.2.15
- *
  * @return {any} changes - Detected changes.
  */
 const findChanges = ( current: any, original: any ) : any => {
@@ -1049,8 +1004,6 @@ const findChanges = ( current: any, original: any ) : any => {
  *
  * @param {object} attributes
  * @param {object} valids
- *
- * @since 0.1.0
  *
  * @return {object} changes
  */
@@ -1105,8 +1058,6 @@ type DeepPartial<T> = T extends (infer U)[] // Falls T ein Array ist
  * @param {T} obj2 - Zweites Objekt
  * @param {T} hard - Harter Vergleich zwischen
  *
- * @since 0.2.14
- *
  * @return {DeepPartial<T>} - Unterschiede zwischen obj1 und obj2
  */
 export const findObjectDifferences = <T extends Record<string, any> | any[]>( obj1: T, obj2: T, hard: boolean = false ): DeepPartial<T> => {
@@ -1142,8 +1093,6 @@ export const findObjectDifferences = <T extends Record<string, any> | any[]>( ob
  * @param {array}  keys
  * @param {object} compare
  *
- * @since 0.1.0
- *
  * @return {object} removes
  */
 export const findRemoves = ( keys : Attributes, compare : Attributes ) : Attributes => {
@@ -1178,8 +1127,6 @@ export const findRemoves = ( keys : Attributes, compare : Attributes ) : Attribu
  * @param {object} attributes
  * @param {object} removes
  *
- * @since 0.1.0
- *
  * @return {object} cleaned
  */
 export const findCleanedChanges = ( attributes : Attributes, removes : Attributes ) : Attributes => {
@@ -1210,16 +1157,15 @@ export const findCleanedChanges = ( attributes : Attributes, removes : Attribute
  * Set function to return spectrumSet from new generator.
  *
  * @param {string} clientId
+ * @param {string} blockName
  * @param {SpectrumState} state
- *
- * @since 0.2.5
  *
  * @return {SpectrumProperties}
  */
-export const getSpectrumProperties = ( clientId : string, state : SpectrumState ) : SpectrumProperties => {
+export const getSpectrumProperties = ( clientId : string, blockName : string, state : SpectrumState ) : SpectrumProperties => {
 
 	// Set styles generator and get spectrumSet.
-	const generator = new Generator( clientId, state );
+	const generator = new Generator( clientId, blockName, state );
 
 	// Return properties.
 	return {
@@ -1234,8 +1180,6 @@ export const getSpectrumProperties = ( clientId : string, state : SpectrumState 
  * Set function to return propertyList from viewportStyle.
  *
  * @param {viewportStyle} viewportStyle
- *
- * @since 0.2.13
  *
  * @return {Array<string | number>}
  */

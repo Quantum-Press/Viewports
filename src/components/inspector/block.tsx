@@ -17,8 +17,6 @@ const {
  * Set component const to export sidebar control-edit ui.
  *
  * @param object props
- *
- * @since 0.2.2
  */
 const Block = ( props ) => {
 
@@ -59,8 +57,6 @@ const Block = ( props ) => {
 
 	/**
 	 * Set function to return child blocks.
-	 *
-	 * @since 0.2.2
 	 */
 	const getChildBlocks = () => {
 
@@ -96,8 +92,6 @@ const Block = ( props ) => {
 
 	/**
 	 * Set function to fire on click select.
-	 *
-	 * @since 0.2.2
 	 */
 	const onClickSelect = () => {
 		dispatch( 'core/block-editor' ).selectBlock( clientId );

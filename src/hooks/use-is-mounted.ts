@@ -9,8 +9,6 @@ const {
 
 /**
  * Set function to export use is mounted hook.
- *
- * @since 0.1.0
  */
 export function useIsMounted() : () => boolean {
 	const isMounted = useRef( false );

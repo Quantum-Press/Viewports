@@ -17,8 +17,6 @@ const {
 /**
  * Set function const to export resize editor hook.
  * Important! It should only be used once! Actually in wrap component.
- *
- * @since 0.2.4
  */
 export const useResizeEditor = () => {
 
@@ -65,8 +63,6 @@ export const useResizeEditor = () => {
 
 	/**
 	 * Set function to calculate siteEditor size.
-	 *
-	 * @since 0.2.4
 	 */
 	const calculateSiteEditorSize = () => {
 
@@ -144,8 +140,6 @@ export const useResizeEditor = () => {
 
 	/**
 	 * Set function to calculate postEditor size.
-	 *
-	 * @since 0.2.4
 	 */
 	const calculatePostEditorSize = () => {
 

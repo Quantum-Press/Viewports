@@ -24,8 +24,6 @@ import {
 /**
  * Test scenario to test the behavior of adding properties as change.
  * - Based on viewport = 0
- *
- * @since 0.2.13
  */
 /**/ /* /**/
 describe( 'Testsuite - findBlockDifferences - Viewport = 0 - Adding property', () => {
@@ -428,8 +426,6 @@ describe( 'Testsuite - findBlockDifferences - Viewport = 0 - Adding property', (
 /**
  * Test scenario to test the behavior of adding properties as change.
  * - Based on viewport > 0
- *
- * @since 0.2.13
  */
 /**/ /* /**/
 describe( 'Testsuite - findBlockDifferences - Viewport > 0 - Adding property', () => {
@@ -874,8 +870,6 @@ describe( 'Testsuite - findBlockDifferences - Viewport > 0 - Adding property', (
 /**
  * Test scenario to test the behavior of changing properties as change.
  * - Based on viewport = 0
- *
- * @since 0.2.13
  */
 /**/ /* /**/
 describe( 'Testsuite - findBlockDifferences - Viewport = 0 - Changing property', () => {
@@ -1198,8 +1192,6 @@ describe( 'Testsuite - findBlockDifferences - Viewport = 0 - Changing property',
 /**
  * Test scenario to test the behavior of changing properties as change.
  * - Based on viewport > 0
- *
- * @since 0.2.13
  */
 /**/ /* /**/
 describe( 'Testsuite - findBlockDifferences - Viewport > 0 - Changing property', () => {
@@ -1579,8 +1571,6 @@ describe( 'Testsuite - findBlockDifferences - Viewport > 0 - Changing property',
 
 /**
  * Test scenario to test the behavior of changing properties as change.
- *
- * @since 0.2.13
  */
 /**/ /* /**/
 describe( 'Testsuite - findBlockDifferences - Multi Scenario 1', () => {

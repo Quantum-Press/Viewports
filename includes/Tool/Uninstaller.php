@@ -11,7 +11,6 @@ defined( 'ABSPATH' ) || exit;
  * This class handles plugin uninstaller hook call.
  *
  * @class    Quantum\Viewports\Tool\Uninstaller
- * @since    0.1.0
  * @package  Quantum\Viewports\Tool
  * @category Class
  * @author   Sebastian Buchwald || conversionmedia GmbH & Co. KG
@@ -20,8 +19,6 @@ class Uninstaller {
 
 	/**
 	 * Static method to init uninstaller.
-	 *
-	 * @since 0.1.0
 	 *
 	 * @static
 	 */

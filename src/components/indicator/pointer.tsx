@@ -23,8 +23,6 @@ const {
  * @param {boolean} hasTabletSpectrum - Indicates if tablet has spectrums
  * @param {boolean} hasDesktopSpectrum - Indicates if desktop has spectrums
  *
- * @since 0.2.16
- *
  * @returns {JSX.Element | null}
  */
 export const Pointer = memo( ( { viewportType, isEditing, iframeViewport, hasTabletSpectrum, hasDesktopSpectrum } ) => {

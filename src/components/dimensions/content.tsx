@@ -1,7 +1,5 @@
 /**
  * Function to render content interface.
- *
- * @since 0.2.3
  */
 const Content = block => {
 

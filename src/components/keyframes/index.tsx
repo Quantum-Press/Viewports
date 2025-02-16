@@ -160,8 +160,6 @@ const generateKeyframes = ( props ) => {
 
 /**
  * Set component to render keyframes ui.
- *
- * @since 0.1.0
  */
 const Keyframes = () => {
 
@@ -220,8 +218,6 @@ const Keyframes = () => {
 
 	/**
 	 * Set function to fire on click open.
-	 *
-	 * @since 0.1.0
 	 */
 	const onClickKeyframe = ( { target }, keyframe ) => {
 		if( ! target.classList.contains( 'qp-keyframe' ) ) {
@@ -272,8 +268,6 @@ const Keyframes = () => {
 
 	/**
 	 * Set function to calculate width of given frame.
-	 *
-	 * @since 0.1.0
 	 */
 	const calculateWidth = ( frame : Frame ) => {
 		const { size, position, viewport } = frame;
@@ -303,8 +297,6 @@ const Keyframes = () => {
 
 	/**
 	 * Set function to fire on mouse over.
-	 *
-	 * @since 0.1.0
 	 */
 	const onMouseOver = ( { target } : any ) => {
 		if( ! target.classList.contains( 'qp-keyframe' ) ) {
@@ -327,8 +319,6 @@ const Keyframes = () => {
 
 	/**
 	 * Set function to fire on mouse over.
-	 *
-	 * @since 0.1.0
 	 */
 	const onMouseOut = () => {
 		setHover( false );
@@ -337,8 +327,6 @@ const Keyframes = () => {
 
 	/**
 	 * Return rendered component.
-	 *
-	 * @since 0.1.0
 	 */
 	return (
 		<div className="qp-keyframes">

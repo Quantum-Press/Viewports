@@ -14,8 +14,6 @@ const {
  *
  * @param storePath
  * @param defaultValue
- *
- * @since 0.2.3
  */
 export function useLocalStorage( storePath, defaultValue = null ) {
 

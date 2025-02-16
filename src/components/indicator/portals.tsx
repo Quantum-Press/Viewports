@@ -22,8 +22,6 @@ const {
  * Set component const to export inspector blocklist ui.
  *
  * @param object props
- *
- * @since 0.2.7
  */
 export const IndicatorPortals = () => {
 

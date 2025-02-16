@@ -11,8 +11,6 @@ const {
 
 /**
  * Function to render border interface.
- *
- * @since 0.2.3
  */
 const Border = ({ block }) => {
 
@@ -37,8 +35,6 @@ const Border = ({ block }) => {
 
 	/**
 	 * Set function to return formatted border.
-	 *
-	 * @since 0.2.3
 	 */
 	const getFormattedBorderStyles = ( styles ) => {
 		const formatted = {
@@ -72,8 +68,6 @@ const Border = ({ block }) => {
 
 	/**
 	 * Set function to return formatted border.
-	 *
-	 * @since 0.2.3
 	 */
 	const getFormattedBorderValue = ( border ) => {
 		const defaults = {

@@ -9,8 +9,6 @@ const {
 
 /**
  * Set function to fill styles with attributes.
- *
- * @since 0.2.3
  */
 export const getFilledStyles = ( path : string, style, schema ) => {
 	const parts = path.split( '.' );
@@ -56,8 +54,6 @@ export const getFilledStyles = ( path : string, style, schema ) => {
 
 /**
  * Set function to format style.
- *
- * @since 0.2.3
  */
 export const getFormattedStyles = ( styles ) => {
 	const styleKeys = Object.keys( styles );

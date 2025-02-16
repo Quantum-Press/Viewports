@@ -21,8 +21,6 @@ const {
 
 /**
  * Set component const to export sidebar control-edit ui.
- *
- * @since 0.2.2
  */
 const Head = () => {
 
@@ -70,8 +68,6 @@ const Head = () => {
 
 	/**
 	 * Set function to fire on click close
-	 *
-	 * @since 0.2.2
 	 */
 	const onClickTitle = () => {
 		if( select( STORE_NAME ).isInspecting() ) {
@@ -84,8 +80,6 @@ const Head = () => {
 
 	/**
 	 * Set function to toggle position.
-	 *
-	 * @since 0.2.2
 	 */
 	const onClickPosition = () => {
 		if( 'left' === position ) {
@@ -100,8 +94,6 @@ const Head = () => {
 
 	/**
 	 * Set function to fire on click close.
-	 *
-	 * @since 0.2.2
 	 */
 	const onClickClose = () => {
 		if( select( STORE_NAME ).isInspecting() ) {

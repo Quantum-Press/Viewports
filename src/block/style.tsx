@@ -9,8 +9,6 @@ const {
 
 /**
  * Set function to render blockStyle depending on outer state.
- *
- * @since 0.1.0
  */
 export default function BlockStyle( props : any ) {
 

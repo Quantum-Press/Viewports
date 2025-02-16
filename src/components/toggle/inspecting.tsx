@@ -19,8 +19,6 @@ const {
  * Set component const to export inspector ui.
  *
  * @param object props
- *
- * @since 0.2.1
  */
 const ToggleInspecting = ( { showText = true, forceShow = false } : { showText?: boolean, forceShow?: boolean } ) => {
 
@@ -61,8 +59,6 @@ const ToggleInspecting = ( { showText = true, forceShow = false } : { showText?:
 
 	/**
 	 * Set function to fire on click inspect to trigger ui.
-	 *
-	 * @since 0.2.1
 	 */
 	const onClickInspect = () => {
 		if( select( STORE_NAME ).isInspecting() ) {

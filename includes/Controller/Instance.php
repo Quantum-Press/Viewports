@@ -11,7 +11,6 @@ defined( 'ABSPATH' ) || exit;
  * This class is base of a single object instance.
  *
  * @class    Quantum\Viewports\Controller\Instance
- * @since    0.1.0
  * @package  Quantum\Viewports\Controller
  * @category Class
  * @author   Sebastian Buchwald // conversionmedia GmbH & Co. KG
@@ -21,16 +20,29 @@ abstract class Instance {
 	/**
 	 * Generates or calls own Instance.
 	 *
-	 * @since 0.1.0
+	 * @static
+	 * @return object instance
+	 */
+	public static function getInstance() {
+		if ( ! InstanceManager::hasInstance( static::class ) ) {
+			InstanceManager::addInstance( new static() );
+		}
+
+		return InstanceManager::getInstance( static::class );
+	}
+
+
+	/**
+	 * Generates or calls own Instance.
 	 *
 	 * @static
 	 * @return object instance
 	 */
-	public static function get_instance() {
-		if ( ! Instance_Manager::has_instance( static::class ) ) {
-			Instance_Manager::add_instance( new static() );
+	public static function maybeAddInstance() {
+		if ( ! InstanceManager::hasInstance( static::class ) ) {
+			InstanceManager::addInstance( new static() );
 		}
 
-		return Instance_Manager::get_instance( static::class );
+		return InstanceManager::getInstance( static::class );
 	}
 }

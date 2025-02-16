@@ -8,8 +8,6 @@ const {
 
 /**
  * Set component const to export Highlights UI.
- *
- * @since 0.2.5
  */
 const Editing = () => {
 
@@ -38,8 +36,6 @@ const Editing = () => {
 
 	/**
 	 * Set Function to get client rect data.
-	 *
-	 * @since 0.2.5
 	 */
 	const getClientRect = () => {
 		const element = document.querySelector( 'iframe[name="editor-canvas"], .editor-styles-wrapper, .edit-site-editor-canvas-container' );
@@ -61,8 +57,6 @@ const Editing = () => {
 
 	/**
 	 * Set Function to get client style.
-	 *
-	 * @since 0.2.5
 	 */
 	const getClientStyle = () => {
 		const rect = getClientRect();

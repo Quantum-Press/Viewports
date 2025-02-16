@@ -6,7 +6,6 @@ export type ViewportsConfig = {
 	version: string;
 }
 
-
 export type Styles = {
 	[ key: string ] : any,
 }
@@ -50,9 +49,15 @@ export type RendererPropertySet = {
 
 export type RendererSet = {
 	[ key: number ] : {
+		type?: string,
 		callback: Function,
 		selectors: SelectorSet,
+		mapping?: RendererMapping,
 	},
+}
+
+export type RendererMapping = {
+	[ key: string ] : string,
 }
 
 export type CSSCollectionSet = Array<CSSCollection>
@@ -82,6 +87,7 @@ export type RuleSet = Array<Rule>;
 
 export interface Rule {
 	type: string,
+	blockName: string,
 	property: string,
 	viewport: number,
 	priority: number,
@@ -191,6 +197,7 @@ export type State = {
 export type Action = {
 	type: string,
 	block?: object | boolean,
+	blockName?: string,
 	clientId?: string,
 	viewports?: Viewports,
 	viewport?: number,
@@ -203,6 +210,7 @@ export type Action = {
 	force?: boolean,
 	priority?: number,
 	selectors?: SelectorSet,
+	mapping?: RendererMapping,
 	position?: string,
 }
 
@@ -210,4 +218,7 @@ export type Reducers = {
 	[ key : string ] : Function,
 }
 
-
+export type ReducerManager = {
+	reducer: Function,
+	addReducer: Function,
+}

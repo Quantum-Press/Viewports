@@ -1,8 +1,6 @@
 /**
  * Set function to return editor document node depending on editor.
  *
- * @since 0.1.0
- *
  * @return {object} node document
  */
 export const getEditorHead = () : HTMLElement | null => {
@@ -19,8 +17,6 @@ export const getEditorHead = () : HTMLElement | null => {
 /**
  * Set function to indicate whether we are in site-editor
  *
- * @since 0.1.0
- *
  * @return {boolean} indication
  */
 export const isSiteEditor = () : boolean => {
@@ -35,8 +31,6 @@ export const isSiteEditor = () : boolean => {
 /**
  * Set function to return version.
  *
- * @since 0.1.0
- *
  * @return {string} version
  */
 export const getVersion = () : string => {
@@ -50,8 +44,6 @@ export const getVersion = () : string => {
 
 /**
  * Set function to open sidebar if not already opened.
- *
- * @since 0.2.5
  */
 export const openSidebar = () => {
 	const element = document.querySelector( 'button[aria-controls="edit-site:template"], button[aria-controls="edit-post:document"], button[aria-controls="edit-post:block"]' );
@@ -64,8 +56,6 @@ export const openSidebar = () => {
 
 /**
  * Set function to open general tab if not already opened.
- *
- * @since 0.2.5
  */
 export const openSettingsTab = () => {
 	const element = document.querySelector( '.block-editor-block-inspector__tabs button[aria-controls$="-settings-view"]' );
@@ -78,8 +68,6 @@ export const openSettingsTab = () => {
 
 /**
  * Set function to open styles tab if not already opened.
- *
- * @since 0.2.5
  */
 export const openStylesTab = () => {
 	const element = document.querySelector( '.block-editor-block-inspector__tabs button[aria-controls$="-styles-view"]' );

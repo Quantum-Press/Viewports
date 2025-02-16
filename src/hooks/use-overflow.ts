@@ -9,8 +9,6 @@ const {
 
 /**
  * Set function to return overflow hook
- *
- * @since 0.2.4
  */
 export function useOverflow( selector, property ) {
 
@@ -31,8 +29,6 @@ export function useOverflow( selector, property ) {
 
 	/**
 	 * Set function to handle overflow.
-	 *
-	 * @since 0.2.4
 	 */
 	const handleOverflow = () => {
 		const element = document.querySelector( selector );

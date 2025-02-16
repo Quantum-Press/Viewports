@@ -18,8 +18,6 @@ const {
  * Set component const to export toggleView ui.
  *
  * @param object props
- *
- * @since 0.1.0
  */
 const ToggleView = () => {
 

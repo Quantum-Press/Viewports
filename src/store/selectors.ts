@@ -32,8 +32,6 @@ const { cloneDeep } = window[ 'lodash' ];
  *
  * @param {State} state current
  *
- * @since 0.1.0
- *
  * @return {object} viewports
  */
 export const getViewports = ( state : State ) : object => {
@@ -45,8 +43,6 @@ export const getViewports = ( state : State ) : object => {
  * Set selector to return active viewport.
  *
  * @param {State} state current
- *
- * @since 0.1.0
  *
  * @return {integer} viewport
  */
@@ -64,8 +60,6 @@ export const getViewport = ( state : State ) : number => {
  *
  * @param {State} state current
  *
- * @since 0.1.0
- *
  * @return {integer} desktop viewport
  */
 export const getDesktop = ( state : State ) : number => {
@@ -77,8 +71,6 @@ export const getDesktop = ( state : State ) : number => {
  * Set selector to return tablet viewport.
  *
  * @param {State} state current
- *
- * @since 0.1.0
  *
  * @return {integer} tablet viewport
  */
@@ -92,8 +84,6 @@ export const getTablet = ( state : State ) : number => {
  *
  * @param {State} state current
  *
- * @since 0.1.0
- *
  * @return {integer} mobile viewport
  */
 export const getMobile = ( state : State ) : number => {
@@ -105,8 +95,6 @@ export const getMobile = ( state : State ) : number => {
  * Set selector to return iframe size.
  *
  * @param {State} state current
- *
- * @since 0.2.5
  *
  * @return {Size} of iframe
  */
@@ -120,8 +108,6 @@ export const getIframeSize = ( state : State ) : Size => {
  *
  * @param {State} state current
  *
- * @since 0.2.5
- *
  * @return {number}
  */
 export const getIframeViewport = ( state : State ) : number => {
@@ -133,8 +119,6 @@ export const getIframeViewport = ( state : State ) : number => {
  * Set selector to return isRegistering indicator.
  *
  * @param {State} state current
- *
- * @since 0.1.0
  *
  * @return {boolean}
  */
@@ -148,8 +132,6 @@ export const isRegistering = ( state : State ) : boolean => {
  *
  * @param {State} state current
  *
- * @since 0.1.0
- *
  * @return {boolean}
  */
 export const isReady = ( state : State ) : boolean => {
@@ -161,8 +143,6 @@ export const isReady = ( state : State ) : boolean => {
  * Set selector to return isLoading indicator.
  *
  * @param {State} state current
- *
- * @since 0.1.0
  *
  * @return {boolean}
  */
@@ -176,8 +156,6 @@ export const isLoading = ( state : State ) : boolean => {
  *
  * @param {State} state current
  *
- * @since 0.1.0
- *
  * @return {boolean}
  */
 export const isSaving = ( state : State ) : boolean => {
@@ -189,8 +167,6 @@ export const isSaving = ( state : State ) : boolean => {
  * Set selector to return isAutoSaving indicator.
  *
  * @param {State} state current
- *
- * @since 0.1.0
  *
  * @return {boolean}
  */
@@ -204,8 +180,6 @@ export const isAutoSaving = ( state : State ) : boolean => {
  *
  * @param {State} state current
  *
- * @since 0.1.0
- *
  * @return {boolean}
  */
 export const isActive = ( state : State ) : boolean => {
@@ -217,8 +191,6 @@ export const isActive = ( state : State ) : boolean => {
  * Set selector to return isInspecting indicator.
  *
  * @param {State} state current
- *
- * @since 0.2.2
  *
  * @return {boolean}
  */
@@ -232,8 +204,6 @@ export const isInspecting = ( state : State ) : boolean => {
  *
  * @param {State} state current
  *
- * @since 0.2.6
- *
  * @return {string}
  */
 export const getInspectorPosition = ( state : State ) : string => {
@@ -245,8 +215,6 @@ export const getInspectorPosition = ( state : State ) : string => {
  * Set selector to return isEditing indicator.
  *
  * @param {State} state current
- *
- * @since 0.1.0
  *
  * @return {boolean}
  */
@@ -260,8 +228,6 @@ export const isEditing = ( state : State ) : boolean => {
  *
  * @param {State} state current
  *
- * @since 0.1.0
- *
  * @return {boolean}
  */
 export const inDesktopRange = ( state : State ) : boolean => {
@@ -274,8 +240,6 @@ export const inDesktopRange = ( state : State ) : boolean => {
  *
  * @param {State} state current
  *
- * @since 0.1.0
- *
  * @return {boolean}
  */
 export const inTabletRange = ( state : State ) : boolean => {
@@ -287,8 +251,6 @@ export const inTabletRange = ( state : State ) : boolean => {
  * Set selector to indicate inMobileRange.
  *
  * @param {State} state current
- *
- * @since 0.1.0
  *
  * @return {boolean}
  */
@@ -303,8 +265,6 @@ export const inMobileRange = ( state : State ) : boolean => {
  * @param {State} state current
  * @param {string} clientId
  *
- * @since 0.1.0
- *
  * @return {boolean}
  */
 export const isRegistered = ( state : State, clientId : string ) : boolean => {
@@ -317,8 +277,6 @@ export const isRegistered = ( state : State, clientId : string ) : boolean => {
  *
  * @param {State} state current
  * @param {string} clientId
- *
- * @since 0.1.0
  *
  * @return {boolean}
  */
@@ -341,8 +299,6 @@ export const hasBlockViewports = ( state : State, clientId : string ) : boolean 
  * @param {State} state current
  * @param {string} clientId
  *
- * @since 0.1.0
- *
  * @return {boolean}
  */
 export const hasBlockDefaults = ( state : State, clientId : string ) : boolean => {
@@ -355,8 +311,6 @@ export const hasBlockDefaults = ( state : State, clientId : string ) : boolean =
  *
  * @param {State} state current
  * @param {string} clientId
- *
- * @since 0.1.0
  *
  * @return {boolean}
  */
@@ -377,8 +331,6 @@ export const hasBlockSaves = ( state : State, clientId : string ) : boolean => {
  * @param {State} state current
  * @param {string} clientId
  *
- * @since 0.1.0
- *
  * @return {boolean}
  */
 export const hasBlockChanges = ( state : State, clientId : string ) : boolean => {
@@ -394,8 +346,6 @@ export const hasBlockChanges = ( state : State, clientId : string ) : boolean =>
  * @param {number} viewport
  * @param {string} property
  *
- * @since 0.2.5
- *
  * @return {boolean}
  */
 export const hasBlockPropertyChanges = ( state : State, clientId : string, viewport : number, property : string ) : boolean => {
@@ -409,8 +359,6 @@ export const hasBlockPropertyChanges = ( state : State, clientId : string, viewp
  * @param {State} state current
  * @param {string} clientId
  *
- * @since 0.1.0
- *
  * @return {boolean}
  */
 export const hasBlockValids = ( state : State, clientId : string ) : boolean => {
@@ -423,8 +371,6 @@ export const hasBlockValids = ( state : State, clientId : string ) : boolean => 
  *
  * @param {State} state current
  * @param {string} clientId
- *
- * @since 0.1.0
  *
  * @return {boolean}
  */
@@ -441,8 +387,6 @@ export const hasBlockRemoves = ( state : State, clientId : string ) : boolean =>
  * @param {number} viewport
  * @param {string} property
  *
- * @since 0.2.5
- *
  * @return {boolean}
  */
 export const hasBlockPropertyRemoves = ( state : State, clientId : string, viewport : number, property : string ) : boolean => {
@@ -454,8 +398,6 @@ export const hasBlockPropertyRemoves = ( state : State, clientId : string, viewp
  * Set selector to return all saves.
  *
  * @param {State} state current
- *
- * @since 0.1.0
  *
  * @return {object} saves
  */
@@ -469,8 +411,6 @@ export const getSaves = ( state : State ) : object => {
  *
  * @param {State} state current
  * @param {string} clientId
- *
- * @since 0.1.0
  *
  * @return {object} block saves
  */
@@ -487,8 +427,6 @@ export const getBlockSaves = ( state : State, clientId : string ) : object => {
  * @param {number} viewport
  * @param {string} property
  *
- * @since 0.2.5
- *
  * @return {object} block saves
  */
 export const getBlockPropertySaves = ( state : State, clientId : string, viewport : number, property : string ) : object => {
@@ -501,8 +439,6 @@ export const getBlockPropertySaves = ( state : State, clientId : string, viewpor
  *
  * @param {State} state current
  * @param {string} clientId
- *
- * @since 0.1.0
  *
  * @return {object} block saves
  */
@@ -546,8 +482,6 @@ export const getGeneratedBlockSaves = ( state : State, clientId : string ) : obj
  *
  * @param {State} state current
  *
- * @since 0.1.0
- *
  * @return {object} changes
  */
 export const getChanges = ( state : State ) : object => {
@@ -560,8 +494,6 @@ export const getChanges = ( state : State ) : object => {
  *
  * @param {State} state current
  * @param {string} clientId
- *
- * @since 0.1.0
  *
  * @return {object} block changes
  */
@@ -582,8 +514,6 @@ export const getBlockChanges = ( state : State, clientId : string ) : object => 
  * @param {number} viewport
  * @param {string} property
  *
- * @since 0.2.5
- *
  * @return {object} block changes
  */
 export const getBlockPropertyChanges = ( state : State, clientId : string, viewport : number, property : string ) : object => {
@@ -595,8 +525,6 @@ export const getBlockPropertyChanges = ( state : State, clientId : string, viewp
  * Set selector to return all valids.
  *
  * @param {State} state current
- *
- * @since 0.1.0
  *
  * @return {object} valids
  */
@@ -610,8 +538,6 @@ export const getValids = ( state : State ) : object => {
  *
  * @param {State} state current
  * @param {string} clientId
- *
- * @since 0.1.0
  *
  * @return {object} block valids
  */
@@ -629,8 +555,6 @@ export const getBlockValids = ( state : State, clientId : string ) : object => {
  *
  * @param {State} state current
  * @param {string} clientId
- *
- * @since 0.1.0
  *
  * @return {object} block valid
  */
@@ -676,8 +600,6 @@ export const getViewportBlockValids = ( state : State, clientId : string ) : obj
  *
  * @param {State} state current
  *
- * @since 0.1.0
- *
  * @return {object} removes
  */
 export const getRemoves = ( state : State ) : object => {
@@ -690,8 +612,6 @@ export const getRemoves = ( state : State ) : object => {
  *
  * @param {State} state current
  * @param {string} clientId
- *
- * @since 0.1.0
  *
  * @return {object} block removes
  */
@@ -710,8 +630,6 @@ export const getBlockRemoves = ( state : State, clientId : string ) : object => 
  * @param {State} state current
  * @param {string} clientId
  *
- * @since 0.2.5
- *
  * @return {object} block removes
  */
 export const getBlockPropertyRemoves = ( state : State, clientId : string, viewport : number, property : string ) : object => {
@@ -723,8 +641,6 @@ export const getBlockPropertyRemoves = ( state : State, clientId : string, viewp
  * Set selector to return timestamp when we last edited from outside block context.
  *
  * @param {State} state current
- *
- * @since 0.1.0
  */
 export const getLastEdit = ( state : State ) : number => {
 	return state.lastEdit;
@@ -735,8 +651,6 @@ export const getLastEdit = ( state : State ) : number => {
  * Set selector to return all renderers.
  *
  * @param {State} state current
- *
- * @since 0.1.0
  */
 export const getRendererPropertySet = ( state : State ) : RendererPropertySet => {
 	return state.renderer;
@@ -748,8 +662,6 @@ export const getRendererPropertySet = ( state : State ) : RendererPropertySet =>
  *
  * @param {State} state current
  * @param {string} key
- *
- * @since 0.2.5
  */
 export const getRendererSet = ( state : State, key : string ) : false | RendererSet => {
 	return state.renderer.hasOwnProperty( key ) ? state.renderer[ key ] : false;
@@ -761,8 +673,6 @@ export const getRendererSet = ( state : State, key : string ) : false | Renderer
  *
  * @param {State} state current
  * @param {object} style
- *
- * @since 0.1.0
  */
 export const needsRenderer = ( state : State, style : Attributes ) : boolean => {
 	let need = false;
@@ -781,8 +691,6 @@ export const needsRenderer = ( state : State, style : Attributes ) : boolean => 
  *
  * @param {State} state current
  * @param {string} key
- *
- * @since 0.1.0
  */
 export const hasRenderer = ( state : State, key : string ) : boolean => {
 	return state.renderer.hasOwnProperty( key );
@@ -794,8 +702,6 @@ export const hasRenderer = ( state : State, key : string ) : boolean => {
  *
  * @param {State} state current
  * @param {string} clientId
- *
- * @since 0.2.5
  */
 export const getCSS = ( state : State, clientId : string ) : string => {
 	const cssSet = state.cssSet.hasOwnProperty( clientId ) ? state.cssSet[ clientId ] : {};
@@ -819,8 +725,6 @@ export const getCSS = ( state : State, clientId : string ) : string => {
  *
  * @param {State} state current
  * @param {string} clientId
- *
- * @since 0.2.5
  */
 export const getSpectrumSet = ( state : State, clientId : string ) : SpectrumSet => {
 	return state.spectrumSets.hasOwnProperty( clientId ) ? state.spectrumSets[ clientId ] : [];
@@ -832,8 +736,6 @@ export const getSpectrumSet = ( state : State, clientId : string ) : SpectrumSet
  *
  * @param {State} state current
  * @param {string} clientId
- *
- * @since 0.2.5
  */
 export const getInlineStyle = ( state : State, clientId : string ) : InlineStyleSet => {
 	return state.inlineStyleSets.hasOwnProperty( clientId ) ? state.inlineStyleSets[ clientId ] : {};
@@ -845,8 +747,6 @@ export const getInlineStyle = ( state : State, clientId : string ) : InlineStyle
  *
  * @param {State} state current
  * @param {string} clientId
- *
- * @since 0.2.7
  */
 export const getIndicatorSelectorSet = ( state : State, clientId : string ) : IndicatorSelectorSet => {
 	const selectorSet = {} as IndicatorSelectorSet;

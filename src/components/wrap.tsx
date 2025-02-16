@@ -1,14 +1,14 @@
 import useResizeEditor from '../hooks/use-resize-editor';
 import { useLocalStorage } from '../hooks';
 import { STORE_NAME } from '../store';
-import Save from './save';
-import Preview from './preview';
 import Body from './body';
+import Save from '../hacks/save';
 import Topbar from './topbar';
 import Viewports from './viewports';
 import Keyframes from './keyframes';
 import Editing from './editing';
 import Visualizer from '../block/visualizer';
+import GlobalBlockStyles from '../block/global';
 
 const {
 	data: {
@@ -23,8 +23,6 @@ const {
  * Set component const to export ui wrap.
  *
  * @param object props
- *
- * @since 0.1.0
  */
 export default function Wrap() {
 
@@ -41,7 +39,7 @@ export default function Wrap() {
 
 	return (
 		<>
-			<Preview />
+			<GlobalBlockStyles />
 			<Body />
 			<Save />
 			<Topbar />

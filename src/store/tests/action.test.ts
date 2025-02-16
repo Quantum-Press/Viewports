@@ -245,9 +245,10 @@ describe( 'store actions', () => {
 		const check = {
 			type: 'REGISTER_BLOCK_INIT',
 			clientId: 'client-id',
+			blockName: 'core/group',
 			attributes: attributes,
 		};
-		const result = registerBlockInit( 'client-id', attributes );
+		const result = registerBlockInit( 'client-id', 'core/group', attributes );
 
 		expect( check ).toStrictEqual( result );
 	});
@@ -260,10 +261,11 @@ describe( 'store actions', () => {
 		const check = {
 			type: 'UPDATE_BLOCK_CHANGES',
 			clientId: 'client-id',
+			blockName: 'core/group',
 			attributes: attributes,
 			viewport: null,
 		};
-		const result = updateBlockChanges( 'client-id', attributes );
+		const result = updateBlockChanges( 'client-id', 'core/group', attributes );
 
 		expect( check ).toStrictEqual( result );
 	});
@@ -273,6 +275,7 @@ describe( 'store actions', () => {
 		const check = {
 			type: 'REMOVE_BLOCK',
 			clientId: 'client-id',
+			blockName: 'core/group',
 		};
 		const result = removeBlock( 'client-id' );
 
@@ -284,10 +287,11 @@ describe( 'store actions', () => {
 		const check = {
 			type: 'RESTORE_BLOCK_SAVES',
 			clientId: 'client-id',
+			blockName: 'core/group',
 			props: props,
 			viewport: 320,
 		};
-		const result = restoreBlockSaves( 'client-id', props, 320 );
+		const result = restoreBlockSaves( 'client-id', 'core/group', props, 320 );
 
 		expect( check ).toStrictEqual( result );
 	});
@@ -297,10 +301,11 @@ describe( 'store actions', () => {
 		const check = {
 			type: 'REMOVE_BLOCK_SAVES',
 			clientId: 'client-id',
+			blockName: 'core/group',
 			props: props,
 			viewport: 320,
 		};
-		const result = removeBlockSaves( 'client-id', props, 320 );
+		const result = removeBlockSaves( 'client-id', 'core/group', props, 320 );
 
 		expect( check ).toStrictEqual( result );
 	});
@@ -309,8 +314,9 @@ describe( 'store actions', () => {
 		const check = {
 			type: 'SAVE_BLOCK',
 			clientId: 'client-id',
+			blockName: 'core/group',
 		};
-		const result = saveBlock( 'client-id' );
+		const result = saveBlock( 'client-id', 'core/group' );
 
 		expect( check ).toStrictEqual( result );
 	});
@@ -334,6 +340,7 @@ describe( 'store actions', () => {
 				panel: '.panel',
 				label: '.label',
 			},
+			mapping: {},
 			priority: 10,
 		};
 		const result = registerRenderer( 'style-key', callback, 10, {

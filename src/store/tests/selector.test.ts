@@ -284,7 +284,7 @@ describe( 'test store selectors', () => {
 		test( 'can indicate inTabletRange() falsy', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
-				viewport: 1280,
+				viewport: 1920,
 			} );
 
 			const result = inTabletRange( state );

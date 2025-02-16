@@ -10,20 +10,17 @@ defined( 'ABSPATH' ) || exit;
  *
  * This class handles object instance management.
  *
- * @class    Quantum\Viewports\Controller\Instance
- * @since    0.1.0
+ * @class    Quantum\Viewports\Controller\InstanceManager
  * @package  Quantum\Viewports\Controller
  * @category Class
  * @author   Sebastian Buchwald // conversionmedia GmbH & Co. KG
  */
-class Instance_Manager {
+class InstanceManager {
 
 	/**
 	 * Property contains own instance.
 	 *
-	 * @var object Instance_Manager
-	 *
-	 * @since 0.1.0
+	 * @var object InstanceManager
 	 */
 	protected static $_instance = null;
 
@@ -31,10 +28,8 @@ class Instance_Manager {
 	 * Property contains instances.
 	 *
 	 * @var array
-	 *
-	 * @since 0.1.0
 	 */
-	protected $_instances = array();
+	protected $_instances = [];
 
 
 
@@ -43,13 +38,11 @@ class Instance_Manager {
 	 *
 	 * @param string (required) $classname
 	 *
-	 * @since 0.1.0
-	 *
 	 * @static
 	 * @return object instance || boolean false
 	 */
-	public static function get_instance( $classname ) {
-		return self::_get_manager()->_get_instance( $classname );
+	public static function getInstance( $classname ) {
+		return self::_getManager()->_getInstance( $classname );
 	}
 
 
@@ -59,13 +52,11 @@ class Instance_Manager {
 	 *
 	 * @param string (required) $classname
 	 *
-	 * @since 0.1.0
-	 *
 	 * @static
 	 * @return boolean for its indication
 	 */
-	public static function has_instance( $classname ) {
-		return self::_get_manager()->_has_instance( $classname );
+	public static function hasInstance( $classname ) {
+		return self::_getManager()->_hasInstance( $classname );
 	}
 
 
@@ -75,13 +66,11 @@ class Instance_Manager {
 	 *
 	 * @param string (required) $instance
 	 *
-	 * @since 0.1.0
-	 *
 	 * @static
 	 * @return object instance
 	 */
-	public static function add_instance( $instance ) {
-		return self::_get_manager()->_add_instance( $instance );
+	public static function addInstance( $instance ) {
+		return self::_getManager()->_addInstance( $instance );
 	}
 
 
@@ -89,12 +78,10 @@ class Instance_Manager {
 	/**
 	 * Method to return set manager.
 	 *
-	 * @since 0.1.0
-	 *
 	 * @static
 	 * @return object instance
 	 */
-	protected static function _get_manager() {
+	protected static function _getManager() {
 		if ( is_null( self::$_instance ) ) {
 			self::$_instance = new self();
 		}
@@ -106,11 +93,9 @@ class Instance_Manager {
 	/**
 	 * Method to return instance.
 	 *
-	 * @since 0.1.0
-	 *
-	 * @return object instance || boolean false
+	 * @return object|false
 	 */
-	public function _get_instance( $classname ) {
+	public function _getInstance( $classname ) {
 		if ( isset( $this->_instances[ $classname ] ) ) {
 			return $this->_instances[ $classname ];
 		}
@@ -125,11 +110,9 @@ class Instance_Manager {
 	 *
 	 * @param string (required) $classname
 	 *
-	 * @since 0.1.0
-	 *
 	 * @return boolean for its indication
 	 */
-	public function _has_instance( $classname ) {
+	public function _hasInstance( $classname ) {
 		if ( isset( $this->_instances[ $classname ] ) ) {
 			return true;
 		}
@@ -143,10 +126,8 @@ class Instance_Manager {
 	 * Method to add instance.
 	 *
 	 * @param object (required) $instance
-	 *
-	 * @since 0.1.0
 	 */
-	public function _add_instance( $instance ) {
+	public function _addInstance( $instance ) {
 		$this->_instances[ get_class( $instance ) ] = $instance;
 	}
 }

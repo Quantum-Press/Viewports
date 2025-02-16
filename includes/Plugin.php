@@ -6,8 +6,9 @@ namespace Quantum\Viewports;
 defined( 'ABSPATH' ) || exit;
 
 use Quantum\Viewports\Controller\Instance;
-use Quantum\Viewports\Controller\CSS_Renderer;
-use Quantum\Viewports\Controller\Template_Save;
+use Quantum\Viewports\Controller\BlockSupport;
+use Quantum\Viewports\Controller\BlockSave;
+use Quantum\Viewports\Controller\BlockRender;
 
 /**
  * Viewports Plugin class.
@@ -15,8 +16,6 @@ use Quantum\Viewports\Controller\Template_Save;
  * This class registers assets and extend block styles.
  *
  * @class    Quantum\Viewports\Plugin
- * @since    0.1.0
- * @version  0.2.15
  * @package  Quantum\Viewports
  * @category Class
  * @author   Sebastian Buchwald // conversionmedia GmbH & Co. KG
@@ -25,9 +24,6 @@ class Plugin extends Instance {
 
 	/**
 	 * Method to construct.
-	 *
-	 * @since 0.1.0
-	 * @version 0.2.15
 	 */
 	protected function __construct()
 	{
@@ -38,32 +34,26 @@ class Plugin extends Instance {
 
 	/**
 	 * Method to set includes.
-	 *
-	 * @since 0.2.8
-	 * @version 0.2.15
 	 */
 	protected function includes()
 	{
-		CSS_Renderer::get_instance();
-		Template_Save::get_instance();
+		BlockSupport::getInstance();
+		BlockSave::getInstance();
+		BlockRender::getInstance();
 	}
 
 
 	/**
 	 * Method to set hooks.
-	 *
-	 * @since 0.2.15
 	 */
 	protected function set_hooks()
 	{
-		\add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_block_editor_assets' ] );
+		\add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_block_editor_assets' ], 0 );
 	}
 
 
 	/**
 	 * Method to enqueue block editor assets.
-	 *
-	 * @since 0.2.15
 	 */
 	public function enqueue_block_editor_assets()
 	{

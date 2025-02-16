@@ -30,10 +30,12 @@ function getViewports() : Viewports {
 			1180: 'Quantum - Tablet xlarge',
 			1024: 'Quantum - Tablet large',
 			820: 'Quantum - Tablet medium',
+			780: 'Wordpress - Tablet',
 			768: 'Quantum - Tablet small',
 			540: 'Quantum - Tablet tiny',
 			425: 'Quantum - Mobile large',
 			375: 'Quantum - Mobile medium',
+			360: 'Wordpress - Mobile',
 			320: 'Quantum - Mobile small',
 			0: 'Default',
 		}
@@ -145,48 +147,62 @@ export const DEFAULT_STATE = {
 	renderer: {
 		background: {
 			5: {
+				type: 'wp',
 				callback: compileCSS,
 				selectors: {
 					label: '.background-block-support-panel .components-tools-panel-header',
 					panel: '.background-block-support-panel',
 				},
-			}
+				mapping: {},
+			},
 		},
 		border: {
 			5: {
+				type: 'wp',
 				callback: compileCSS,
 				selectors: {
 					label: '.border-block-support-panel .components-tools-panel-header',
 					panel: '.border-block-support-panel',
 				},
-			}
+				mapping: {
+					'core/image': '> img',
+				},
+			},
 		},
 		dimensions: {
 			5: {
+				type: 'wp',
 				callback: compileCSS,
 				selectors: {
 					label: '.dimensions-block-support-panel .components-tools-panel-item.last .block-editor-height-control',
 					panel: '.dimensions-block-support-panel .components-tools-panel-item.last',
 				},
-			}
+				mapping: {},
+			},
 		},
 		shadow: {
 			5: {
+				type: 'wp',
 				callback: compileCSS,
 				selectors: {
 					label: '.border-block-support-panel .components-tools-panel-header',
 					panel: '.border-block-support-panel',
 				},
-			}
+				mapping: {
+					'core/image': '> img',
+				},
+			},
 		},
 		spacing: {
 			5: {
+				type: 'wp',
 				callback: compileCSS,
 				selectors: {
 					label: '.dimensions-block-support-panel .components-tools-panel-header',
 					panel: '.dimensions-block-support-panel .components-tools-panel-item.tools-panel-item-spacing',
 				},
-			}
+				mapping: {},
+			},
 		},
 	},
 	cssSet: {},

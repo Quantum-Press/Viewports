@@ -21,8 +21,6 @@ const {
  * Set component const to export topbar ui.
  *
  * @param object props
- *
- * @since 0.1.0
  */
 const Topbar = () => {
 
@@ -106,8 +104,6 @@ const Topbar = () => {
 
 	/**
 	 * Set function to handle prev action.
-	 *
-	 * @since 0.1.0
 	 */
 	const onClickPrev = () => {
 		dispatch.setPrevViewport();
@@ -116,8 +112,6 @@ const Topbar = () => {
 
 	/**
 	 * Set function to handle prev action.
-	 *
-	 * @since 0.1.0
 	 */
 	const onClickNext = () => {
 		dispatch.setNextViewport();

@@ -1,7 +1,5 @@
 /**
  * Set function to indicate whether element is scrollable.
- *
- * @since 0.2.4
  */
 export function isScrollable( element : HTMLElement ) : boolean {
 	const computed = getComputedStyle( element );
@@ -12,8 +10,6 @@ export function isScrollable( element : HTMLElement ) : boolean {
 
 /**
  * Set function to scroll to scrollable parent element.
- *
- * @since 0.2.4
  */
 export function scrollParent( element : HTMLElement ) {
 	let parent = element.parentElement;

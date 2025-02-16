@@ -8,8 +8,6 @@ import type { Size } from '../hooks';
  *
  * @param {Viewports} viewports
  *
- * @since 0.1.0
- *
  * @return {Action}
  */
 export const setViewports = ( viewports : Viewports ) : Action => {
@@ -24,8 +22,6 @@ export const setViewports = ( viewports : Viewports ) : Action => {
  * Set Action that updates viewport.
  *
  * @param {number} viewport
- *
- * @since 0.1.0
  *
  * @return {Action}
  */
@@ -42,8 +38,6 @@ export const setViewport = ( viewport : number ) : Action => {
  *
  * @param {ViewportType} viewportType
  *
- * @since 0.1.0
- *
  * @return {Action}
  */
 export const setViewportType = ( viewportType : ViewportType ) : Action => {
@@ -58,8 +52,6 @@ export const setViewportType = ( viewportType : ViewportType ) : Action => {
  * Set Action that updates to prev viewport.
  *
  * @param {ViewportType} viewportType
- *
- * @since 0.1.0
  *
  * @return {Action}
  */
@@ -76,8 +68,6 @@ export const setPrevViewport = ( viewportType : ViewportType = '' ) : Action => 
  *
  * @param {ViewportType} viewportType
  *
- * @since 0.1.0
- *
  * @return {Action}
  */
 export const setNextViewport = ( viewportType : ViewportType = '' ) : Action => {
@@ -91,8 +81,6 @@ export const setNextViewport = ( viewportType : ViewportType = '' ) : Action => 
 /**
  * Set Action that updates desktop viewport.
  *
- * @since 0.1.0
- *
  * @return {Action}
  */
 export const setDesktop = () : Action => {
@@ -104,8 +92,6 @@ export const setDesktop = () : Action => {
 
 /**
  * Set Action that updates tablet viewport.
- *
- * @since 0.1.0
  *
  * @return {Action}
  */
@@ -119,8 +105,6 @@ export const setTablet = () : Action => {
 /**
  * Set Action that updates mobile viewport.
  *
- * @since 0.1.0
- *
  * @return {Action}
  */
 export const setMobile = () : Action => {
@@ -132,8 +116,6 @@ export const setMobile = () : Action => {
 
 /**
  * Set Action that updates iframe size.
- *
- * @since 0.2.5
  *
  * @return {Action}
  */
@@ -148,8 +130,6 @@ export const setIframeSize = ( size : Size ) : Action => {
 /**
  * Set Action that updates ready indicator to true.
  *
- * @since 0.1.0
- *
  * @return {Action}
  */
 export const setReady = () : Action => {
@@ -161,8 +141,6 @@ export const setReady = () : Action => {
 
 /**
  * Set Action that updates registering indicator to true.
- *
- * @since 0.1.0
  *
  * @return {Action}
  */
@@ -176,8 +154,6 @@ export const setRegistering = () : Action => {
 /**
  * Set Action that updates registering indicator to false.
  *
- * @since 0.1.0
- *
  * @return {Action}
  */
 export const unsetRegistering = () : Action => {
@@ -189,8 +165,6 @@ export const unsetRegistering = () : Action => {
 
 /**
  * Set Action that updates loading indicator to true.
- *
- * @since 0.1.0
  *
  * @return {Action}
  */
@@ -204,8 +178,6 @@ export const setLoading = () : Action => {
 /**
  * Set Action that updates loading indicator to false.
  *
- * @since 0.1.0
- *
  * @return {Action}
  */
 export const unsetLoading = () : Action => {
@@ -217,8 +189,6 @@ export const unsetLoading = () : Action => {
 
 /**
  * Set Action that updates saving indicator to true.
- *
- * @since 0.1.0
  *
  * @return {Action}
  */
@@ -232,8 +202,6 @@ export const setSaving = () : Action => {
 /**
  * Set Action that updates saving indicator to false.
  *
- * @since 0.1.0
- *
  * @return {Action}
  */
 export const unsetSaving = () : Action => {
@@ -245,8 +213,6 @@ export const unsetSaving = () : Action => {
 
 /**
  * Set Action that updates autosaving indicator to true.
- *
- * @since 0.1.0
  *
  * @return {Action}
  */
@@ -260,8 +226,6 @@ export const setAutoSaving = () : Action => {
 /**
  * Set Action that updates autosaving indicator to false.
  *
- * @since 0.1.0
- *
  * @return {Action}
  */
 export const unsetAutoSaving = () : Action => {
@@ -273,8 +237,6 @@ export const unsetAutoSaving = () : Action => {
 
 /**
  * Set Action that updates active indicator to true.
- *
- * @since 0.1.0
  *
  * @return {Action}
  */
@@ -288,8 +250,6 @@ export const setActive = () : Action => {
 /**
  * Set Action that updates active indicator to false.
  *
- * @since 0.1.0
- *
  * @return {Action}
  */
 export const unsetActive = () : Action => {
@@ -301,8 +261,6 @@ export const unsetActive = () : Action => {
 
 /**
  * Set Action that updates inspecting indicator to true.
- *
- * @since 0.2.2
  *
  * @return {Action}
  */
@@ -316,8 +274,6 @@ export const setInspecting = () : Action => {
 /**
  * Set Action that updates inspecting indicator to false.
  *
- * @since 0.2.2
- *
  * @return {Action}
  */
 export const unsetInspecting = () : Action => {
@@ -329,8 +285,6 @@ export const unsetInspecting = () : Action => {
 
 /**
  * Set Action that toggle editing indicator.
- *
- * @since 0.2.8
  *
  * @return {Action}
  */
@@ -346,8 +300,6 @@ export const toggleInspecting = () : Action => {
  *
  * @param {string}
  *
- * @since 0.2.2
- *
  * @return {Action}
  */
 export const setInspectorPosition = ( position : string ) : Action => {
@@ -361,8 +313,6 @@ export const setInspectorPosition = ( position : string ) : Action => {
 /**
  * Set Action that updates editing indicator to true.
  *
- * @since 0.1.0
- *
  * @return {Action}
  */
 export const setEditing = () : Action => {
@@ -374,8 +324,6 @@ export const setEditing = () : Action => {
 
 /**
  * Set Action that updates editing indicator to false.
- *
- * @since 0.1.0
  *
  * @return {Action}
  */
@@ -389,8 +337,6 @@ export const unsetEditing = () : Action => {
 /**
  * Set Action that toggle editing indicator.
  *
- * @since 0.2.8
- *
  * @return {Action}
  */
 export const toggleEditing = () : Action => {
@@ -402,8 +348,6 @@ export const toggleEditing = () : Action => {
 
 /**
  * Set Action that toggle viewport simulation.
- *
- * @since 0.1.0
  *
  * @return {Action}
  */
@@ -417,8 +361,6 @@ export const toggleActive = () : Action => {
 /**
  * Set Action that toggle desktop viewport.
  *
- * @since 0.1.0
- *
  * @return {Action}
  */
 export const toggleDesktop = () : Action => {
@@ -431,8 +373,6 @@ export const toggleDesktop = () : Action => {
 /**
  * Set Action that toggle tablet viewport.
  *
- * @since 0.1.0
- *
  * @return {Action}
  */
 export const toggleTablet = () : Action => {
@@ -444,8 +384,6 @@ export const toggleTablet = () : Action => {
 
 /**
  * Set Action that toggle mobile viewport.
- *
- * @since 0.1.0
  *
  * @return {Action}
  */
@@ -460,16 +398,20 @@ export const toggleMobile = () : Action => {
  * Set Action to register block init.
  *
  * @param {string} clientId
+ * @param {string} blockName
  * @param {Attributes} attributes
- *
- * @since 0.1.0
  *
  * @return {Action}
  */
-export const registerBlockInit = ( clientId : string, attributes : Attributes ) : Action => {
+export const registerBlockInit = (
+	clientId : string,
+	blockName : string,
+	attributes : Attributes
+) : Action => {
 	return {
 		type: 'REGISTER_BLOCK_INIT',
 		clientId,
+		blockName,
 		attributes,
 	};
 }
@@ -479,17 +421,22 @@ export const registerBlockInit = ( clientId : string, attributes : Attributes ) 
  * Set Action to update block changes.
  *
  * @param {string} clientId
+ * @param {string} blockName
  * @param {Attributes} attributes
  * @param {number | null} viewport
  *
- * @since 0.1.0
- *
  * @return {Action}
  */
-export const updateBlockChanges = ( clientId : string, attributes : Attributes, viewport : number = null ) : Action => {
+export const updateBlockChanges = (
+	clientId : string,
+	blockName : string,
+	attributes : Attributes,
+	viewport : number = null
+) : Action => {
 	return {
 		type: 'UPDATE_BLOCK_CHANGES',
 		clientId,
+		blockName,
 		attributes,
 		viewport,
 	};
@@ -500,17 +447,22 @@ export const updateBlockChanges = ( clientId : string, attributes : Attributes, 
  * Set Action to add block changes.
  *
  * @param {string} clientId
+ * @param {string} blockName
  * @param {number} viewport
  * @param {string} viewport
  *
- * @since 0.2.8
- *
  * @return {Action}
  */
-export const addBlockPropertyChanges = ( clientId : string, viewport : number, prop: string ) : Action => {
+export const addBlockPropertyChanges = (
+	clientId : string,
+	blockName : string,
+	viewport : number,
+	prop: string
+) : Action => {
 	return {
 		type: 'ADD_BLOCK_PROPERTY_CHANGES',
 		clientId,
+		blockName,
 		viewport,
 		prop,
 	};
@@ -521,12 +473,13 @@ export const addBlockPropertyChanges = ( clientId : string, viewport : number, p
  * Set Action to remove block.
  *
  * @param {string} clientId
- *
- * @since 0.1.0
+ * @param {string} blockName
  *
  * @return {Action}
  */
-export const removeBlock = ( clientId : string ) : Action => {
+export const removeBlock = (
+	clientId : string,
+) : Action => {
 	return {
 		type: 'REMOVE_BLOCK',
 		clientId,
@@ -538,17 +491,22 @@ export const removeBlock = ( clientId : string ) : Action => {
  * Set Action to remove block saves.
  *
  * @param {string} clientId
+ * @param {string} blockName
  * @param {Array} props
  * @param {number} viewport
  *
- * @since 0.1.0
- *
  * @return {Action}
  */
-export const removeBlockSaves = ( clientId : string, props : Array<string>, viewport : number ) : Action => {
+export const removeBlockSaves = (
+	clientId : string,
+	blockName : string,
+	props : Array<string>,
+	viewport : number
+) : Action => {
 	return {
 		type: 'REMOVE_BLOCK_SAVES',
 		clientId,
+		blockName,
 		props,
 		viewport,
 	};
@@ -559,17 +517,17 @@ export const removeBlockSaves = ( clientId : string, props : Array<string>, view
  * Set Action to restore block saves.
  *
  * @param {string} clientId
+ * @param {string} blockName
  * @param {Array} props
  * @param {number} viewport
  *
- * @since 0.1.0
- *
  * @return {Action}
  */
-export const restoreBlockSaves = ( clientId : string, props : Array<string>, viewport : number ) : Action => {
+export const restoreBlockSaves = ( clientId : string, blockName : string, props : Array<string>, viewport : number ) : Action => {
 	return {
 		type: 'RESTORE_BLOCK_SAVES',
 		clientId,
+		blockName,
 		props,
 		viewport,
 	};
@@ -581,22 +539,19 @@ export const restoreBlockSaves = ( clientId : string, props : Array<string>, vie
  *
  * @param {string} clientId
  *
- * @since 0.1.0
- *
  * @return {Action}
  */
-export const saveBlock = ( clientId : string ) : Action => {
+export const saveBlock = ( clientId : string, blockName : string ) : Action => {
 	return {
 		type: 'SAVE_BLOCK',
 		clientId,
+		blockName,
 	};
 }
 
 
 /**
  * Set Action to clear blocks.
- *
- * @since 0.1.0
  *
  * @return {Action}
  */
@@ -615,14 +570,13 @@ export const clearBlocks = () : Action => {
  * @param {number} priority
  * @param {SelectorSet} selectors
  *
- * @since 0.1.0
- *
  * @return {Action}
  */
-export const registerRenderer = ( prop : string, callback : Function, priority = 10, selectors = {} ) : Action => ( {
+export const registerRenderer = ( prop : string, callback : Function, priority = 10, selectors = {}, mapping = {} ) : Action => ( {
 	type: 'REGISTER_RENDERER',
 	prop,
 	callback,
 	priority,
 	selectors,
+	mapping,
 } );

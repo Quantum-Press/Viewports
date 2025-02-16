@@ -13,8 +13,6 @@ const {
  *
  * @param number storeId
  * @param SpectrumSet spectrumSet
- *
- * @since 0.2.2
  */
 export const StyleList = ( { storeId, spectrumSet } : { storeId : string, spectrumSet : SpectrumSet } ) => {
 
@@ -52,8 +50,6 @@ export const StyleList = ( { storeId, spectrumSet } : { storeId : string, spectr
  * Set component const to export sidebar control-edit ui.
  *
  * @param object props
- *
- * @since 0.2.2
  */
 export const BlockStyleList = () => {
 

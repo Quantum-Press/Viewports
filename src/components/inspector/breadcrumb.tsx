@@ -10,8 +10,6 @@ const {
 
 /**
  * Set component const to export sidebar control-edit ui.
- *
- * @since 0.2.2
  */
 const Breadcrumb = () => {
 
@@ -30,8 +28,6 @@ const Breadcrumb = () => {
 
 	/**
 	 * Set function to fire on click root.
-	 *
-	 * @since 0.2.2
 	 */
 	const onClickRoot = () => {
 		dispatch( 'core/block-editor' ).selectBlock( false );

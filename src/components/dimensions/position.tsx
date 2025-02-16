@@ -1,7 +1,5 @@
 /**
  * Function to render position interface.
- *
- * @since 0.2.3
  */
 const Position = block => {
 
