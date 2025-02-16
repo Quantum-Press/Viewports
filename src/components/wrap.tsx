@@ -26,7 +26,7 @@ const {
  */
 export default function Wrap() {
 
-	// Set resize editor state dependency.
+	// Set state dependencies.
 	useResizeEditor();
 
 	// Set useLocalStorage to handle nested client settings.

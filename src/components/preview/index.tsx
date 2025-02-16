@@ -24,7 +24,6 @@ const Preview = () => {
 
 		return {
 			isActive: store.isActive(),
-			isEditing: store.isEditing(),
 		}
 	} );
 
@@ -32,27 +31,11 @@ const Preview = () => {
 	const dispatcher = dispatch( STORE_NAME );
 
 	/**
-	 * Set function to fire on click edit.
-	 */
-	const onClickEdit = () => {
-		if( ! isActive ) {
-			dispatcher.setEditing();
-			dispatcher.setLoading();
-		} else {
-			if( ! isEditing ) {
-				dispatcher.setEditing();
-			} else {
-				dispatcher.unsetEditing();
-			}
-		}
-	}
-
-	/**
 	 * Set function to fire on click viewport simulation.
 	 */
 	const onClickViewport = () => {
 		if( ! isActive ) {
-			dispatcher.setLoading();
+			dispatcher.setActive();
 		} else {
 			dispatcher.unsetActive();
 		}
@@ -61,14 +44,9 @@ const Preview = () => {
 	return (
 		<>
 			<PluginPreviewMenuItem
-				onClick={ onClickEdit }
-			>
-				{ __( 'Edit on Viewport', 'quantum-viewports' ) }
-			</PluginPreviewMenuItem>
-			<PluginPreviewMenuItem
 				onClick={ onClickViewport }
 			>
-				{ __( 'Viewport simulation', 'quantum-viewports' ) }
+				{ __( 'Viewport keyframes', 'quantum-viewports' ) }
 			</PluginPreviewMenuItem>
 		</>
 	)

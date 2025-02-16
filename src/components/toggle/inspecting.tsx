@@ -39,15 +39,10 @@ const ToggleInspecting = ( { showText = true, forceShow = false } : { showText?:
 
 		const {
 			clientId,
-			attributes: {
-				tempId,
-			}
 		} = selected;
 
-		const storeId = tempId ? tempId : clientId as string;
-
 		return {
-			spectrumSet: store.getSpectrumSet( storeId ),
+			spectrumSet: store.getSpectrumSet( clientId ),
 			isInspecting: store.isInspecting(),
 		}
 	}, [] );

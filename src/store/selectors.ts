@@ -569,6 +569,7 @@ export const getViewportBlockValids = ( state : State, clientId : string ) : obj
 	const blockValids : ViewportStyle = {
 		0: {
 			style: {},
+			viewports: {},
 		},
 	};
 
@@ -591,7 +592,7 @@ export const getViewportBlockValids = ( state : State, clientId : string ) : obj
 		last = viewport;
 	}
 
-	return blockValids[ last ];
+	return cloneDeep( blockValids[ last ] );
 };
 
 

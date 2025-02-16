@@ -55,12 +55,6 @@ class BlockSupport extends Instance {
 			];
 		}
 
-		if ( ! isset( $args[ 'attributes' ][ 'tempId' ] ) ) {
-			$args[ 'attributes' ][ 'tempId' ] = [
-				'type' => 'string',
-			];
-		}
-
 		return $args;
 	}
 

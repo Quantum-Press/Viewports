@@ -65,20 +65,14 @@ export const BlockStyleList = () => {
 	// Deconstruct block
 	const {
 		clientId,
-		attributes: {
-			tempId,
-		}
 	} = selected;
 
-	// Set storeId.
-	const storeId = tempId ? tempId : clientId as string;
-
 	// Set spectrumSet.
-	const spectrumSet = select( STORE_NAME ).getSpectrumSet( storeId ) as SpectrumSet;
+	const spectrumSet = select( STORE_NAME ).getSpectrumSet( clientId ) as SpectrumSet;
 
 	return (
 		<StyleList
-			storeId={ storeId }
+			storeId={ clientId }
 			spectrumSet={ spectrumSet }
 		/>
 	)

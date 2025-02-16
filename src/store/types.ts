@@ -1,6 +1,10 @@
 import type { Attributes } from '../utils';
 import type { Size } from '../hooks';
 
+export type BlockList = Block[];
+
+export type Block = any;
+
 export type ViewportsConfig = {
 	distribution: string;
 	version: string;
@@ -23,6 +27,7 @@ export type clientViewportSets = {
 export type ViewportStyle = { // Das müsste dann nur noch das object repräsentieren. ViewportStyleSet?
 	[ key: number ] : {
 		style: Styles,
+		viewports?: any,
 		to?: number
 	}
 }

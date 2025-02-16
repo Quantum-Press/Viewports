@@ -13,30 +13,24 @@ const {
 export default function BlockStyle( props : any ) {
 
 	// Deconstruct props.
-	const { block } = props;
-
-	// Deconstruct block properties.
 	const {
-		clientId,
-		attributes
-	} = block;
-	const { tempId } = attributes;
-
-	// Set store id to jump over first init.
-	const storeId = tempId !== clientId ? clientId : tempId;
+		block: {
+			clientId,
+		}
+	} = props;
 
 	// Set state dependencies.
 	useSelect( ( select : Function ) => {
 		const store = select( STORE_NAME );
 
 		return {
-			valids: store.getBlockValids( storeId ),
+			valids: store.getBlockValids( clientId ),
 			size: store.getIframeSize(),
 		};
 	}, [] );
 
 	// Set css from store.
-	const css = select( STORE_NAME ).getCSS( storeId );
+	const css = select( STORE_NAME ).getCSS( clientId );
 
 	// Check if we have css to render.
 	if ( '' === css ) {
@@ -44,5 +38,5 @@ export default function BlockStyle( props : any ) {
 	}
 
 	// Render component.
-	return <style id={ 'qp-viewports-block-style-' + storeId }>{ css }</style>;
+	return <style id={ 'qp-viewports-block-style-' + clientId }>{ css }</style>;
 }

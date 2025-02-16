@@ -10,6 +10,9 @@ const {
 	components: {
 		ToolbarGroup,
 	},
+	element: {
+		useEffect,
+	},
 	hooks: {
 		addFilter,
 	}
@@ -26,9 +29,6 @@ addFilter( 'blocks.registerBlockType', 'quantumpress/viewports', ( block ) => {
 		},
 		inlineStyles: {
 			type: 'object',
-		},
-		tempId: {
-			type: 'string',
 		}
 	});
 

@@ -1,72 +1,20 @@
 import { STORE_NAME } from '../store';
 import { debug } from '../utils';
 
-const { isEqual, cloneDeep } = window[ 'lodash' ];
+const { cloneDeep } = window[ 'lodash' ];
 const {
-	blockEditor: {
-		useBlockProps,
-	},
 	data: {
 		useDispatch,
 		useSelect,
-		dispatch,
 		select,
 	},
 	element: {
-		useRef,
 		useLayoutEffect,
 		useEffect,
 		useState,
 		Component
 	}
 } = window[ 'wp' ];
-
-
-/**
- * Set function and var to register activation process 1000ms after the last block loaded.
- */
-let activeTimeout: any;
-const registerActivate = () => {
-	clearTimeout( activeTimeout );
-
-	activeTimeout = setTimeout( () => {
-		dispatch( STORE_NAME ).setActive();
-	}, 50 );
-}
-
-
-/**
- * Set function and var to register init process 1000ms after the last block has rendered its edit.
- */
-type InitMap = {
-	[ key : string ]: Function;
-};
-
-let initTimeout: any;
-let initMap = {} as InitMap;
-const registerInit = ( clientId, setAttributes ) => {
-	clearTimeout( initTimeout );
-
-	initMap[ clientId ] = setAttributes;
-
-	initTimeout = setTimeout( () => {
-		dispatch( STORE_NAME ).setReady();
-		dispatch( STORE_NAME ).unsetRegistering();
-
-		Object.entries( initMap ).forEach( ( [ clientId, setAttributes ] ) => {
-			setAttributes( { tempId: clientId } );
-		} );
-
-		debug(
-			'log',
-			'edit',
-			'successfully registered',
-			initMap
-		);
-
-		initMap = {};
-	}, 300 );
-}
 
 
 /**
@@ -85,75 +33,71 @@ export default function BlockEdit( blockArgs : any ) {
 	// Set store dispatchers.
 	const store = useDispatch( STORE_NAME );
 
-	// Set states.
+	// Set datastore state dependencies.
 	const {
-		isLoading,
 		isSaving,
-		isAutoSaving,
 		iframeViewport,
 		lastEdit,
 	} = useSelect( ( select : Function ) => {
 		const store = select( STORE_NAME );
 
 		return {
+			isSaving: store.isSaving(),
 			isActive: store.isActive(),
 			isEditing: store.isEditing(),
 			isLoading: store.isLoading(),
-			isSaving: store.isSaving(),
-			isAutoSaving: store.isAutoSaving(),
 			viewport: store.getViewport(),
 			iframeViewport: store.getIframeViewport(),
 			lastEdit: store.getLastEdit(),
 		};
 	}, [] );
 
-	// Set useState handler.
-	const [ updateTempId,                     setUpdateTempId ] = useState( true );
-	const [ updateSelected,                 setUpdateSelected ] = useState( false );
+	// Set useState indicator flags.
+	const [ isReady, setIsReady ] = useState( false );
+	const [ isRegistered, setIsRegistered ] = useState( false );
+	const [ isRegistering, setIsRegistering ] = useState( true );
+	const [ updateSelected, setUpdateSelected ] = useState( false );
 	const [ updateSelectedViewport, setUpdateSelectedViewport ] = useState( false );
 
 
-	// Set useEffect to handle first init after render.
-	useLayoutEffect( () => {
-		attributes.tempId = clientId;
-
-		store.setRegistering();
-		store.registerBlockInit( clientId, blockName, attributes );
-
-		registerInit( clientId, setAttributes );
+	// Set useEffect on mount to skip first render cycle via state delay.
+	useEffect( () => {
+		setIsReady( true );
 	}, [] );
 
 
-	// Set useEffect to handle first init after render.
-	useEffect( () => {
-		if( '' === attributes.tempId ) {
-			return;
-		}
-
-		if( attributes.tempId !== clientId ) {
-			console.error( 'This task should not run!' );
-
-			store.setRegistering();
-			store.removeBlock( attributes.tempId );
-			store.registerBlockInit( clientId, blockName, attributes );
-
-			registerInit( clientId, setAttributes );
-		}
-
-	}, [ attributes.tempId ] );
-
-
-	// Use useEffect to handle loading updates to transition into active.
+	// Set useEffect on isReady flag to register block in viewports datastore.
 	useLayoutEffect( () => {
-		if( ! isLoading ) {
+		if( ! isReady ) {
 			return;
 		}
 
-		registerActivate();
-	}, [ isLoading ] );
+		// Register block in datastore.
+		store.registerBlockInit( clientId, blockName, attributes );
+
+		// Init with fresh data from datastore after register.
+		const saves = select( STORE_NAME ).getGeneratedBlockSaves( clientId );
+		const inlineStyle = select( STORE_NAME ).getInlineStyle( clientId );
+
+		// Update viewports attributes.
+		setAttributes( {
+			viewports: saves,
+			inlineStyles: inlineStyle,
+		} );
+
+	}, [ isReady ] );
 
 
-	// Use useEffect to handle changes in viewport simulation.
+	// Set useEffect on isSaving to handle viewports datastore and block attributes cleanup.
+	useEffect( () => {
+		if( isSaving ) {
+			store.saveBlock( clientId, blockName );
+		}
+
+	}, [ isSaving ] );
+
+
+	// Set useEffect on selected block to update its attributes by user interactions with viewports.
 	useLayoutEffect( () => {
 		if( ! isSelected ) {
 			return;
@@ -171,21 +115,23 @@ export default function BlockEdit( blockArgs : any ) {
 	}, [ iframeViewport, isSelected, lastEdit ] );
 
 
-	// Use useEffect to handle updates on selected block via viewport change.
-	useLayoutEffect( () => {
+	// Set useEffect on updating selected block to update its attributes silently.
+	useEffect( () => {
 		if( ! updateSelectedViewport ) {
 			return;
 		}
 
-		// Set valids to inject.
+		// Set valids running on actual viewport.
+		const saves = select( STORE_NAME ).getGeneratedBlockSaves( clientId );
 		const valids = select( STORE_NAME ).getViewportBlockValids( clientId );
-		const newAttributes = {
-			... cloneDeep( valids ),
-			tempId: clientId,
-		}
+		const inlineStyle = select( STORE_NAME ).getInlineStyle( clientId );
 
-		// Update states.
-		setAttributes( newAttributes );
+		// Set attributes without change listening.
+		setAttributes( {
+			... valids,
+			viewports: saves,
+			inlineStyles: inlineStyle,
+		} );
 		setUpdateSelected( true );
 
 	}, [ updateSelectedViewport ] );
@@ -197,6 +143,7 @@ export default function BlockEdit( blockArgs : any ) {
 			return;
 		}
 
+		// Reset states to listen again.
 		setUpdateSelectedViewport( false );
 		setUpdateSelected( false );
 
@@ -211,14 +158,10 @@ export default function BlockEdit( blockArgs : any ) {
 			return;
 		}
 
-		// Skip on save.
-		if( isSaving || isAutoSaving ) {
-			return;
-		}
-
 		// Skip and reset on updateTempId to ignore just the init rerender.
-		if( updateTempId ) {
-			setUpdateTempId( false );
+		if( ! isRegistered && isRegistering ) {
+			setIsRegistered( true );
+			setIsRegistering( false );
 			return;
 		}
 
@@ -234,9 +177,7 @@ export default function BlockEdit( blockArgs : any ) {
 			return;
 		}
 
-		// Here we finally indicate that we need to organize a change in datastore.
-		const storeId = attributes.tempId && '' !== attributes.tempId ? attributes.tempId : clientId;
-
+		// Debug statement when running attribute change detection.
 		debug(
 			'log',
 			'edit',
@@ -244,9 +185,17 @@ export default function BlockEdit( blockArgs : any ) {
 			attributes
 		);
 
-		store.updateBlockChanges( storeId, blockName, attributes );
+		// Give datastore check the changes in attributes.
+		store.updateBlockChanges( clientId, blockName, attributes );
+
+		// Update viewports attributes on every potential attribute.style change.
+		setAttributes( {
+			viewports: select( STORE_NAME ).getGeneratedBlockSaves( clientId ),
+			inlineStyles: select( STORE_NAME ).getInlineStyle( clientId ),
+		} );
 
 	}, [ attributes?.style ] );
+
 
 	// Check if block.edit is a function or class component to return its edit function.
 	const isClassComponent = typeof block.edit === 'function' && block.edit.prototype instanceof Component;

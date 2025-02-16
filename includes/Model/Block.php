@@ -148,11 +148,6 @@ class Block {
 	public function modifySave()
 	{
 
-		// Cleanup the tempId - it will only get used in React Runtime.
-		if( isset( $this->attrs[ 'tempId' ] ) ) {
-			unset( $this->attrs[ 'tempId' ] );
-		}
-
 		// Modify inline styles if there are styles.
 		if( isset( $this->attrs[ 'style' ] ) ) {
 			$this->modifySaveStyles();

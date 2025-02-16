@@ -184,22 +184,17 @@ const Keyframes = () => {
 
 		const {
 			clientId,
-			attributes: {
-				tempId,
-			}
 		} = selected;
 
-		const storeId = tempId ? tempId : clientId as string;
-
 		return {
-			storeId,
+			clientId,
 			viewport: store.getViewport(),
 			iframeSize: store.getIframeSize(),
 			iframeViewport: store.getIframeViewport(),
 			viewports: store.getViewports(),
 			isActive: store.isActive(),
 			isInspecting: store.isInspecting(),
-			spectrumSet: store.getSpectrumSet( storeId ),
+			spectrumSet: store.getSpectrumSet( clientId ),
 		}
 	}, [] );
 
