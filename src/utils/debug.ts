@@ -58,7 +58,7 @@ function getDebugSections() : DebugSection[] | true {
 }
 
 // Set global debugging options.
-const debugOptions: DebugOptions = {
+export const debugOptions: DebugOptions = {
 	enabled: isDebugEnabled(),
 	sections: getDebugSections(),
 };

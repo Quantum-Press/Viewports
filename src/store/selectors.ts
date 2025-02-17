@@ -1,17 +1,18 @@
 import type { Size } from '../hooks';
-import type { Attributes } from '../utils';
 import type {
 	State,
 	RendererSet,
 	RendererPropertySet,
 	SpectrumSet,
 	InlineStyleSet,
-	ViewportStyle,
+	ViewportStyleSets,
 	IndicatorSelectorSet,
-} from './types';
+	BlockStyles,
+} from '../types';
 
 import {
-	getMergedAttributes,
+	findObjectChanges,
+	getMergedObject,
 	traverseFilled,
 	traverseGet,
 } from '../utils';
@@ -20,7 +21,6 @@ import {
 	isInTabletRange,
 	isInDesktopRange,
 	findCleanedChanges,
-	findObjectChanges,
 	clearEmptySaves,
 	clearDuplicateSaves,
 } from './utils';
@@ -461,7 +461,7 @@ export const getGeneratedBlockSaves = ( state : State, clientId : string ) : obj
 	}
 
 	// Set merged blockSaves.
-	blockSaves = getMergedAttributes( blockSaves, blockChanges );
+	blockSaves = getMergedObject( blockSaves, blockChanges );
 
 	// Cleanup saves from removes.
 	blockSaves = findCleanedChanges( blockSaves, blockRemoves );
@@ -470,7 +470,12 @@ export const getGeneratedBlockSaves = ( state : State, clientId : string ) : obj
 	blockSaves = clearEmptySaves( blockSaves );
 	blockSaves = clearDuplicateSaves( blockSaves );
 
-	// if( hasBlockRemoves ) { console.log( 'after clean', { ... blockSaves } ); }
+	// Set viewport 0 if not set.
+	if( ! blockSaves.hasOwnProperty( 0 ) ) {
+		blockSaves[ 0 ] = {
+			style: {},
+		}
+	}
 
 	// Return cleaned blockSaves.
 	return blockSaves;
@@ -561,15 +566,14 @@ export const getBlockValids = ( state : State, clientId : string ) : object => {
 export const getViewportBlockValids = ( state : State, clientId : string ) : object => {
 	const { viewports, iframeViewport, saves, changes, removes } = state;
 
-	const blockSaves = cloneDeep( traverseGet( [ clientId ], saves, {} ) ) as ViewportStyle;
-	const blockChanges = cloneDeep( traverseGet( [ clientId ], changes, {} ) ) as ViewportStyle;
-	const blockRemoves = cloneDeep( traverseGet( [ clientId ], removes, {} ) ) as ViewportStyle;
+	const blockSaves = cloneDeep( traverseGet( [ clientId ], saves, {} ) ) as ViewportStyleSets;
+	const blockChanges = cloneDeep( traverseGet( [ clientId ], changes, {} ) ) as ViewportStyleSets;
+	const blockRemoves = cloneDeep( traverseGet( [ clientId ], removes, {} ) ) as ViewportStyleSets;
 
-	const merged = findObjectChanges( getMergedAttributes( blockSaves, blockChanges ), blockRemoves );
-	const blockValids : ViewportStyle = {
+	const merged = findObjectChanges( getMergedObject( blockSaves, blockChanges ), blockRemoves );
+	const blockValids : ViewportStyleSets = {
 		0: {
 			style: {},
-			viewports: {},
 		},
 	};
 
@@ -584,7 +588,7 @@ export const getViewportBlockValids = ( state : State, clientId : string ) : obj
 		}
 
 		if ( merged.hasOwnProperty( viewport ) ) {
-			blockValids[ viewport ] = getMergedAttributes( lastBlockValids, merged[ viewport ] );
+			blockValids[ viewport ] = getMergedObject( lastBlockValids, merged[ viewport ] );
 		} else {
 			blockValids[ viewport ] = lastBlockValids;
 		}
@@ -675,7 +679,7 @@ export const getRendererSet = ( state : State, key : string ) : false | Renderer
  * @param {State} state current
  * @param {object} style
  */
-export const needsRenderer = ( state : State, style : Attributes ) : boolean => {
+export const needsRenderer = ( state : State, style : BlockStyles ) : boolean => {
 	let need = false;
 	for( const [ prop ] of Object.entries( style ) ) {
 		if( state.renderer.hasOwnProperty( prop ) ) {

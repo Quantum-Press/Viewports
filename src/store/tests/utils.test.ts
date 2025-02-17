@@ -24,11 +24,11 @@ import {
 	findBlockSaves,
 	clearEmptySaves,
 	findBlockDifferences,
-	findObjectChanges,
 	findBlockValids,
 	findRemoves,
 	findCleanedChanges,
 } from '../utils';
+import { findObjectChanges } from '../../utils';
 
 describe( 'store utils', () => {
 
@@ -223,7 +223,6 @@ describe( 'store utils', () => {
 					},
 				},
 			},
-			475: {},
 			768: {},
 			1024: {
 				style: {

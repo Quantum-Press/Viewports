@@ -1,4 +1,5 @@
 import { STORE_NAME } from '../store';
+import { BlockEditProps } from '../types';
 
 const {
 	data: {
@@ -8,18 +9,14 @@ const {
 } = window[ 'wp' ];
 
 /**
- * Set function to render blockStyle depending on outer state.
+ * Export functional BlockStyle component to handle block changes.
  */
-export default function BlockStyle( props : any ) {
-
-	// Deconstruct props.
+export default function BlockStyle( { props } : { props: BlockEditProps } ) {
 	const {
-		block: {
-			clientId,
-		}
+		clientId,
 	} = props;
 
-	// Set state dependencies.
+	// Set datastore dependencies.
 	useSelect( ( select : Function ) => {
 		const store = select( STORE_NAME );
 
@@ -29,10 +26,10 @@ export default function BlockStyle( props : any ) {
 		};
 	}, [] );
 
-	// Set css from store.
+	// Get CSS from datastore.
 	const css = select( STORE_NAME ).getCSS( clientId );
 
-	// Check if we have css to render.
+	// Return empty if there is no css.
 	if ( '' === css ) {
 		return null;
 	}

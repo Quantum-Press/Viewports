@@ -1,27 +1,46 @@
-import type { Attributes } from '../utils';
 import { STORE_NAME } from '../store/constants';
-import { debug } from '../utils';
+import { debug, debugOptions } from '../utils';
+import { Block, BlockSaveProps } from '../types';
 
 const {
 	data: {
 		select,
-		dispatch,
 	},
 } = window[ 'wp' ];
 
-
 /**
- * Set function to render blockSave wrapped in a higher order component.
+ * Export functional BlockSave component to handle block changes.
  */
-export const BlockSave = ( { block, props }: { block: Attributes, props: Attributes } ) => {
+export const BlockSave = ( { block, props } : { block: Block, props: BlockSaveProps } ) => {
+
+	// Cleanup attributes.viewports if empty.
 	if( props.attributes.hasOwnProperty( 'viewports' ) && props.attributes.viewports && 0 === Object.keys( props.attributes.viewports ).length ) {
 		delete props.attributes.viewports;
 	}
 
-	if( 'swoosh-bogen-small' === props.attributes.className ) {
-		console.log( 'save', props );
+	// Cleanup attributes.inlineStyles if empty.
+	if( props.attributes.hasOwnProperty( 'inlineStyles' ) && props.attributes.inlineStyles && 0 === Object.keys( props.attributes.inlineStyles ).length ) {
+		delete props.attributes.inlineStyles;
 	}
 
+	// Debug saved attributes on enabled debug.
+	if( debugOptions.enabled && props.attributes.viewports && Object.keys( props.attributes.viewports ).length ) {
+		const isSaving = select( STORE_NAME ).isSaving();
+		if( isSaving ) {
+			debug(
+				'log',
+				'save',
+				block.name + ' block with viewports',
+				{
+					style: props.attributes.style,
+					viewports: props.attributes.viewports,
+					inlineStyles: props.attributes.inlineStyles,
+				}
+			);
+		}
+	}
+
+	// Return the result of inherited save component.
 	return block.save( props );
 }
 

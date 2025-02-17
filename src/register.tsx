@@ -1,3 +1,8 @@
+import type {
+	Block,
+	BlockEditProps,
+	BlockSaveProps,
+} from './types';
 import BlockEdit from './block/edit';
 import BlockSave from './block/save';
 import BlockStyle from './block/style';
@@ -10,19 +15,16 @@ const {
 	components: {
 		ToolbarGroup,
 	},
-	element: {
-		useEffect,
-	},
 	hooks: {
 		addFilter,
 	}
 } = window[ 'wp' ];
 
 
-// Filter to modify block registration
-addFilter( 'blocks.registerBlockType', 'quantumpress/viewports', ( block ) => {
+// Filter into all blocks register to wrap around block.edit and block.save.
+addFilter( 'blocks.registerBlockType', 'quantumpress/viewports', ( block : Block ) => {
 
-	// Merge new attributes with the old ones.
+	// Add viewports attributes.
 	Object.assign( block.attributes, {
 		viewports: {
 			type: 'object',
@@ -32,14 +34,14 @@ addFilter( 'blocks.registerBlockType', 'quantumpress/viewports', ( block ) => {
 		}
 	});
 
-	// Return a new block object.
+	// Return wrapped edit and save.
 	return {
 		... block,
-		edit( props ) {
+		edit( props : BlockEditProps ) {
 			return (
 				<>
 					<BlockEdit block={ block } props={ props } />
-					<BlockStyle block={ props } />
+					<BlockStyle props={ props } />
 					<BlockControls>
 						<ToolbarGroup>
 							<ToggleInspecting
@@ -51,7 +53,7 @@ addFilter( 'blocks.registerBlockType', 'quantumpress/viewports', ( block ) => {
 			);
 		},
 
-		save( props ) {
+		save( props : BlockSaveProps ) {
 			return <BlockSave block={ block } props={ props } />
 		}
 	};

@@ -1,4 +1,6 @@
-import type { Spectrum } from '../../store';
+import type {
+	Spectrum
+} from '../../types';
 import { STORE_NAME } from '../../store';
 import { useHighlightProperty } from '../../hooks';
 

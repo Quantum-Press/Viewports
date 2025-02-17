@@ -1,4 +1,4 @@
-import type { State, Viewports, ViewportsConfig } from './types';
+import type { State, Viewports, ViewportsConfig } from '../types';
 
 const {
 	styleEngine: {

@@ -1,5 +1,5 @@
-import type { Action, Viewports, ViewportType } from './';
-import type { Attributes } from '../utils';
+import type { Action, Viewports, viewportType } from './../types';
+import type { BlockAttributes } from '../types';
 import type { Size } from '../hooks';
 
 
@@ -36,11 +36,11 @@ export const setViewport = ( viewport : number ) : Action => {
 /**
  * Set Action that updates viewportType.
  *
- * @param {ViewportType} viewportType
+ * @param {viewportType} viewportType
  *
  * @return {Action}
  */
-export const setViewportType = ( viewportType : ViewportType ) : Action => {
+export const setViewportType = ( viewportType : viewportType ) : Action => {
 	return {
 		type: 'SET_VIEWPORT_TYPE',
 		viewportType,
@@ -51,11 +51,11 @@ export const setViewportType = ( viewportType : ViewportType ) : Action => {
 /**
  * Set Action that updates to prev viewport.
  *
- * @param {ViewportType} viewportType
+ * @param {viewportType} viewportType
  *
  * @return {Action}
  */
-export const setPrevViewport = ( viewportType : ViewportType = '' ) : Action => {
+export const setPrevViewport = ( viewportType : viewportType = '' ) : Action => {
 	return {
 		type: 'SET_PREV_VIEWPORT',
 		viewportType,
@@ -66,11 +66,11 @@ export const setPrevViewport = ( viewportType : ViewportType = '' ) : Action => 
 /**
  * Set Action that updates to next viewport.
  *
- * @param {ViewportType} viewportType
+ * @param {viewportType} viewportType
  *
  * @return {Action}
  */
-export const setNextViewport = ( viewportType : ViewportType = '' ) : Action => {
+export const setNextViewport = ( viewportType : viewportType = '' ) : Action => {
 	return {
 		type: 'SET_NEXT_VIEWPORT',
 		viewportType,
@@ -399,14 +399,14 @@ export const toggleMobile = () : Action => {
  *
  * @param {string} clientId
  * @param {string} blockName
- * @param {Attributes} attributes
+ * @param {BlockAttributes} attributes
  *
  * @return {Action}
  */
 export const registerBlockInit = (
 	clientId : string,
 	blockName : string,
-	attributes : Attributes
+	attributes : BlockAttributes
 ) : Action => {
 	return {
 		type: 'REGISTER_BLOCK_INIT',
@@ -422,7 +422,7 @@ export const registerBlockInit = (
  *
  * @param {string} clientId
  * @param {string} blockName
- * @param {Attributes} attributes
+ * @param {BlockAttributes} attributes
  * @param {number | null} viewport
  *
  * @return {Action}
@@ -430,7 +430,7 @@ export const registerBlockInit = (
 export const updateBlockChanges = (
 	clientId : string,
 	blockName : string,
-	attributes : Attributes,
+	attributes : BlockAttributes,
 	viewport : number = null
 ) : Action => {
 	return {
@@ -473,7 +473,6 @@ export const addBlockPropertyChanges = (
  * Set Action to remove block.
  *
  * @param {string} clientId
- * @param {string} blockName
  *
  * @return {Action}
  */

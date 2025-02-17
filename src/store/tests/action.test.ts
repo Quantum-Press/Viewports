@@ -275,7 +275,6 @@ describe( 'store actions', () => {
 		const check = {
 			type: 'REMOVE_BLOCK',
 			clientId: 'client-id',
-			blockName: 'core/group',
 		};
 		const result = removeBlock( 'client-id' );
 

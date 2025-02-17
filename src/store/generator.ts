@@ -1,7 +1,7 @@
 import type {
 	RendererSet,
-	ViewportStyle,
-	Styles,
+	ViewportStyleSets,
+	BlockStyles,
 	CSSProperties,
 	CSSCollectionSet,
 	CSSViewportSet,
@@ -11,12 +11,20 @@ import type {
 	Spectrum,
 	SpectrumState,
 	InlineStyleSet,
-	ViewportStyleSet,
-} from '../store';
-import { getMergedAttributes, traverseGet } from '../utils';
-import { findObjectChanges, findObjectDifferences } from './utils';
+} from '../types';
+import {
+	getMergedObject,
+	findObjectChanges,
+	findObjectDifferences,
+	traverseGet,
+} from '../utils';
 
-const { isEqual, isEmpty, isObject, cloneDeep } = window[ 'lodash' ];
+const {
+	isEqual,
+	isEmpty,
+	isObject,
+	cloneDeep
+} = window[ 'lodash' ];
 
 /**
  * Set class to handle style generation by block attributes.
@@ -93,18 +101,18 @@ export class Generator {
 		};
 
 		// Set combined valids + removes from store to build rules from.
-		let combined = {} as ViewportStyle;
+		let combined = {} as ViewportStyleSets;
 		if( isObject( this.state.valids ) && isObject( this.state.removes ) ) {
-			combined = getMergedAttributes( cloneDeep( this.state.removes ), cloneDeep( this.state.valids ) ) as ViewportStyle;
+			combined = getMergedObject( cloneDeep( this.state.removes ), cloneDeep( this.state.valids ) ) as ViewportStyleSets;
 		} else {
 			combined = cloneDeep( this.state.valids );
 		}
 
 		// Set initial states.
 		const ruleSet = [] as RuleSet;
-		let prevStyle = {} as Styles;
-		let prevValids = {} as Styles;
-		let prevRemoves = {} as Styles;
+		let prevStyle = {} as BlockStyles;
+		let prevValids = {} as BlockStyles;
+		let prevRemoves = {} as BlockStyles;
 
 		// Iterate over block valids.
 		Object.entries( combined ).forEach( ( [ viewportDirty, { style } ] ) => {
@@ -121,7 +129,7 @@ export class Generator {
 				}
 
 				// Set collapsed viewportStyleSet of saves till actual viewport.
-				const collapsedSavesSet = this.collapseViewportStyleSet( this.state.saves, viewport );
+				const collapsedSavesSet = this.collapseViewportStyleSets( this.state.saves, viewport );
 
 				// Iterate over properties to handle each seperately.
 				for( const [ property ] of Object.entries( style ) ) {
@@ -162,7 +170,7 @@ export class Generator {
 					} else if( ( ! isEmpty( valids ) && isEmpty( removes ) ) || isEqual( valids, removes ) ) {
 						combined = valids;
 					} else if( ! isEqual( valids, removes ) ) {
-						combined = getMergedAttributes( valids, removes );
+						combined = getMergedObject( valids, removes );
 					} else {
 						combined = valids;
 					}
@@ -535,18 +543,18 @@ export class Generator {
 	/**
 	 * Set method to collapse a viewportStyleSet.
 	 */
-	collapseViewportStyleSet( viewportStyleSet : ViewportStyleSet, tillViewport : number ) {
-		const stylesToMerge: Styles[] = [];
+	collapseViewportStyleSets( viewportStyleSets : ViewportStyleSets, tillViewport : number ) {
+		const stylesToMerge: BlockStyles[] = [];
 
-		for( const [ dirtyViewport, viewportStyle ] of Object.entries( viewportStyleSet ) ) {
+		for( const [ dirtyViewport, viewportStyleSet ] of Object.entries( viewportStyleSets ) ) {
 			const viewport = parseInt( dirtyViewport );
 
 			if( tillViewport >= viewport ) {
-				stylesToMerge.push( viewportStyle.style );
+				stylesToMerge.push( viewportStyleSet.style );
 			}
 		}
 
-		return getMergedAttributes( ... stylesToMerge );
+		return getMergedObject( ... stylesToMerge );
 	}
 
 
@@ -781,5 +789,3 @@ export class Generator {
 }
 
 export default Generator;
-
-export type { RuleSet, Rule, SpectrumSet, Spectrum };

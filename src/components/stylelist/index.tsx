@@ -1,4 +1,5 @@
-import { SpectrumSet, STORE_NAME } from '../../store';
+import { STORE_NAME } from '../../store';
+import { SpectrumSet } from '../../types';
 import Style from './style';
 
 const {

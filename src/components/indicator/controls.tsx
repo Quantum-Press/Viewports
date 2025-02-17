@@ -1,4 +1,5 @@
-import { isInTabletRange, isInDesktopRange, getInRange, SpectrumSet, ViewportType, STORE_NAME } from '../../store';
+import { STORE_NAME } from '../../store';
+import { SpectrumSet, viewportType } from '../../types';
 import { StyleList } from '../stylelist';
 import ToggleEdit from '../toggle/edit';
 
@@ -23,7 +24,7 @@ const {
 /**
  * Renders Popover UI for actual viewportTyoe.
  *
- * @param {ViewportType} viewportType - The current viewport type.
+ * @param {viewportType} viewportType - The current viewport type.
  *
  * @returns {JSX.Element | null} - The rendered component or null if conditions aren't met.
  */
@@ -40,7 +41,7 @@ export const IndicatorControls = ( {
 	setIsVisible : Function,
 	isEditing : boolean,
 	storeId : string,
-	viewportType : ViewportType,
+	viewportType : viewportType,
 	iframeViewport : number,
 	spectrumSet : SpectrumSet
 } ) => {

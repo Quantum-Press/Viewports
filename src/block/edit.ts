@@ -1,7 +1,10 @@
 import { STORE_NAME } from '../store';
+import {
+	Block,
+	BlockEditProps
+} from '../types';
 import { debug } from '../utils';
 
-const { cloneDeep } = window[ 'lodash' ];
 const {
 	data: {
 		useDispatch,
@@ -16,12 +19,14 @@ const {
 	}
 } = window[ 'wp' ];
 
+const {
+	cloneDeep,
+} = window[ 'lodash' ];
 
 /**
- * Set function to render blockEdit wrapped in a higher order component, depending on viewports changes.
+ * Export functional BlockEdit component to handle block changes.
  */
-export default function BlockEdit( blockArgs : any ) {
-	const { block, props } = blockArgs;
+export default function BlockEdit( { block, props } : { block: Block, props: BlockEditProps } ) {
 	const {
 		name: blockName,
 		setAttributes,
@@ -74,6 +79,18 @@ export default function BlockEdit( blockArgs : any ) {
 
 		// Register block in datastore.
 		store.registerBlockInit( clientId, blockName, attributes );
+
+		// Debug statement.
+		if( attributes.hasOwnProperty( 'viewports' ) && attributes.viewports && Object.keys( attributes.viewports ).length ) {
+			// Debug statement when running attribute change detection.
+			debug(
+				'log',
+				'init',
+				'init with viewports',
+				attributes,
+			);
+		}
+
 
 		// Init with fresh data from datastore after register.
 		const saves = select( STORE_NAME ).getGeneratedBlockSaves( clientId );
@@ -128,7 +145,7 @@ export default function BlockEdit( blockArgs : any ) {
 
 		// Set attributes without change listening.
 		setAttributes( {
-			... valids,
+			... cloneDeep( valids ),
 			viewports: saves,
 			inlineStyles: inlineStyle,
 		} );
@@ -188,10 +205,13 @@ export default function BlockEdit( blockArgs : any ) {
 		// Give datastore check the changes in attributes.
 		store.updateBlockChanges( clientId, blockName, attributes );
 
+		const saves = select( STORE_NAME ).getGeneratedBlockSaves( clientId );
+		const inlineStyle = select( STORE_NAME ).getInlineStyle( clientId );
+
 		// Update viewports attributes on every potential attribute.style change.
 		setAttributes( {
-			viewports: select( STORE_NAME ).getGeneratedBlockSaves( clientId ),
-			inlineStyles: select( STORE_NAME ).getInlineStyle( clientId ),
+			viewports: saves,
+			inlineStyles: inlineStyle,
 		} );
 
 	}, [ attributes?.style ] );

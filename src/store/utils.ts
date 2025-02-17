@@ -1,16 +1,33 @@
 import {
 	isObject,
-	getMergedAttributes,
+	getMergedObject,
 	traverseGet,
 	traverseExist,
+	cleanupObject,
+	findObjectDifferences,
+	findObjectChanges,
+	findChanges,
 } from '../utils';
 import {
 	tabletBreakpoint,
 	desktopBreakpoint,
 } from './default';
 import { Generator } from './generator';
-import type { Attributes } from '../utils';
-import type { Styles, SpectrumState, SpectrumProperties, State, ViewportStyle, ViewportStyleSet, BlockDifferences, Viewports, ViewportType, SpectrumSet } from './types';
+import type {
+	clientId,
+	BlockStyles,
+	SpectrumState,
+	SpectrumProperties,
+	State,
+	ViewportStyleSets,
+	BlockDifferences,
+	Viewports,
+	viewportType,
+	SpectrumSet,
+	viewport,
+	BlockAttributes,
+	AnyObject
+} from '../types';
 
 const {
 	isEqual,
@@ -23,7 +40,7 @@ const {
 /**
  * Set function to indicate whether given viewport is in range of desktop size.
  *
- * @param {integer} viewport
+ * @param {number} viewport
  *
  * @return {boolean} indication
  */
@@ -39,7 +56,7 @@ export const isInDesktopRange = ( viewport : number ) : boolean => {
 /**
  * Set function to indicate whether given viewport is in range of tablet size.
  *
- * @param {integer} viewport
+ * @param {number} viewport
  *
  * @return {boolean} indication
  */
@@ -55,7 +72,7 @@ export const isInTabletRange = ( viewport : number ) : boolean => {
 /**
  * Set function to indicate whether given viewport is in range of mobile size.
  *
- * @param {integer} viewport
+ * @param {number} viewport
  *
  * @return {boolean} indication
  */
@@ -71,8 +88,8 @@ export const isInMobileRange = ( viewport : number ) : boolean => {
 /**
  * Set function to get the prev viewport from viewports.
  *
- * @param {integer} viewport
- * @param {integer} viewports
+ * @param {number} viewport
+ * @param {Viewports} viewports
  *
  * @return {number}
  */
@@ -96,8 +113,8 @@ export const getPrevViewport = ( viewport : number, viewports : Viewports ) : nu
 /**
  * Set function to get the next viewport from viewports.
  *
- * @param {integer} viewport
- * @param {integer} viewports
+ * @param {number} viewport
+ * @param {Viewports} viewports
  *
  * @return {number}
  */
@@ -121,12 +138,12 @@ export const getNextViewport = ( viewport : number, viewports : Viewports ) : nu
 /**
  * Set function to get the prev viewport from viewports.
  *
- * @param {ViewportType} viewportType
+ * @param {viewportType} viewportType
  * @param {Viewports} viewports
  *
  * @return {Viewports}
  */
-export const getViewports = ( viewportType : ViewportType, viewports : Viewports ) : Viewports => {
+export const getViewports = ( viewportType : viewportType, viewports : Viewports ) : Viewports => {
 	const cleaned = {};
 
 	switch( viewportType ) {
@@ -172,13 +189,14 @@ export const getViewports = ( viewportType : ViewportType, viewports : Viewports
 
 
 /**
- * Set function to get the highest possible viewport for actual maxWidth.
+ * Set function to get the highest possible viewport for given width in px.
  *
- * @param {object} viewports
+ * @param {Viewports} viewports
+ * @param {number} width
  *
- * @return {integer} highest viewport
+ * @return {number} highest viewport
  */
-export const getHighestPossibleViewport = ( viewports : object, width : number ) : number => {
+export const getHighestPossibleViewport = ( viewports : Viewports, width : number ) : number => {
 
 	// Iterates over the viewports and returns the highest possible viewport
 	// smaller than the iframe width.
@@ -199,11 +217,11 @@ export const getHighestPossibleViewport = ( viewports : object, width : number )
 /**
  * Set function to return in range function for given viewportType.
  *
- * @param {ViewportType} viewportType
+ * @param {viewportType} viewportType
  *
- * @return {Function}
+ * @return {Function|null}
  */
-export const getInRange = ( viewportType : ViewportType ) : Function => {
+export const getInRange = ( viewportType : viewportType ) : Function|null => {
 	let inRange = null;
 
 	switch( viewportType ) {
@@ -224,16 +242,15 @@ export const getInRange = ( viewportType : ViewportType ) : Function => {
 }
 
 
-
 /**
  * Set function to indicate whether spectrumSet has given viewportType.
  *
- * @param {ViewportType} viewportType
+ * @param {viewportType} viewportType
  * @param {SpectrumSet} spectrumSet
  *
  * @return {boolean}
  */
-export const hasSpectrumSetViewportType = ( viewportType : ViewportType, spectrumSet : SpectrumSet ) =>  {
+export const hasSpectrumSetViewportType = ( viewportType : viewportType, spectrumSet : SpectrumSet ) : boolean =>  {
 	const inRange = getInRange( viewportType );
 
 	let hasSpectrumSet = false;
@@ -252,24 +269,24 @@ export const hasSpectrumSetViewportType = ( viewportType : ViewportType, spectru
 
 
 /**
- * Set function to clear empty saves.
+ * Set function to clear empty saves from ViewportStyleSets.
  *
- * @param {object} saves
+ * @param {ViewportStyleSets} saves
  *
- * @return {object} cleaned
+ * @return {ViewportStyleSets} cleaned saves
  */
-export const clearEmptySaves = ( saves : Attributes ) : Attributes => {
+export const clearEmptySaves = ( saves : ViewportStyleSets ) : ViewportStyleSets => {
 	if ( ! Object.keys( saves ).length ) {
 		return {};
 	}
 
-	let cleared : Attributes = {};
+	let cleared : ViewportStyleSets = {};
 
 	// Iterate over save entries.
 	for ( const [ dirtyViewport, { style } ] of Object.entries( saves ) ) {
 
 		// Check if we have viewport styles.
-		if ( isObject( style ) && Object.keys( style ).length ) {
+		if ( style && isObject( style ) && Object.keys( style ).length ) {
 			const viewport = parseInt( dirtyViewport );
 			const clearedProperties = clearEmptyProperties( style );
 
@@ -294,17 +311,17 @@ export const clearEmptySaves = ( saves : Attributes ) : Attributes => {
 
 
 /**
- * Set function to clear empty properties.
+ * Set function to clear empty properties from BlockStyles.
  *
- * @param {object} saves
+ * @param {BlockStyles} blockStyles
  *
- * @return {object} cleaned
+ * @return {BlockStyles} cleaned
  */
-export const clearEmptyProperties = ( properties : Styles ) : Styles => {
-	let cleared : Styles = {};
+export const clearEmptyProperties = ( blockStyles : BlockStyles ) : BlockStyles => {
+	let cleared : BlockStyles = {};
 
 	// Iterate over style properties.
-	for ( const [ property, styles ] of Object.entries( properties ) ) {
+	for ( const [ property, styles ] of Object.entries( blockStyles ) ) {
 		if ( styles && isObject( styles ) && Object.keys( styles ).length ) {
 
 			// Iterate over styles.
@@ -346,13 +363,13 @@ export const clearEmptyProperties = ( properties : Styles ) : Styles => {
 /**
  * Set function to clear empty saves.
  *
- * @param {object} saves
+ * @param {ViewportStyleSets} saves
  *
- * @return {object} cleaned
+ * @return {ViewportStyleSets} cleaned saves
  */
-export const clearDuplicateSaves = ( saves : Attributes ) : Attributes => {
-	var valids : Attributes = {};
-	var cleared : Attributes = {};
+export const clearDuplicateSaves = ( saves : ViewportStyleSets ) : ViewportStyleSets => {
+	let valids : ViewportStyleSets = {};
+	let cleared : ViewportStyleSets = {};
 
 	for( const [ dirtyViewport, styles ] of Object.entries( saves ) ) {
 		const viewport = parseInt( dirtyViewport );
@@ -382,14 +399,13 @@ export const clearDuplicateSaves = ( saves : Attributes ) : Attributes => {
 
 
 /**
- * Set function to find block saves.
+ * Set function to find block saves from BlockAttributes.
  *
- * @param {string} clientId
- * @param {object} attributes
+ * @param {BlockAttributes} attributes
  *
- * @return {Attributes} saves
+ * @return {ViewportStyleSets} saves
  */
-export const findBlockSaves = ( attributes : Attributes ) : Attributes => {
+export const findBlockSaves = ( attributes : BlockAttributes ) : ViewportStyleSets => {
 	const style = traverseGet( [ 'style' ], attributes ) || {};
 
 	let saves = {
@@ -401,7 +417,7 @@ export const findBlockSaves = ( attributes : Attributes ) : Attributes => {
 	const viewports = traverseGet( [ 'viewports' ], attributes ) || {}
 
 	if( Object.keys( viewports ).length ) {
-		saves = getMergedAttributes( saves, cloneDeep( viewports ) );
+		saves = getMergedObject( saves, cloneDeep( viewports ) );
 	}
 
 	return saves;
@@ -413,11 +429,11 @@ export const findBlockSaves = ( attributes : Attributes ) : Attributes => {
  *
  * @param {string} property
  * @param {number} actionViewport
- * @param {ViewportStyle} viewportStyle
+ * @param {ViewportStyleSets} viewportStyle
  *
  * @return {number} viewport
  */
-export const findHighestPropertyViewportStyle = ( property : string, actionViewport: number, viewportStyle : ViewportStyle ) : number => {
+export const findHighestPropertyViewportStyle = ( property : string, actionViewport: number, viewportStyle : ViewportStyleSets ) : number => {
 
 	// Reverse Iteration to get the latest from iframeViewport on.
 	const viewportsSaves = Object.keys( viewportStyle ).reverse();
@@ -440,69 +456,16 @@ export const findHighestPropertyViewportStyle = ( property : string, actionViewp
 
 
 /**
- * Set function to cleanu an object.
- *
- * @param {T} obj
- *
- * @return {T}
- */
-export const cleanupObject = <T extends object>( obj : T ) : T => {
-	for( const [ property, value ] of Object.entries( obj ) ) {
-		if( isNull( value ) || isUndefined( value ) ) {
-			delete obj[ property ];
-			continue;
-		}
-
-		if( isObject( value ) ) {
-			obj[ property ] = cleanupObject( value );
-		} else if( Array.isArray( value ) ) {
-			obj[ property ] = cleanupArray( value );
-		}
-	}
-
-	return obj;
-}
-
-
-/**
- * Set function to cleanup an array.
- *
- * @param {T} arr
- *
- * @return {T}
- */
-export const cleanupArray = <T extends Array<any>>( arr : T ) : T => {
-	for( let i = 0; i < arr.length; i++ ) {
-		const value = arr[ i ];
-
-		if( isNull( value ) || isUndefined( value ) ) {
-			continue;
-		}
-
-		if( isObject( value ) ) {
-			arr[ i ] = cleanupObject( value );
-		} else if( Array.isArray( value ) ) {
-			arr[ i ] = cleanupArray( value );
-		} else {
-			arr[ i ] = value;
-		}
-	}
-
-	return arr;
-}
-
-
-/**
  * Set function to find differences in block styles.
  *
- * @param {string} clientId
- * @param {Attributes} attributes
+ * @param {clientId} clientId
+ * @param {BlockAttributes} attributes
  * @param {State} state
  * @param {number} actionViewport
  *
  * @return {BlockDifferences}
  */
-export const findBlockDifferences = ( clientId : string, attributes : Attributes, state : State, actionViewport : number ) : BlockDifferences => {
+export const findBlockDifferences = ( clientId : clientId, attributes : BlockAttributes, state : State, actionViewport : number ) : BlockDifferences => {
 
 	// Deconstruct plain from state.
 	const {
@@ -514,7 +477,7 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
 	const selectedViewport = actionViewport ? actionViewport : iframeViewport ? iframeViewport : 0;
 
 	// Set styles from attributes.
-	const styles = cloneDeep( traverseGet( [ 'style' ], attributes) ) || {} as Styles;
+	const styles = cloneDeep( traverseGet( [ 'style' ], attributes) ) || {} as BlockStyles;
 
 	// Set next block states.
 	const nextBlockValids = cloneDeep( traverseGet( [ clientId ], state.valids ) ) || {};
@@ -603,7 +566,7 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
 
 
 	// Set viewport relating blockValids.
-	const viewportValids = traverseGet( [ selectedViewport, 'style' ], nextBlockValids, undefined ) as Styles;
+	const viewportValids = traverseGet( [ selectedViewport, 'style' ], nextBlockValids, undefined ) as BlockStyles;
 
 	// Check if we get a viewport valid.
 	if( isUndefined( viewportValids ) || isNull( viewportValids ) ) {
@@ -756,7 +719,7 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
 					const nextChanges = nextBlockChanges[ viewport ][ 'style' ][ property ];
 
 					if( isObject( nextChanges ) && isObject( changeValue ) ) {
-						nextBlockChanges[ viewport ][ 'style' ][ property ] = getMergedAttributes( nextBlockChanges[ viewport ][ 'style' ][ property ], changeValue );
+						nextBlockChanges[ viewport ][ 'style' ][ property ] = getMergedObject( nextBlockChanges[ viewport ][ 'style' ][ property ], changeValue );
 					} else {
 						nextBlockChanges[ viewport ][ 'style' ][ property ] = changeValue;
 					}
@@ -927,21 +890,21 @@ export const findBlockDifferences = ( clientId : string, attributes : Attributes
 
 
 /**
- * Set function to find block valids.
+ * Set function to find block valids from datastore.
  *
- * @param {string} clientId
- * @param {object} state
+ * @param {clientId} clientId
+ * @param {State} state
  *
- * @return {object} valids
+ * @return {ViewportStyleSets} valids
  */
-export const findBlockValids = ( clientId : string, state : State ) : Attributes => {
+export const findBlockValids = ( clientId : string, state : State ) : ViewportStyleSets => {
 	const { saves, changes, removes, viewports } = state;
 
 	const blockSaves = traverseGet( [ clientId ], saves ) || {};
 	const blockChanges = traverseGet( [ clientId ], changes ) || {};
 	const blockRemoves = traverseGet( [ clientId ], removes ) || {};
 
-	const blockValids : ViewportStyle = {
+	const blockValids : ViewportStyleSets = {
 		0: {
 			style: {},
 		},
@@ -953,11 +916,11 @@ export const findBlockValids = ( clientId : string, state : State ) : Attributes
 		const lastBlockValids = cloneDeep( blockValids[ last ] );
 
 		if( blockSaves.hasOwnProperty( viewport ) && blockChanges.hasOwnProperty( viewport ) ) {
-			blockValids[ viewport ] = getMergedAttributes( lastBlockValids, blockSaves[ viewport ], blockChanges[ viewport ] );
+			blockValids[ viewport ] = getMergedObject( lastBlockValids, blockSaves[ viewport ], blockChanges[ viewport ] );
 		} else if( blockSaves.hasOwnProperty( viewport ) && ! blockChanges.hasOwnProperty( viewport ) ) {
-			blockValids[ viewport ] = getMergedAttributes( lastBlockValids, blockSaves[ viewport ] );
+			blockValids[ viewport ] = getMergedObject( lastBlockValids, blockSaves[ viewport ] );
 		} else if( ! blockSaves.hasOwnProperty( viewport ) && blockChanges.hasOwnProperty( viewport ) ) {
-			blockValids[ viewport ] = getMergedAttributes( lastBlockValids, blockChanges[ viewport ] );
+			blockValids[ viewport ] = getMergedObject( lastBlockValids, blockChanges[ viewport ] );
 		} else {
 			blockValids[ viewport ] = lastBlockValids;
 		}
@@ -979,158 +942,52 @@ export const findBlockValids = ( clientId : string, state : State ) : Attributes
 
 
 /**
- * General function to find changes between two values (arrays or objects).
- *
- * @param {any} current - The current value state.
- * @param {any} original - The original value state.
- *
- * @return {any} changes - Detected changes.
- */
-const findChanges = ( current: any, original: any ) : any => {
-	if( Array.isArray( current ) && Array.isArray( original ) ) {
-		return [ ... current ];
-	} else if ( isObject( current ) && isObject( original ) ) {
-		return findObjectChanges( current, original );
-	} else if ( ! isEqual( current, original ) ) {
-		return current; // Primitive or non-equal types
-	}
-
-	return undefined; // No changes detected
-};
-
-
-/**
- * Set function to find object changes.
- *
- * @param {object} attributes
- * @param {object} valids
- *
- * @return {object} changes
- */
-export const findObjectChanges = ( attributes : Attributes, valids : Attributes ) : Attributes => {
-	let changes : Attributes = {};
-
-	if( null === attributes || 'undefined' === typeof attributes ) {
-		return {};
-	}
-
-	// Iterate through attributes.
-	for ( const [ attributeKey, attributeValue ] of Object.entries( attributes ) ) {
-		const validValue = valids.hasOwnProperty( attributeKey ) ? valids[ attributeKey ] : undefined;
-
-		if( isEqual( attributeValue, validValue ) ) {
-			continue;
-		}
-
-		if ( isObject( attributeValue ) && isObject( validValue ) ) {
-			let subChanges = findObjectChanges( attributeValue, validValue );
-
-			if ( 0 < Object.keys( subChanges ).length ) {
-				changes[ attributeKey ] = { ... subChanges };
-			}
-
-			continue;
-		}
-
-		if( isObject( attributeValue ) ) {
-			changes[ attributeKey ] = { ... attributeValue };
-		} else if( Array.isArray( attributeValue ) ) {
-			changes[ attributeKey ] = [ ... attributeValue ];
-		} else {
-			changes[ attributeKey ] = attributeValue;
-		}
-	}
-
-	return changes;
-}
-
-
-type DeepPartial<T> = T extends (infer U)[] // Falls T ein Array ist
-  ? DeepPartial<U>[] // Wendet DeepPartial rekursiv auf den Typ der Elemente an
-  : T extends object // Falls T ein Objekt ist
-  ? { [K in keyof T]?: DeepPartial<T[K]> } // Wendet DeepPartial auf alle Schlüssel an
-  : T; // Andernfalls gibt den Typ selbst zurück
-
-/**
- * Funktion zur Ermittlung von Unterschieden zwischen zwei Objekten.
- *
- * @param {T} obj1 - Erstes Objekt
- * @param {T} obj2 - Zweites Objekt
- * @param {T} hard - Harter Vergleich zwischen
- *
- * @return {DeepPartial<T>} - Unterschiede zwischen obj1 und obj2
- */
-export const findObjectDifferences = <T extends Record<string, any> | any[]>( obj1: T, obj2: T, hard: boolean = false ): DeepPartial<T> => {
-
-	// Typanpassung für result, um es als DeepPartial<T> zu behandeln.
-	const result = ( Array.isArray( obj1 ) ? [] : {} ) as DeepPartial<T>;
-
-	for( const key in obj1 ) {
-		if( obj1.hasOwnProperty( key ) ) {
-			if( obj2.hasOwnProperty( key ) ) {
-				if( typeof obj1[ key ] === 'object' && obj1[ key ] !== null && typeof obj2[ key ] === 'object' && obj2[ key ] !== null ) {
-					const diff = findObjectDifferences( obj1[ key ], obj2[ key ] );
-
-					if( Object.keys( diff ).length > 0 ) {
-						( result as any )[ key ] = diff;
-					}
-				} else if( hard && obj1[ key ] !== obj2[ key ] ) {
-					( result as any ) [ key ] = obj1[ key ];
-				}
-			} else {
-				( result as any ) [ key ] = obj1[ key ];
-			}
-		}
-	}
-
-	return result;
-};
-
-
-/**
  * Set function to find removes by keys array.
  *
- * @param {array}  keys
- * @param {object} compare
+ * @param {Array<string>}  keys
+ * @param {T} compare
  *
- * @return {object} removes
+ * @return {T} removes
  */
-export const findRemoves = ( keys : Attributes, compare : Attributes ) : Attributes => {
-	const result : Attributes = {};
-	const key : string = keys.shift();
+export const findRemoves = <T extends AnyObject>(keys: Array<string>, compare: T ) : T => {
+	const result = {} as T;
+	const key: string | undefined = keys.shift();
 
-	if ( compare.hasOwnProperty( key ) ) {
-		compare = compare[ key ];
-		result[ key ] = {};
-	} else {
-		return {};
+	// Check if there is no key to return.
+	if( ! key || ! compare.hasOwnProperty( key ) ) {
+		return {} as T;
 	}
 
-	if ( 0 === keys.length && isObject( compare ) ) {
-		result[ key ] = compare;
+	let nextCompare = compare[key];
+
+	// If there are no keys left to iterate over, return result.
+	if( keys.length === 0 && isObject( nextCompare ) ) {
+		result[ key as keyof T ] = nextCompare;
 		return result;
 	}
 
-	if ( isObject( compare ) ) {
-		result[ key ] = findRemoves( keys, compare );
+	// Wenn der Wert ein Objekt ist, rekursiv fortfahren
+	if( isObject( nextCompare ) ) {
+		result[ key as keyof T ] = findRemoves( keys, nextCompare );
 	} else {
-		result[ key ] = compare;
+		result[ key as keyof T ] = nextCompare;
 	}
 
-	return result;
-}
+  return result;
+};
+
 
 
 /**
  * Set function to find cleaned changes with removes.
  *
- * @param {object} attributes
- * @param {object} removes
+ * @param {T} attributes
+ * @param {T} removes
  *
- * @return {object} cleaned
+ * @return {T} cleaned
  */
-export const findCleanedChanges = ( attributes : Attributes, removes : Attributes ) : Attributes => {
-	const cleaned = {};
+export const findCleanedChanges = <T extends AnyObject>(attributes: T, removes: T): T => {
+	const cleaned: T = {} as T;
 
 	if ( isEqual( attributes, removes ) ) {
 		return cleaned;
@@ -1138,14 +995,14 @@ export const findCleanedChanges = ( attributes : Attributes, removes : Attribute
 
 	for ( const [ attributeKey, attributeValue ] of Object.entries( cloneDeep( attributes ) ) ) {
 		if ( ! removes.hasOwnProperty( attributeKey ) ) {
-			cleaned[ attributeKey ] = attributeValue;
+			cleaned[ attributeKey as keyof T ] = attributeValue;
 			continue;
 		}
 
 		const removeValue = removes[ attributeKey ];
 
 		if ( isObject( attributeValue ) && isObject( removeValue ) ) {
-			cleaned[ attributeKey ] = findCleanedChanges( attributeValue, removeValue );
+			cleaned[ attributeKey as keyof T ] = findCleanedChanges( attributeValue, removeValue );
 		}
 	}
 
@@ -1156,16 +1013,16 @@ export const findCleanedChanges = ( attributes : Attributes, removes : Attribute
 /**
  * Set function to return spectrumSet from new generator.
  *
- * @param {string} clientId
+ * @param {clientId} clientId
  * @param {string} blockName
- * @param {SpectrumState} state
+ * @param {SpectrumState} spectrumState
  *
  * @return {SpectrumProperties}
  */
-export const getSpectrumProperties = ( clientId : string, blockName : string, state : SpectrumState ) : SpectrumProperties => {
+export const getSpectrumProperties = ( clientId : clientId, blockName : string, spectrumState : SpectrumState ) : SpectrumProperties => {
 
 	// Set styles generator and get spectrumSet.
-	const generator = new Generator( clientId, blockName, state );
+	const generator = new Generator( clientId, blockName, spectrumState );
 
 	// Return properties.
 	return {
@@ -1179,11 +1036,11 @@ export const getSpectrumProperties = ( clientId : string, blockName : string, st
 /**
  * Set function to return propertyList from viewportStyle.
  *
- * @param {viewportStyle} viewportStyle
+ * @param {ViewportStyleSets} viewportStyle
  *
  * @return {Array<string | number>}
  */
-export const getViewportStyleProperties = ( viewportStyle: ViewportStyle ) : Array<string | number> => {
+export const getViewportStyleProperties = ( viewportStyle: ViewportStyleSets ) : Array<string | number> => {
 
 	// Initialize a Set to store unique keys
 	const allKeys = new Set<string | number>();

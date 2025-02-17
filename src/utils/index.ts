@@ -1,43 +1,12 @@
-import {
-	isObject,
-	getMergedAttributes,
-	sanitizeAttributes,
-	fillEmpty,
-	traverseExist,
-	traverseFilled,
-	traverseGet,
-} from "./attributes";
-import type { Attributes } from "./attributes";
-import { debug } from "./debug";
-import {
-	isSiteEditor,
-	getVersion,
-	openSidebar,
-	openSettingsTab,
-	openStylesTab,
-} from "./editor";
-import { useLongPress } from './longpress';
-import { isScrollable, scrollParent } from "./scroll";
-
-export {
-	isObject,
-	getMergedAttributes,
-	sanitizeAttributes,
-	fillEmpty,
-	traverseExist,
-	traverseFilled,
-	traverseGet,
-	debug,
-	isSiteEditor,
-	getVersion,
-	openSidebar,
-	openSettingsTab,
-	openStylesTab,
-	useLongPress,
-	isScrollable,
-	scrollParent,
-}
-
-export type {
-	Attributes,
-}
+/**
+ * Export all utils.
+ */
+export * from './any';
+export * from './array';
+export * from './attributes';
+export * from './debug';
+export * from './editor';
+export * from './longpress';
+export * from './object';
+export * from './scroll';
+export * from './traverse';

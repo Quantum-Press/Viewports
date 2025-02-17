@@ -1,4 +1,7 @@
-import { getFilledStyles, getFormattedStyles } from './utils';
+import {
+	getFilledStyles,
+	getFormattedStyles
+} from './utils';
 
 /**
  * Imports lodash ressources.

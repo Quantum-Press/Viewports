@@ -15,7 +15,7 @@ global.window[ 'wp' ] = {
 import { describe, expect, test } from '@jest/globals';
 
 // Import store parts.
-import { DEFAULT_STATE, State, Action } from '..';
+import { DEFAULT_STATE } from '..';
 
 // Deconstruct functions to test.
 import {
@@ -48,6 +48,10 @@ import {
 	clearBlocks,
 	registerRenderer,
 } from '../reducer';
+import {
+	State,
+	Action
+} from '../../types';
 
 
 describe( 'test store reducers', () => {

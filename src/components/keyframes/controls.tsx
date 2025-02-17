@@ -1,4 +1,6 @@
-import { isInTabletRange, isInDesktopRange, getInRange, SpectrumSet, STORE_NAME } from '../../store';
+import {
+	STORE_NAME,
+} from '../../store';
 import { StyleList } from '../stylelist';
 
 const {

@@ -1,4 +1,4 @@
-import { ensureObjectPath } from '../utils/attributes';
+import { ensureObjectPath } from '../utils';
 import reducerManager from './reducer';
 import * as selectors from './selectors';
 import * as actions from './actions';
@@ -8,8 +8,6 @@ const {
 	reducer,
 	addReducer
 } = reducerManager;
-console.log( ensureObjectPath( window, 'qp.viewports.addReducer' ) );
-Object.assign( ensureObjectPath( window, 'qp.viewports.addReducer' ), addReducer );
 
 const {
 	data: {
@@ -17,6 +15,12 @@ const {
 		register,
 	}
 } = window[ 'wp' ];
+
+
+/**
+ * Link datastore addReducer to open up datastore to 3rd party plugins.
+ */
+Object.assign( ensureObjectPath( window, 'qp.viewports.addReducer' ), addReducer );
 
 
 /**
@@ -48,10 +52,6 @@ export const store = createReduxStore( STORE_NAME, {
  */
 register( store );
 
-/**
- * Export store types.
- */
-export type * from './types';
 
 /**
  * Export constants.
@@ -59,10 +59,12 @@ export type * from './types';
 export { DEFAULT_STATE } from './default';
 export { STORE_NAME } from './constants';
 
+
 /**
  * Export utils.
  */
 export * from './utils';
+
 
 /**
  * Export generator.

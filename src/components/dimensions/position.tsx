@@ -1,7 +1,7 @@
 /**
  * Function to render position interface.
  */
-const Position = block => {
+const Position = ( block ) => {
 
 	// Set schema.
 	const schema = {

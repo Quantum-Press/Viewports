@@ -1,4 +1,4 @@
-import type { SpectrumSet, ViewportType } from '../../store';
+import type { SpectrumSet, viewportType } from '../../types';
 import { isInMobileRange, isInTabletRange, isInDesktopRange, STORE_NAME, hasSpectrumSetViewportType, getInRange } from '../../store';
 import { Pointer } from './pointer';
 import { IndicatorControls } from './controls';
@@ -74,7 +74,7 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 	/**
 	 * Set function to handle toggle.
 	 */
-	const handleClick = ( viewportType : ViewportType ) => {
+	const handleClick = ( viewportType : viewportType ) => {
 		if( isActive ) {
 			if(
 				( 'mobile' === viewportType && ! isInMobileRange( iframeViewport ) ) ||

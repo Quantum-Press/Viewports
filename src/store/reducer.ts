@@ -1,6 +1,6 @@
-import type { State, Action, ReducerManager } from './types';
+import type { State, Action, ReducerManager } from '../types';
 import { DEFAULT_STATE } from './default';
-import { getMergedAttributes, traverseGet, traverseFilled, traverseExist } from '../utils';
+import { getMergedObject, traverseGet, traverseFilled, traverseExist } from '../utils';
 import {
 	mobileDefaultViewport,
 	tabletDefaultViewport,
@@ -1390,7 +1390,7 @@ export const removeBlockSaves = ( state : State, action : Action ) : State => {
 
 				let nextRemoves = {};
 				if ( hasBlockRemoves ) {
-					nextRemoves = getMergedAttributes( blockRemoves, foundRemoves );
+					nextRemoves = getMergedObject( blockRemoves, foundRemoves );
 				} else {
 					nextRemoves = foundRemoves;
 				}
@@ -1681,7 +1681,7 @@ export const saveBlock = ( state : State, action : Action ) : State => {
 			}
 
 			// Set merged blockSaves.
-			blockSaves = getMergedAttributes( blockSaves, blockChanges );
+			blockSaves = getMergedObject( blockSaves, blockChanges );
 
 			// Cleanup saves from removes.
 			blockSaves = findCleanedChanges( blockSaves, blockRemoves );

@@ -1,43 +1,35 @@
-import type { Attributes } from '../utils';
 import type { Size } from '../hooks';
-
-export type BlockList = Block[];
-
-export type Block = any;
+import type {
+	AnyObject,
+	clientId,
+	BlockStyles,
+	BlockAttributes
+} from './';
 
 export type ViewportsConfig = {
 	distribution: string;
 	version: string;
 }
 
-export type Styles = {
-	[ key: string ] : any,
-}
 
-export type ViewportType = 'desktop' | 'tablet' | 'mobile' | '';
-
+export type viewportType = 'desktop' | 'tablet' | 'mobile' | '';
+export type viewport = number|string;
 export type Viewports = {
-	[ key: number ] : string,
+	[ key: viewport ] : string,
 }
 
-export type clientViewportSets = {
-	[ key: string ] : ViewportStyle,
+
+export type ClientViewportSets = {
+	[ key: clientId ] : ViewportStyleSets,
+}
+export type ViewportStyleSets = {
+	[ key: viewport ] : ViewportStyleSet;
+}
+export type ViewportStyleSet = {
+	style?: BlockStyles,
+	to?: number
 }
 
-export type ViewportStyle = { // Das müsste dann nur noch das object repräsentieren. ViewportStyleSet?
-	[ key: number ] : {
-		style: Styles,
-		viewports?: any,
-		to?: number
-	}
-}
-
-export type ViewportStyleSet = { // Dopplung mit ViewportStyle. Warum? Wenn clientViewportSets dann müsste das hier bleiben. ViewportStyleSets?
-	[ key: number ] : {
-		style: Styles,
-		to?: number,
-	};
-}
 
 export type BlockDifferences = {
 	changes: ViewportStyleSet,
@@ -100,15 +92,15 @@ export interface Rule {
 	selectors: SelectorSet,
 	declarations: string,
 	css: string,
-	style: Styles,
+	style: BlockStyles,
 	properties: CSSProperties,
-	saves: Attributes,
+	saves: BlockStyles,
 	savesProperties: CSSProperties,
 	hasSaves: boolean,
-	changes: Attributes,
+	changes: BlockStyles,
 	changesProperties: CSSProperties,
 	hasChanges: boolean,
-	removes: Attributes,
+	removes: BlockStyles,
 	removesProperties: CSSProperties,
 	hasRemoves: boolean,
 }
@@ -132,10 +124,10 @@ export type SpectrumProperties = {
 }
 
 export type SpectrumState = {
-	valids: ViewportStyle,
-	saves: ViewportStyle,
-	changes: ViewportStyle,
-	removes: ViewportStyle,
+	valids: ViewportStyleSets,
+	saves: ViewportStyleSets,
+	changes: ViewportStyleSets,
+	removes: ViewportStyleSets,
 	rendererPropertySet: RendererPropertySet,
 	isSaving: boolean,
 	viewport: number,
@@ -187,10 +179,10 @@ export type State = {
 	tablet: number,
 	mobile: number,
 	init: InitSet,
-	saves: clientViewportSets,
-	changes: clientViewportSets,
-	removes: clientViewportSets,
-	valids: clientViewportSets,
+	saves: ClientViewportSets,
+	changes: ClientViewportSets,
+	removes: ClientViewportSets,
+	valids: ClientViewportSets,
 	inspect: object | boolean,
 	lastEdit: number,
 	renderer: RendererPropertySet,
@@ -206,9 +198,9 @@ export type Action = {
 	clientId?: string,
 	viewports?: Viewports,
 	viewport?: number,
-	viewportType?: ViewportType,
+	viewportType?: viewportType,
 	size?: Size,
-	attributes?: Attributes,
+	attributes?: BlockAttributes,
 	props?: Array<string>,
 	prop?: string,
 	callback?: Function,

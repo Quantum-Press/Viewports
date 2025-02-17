@@ -1,4 +1,10 @@
-import { SpectrumSet, STORE_NAME } from '../../store';
+import {
+	STORE_NAME
+} from '../../store';
+import  {
+	SpectrumSet
+} from '../../types';
+
 import { useHighlight, useHighlightViewport } from '../../hooks';
 import { keyframe as iconKeyframe } from '../svgs';
 import { KeyframeControls } from './controls';

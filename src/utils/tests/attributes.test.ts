@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
-import { getMergedAttributes, sanitizeAttributes, fillEmpty } from '../attributes';
+import { getMergedObject, sanitizeAttributes } from '../';
 import {
 	aragorn,
 	aragornDelivery,
@@ -14,13 +14,13 @@ import {
 describe( 'attribute utils', () => {
 
 	/**
-	 * Set tests for getMergedAttributes
+	 * Set tests for getMergedObject
 	 */
-	test( 'can getMergedAttributes() with empty objects', () => {
-		expect( getMergedAttributes( {}, {} ) ).toStrictEqual( {} );
+	test( 'can getMergedObject() with empty objects', () => {
+		expect( getMergedObject( {}, {} ) ).toStrictEqual( {} );
 	});
 
-	test( 'can getMergedAttributes() with filled attributes and empty merge object', () => {
+	test( 'can getMergedObject() with filled attributes and empty merge object', () => {
 		const attributes = {
 			style: {
 				dimensions: {
@@ -33,10 +33,10 @@ describe( 'attribute utils', () => {
 			}
 		};
 
-		expect( getMergedAttributes( attributes, {} ) ).toStrictEqual( attributes );
+		expect( getMergedObject( attributes, {} ) ).toStrictEqual( attributes );
 	});
 
-	test( 'can getMergedAttributes() with different filled objects', () => {
+	test( 'can getMergedObject() with different filled objects', () => {
 		const attributes = {
 			style: {
 				dimensions: {
@@ -66,10 +66,10 @@ describe( 'attribute utils', () => {
 			}
 		}
 
-		expect( getMergedAttributes( attributes, merge ) ).toStrictEqual( check );
+		expect( getMergedObject( attributes, merge ) ).toStrictEqual( check );
 	});
 
-	test( 'can getMergedAttributes() with different filled objects reverse', () => {
+	test( 'can getMergedObject() with different filled objects reverse', () => {
 		const attributes = {
 			style: {
 				dimensions: {
@@ -102,10 +102,10 @@ describe( 'attribute utils', () => {
 			}
 		}
 
-		expect( getMergedAttributes( attributes, merge ) ).toStrictEqual( check );
+		expect( getMergedObject( attributes, merge ) ).toStrictEqual( check );
 	});
 
-	test( 'can getMergedAttributes() with different filled objects and an array reorder', () => {
+	test( 'can getMergedObject() with different filled objects and an array reorder', () => {
 		const attributes = {
 			style: {
 				dimensions: {
@@ -151,7 +151,7 @@ describe( 'attribute utils', () => {
 			}
 		};
 
-		const result = getMergedAttributes( attributes, merge );
+		const result = getMergedObject( attributes, merge );
 
 		expect( result ).toStrictEqual( check );
 	});
@@ -175,25 +175,4 @@ describe( 'attribute utils', () => {
 	test( 'sanitizeAttributes:: test filled object with style and additionals', () => {
 		expect( sanitizeAttributes( legolasGeared ) ).toStrictEqual( legolas );
 	});
-
-
-	/**
-	 * Set tests for fillEmpty.
-	 */
-	test( 'fillEmpty:: test empty object', () => {
-		expect( fillEmpty( {}, {} ) ).toStrictEqual( {} );
-	});
-
-	test( 'fillEmpty:: test empty object and filled object', () => {
-		expect( fillEmpty( {}, gimliGeared ) ).toStrictEqual( {} );
-	});
-
-	test( 'fillEmpty:: test filled object and empty object', () => {
-		expect( fillEmpty( gimliGeared, {} ) ).toStrictEqual( gimliGeared );
-	});
-
-	test( 'fillEmpty:: test filled different filled objects', () => {
-		expect( fillEmpty( gimli, gimliGeared ) ).toStrictEqual( gimliGeared );
-	});
-
 });
