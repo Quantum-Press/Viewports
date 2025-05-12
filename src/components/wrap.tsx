@@ -8,7 +8,6 @@ import Viewports from './viewports';
 import Keyframes from './keyframes';
 import Editing from './editing';
 import Visualizer from '../block/visualizer';
-import GlobalBlockStyles from '../block/global';
 
 const {
 	data: {
@@ -39,7 +38,6 @@ export default function Wrap() {
 
 	return (
 		<>
-			<GlobalBlockStyles />
 			<Body />
 			<Save />
 			<Topbar />

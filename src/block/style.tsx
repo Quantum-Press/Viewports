@@ -1,3 +1,4 @@
+import { gutenbergVersionCompare } from '../config';
 import { STORE_NAME } from '../store';
 import { BlockEditProps } from '../types';
 import { isSiteEditor } from '../utils';
@@ -37,14 +38,22 @@ export default function BlockStyle( { props } : { props: BlockEditProps } ) {
 
 	// Set iframe head to append portal to.
 	useEffect( () => {
-		if( ! isSiteEditor() ) {
-			const head = document.head;
-			setContainer( head );
-		} else {
+		if( -1 < gutenbergVersionCompare( '20.4' ) ) {
 			const iframe = document.querySelector( 'iframe[name="editor-canvas"]' ) as HTMLIFrameElement;
-			if( iframe && iframe.contentDocument ) {
-				const head = iframe.contentDocument.head;
+				if( iframe && iframe.contentDocument ) {
+					const head = iframe.contentDocument.head;
+					setContainer( head );
+				}
+		} else {
+			if( ! isSiteEditor() ) {
+				const head = document.head;
 				setContainer( head );
+			} else {
+				const iframe = document.querySelector( 'iframe[name="editor-canvas"]' ) as HTMLIFrameElement;
+				if( iframe && iframe.contentDocument ) {
+					const head = iframe.contentDocument.head;
+					setContainer( head );
+				}
 			}
 		}
 	}, [] );

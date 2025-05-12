@@ -7,6 +7,7 @@ import BlockEdit from './block/edit';
 import BlockSave from './block/save';
 import BlockStyle from './block/style';
 import ToggleInspecting from './components/toggle/inspecting';
+import { isInBlockBlacklist } from './config';
 
 const {
 	blockEditor: {
@@ -23,6 +24,11 @@ const {
 
 // Filter into all blocks register to wrap around block.edit and block.save.
 addFilter( 'blocks.registerBlockType', 'quantumpress/viewports', ( block : Block ) => {
+
+	// Ignore all blacklisted blocks.
+	if( isInBlockBlacklist( block.name ) ) {
+		return block;
+	}
 
 	// Add viewports attributes.
 	Object.assign( block.attributes, {

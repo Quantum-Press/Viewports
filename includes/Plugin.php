@@ -70,6 +70,9 @@ class Plugin extends Instance {
 			[
 				'distribution' => defined( 'VIEWPORTS_PRO' ) && 'true' === VIEWPORTS_PRO ? 'pro' : 'lite',
 				'version' => QUANTUM_VIEWPORTS_VERSION,
+				'blockBlacklist' => $this->get_block_blacklist(),
+				'gutenbergVersion' => $this->get_gutenberg_version(),
+				'wordpressVersion' => $this->get_wordpress_version(),
 			]
 		);
 		\wp_enqueue_script( 'qp-viewports-scripts' );
@@ -80,5 +83,71 @@ class Plugin extends Instance {
 			[],
 			QUANTUM_VIEWPORTS_VERSION
 		);
+	}
+
+
+	/**
+	 * Method to return the blacklist of blocks.
+	 */
+	public function get_block_blacklist() : array
+	{
+		$issue_blocks = [
+			'cloudcatch/light-modal-block',
+			'quantum-editor/teaser', // Old name - Still in use
+			'quantumpress/teaser',
+		];
+
+		$block_blacklist = \apply_filters( 'quantum_viewports_block_blacklist', $issue_blocks );
+
+		return $block_blacklist;
+	}
+
+
+	/**
+	 * Method to return the used wordpress version.
+	 */
+	public function get_wordpress_version() : string
+	{
+		require ABSPATH . WPINC . '/version.php';
+
+		return $wp_version;
+	}
+
+
+	/**
+	 * Method to return the used gutenberg version.
+	 */
+	public function get_gutenberg_version() : string
+	{
+		if ( is_plugin_active( 'gutenberg/gutenberg.php' ) ) {
+			$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/gutenberg/gutenberg.php' );
+
+			if( ! empty( $plugin_data[ 'Version' ] ) ) {
+				return $plugin_data[ 'Version' ];
+			}
+		}
+
+		$gutenberg_mapping = [
+			'6.6' => '18.5',
+			'6.6.1' => '18.5',
+			'6.6.2' => '18.5',
+			'6.7' => '19.3',
+			'6.7.1' => '19.3',
+			'6.7.2' => '19.3',
+			'6.8' => '20.4',
+		];
+
+		// Check if there is direct support for wordpress version.
+		$wp_version = $this->get_wordpress_version();
+		if( isset( $gutenberg_mapping[ $wp_version ] ) ) {
+			return $gutenberg_mapping[ $wp_version ];
+		}
+
+		// Check if there is a newer version then last supported wp_version.
+		if( -1 < version_compare( $wp_version, end( $gutenberg_mapping ) ) ) {
+			return end( $gutenberg_mapping );
+		}
+
+		return 'unknown';
 	}
 }

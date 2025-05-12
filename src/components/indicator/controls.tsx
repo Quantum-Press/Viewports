@@ -1,6 +1,6 @@
 import { STORE_NAME } from '../../store';
 import { SpectrumSet, viewportType } from '../../types';
-import { StyleList } from '../stylelist';
+import { StyleList } from '../inspector/stylelist';
 import ToggleEdit from '../toggle/edit';
 
 const {

@@ -1,7 +1,7 @@
 import {
 	STORE_NAME,
 } from '../../store';
-import { StyleList } from '../stylelist';
+import { StyleList } from '../inspector/stylelist';
 
 const {
 	components: {

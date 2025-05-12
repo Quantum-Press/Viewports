@@ -1,4 +1,4 @@
-import { STORE_NAME } from '../../store';
+import { STORE_NAME } from '../../../store';
 
 const {
 	components: {

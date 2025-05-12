@@ -1,8 +1,10 @@
 import type {
 	Spectrum
-} from '../../types';
-import { STORE_NAME } from '../../store';
-import { useHighlightProperty } from '../../hooks';
+} from '../../../types';
+import { STORE_NAME } from '../../../store';
+import { useHighlightProperty } from '../../../hooks';
+import { getMergedObject } from '../../../utils';
+import ObjectList from './object';
 
 interface Style {
 	baseKeys : Array<any>;
@@ -27,7 +29,7 @@ const {
  *
  * @param {object}
  */
-export const Style = ( attributes ) => {
+export const Attribute = ( attributes ) => {
 
 	// Deconstruct attributes.
 	const {
@@ -37,6 +39,8 @@ export const Style = ( attributes ) => {
 
 	// Set spectrum.
 	const spectrum = attributes.spectrum as Spectrum;
+
+	// console.log( 'spectrum', spectrum );
 
 	// Set useHighlightProperty hook.
 	const [ highlightProperty, setHighlightProperty ] = useHighlightProperty();
@@ -81,22 +85,24 @@ export const Style = ( attributes ) => {
 	}
 
 
-	// Set clientId shorthand to replace in selector.
-	const clientIdSplit = spectrum.selector.split( '-' );
-	const clientIdShort = clientIdSplit.shift() + '-' + clientIdSplit.shift();
+	// Set combined attributes.
+	const combined = getMergedObject( spectrum.removes, spectrum.saves, spectrum.changes );
+
+	// console.log( combined );
 
 	// Render component.
 	return (
 		<div className={ classNames.join( ' ' ) } data-viewport={ spectrum.viewport }>
-			{ '' !== spectrum.media && viewport < spectrum.from &&
-				<div className="media">{ '@media (' + spectrum.media + ')' }</div>
-			}
-			{ '' !== spectrum.media && viewport >= spectrum.from &&
-				<div className="media active">{ '@media (' + spectrum.media + ')' }</div>
-			}
 			<div className="selector-start">
-				{ spectrum.selector.replace( '#block-' + clientId, clientIdShort ) }
-				<br/>{ "{" }
+				{ '' === spectrum.media && viewport >= spectrum.from &&
+					<div className="media active">{ '@media (min-width:0px)' }</div>
+				}
+				{ '' !== spectrum.media && viewport < spectrum.from &&
+					<div className="media">{ '@media (' + spectrum.media + ')' }</div>
+				}
+				{ '' !== spectrum.media && viewport >= spectrum.from &&
+					<div className="media active">{ '@media (' + spectrum.media + ')' }</div>
+				}
 			</div>
 			<div className="actions">
 				<Button
@@ -117,31 +123,13 @@ export const Style = ( attributes ) => {
 					/> }
 				</div>
 			</div>
-			{ Object.entries( spectrum.properties ).map( entry => {
-				const property = entry[ 0 ];
-				const value = entry[ 1 ];
+			<ObjectList
+				combined={ combined }
+				changes={ spectrum.changes }
+				removes={ spectrum.removes }
+				spectrum={ spectrum }
+			/>
 
-				if( ! property || ! value ) {
-					return null;
-				}
-
-				const classNames = [ 'css-wrap' ];
-				if( spectrum.changesProperties.hasOwnProperty( property ) ) {
-					classNames.push( 'changed' );
-				}
-				if( spectrum.removesProperties.hasOwnProperty( property ) ) {
-					classNames.push( 'removed' );
-				}
-
-				return (
-					<div className={ classNames.join( ' ' ) }>
-						<div className="css-status"></div>
-						<div className="css-key">{ property }:</div>
-						<div className="css-value">{ value };</div>
-					</div>
-				);
-			} ) }
-			<div className="selector-end">{ '}' }</div>
 		</div>
 	);
 }

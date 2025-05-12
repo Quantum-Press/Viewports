@@ -1,7 +1,7 @@
 /**
  * Post Editor - Content division.
  */
-.edit-post-visual-editor {
+ .edit-post-visual-editor {
 	display: flex;
 	flex-direction: row;
 	align-items: flex-start;
@@ -100,6 +100,20 @@ body.is-active-viewports {
 			height: auto;
 			flex-direction: column;
 			align-items: center;
+		}
+	}
+}
+
+
+/**
+ * Post Editor - Fix GB 20.4
+ */
+body.is-active-viewports {
+	.edit-post-visual-editor {
+		& > div.editor-resizable-editor {
+			& > div.block-editor-block-canvas {
+				height: auto !important;
+			}
 		}
 	}
 }
@@ -999,6 +1013,36 @@ body.is-active-viewports {
 	.selector-end {
 		width: 100%;
 	}
+}
+
+
+/**
+ * AtrributeList - General.
+ */
+ .qp-viewports-inspector-attributelist {
+	display: flex;
+	flex-direction: column;
+	margin: 0 10px;
+	color: #919191;
+}
+
+
+.objectlist-wrap,
+.arraylist-wrap {
+	width: 100%;
+}
+
+.objectlist-row,
+.arraylist-row {
+	width: 100%;
+	padding-left: 10px;
+	display: flex;
+}
+
+.object-key,
+.array-key {
+	padding-left: 2px;
+	padding-right: 5px;
 }
 
 

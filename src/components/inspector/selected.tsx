@@ -1,6 +1,7 @@
 import { useOverflow, useLocalStorage } from '../../hooks';
 
-import { BlockStyleList } from '../stylelist';
+import { BlockStyleList } from './stylelist';
+import { BlockAttributeList } from './attributelist';
 import Accordion from '../accordion';
 import Dimensions from '../dimensions';
 
@@ -21,6 +22,7 @@ const Selected = ({ block }) => {
 	// Set states for Accordion visibility.
 	const [ isOpenDimensions, setIsOpenDimensions ] = useLocalStorage( 'inspector.dimensions', true );
 	const [ isOpenStyles, setIsOpenStyles ] = useLocalStorage( 'inspector.styles', false );
+	const [ isOpenAttributes, setIsOpenAttributes ] = useLocalStorage( 'inspector.attributes', false );
 
 	// Set classNames.
 	const classNames = [ 'qp-viewports-inspector-selected-wrap' ];
@@ -45,6 +47,13 @@ const Selected = ({ block }) => {
 					label={ __( 'Styles', 'quantum-viewports' ) }
 				>
 					<BlockStyleList />
+				</Accordion>
+				<Accordion
+					isOpen={ isOpenAttributes }
+					setIsOpen={ setIsOpenAttributes }
+					label={ __( 'Attributes', 'quantum-viewports' ) }
+				>
+					<BlockAttributeList />
 				</Accordion>
 			</div>
 		</div>
