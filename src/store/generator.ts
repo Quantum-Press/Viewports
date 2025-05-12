@@ -505,7 +505,7 @@ export class Generator {
 		}
 
 		// Set css defaults
-		const cssViewportSet : CSSViewportSet = [];
+		const cssViewportSet : CSSViewportSet = {};
 
 		// Set unfiltered spectrumSet.
 		const spectrumSet = this.getSpectrumSet();

@@ -1,9 +1,14 @@
+import { StyleFill } from '../components/block-styles';
+import { useMount } from '../hooks';
 import { STORE_NAME } from '../store';
 import {
 	Block,
 	BlockEditProps
 } from '../types';
-import { debug } from '../utils';
+import {
+	debounce,
+	debug
+} from '../utils';
 
 const {
 	data: {
@@ -12,8 +17,10 @@ const {
 		select,
 	},
 	element: {
-		useLayoutEffect,
+		useCallback,
 		useEffect,
+		useLayoutEffect,
+		useRef,
 		useState,
 		Component
 	}
@@ -58,31 +65,58 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
 	}, [] );
 
 	// Set useState indicator flags.
-	const [ isReady, setIsReady ] = useState( false );
 	const [ isRegistered, setIsRegistered ] = useState( false );
 	const [ isRegistering, setIsRegistering ] = useState( true );
 	const [ updateSelected, setUpdateSelected ] = useState( false );
 	const [ updateSelectedViewport, setUpdateSelectedViewport ] = useState( false );
 
+	// Store attributes as reference to handle debounced updates.
+	const attributesRef = useRef( attributes );
+	attributesRef.current = attributes;
+
+	/*
+	// Set useMemo to handle updates on block attributes.
+	const debouncedRegisterBlockInit = useCallback( () => {
+		store.updateBlockChanges( clientId, blockName, attributesRef.current );
+
+		const saves = select( STORE_NAME ).getGeneratedBlockSaves( clientId );
+		const inlineStyle = select( STORE_NAME ).getInlineStyle( clientId );
+
+		setAttributes( {
+			viewports: saves,
+			inlineStyles: inlineStyle,
+		} );
+	}, [ clientId, blockName, store, select, setAttributes ] );
+
+	// Set reference to handle debounced updates.
+	const debouncedRegisterRef = useRef( debounce( debouncedRegisterBlockInit, 150 ) );
+	*/
+
+	// Set useMemo to handle updates on block attributes.
+	const debouncedUpdateBlockChanges = useCallback( () => {
+		store.updateBlockChanges( clientId, blockName, attributesRef.current );
+
+		const saves = select( STORE_NAME ).getGeneratedBlockSaves( clientId );
+		const inlineStyle = select( STORE_NAME ).getInlineStyle( clientId );
+
+		setAttributes( {
+			viewports: saves,
+			inlineStyles: inlineStyle,
+		} );
+	}, [ clientId, blockName, store, select, setAttributes ] );
+
+	// Set reference to handle debounced updates.
+	const debouncedUpdateRef = useRef( debounce( debouncedUpdateBlockChanges, 150 ) );
+
 
 	// Set useEffect on mount to skip first render cycle via state delay.
-	useEffect( () => {
-		setIsReady( true );
-	}, [] );
-
-
-	// Set useEffect on isReady flag to register block in viewports datastore.
-	useLayoutEffect( () => {
-		if( ! isReady ) {
-			return;
-		}
+	useMount( () => {
 
 		// Register block in datastore.
 		store.registerBlockInit( clientId, blockName, attributes );
 
-		// Debug statement.
+		// Debug statement when running attribute change detection.
 		if( attributes.hasOwnProperty( 'viewports' ) && attributes.viewports && Object.keys( attributes.viewports ).length ) {
-			// Debug statement when running attribute change detection.
 			debug(
 				'log',
 				'init',
@@ -90,7 +124,6 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
 				attributes,
 			);
 		}
-
 
 		// Init with fresh data from datastore after register.
 		const saves = select( STORE_NAME ).getGeneratedBlockSaves( clientId );
@@ -102,7 +135,7 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
 			inlineStyles: inlineStyle,
 		} );
 
-	}, [ isReady ] );
+	} );
 
 
 	// Set useEffect on isSaving to handle viewports datastore and block attributes cleanup.
@@ -202,25 +235,23 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
 			attributes
 		);
 
-		// Give datastore check the changes in attributes.
-		store.updateBlockChanges( clientId, blockName, attributes );
-
-		const saves = select( STORE_NAME ).getGeneratedBlockSaves( clientId );
-		const inlineStyle = select( STORE_NAME ).getInlineStyle( clientId );
-
-		// Update viewports attributes on every potential attribute.style change.
-		setAttributes( {
-			viewports: saves,
-			inlineStyles: inlineStyle,
-		} );
+		debouncedUpdateRef.current();
 
 	}, [ attributes?.style ] );
 
+	// Get css from store.
+	const css = select( STORE_NAME ).getCSS( clientId ) as string;
 
 	// Check if block.edit is a function or class component to return its edit function.
-	const isClassComponent = typeof block.edit === 'function' && block.edit.prototype instanceof Component;
-	return isClassComponent
-		? ( new block.edit( props ) ).render()
-		: block.edit( props )
-	;
+	return (
+		<>
+			{ typeof block.edit === 'function' && block.edit.prototype instanceof Component
+				? new block.edit( props ).render()
+				: block.edit( props ) }
+
+			{ '' !== css && <StyleFill>
+				{ css }
+			</StyleFill> }
+		</>
+	);
 }

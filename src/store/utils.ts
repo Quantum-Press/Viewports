@@ -1026,7 +1026,7 @@ export const getSpectrumProperties = ( clientId : clientId, blockName : string, 
 
 	// Return properties.
 	return {
-		css: generator.getCSSViewportSet(),
+		cssViewportSet: generator.getCSSViewportSet(),
 		spectrumSet: generator.getSpectrumSet(),
 		inlineStyle: generator.getInlineStyle(),
 	}

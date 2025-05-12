@@ -137,7 +137,6 @@ export const DEFAULT_STATE = {
 	desktop: getDesktopViewport(),
 	tablet: getTabletViewport(),
 	mobile: getMobileViewport(),
-	init: {},
 	saves: {},
 	changes: {},
 	removes: {},

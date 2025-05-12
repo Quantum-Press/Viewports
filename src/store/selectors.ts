@@ -1,3 +1,4 @@
+import { desktop } from '../components/svgs';
 import type { Size } from '../hooks';
 import type {
 	State,
@@ -8,6 +9,7 @@ import type {
 	ViewportStyleSets,
 	IndicatorSelectorSet,
 	BlockStyles,
+	BlockAttributes,
 } from '../types';
 
 import {
@@ -16,6 +18,7 @@ import {
 	traverseFilled,
 	traverseGet,
 } from '../utils';
+import { DEFAULT_STATE } from './default';
 import {
 	isInMobileRange,
 	isInTabletRange,
@@ -23,6 +26,9 @@ import {
 	findCleanedChanges,
 	clearEmptySaves,
 	clearDuplicateSaves,
+	findBlockSaves,
+	findBlockValids,
+	getSpectrumProperties,
 } from './utils';
 
 const { cloneDeep } = window[ 'lodash' ];
@@ -703,7 +709,7 @@ export const hasRenderer = ( state : State, key : string ) : boolean => {
 
 
 /**
- * Set selector to return spectrumSet by clientId.
+ * Set selector to return css by clientId.
  *
  * @param {State} state current
  * @param {string} clientId
@@ -717,6 +723,57 @@ export const getCSS = ( state : State, clientId : string ) : string => {
 		const cssParts = cssSet[ viewport ];
 
 		if( state.iframeSize.width >= viewport ) {
+			css.push( cssParts.join( '' ) );
+		}
+	} );
+
+	return css.join( '' );
+}
+
+
+/**
+ * Set selector to return preview css by attributes.
+ *
+ * @param {State} state current
+ * @param {string} clientId
+ * @param {string} blockName
+ * @param {BlockAttributes} attributes
+ */
+export const getPreviewCSS = ( state : State, clientId : string, blockName : string, attributes : BlockAttributes ) : string => {
+	const blockSaves = findBlockSaves( attributes );
+	const initState = {
+		... DEFAULT_STATE,
+		viewports: state.viewports,
+		saves: {
+			[ clientId ]: blockSaves,
+		},
+	}
+
+	const blockValids = findBlockValids( clientId, initState );
+
+	// Set spectrumState for spectrumSet generation.
+	const spectrumState = {
+		valids: blockValids,
+		saves: blockSaves,
+		changes: null,
+		removes: null,
+		rendererPropertySet: state.renderer,
+		isSaving: false,
+		viewport: 1200,
+	};
+
+	// Deconstruct spectrumProperties.
+	const {
+		cssViewportSet,
+	} = getSpectrumProperties( clientId, blockName, spectrumState );
+
+	const css = [];
+
+	Object.keys( cssViewportSet ).forEach( viewportDirty => {
+		const viewport = parseInt( viewportDirty );
+		const cssParts = cssViewportSet[ viewport ];
+
+		if( spectrumState.viewport >= viewport ) {
 			css.push( cssParts.join( '' ) );
 		}
 	} );

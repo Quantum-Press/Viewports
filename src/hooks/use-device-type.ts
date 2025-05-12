@@ -7,7 +7,6 @@ const {
 	},
 	element: {
 		useEffect,
-		useLayoutEffect,
 		useState,
 	}
 } = window[ 'wp' ];

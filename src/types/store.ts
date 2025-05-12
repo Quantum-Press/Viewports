@@ -36,10 +36,6 @@ export type BlockDifferences = {
 	removes: ViewportStyleSet,
 }
 
-export type InitSet = {
-	[ key: string ] : boolean,
-}
-
 export type RendererPropertySet = {
 	[ key: string ] : RendererSet,
 }
@@ -118,7 +114,7 @@ export interface Spectrum extends Rule {
 }
 
 export type SpectrumProperties = {
-	css: CSSViewportSet,
+	cssViewportSet: CSSViewportSet,
 	spectrumSet: SpectrumSet,
 	inlineStyle: InlineStyleSet,
 }
@@ -178,7 +174,6 @@ export type State = {
 	desktop: number,
 	tablet: number,
 	mobile: number,
-	init: InitSet,
 	saves: ClientViewportSets,
 	changes: ClientViewportSets,
 	removes: ClientViewportSets,

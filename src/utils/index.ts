@@ -5,6 +5,7 @@ export * from './any';
 export * from './array';
 export * from './attributes';
 export * from './debug';
+export * from './debounce';
 export * from './editor';
 export * from './longpress';
 export * from './object';

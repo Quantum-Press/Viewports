@@ -127,27 +127,6 @@ class Plugin extends Instance {
 			}
 		}
 
-		$gutenberg_mapping = [
-			'6.6' => '18.5',
-			'6.6.1' => '18.5',
-			'6.6.2' => '18.5',
-			'6.7' => '19.3',
-			'6.7.1' => '19.3',
-			'6.7.2' => '19.3',
-			'6.8' => '20.4',
-		];
-
-		// Check if there is direct support for wordpress version.
-		$wp_version = $this->get_wordpress_version();
-		if( isset( $gutenberg_mapping[ $wp_version ] ) ) {
-			return $gutenberg_mapping[ $wp_version ];
-		}
-
-		// Check if there is a newer version then last supported wp_version.
-		if( -1 < version_compare( $wp_version, end( $gutenberg_mapping ) ) ) {
-			return end( $gutenberg_mapping );
-		}
-
 		return 'unknown';
 	}
 }

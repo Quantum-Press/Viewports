@@ -971,6 +971,7 @@ toggleMobile.handlesAction = ( actionType ) => actionType === 'TOGGLE_MOBILE';
 export const registerBlockInit = ( state : State, action : Action ) : State => {
 	switch ( action.type ) {
 		case 'REGISTER_BLOCK_INIT' :
+			// console.log( 'REGISTER_BLOCK_INIT' );
 
 			// Deconstruct action.
 			const {
@@ -985,7 +986,7 @@ export const registerBlockInit = ( state : State, action : Action ) : State => {
 			}
 
 			// Deconstruct state.
-			const { init, saves, valids } = state;
+			const { saves, valids } = state;
 
 			// Find defaults and viewport saves.
 			const blockSaves = findBlockSaves( attributes );
@@ -993,10 +994,6 @@ export const registerBlockInit = ( state : State, action : Action ) : State => {
 			// Set initState.
 			const initState = {
 				... state,
-				init: {
-					... init,
-					[ clientId ]: true,
-				},
 				saves: {
 					... saves,
 					[ clientId ]: blockSaves,
@@ -1019,7 +1016,7 @@ export const registerBlockInit = ( state : State, action : Action ) : State => {
 
 			// Deconstruct spectrumProperties.
 			const {
-				css,
+				cssViewportSet,
 				spectrumSet,
 				inlineStyle,
 			} = getSpectrumProperties( clientId, blockName, spectrumState );
@@ -1033,7 +1030,7 @@ export const registerBlockInit = ( state : State, action : Action ) : State => {
 				},
 				cssSet: {
 					... initState.cssSet,
-					[ clientId ]: css,
+					[ clientId ]: cssViewportSet,
 				},
 				spectrumSets: {
 					... initState.spectrumSets,
@@ -1131,7 +1128,7 @@ export const updateBlockChanges = ( state : State, action : Action ) : State => 
 
 			// Deconstruct spectrumProperties.
 			const {
-				css,
+				cssViewportSet,
 				spectrumSet,
 				inlineStyle,
 			} = getSpectrumProperties( clientId, blockName, spectrumState );
@@ -1147,7 +1144,7 @@ export const updateBlockChanges = ( state : State, action : Action ) : State => 
 				},
 				cssSet: {
 					... state.cssSet,
-					[ clientId ]: css,
+					[ clientId ]: cssViewportSet,
 				},
 				spectrumSets: {
 					... state.spectrumSets,
@@ -1267,7 +1264,7 @@ export const addBlockPropertyChanges = ( state : State, action : Action ) : Stat
 
 			// Deconstruct spectrumProperties.
 			const {
-				css,
+				cssViewportSet,
 				spectrumSet,
 				inlineStyle,
 			} = getSpectrumProperties( clientId, blockName, spectrumState );
@@ -1283,7 +1280,7 @@ export const addBlockPropertyChanges = ( state : State, action : Action ) : Stat
 				},
 				cssSet: {
 					... state.cssSet,
-					[ clientId ]: css,
+					[ clientId ]: cssViewportSet,
 				},
 				spectrumSets: {
 					... state.spectrumSets,
@@ -1316,10 +1313,6 @@ export const removeBlock = ( state : State, action : Action ) : State => {
 			// Deconstruct action.
 			const { clientId } = action;
 
-			// Remove init entry.
-			const init = { ... state.init };
-			delete init[ clientId ];
-
 			// Remove saves entry.
 			const saves = { ... state.saves };
 			delete saves[ clientId ];
@@ -1339,7 +1332,6 @@ export const removeBlock = ( state : State, action : Action ) : State => {
 			// Return new state.
 			return {
 				... state,
-				init,
 				saves,
 				changes,
 				removes,
@@ -1424,7 +1416,7 @@ export const removeBlockSaves = ( state : State, action : Action ) : State => {
 
 				// Deconstruct spectrumProperties.
 				const {
-					css,
+					cssViewportSet,
 					spectrumSet,
 					inlineStyle,
 				} = getSpectrumProperties( clientId, blockName, spectrumState );
@@ -1438,7 +1430,7 @@ export const removeBlockSaves = ( state : State, action : Action ) : State => {
 					},
 					cssSet: {
 						... state.cssSet,
-						[ clientId ]: css,
+						[ clientId ]: cssViewportSet,
 					},
 					spectrumSets: {
 						... state.spectrumSets,
@@ -1613,7 +1605,7 @@ export const restoreBlockSaves = ( state : State, action : Action ) : State => {
 
 			// Deconstruct spectrumProperties.
 			const {
-				css,
+				cssViewportSet,
 				spectrumSet,
 				inlineStyle,
 			} = getSpectrumProperties( clientId, blockName, spectrumState );
@@ -1627,7 +1619,7 @@ export const restoreBlockSaves = ( state : State, action : Action ) : State => {
 				},
 				cssSet: {
 					... state.cssSet,
-					[ clientId ]: css,
+					[ clientId ]: cssViewportSet,
 				},
 				spectrumSets: {
 					... state.spectrumSets,
@@ -1725,7 +1717,7 @@ export const saveBlock = ( state : State, action : Action ) : State => {
 
 			// Deconstruct spectrumProperties.
 			const {
-				css,
+				cssViewportSet,
 				spectrumSet,
 				inlineStyle,
 			} = getSpectrumProperties( clientId, blockName, spectrumState );
@@ -1738,7 +1730,7 @@ export const saveBlock = ( state : State, action : Action ) : State => {
 				},
 				cssSet: {
 					... state.cssSet,
-					[ clientId ]: css,
+					[ clientId ]: cssViewportSet,
 				},
 				spectrumSets: {
 					... state.spectrumSets,
@@ -1769,7 +1761,6 @@ export const clearBlocks = ( state : State, action : Action ) : State => {
 		case 'CLEAR_BLOCKS':
 			return {
 				... state,
-				init: {},
 				saves: {},
 				changes: {},
 				removes: {},
@@ -1830,7 +1821,8 @@ export const registerRenderer = ( state : State, action : Action ) : State => {
 						mapping: mapping ?? {},
 					}
 				}
-			}
+			},
+			lastEdit: Date.now(),
 		}
 	}
 

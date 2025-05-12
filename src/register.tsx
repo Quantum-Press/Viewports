@@ -5,9 +5,9 @@ import type {
 } from './types';
 import BlockEdit from './block/edit';
 import BlockSave from './block/save';
-import BlockStyle from './block/style';
 import ToggleInspecting from './components/toggle/inspecting';
 import { isInBlockBlacklist } from './config';
+import BlockPreview from './block/preview';
 
 const {
 	blockEditor: {
@@ -46,8 +46,15 @@ addFilter( 'blocks.registerBlockType', 'quantumpress/viewports', ( block : Block
 		edit( props : BlockEditProps ) {
 			return (
 				<>
-					<BlockEdit block={ block } props={ props } />
-					<BlockStyle props={ props } />
+					{ props.isSelectionEnabled && <BlockEdit
+						block={ block }
+						props={ props }
+					/> }
+
+					{ ! props.isSelectionEnabled && <BlockPreview
+						block={ block }
+						props={ props }
+					/> }
 					<BlockControls>
 						<ToolbarGroup>
 							<ToggleInspecting

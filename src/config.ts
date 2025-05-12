@@ -32,7 +32,7 @@ export const getConfigValue = <T>( key: string, defaultValue: T = null ): T => {
  *
  * @param {string} compareVersion - The version to compare against the `gutenbergVersion` from the configuration.
  *
- * @returns {number} - Returns `-1` if the `gutenbergVersion` is older than `compareVersion`, `1` if it is newer, and `0` if they are equal.
+ * @returns {number|null} - Returns `-1` if the `gutenbergVersion` is older than `compareVersion`, `1` if it is newer, and `0` if they are equal.
  *
  * @throws {Error} - Throws an error if `gutenbergVersion` is not found in the configuration.
  */
@@ -40,6 +40,10 @@ export const gutenbergVersionCompare = ( compareVersion: string ): number => {
 	const gutenbergVersion = getConfigValue( 'gutenbergVersion' ) as string|null;
 	if( ! gutenbergVersion ) {
 		throw new Error( 'gutenbergVersion not found in the config' );
+	}
+
+	if( 'unknown' === gutenbergVersion ) {
+		return null;
 	}
 
 	return versionCompare( gutenbergVersion, compareVersion );
