@@ -1,7 +1,5 @@
 # Quantum-Viewports
 
-> Responsive block styling for Gutenberg – control styles per viewport (mobile, tablet, desktop) directly in the editor.
-
 ---
 
 ## Table of Contents
