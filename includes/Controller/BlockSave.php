@@ -54,6 +54,11 @@ class BlockSave extends Instance {
 			return $data;
 		}
 
+		// Ignore posts without block editor support.
+		if ( ! \use_block_editor_for_post_type( $postarr[ 'post_type' ] ) ) {
+			return $data;
+		}
+
 		// Prepare blocks for modification.
 		$blocks = \parse_blocks( \stripslashes( $postarr[ 'post_content' ] ) );
 		$blocksModified = BlockProcessor::modifySavedBlocks( $blocks );
@@ -76,6 +81,7 @@ class BlockSave extends Instance {
 				'wp_global_styles',
 				'wp_font_family',
 				'wp_font_face',
+				'customize_changeset',
 			];
 			$this->invalid_post_types = \apply_filters( 'quantum_viewports_invalid_post_types', $invalid_post_types );
 		}
