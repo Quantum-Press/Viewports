@@ -1,6 +1,6 @@
 <?php
 
-namespace Quantum\Viewports\Controller;
+namespace QP\Viewports\Controller;
 
 // Be sure not to load without wp.
 defined( 'ABSPATH' ) || exit;
@@ -10,8 +10,8 @@ defined( 'ABSPATH' ) || exit;
  *
  * This class is base of a single object instance.
  *
- * @class    Quantum\Viewports\Controller\Instance
- * @package  Quantum\Viewports\Controller
+ * @class    QP\Viewports\Controller\Instance
+ * @package  QP\Viewports\Controller
  * @category Class
  * @author   Sebastian Buchwald // conversionmedia GmbH & Co. KG
  */

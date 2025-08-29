@@ -36,7 +36,7 @@ const Breadcrumb = () => {
 	// Render component.
 	return (
 		<ul className="qp-viewports-inspector-breadcrumb">
-			<li><span onClick={ onClickRoot }>{ __( 'Blocks', 'quantum-viewports' ) }</span></li>
+			<li><span onClick={ onClickRoot }>{ __( 'Blocks', 'viewports' ) }</span></li>
 			{ clientId && <li><span>{ selected.name }</span></li> }
 		</ul>
 	);

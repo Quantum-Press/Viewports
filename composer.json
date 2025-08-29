@@ -1,12 +1,12 @@
 {
-    "name": "cm/quantum-viewports",
+    "name": "qp/viewports",
     "type": "wordpress-plugin",
     "description": "",
     "license": "non-public",
-    "version": "0.9.3.3",
+    "version": "0.9.4",
     "autoload": {
         "psr-4": {
-            "Quantum\\Viewports\\": "includes/"
+            "QP\\Viewports\\": "includes/"
         }
     },
     "require-dev": {

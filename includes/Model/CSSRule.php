@@ -1,6 +1,6 @@
 <?php
 
-namespace Quantum\Viewports\Model;
+namespace QP\Viewports\Model;
 
 // Be sure not to load without wp.
 defined( 'ABSPATH' ) || exit;
@@ -8,8 +8,8 @@ defined( 'ABSPATH' ) || exit;
 /**
  * This model class handles a single css rule.
  *
- * @class    Quantum\Viewports\Model\CSSRule
- * @package  Quantum\Viewports\Model\
+ * @class    QP\Viewports\Model\CSSRule
+ * @package  QP\Viewports\Model\
  * @category Class
  */
 class CSSRule {

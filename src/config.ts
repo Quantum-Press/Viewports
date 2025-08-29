@@ -1,12 +1,12 @@
 import { versionCompare } from "./utils/version";
 
 /**
- * Retrieves the global configuration object for qpViewports.
+ * Retrieves the global configuration object for viewports.
  *
  * @returns {Readonly<Record<string, any>>} - A frozen object containing configuration settings.
  */
 export const getConfig = (): Readonly<Record<string, any>> => {
-	return Object.freeze( ( window as any ).qpViewportsConfig || {} );
+	return Object.freeze( ( window as any ).viewportsConfig || {} );
 };
 
 

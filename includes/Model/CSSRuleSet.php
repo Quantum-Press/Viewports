@@ -1,17 +1,17 @@
 <?php
 
-namespace Quantum\Viewports\Model;
+namespace QP\Viewports\Model;
 
 // Be sure not to load without wp.
 defined( 'ABSPATH' ) || exit;
 
-use Quantum\Viewports\Controller\CSSParser;
+use QP\Viewports\Controller\CSSParser;
 
 /**
  * This model class handles a single css ruleset.
  *
- * @class    Quantum\Viewports\Model\CSSRuleset
- * @package  Quantum\Viewports\Model\
+ * @class    QP\Viewports\Model\CSSRuleset
+ * @package  QP\Viewports\Model\
  * @category Class
  */
 class CSSRuleset {
@@ -161,7 +161,7 @@ class CSSRuleset {
 							} else {
 
 								// Allow to register non-numeric viewport types.
-								$customRule = \apply_filters( 'quantum_viewports_custom_viewport_rule', null, $property, $selector, $properties, $viewport );
+								$customRule = \apply_filters( 'viewports_custom_viewport_rule', null, $property, $selector, $properties, $viewport );
 								if( $customRule instanceOf CSSRule ) {
 									$attributeRules[] = $customRule;
 								}

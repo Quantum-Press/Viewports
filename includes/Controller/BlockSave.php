@@ -1,6 +1,6 @@
 <?php
 
-namespace Quantum\Viewports\Controller;
+namespace QP\Viewports\Controller;
 
 // Be sure not to load without wp.
 defined( 'ABSPATH' ) || exit;
@@ -8,8 +8,8 @@ defined( 'ABSPATH' ) || exit;
 /**
  * This class handles block save.
  *
- * @class    Quantum\Viewports\BlockSave
- * @package  Quantum\Viewports
+ * @class    QP\Viewports\BlockSave
+ * @package  QP\Viewports
  * @category Class
  * @author   Sebastian Buchwald // conversionmedia GmbH & Co. KG
  */
@@ -83,7 +83,7 @@ class BlockSave extends Instance {
 				'wp_font_face',
 				'customize_changeset',
 			];
-			$this->invalid_post_types = \apply_filters( 'quantum_viewports_invalid_post_types', $invalid_post_types );
+			$this->invalid_post_types = \apply_filters( 'viewports_invalid_post_types', $invalid_post_types );
 		}
 
 		return $this->invalid_post_types;

@@ -57,7 +57,7 @@ module.exports = ( env ) => ( {
 		extensions: [ '.ts', '.tsx' ],
 	},
 	output: {
-		filename: 'qp-viewports.js',
+		filename: 'viewports.js',
 		path: path.resolve( __dirname, 'build' ),
 		clean: true,
 	},

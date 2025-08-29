@@ -1,6 +1,6 @@
 <?php
 
-namespace Quantum\Viewports\Controller;
+namespace QP\Viewports\Controller;
 
 // Be sure not to load without wp.
 defined( 'ABSPATH' ) || exit;
@@ -10,8 +10,8 @@ defined( 'ABSPATH' ) || exit;
  *
  * This class handles object instance management.
  *
- * @class    Quantum\Viewports\Controller\InstanceManager
- * @package  Quantum\Viewports\Controller
+ * @class    QP\Viewports\Controller\InstanceManager
+ * @package  QP\Viewports\Controller
  * @category Class
  * @author   Sebastian Buchwald // conversionmedia GmbH & Co. KG
  */

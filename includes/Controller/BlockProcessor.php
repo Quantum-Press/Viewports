@@ -1,17 +1,17 @@
 <?php
 
-namespace Quantum\Viewports\Controller;
+namespace QP\Viewports\Controller;
 
 // Be sure not to load without wp.
 defined( 'ABSPATH' ) || exit;
 
-use Quantum\Viewports\Model\Block;
+use QP\Viewports\Model\Block;
 
 /**
  * This class handles block processing operations.
  *
- * @class    Quantum\Viewports\BlockProcessor
- * @package  Quantum\Viewports
+ * @class    QP\Viewports\BlockProcessor
+ * @package  QP\Viewports
  * @category Class
  * @author   Sebastian Buchwald // conversionmedia GmbH & Co. KG
  */
@@ -54,7 +54,7 @@ class BlockProcessor extends Instance {
 	protected function setProperties()
 	{
 		$this->ignoreProperties = \apply_filters(
-			'quantum_viewports_ignore_properties',
+			'viewports_ignore_properties',
 			[
 				'background',
 				'qpBackground',

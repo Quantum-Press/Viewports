@@ -10,10 +10,10 @@ const {
 /**
  * Register preview dropdown extension.
  */
-registerPlugin( 'quantum-viewports-preview', {
+registerPlugin( 'viewports-preview', {
 	render: Preview,
 } );
 
-registerPlugin( 'quantum-viewports-block-styles', {
+registerPlugin( 'viewports-block-styles', {
 	render: BlockStyles,
 } );

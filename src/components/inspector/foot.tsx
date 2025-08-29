@@ -39,7 +39,7 @@ const Foot = () => {
 			<Button
 				className="qp-viewports-link"
 				icon={ logo }
-				text={ __( 'Quantum Viewports - Version', 'quantum-viewports' ) + ' ' + version }
+				text={ __( 'Viewports - Version', 'viewports' ) + ' ' + version }
 			/>
 		</div>
 	);

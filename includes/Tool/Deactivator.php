@@ -1,6 +1,6 @@
 <?php
 
-namespace Quantum\Viewports\Tool;
+namespace QP\Viewports\Tool;
 
 // Be sure not to load without wp.
 defined( 'ABSPATH' ) || exit;
@@ -10,8 +10,8 @@ defined( 'ABSPATH' ) || exit;
  *
  * This class handles plugin deactivation hook call.
  *
- * @class    Quantum\Viewports\Tool\Deactivator
- * @package  Quantum\Viewports\Tool
+ * @class    QP\Viewports\Tool\Deactivator
+ * @package  QP\Viewports\Tool
  * @category Class
  * @author   Sebastian Buchwald // conversionmedia GmbH & Co. KG
  */

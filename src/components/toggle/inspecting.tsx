@@ -74,9 +74,9 @@ const ToggleInspecting = ( { showText = true, forceShow = false } : { showText?:
 		<Button
 			className={ classNames }
 			icon={ inspect }
-			label={ __( 'Inspect styles', 'quantum-viewports' ) }
+			label={ __( 'Inspect styles', 'viewports' ) }
 			onClick={ onClickInspect }
-			text={ showText ? __( 'Inspector', 'quantum-viewports' ) : '' }
+			text={ showText ? __( 'Inspector', 'viewports' ) : '' }
 		/>
 	);
 }

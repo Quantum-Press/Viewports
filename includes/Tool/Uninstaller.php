@@ -1,6 +1,6 @@
 <?php
 
-namespace Quantum\Viewports\Tool;
+namespace QP\Viewports\Tool;
 
 // Be sure not to load without wp.
 defined( 'ABSPATH' ) || exit;
@@ -10,8 +10,8 @@ defined( 'ABSPATH' ) || exit;
  *
  * This class handles plugin uninstaller hook call.
  *
- * @class    Quantum\Viewports\Tool\Uninstaller
- * @package  Quantum\Viewports\Tool
+ * @class    QP\Viewports\Tool\Uninstaller
+ * @package  QP\Viewports\Tool
  * @category Class
  * @author   Sebastian Buchwald || conversionmedia GmbH & Co. KG
  */

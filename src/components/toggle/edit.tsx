@@ -58,7 +58,7 @@ const ToggleEdit = () => {
 	return (
 		<ToggleControl
 			className={ classNames }
-			label={ __( 'Edit on Viewport', 'quantum-viewports' ) }
+			label={ __( 'Edit on Viewport', 'viewports' ) }
 			onChange={ onChange }
 			checked={ isEditing }
 		/>

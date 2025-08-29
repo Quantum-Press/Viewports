@@ -23,7 +23,7 @@ const {
 
 
 // Filter into all blocks register to wrap around block.edit and block.save.
-addFilter( 'blocks.registerBlockType', 'quantumpress/viewports', ( block : Block ) => {
+addFilter( 'blocks.registerBlockType', 'qp/viewports', ( block : Block ) => {
 
 	// Ignore all blacklisted blocks.
 	if( isInBlockBlacklist( block.name ) ) {

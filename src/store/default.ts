@@ -6,44 +6,44 @@ const {
 	}
 } = window[ 'wp' ];
 
-declare const qpViewportsConfig: ViewportsConfig | undefined;
+declare const viewportsConfig: ViewportsConfig | undefined;
 
 function getViewports() : Viewports {
-	if ( typeof qpViewportsConfig === 'undefined' ) {
+	if ( typeof viewportsConfig === 'undefined' ) {
 		return {
-			1920: 'Quantum - Desktop large',
-			1360: 'Quantum - Desktop small',
+			1920: 'VP - Desktop large',
+			1360: 'VP - Desktop small',
 			780: 'Wordpress - Tablet',
 			360: 'Wordpress - Mobile',
 			0: 'Default',
 		};
 	}
 
-	if( 'pro' === qpViewportsConfig.distribution ) {
+	if( 'extended' === viewportsConfig.distribution ) {
 		return {
-			3440: 'Quantum - Desktop xxlarge',
-			2560: 'Quantum - Desktop xlarge',
-			1920: 'Quantum - Desktop large',
-			1650: 'Quantum - Desktop medium',
-			1360: 'Quantum - Desktop small',
-			1280: 'Quantum - Desktop tiny',
-			1180: 'Quantum - Tablet xlarge',
-			1024: 'Quantum - Tablet large',
-			820: 'Quantum - Tablet medium',
+			3440: 'VP - Desktop xxlarge',
+			2560: 'VP - Desktop xlarge',
+			1920: 'VP - Desktop large',
+			1650: 'VP - Desktop medium',
+			1360: 'VP - Desktop small',
+			1280: 'VP - Desktop tiny',
+			1180: 'VP - Tablet xlarge',
+			1024: 'VP - Tablet large',
+			820: 'VP - Tablet medium',
 			780: 'Wordpress - Tablet',
-			768: 'Quantum - Tablet small',
-			540: 'Quantum - Tablet tiny',
-			425: 'Quantum - Mobile large',
-			375: 'Quantum - Mobile medium',
+			768: 'VP - Tablet small',
+			540: 'VP - Tablet tiny',
+			425: 'VP - Mobile large',
+			375: 'VP - Mobile medium',
 			360: 'Wordpress - Mobile',
-			320: 'Quantum - Mobile small',
+			320: 'VP - Mobile small',
 			0: 'Default',
 		}
 	}
 
 	return {
-		1920: 'Quantum - Desktop large',
-		1360: 'Quantum - Desktop small',
+		1920: 'VP - Desktop large',
+		1360: 'VP - Desktop small',
 		780: 'Wordpress - Tablet',
 		360: 'Wordpress - Mobile',
 		0: 'Default',
@@ -56,11 +56,11 @@ function getDesktopViewport() : number {
 }
 
 function getTabletViewport() : number {
-	if ( typeof qpViewportsConfig === 'undefined' ) {
+	if ( typeof viewportsConfig === 'undefined' ) {
 		return 780;
 	}
 
-	if( 'pro' === qpViewportsConfig.distribution ) {
+	if( 'extended' === viewportsConfig.distribution ) {
 		return 768;
 	}
 
@@ -68,11 +68,11 @@ function getTabletViewport() : number {
 }
 
 function getMobileViewport() : number {
-	if ( typeof qpViewportsConfig === 'undefined' ) {
+	if ( typeof viewportsConfig === 'undefined' ) {
 		return 360;
 	}
 
-	if( 'pro' === qpViewportsConfig.distribution ) {
+	if( 'extended' === viewportsConfig.distribution ) {
 		return 320;
 	}
 
@@ -84,11 +84,11 @@ function getDesktopBreakpoint() : number {
 	return 1360;
 }
 function getTabletBreakpoint() : number {
-	if ( typeof qpViewportsConfig === 'undefined' ) {
+	if ( typeof viewportsConfig === 'undefined' ) {
 		return 780;
 	}
 
-	if( 'pro' === qpViewportsConfig.distribution ) {
+	if( 'extended' === viewportsConfig.distribution ) {
 		return 540;
 	}
 

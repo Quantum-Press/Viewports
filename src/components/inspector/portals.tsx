@@ -173,7 +173,7 @@ export const InspectorPortals = () => {
 					<Button
 						key={ index }
 						className={ classNames }
-						label={ __( 'Inspect styles', 'quantum-viewports' ) }
+						label={ __( 'Inspect styles', 'viewports' ) }
 						onClick={ onClickInspect }
 					>
 						<Icon icon={ inspect } />

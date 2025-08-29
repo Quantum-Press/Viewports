@@ -1,18 +1,18 @@
 <?php
 
-namespace Quantum\Viewports\Model;
+namespace QP\Viewports\Model;
 
 // Be sure not to load without wp.
 defined( 'ABSPATH' ) || exit;
 
-use Quantum\Viewports\Controller\BlockProcessor;
-use Quantum\Viewports\Controller\CSSParser;
+use QP\Viewports\Controller\BlockProcessor;
+use QP\Viewports\Controller\BlockSupport\Viewports\Controller\CSSParser;
 
 /**
  * This model class handles a single block.
  *
- * @class    Quantum\Viewports\Model\Block
- * @package  Quantum\Viewports\Model\
+ * @class    QP\Viewports\Model\Block
+ * @package  QP\Viewports\Model\
  * @category Class
  */
 class Block {

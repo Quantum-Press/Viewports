@@ -1,19 +1,19 @@
 <?php
 
-namespace Quantum\Viewports\Controller;
+namespace QP\Viewports\Controller;
 
 // Be sure not to load without wp.
 defined( 'ABSPATH' ) || exit;
 
-use Quantum\Viewports\Model\CSSRuleset;
+use QP\Viewports\Model\CSSRuleset;
 
 /**
  * CSS parser class.
  *
  * This class handles parsing css back and forth.
  *
- * @class    Quantum\Viewports\CSSParser
- * @package  Quantum\Viewports
+ * @class    QP\Viewports\CSSParser
+ * @package  QP\Viewports
  * @category Class
  * @author   Sebastian Buchwald // conversionmedia GmbH & Co. KG
  */

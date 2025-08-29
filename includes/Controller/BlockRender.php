@@ -1,11 +1,11 @@
 <?php
 
-namespace Quantum\Viewports\Controller;
+namespace QP\Viewports\Controller;
 
 // Be sure not to load without wp.
 defined( 'ABSPATH' ) || exit;
 
-use Quantum\Viewports\Model\CSSRuleset;
+use QP\Viewports\Model\CSSRuleset;
 
 class BlockRender extends Instance {
 
@@ -48,7 +48,7 @@ class BlockRender extends Instance {
 		$ruleSet = new CSSRuleset( $block );
 		$ruleSet->compress();
 
-		$className = \wp_unique_id( 'qp-viewports-' );
+		$className = \wp_unique_id( 'viewports-' );
 		$selector = 'body .wp-site-blocks .' . $className;
 
 		$css = $ruleSet->getCSS( $selector );
@@ -66,9 +66,9 @@ class BlockRender extends Instance {
 	 */
 	protected function registerCSS( $css )
 	{
-		global $qpViewportsStyles;
+		global $viewportsStyles;
 
-		$qpViewportsStyles .= $css;
+		$viewportsStyles .= $css;
 	}
 
 
@@ -77,14 +77,14 @@ class BlockRender extends Instance {
 	 */
 	public function enqueueBlockStyles()
 	{
-		global $qpViewportsStyles;
+		global $viewportsStyles;
 
-		if ( empty( $qpViewportsStyles ) ) {
+		if ( empty( $viewportsStyles ) ) {
 			return;
 		}
 
-		\wp_register_style( 'qp-viewports-inline-css', false );
-		\wp_add_inline_style( 'qp-viewports-inline-css', $qpViewportsStyles );
-		\wp_enqueue_style( 'qp-viewports-inline-css' );
+		\wp_register_style( 'viewports-inline-css', false );
+		\wp_add_inline_style( 'viewports-inline-css', $viewportsStyles );
+		\wp_enqueue_style( 'viewports-inline-css' );
 	}
 }

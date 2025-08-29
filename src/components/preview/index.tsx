@@ -46,7 +46,7 @@ const Preview = () => {
 			<PluginPreviewMenuItem
 				onClick={ onClickViewport }
 			>
-				{ __( 'Viewport keyframes', 'quantum-viewports' ) }
+				{ __( 'Viewport keyframes', 'viewports' ) }
 			</PluginPreviewMenuItem>
 		</>
 	)

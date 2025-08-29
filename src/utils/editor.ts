@@ -34,7 +34,7 @@ export const isSiteEditor = () : boolean => {
  * @return {string} version
  */
 export const getVersion = () : string => {
-	const script = document.getElementById( 'qp-viewports-scripts-js' ) as HTMLScriptElement;
+	const script = document.getElementById( 'viewports-scripts-js' ) as HTMLScriptElement;
 	const parts = script.src.split( '?' );
 	const params = new URLSearchParams( '?' + parts[1] );
 
