@@ -1,13 +1,11 @@
 name: Build Release
 
-# Trigger: Bei jedem veröffentlichten Release
 on:
   release:
     types: [published]
 
-# Berechtigungen für Release-Upload
 permissions:
-  contents: write  # nötig für Upload von Assets
+  contents: write
 
 jobs:
   build:
@@ -18,17 +16,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Alte Artefakte löschen
+      - name: Clean old build files
+        run: rm -rf release *.zip
+
       # Composer-Abhängigkeiten installieren
       - name: Install dependencies
         run: composer install --no-dev --optimize-autoloader
 
-      # ZIP erstellen inklusive vendor
+      # Release-Ordner vorbereiten
+      - name: Prepare release folder
+        run: |
+          mkdir release
+          cp -r src vendor composer.json composer.lock release/
+
+      # ZIP erstellen
       - name: Create archive
-        run: zip -r Viewports-${{ github.ref_name }}.zip . -x ".git/*" ".github/*"
+        run: zip -r viewports-${{ github.ref_name }}.zip release/*
 
       # ZIP als Release-Asset hochladen
       - name: Upload release asset
         uses: softprops/action-gh-release@v1
         with:
-          files: Viewports-${{ github.ref_name }}.zip
+          files: viewports-${{ github.ref_name }}.zip
           token: ${{ secrets.GITHUB_TOKEN }}
