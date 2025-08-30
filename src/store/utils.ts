@@ -23,8 +23,8 @@ import type {
 	BlockDifferences,
 	Viewports,
 	viewportType,
+	deviceType,
 	SpectrumSet,
-	viewport,
 	BlockAttributes,
 	AnyObject
 } from '../types';
@@ -215,25 +215,25 @@ export const getHighestPossibleViewport = ( viewports : Viewports, width : numbe
 
 
 /**
- * Set function to return in range function for given viewportType.
+ * Set function to return in range function for given deviceType.
  *
- * @param {viewportType} viewportType
+ * @param {deviceType} deviceType
  *
  * @return {Function|null}
  */
-export const getInRange = ( viewportType : viewportType ) : Function|null => {
+export const getInRange = ( deviceType : deviceType ) : Function|null => {
 	let inRange = null;
 
-	switch( viewportType ) {
-		case 'mobile' :
+	switch( deviceType ) {
+		case 'Mobile' :
 			inRange = isInMobileRange;
 			break;
 
-		case 'tablet' :
+		case 'Tablet' :
 			inRange = isInTabletRange;
 			break;
 
-		case 'desktop' :
+		case 'Desktop' :
 			inRange = isInDesktopRange;
 			break;
 	}
@@ -243,15 +243,15 @@ export const getInRange = ( viewportType : viewportType ) : Function|null => {
 
 
 /**
- * Set function to indicate whether spectrumSet has given viewportType.
+ * Set function to indicate whether spectrumSet has given deviceType.
  *
- * @param {viewportType} viewportType
+ * @param {deviceType} deviceType
  * @param {SpectrumSet} spectrumSet
  *
  * @return {boolean}
  */
-export const hasSpectrumSetViewportType = ( viewportType : viewportType, spectrumSet : SpectrumSet ) : boolean =>  {
-	const inRange = getInRange( viewportType );
+export const hasSpectrumSetViewportType = ( deviceType : deviceType, spectrumSet : SpectrumSet ) : boolean =>  {
+	const inRange = getInRange( deviceType );
 
 	let hasSpectrumSet = false;
 

@@ -5,7 +5,7 @@
  *
  * Plugin Name: Viewports
  * Description: Extends the BlockEditor with responsive controls.
- * Version:     0.9.4
+ * Version:     0.9.5-dev
  * Text Domain: viewports
  * Domain Path: /languages
  *
@@ -28,7 +28,7 @@ use \QP\Viewports\Tool\Deactivator;
 use \QP\Viewports\Tool\Uninstaller;
 
 // Global variables, as few as possible
-define( 'VIEWPORTS_VERSION',    '0.9.4' );
+define( 'VIEWPORTS_VERSION',    '0.9.5-dev' );
 define( 'VIEWPORTS_FILE',       ( __FILE__ ) );
 define( 'VIEWPORTS_URL',        untrailingslashit( plugin_dir_url( VIEWPORTS_FILE ) ) );
 define( 'VIEWPORTS_PATH',       untrailingslashit( plugin_dir_path( VIEWPORTS_FILE ) ) );

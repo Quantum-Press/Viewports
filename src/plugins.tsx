@@ -1,4 +1,4 @@
-import Preview from './components/preview';
+import KeyframesToggle from './components/keyframes/toggle';
 import { BlockStyles } from './components/block-styles';
 
 const {
@@ -10,8 +10,8 @@ const {
 /**
  * Register preview dropdown extension.
  */
-registerPlugin( 'viewports-preview', {
-	render: Preview,
+registerPlugin( 'viewports-keyframes-toggle', {
+	render: KeyframesToggle,
 } );
 
 registerPlugin( 'viewports-block-styles', {

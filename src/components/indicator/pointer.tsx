@@ -25,8 +25,8 @@ const {
  *
  * @returns {JSX.Element | null}
  */
-export const Pointer = memo( ( { viewportType, isEditing, iframeViewport, hasTabletSpectrum, hasDesktopSpectrum } ) => {
-	const inRange = getInRange( viewportType );
+export const Pointer = memo( ( { deviceType, isEditing, iframeViewport, hasTabletSpectrum, hasDesktopSpectrum } ) => {
+	const inRange = getInRange( deviceType );
 
 	// Memoize icon rendering logic based on the relevant conditions
 	const shouldRenderIcons = useMemo( () => {
@@ -47,7 +47,7 @@ export const Pointer = memo( ( { viewportType, isEditing, iframeViewport, hasTab
 		}
 
 		// Mobile viewport logic
-		if( viewportType === 'mobile' ) {
+		if( deviceType === 'Mobile' ) {
 			if(
 				inRange( iframeViewport ) ||
 				( isInTabletRange( iframeViewport ) && ! hasTabletSpectrum ) ||
@@ -58,7 +58,7 @@ export const Pointer = memo( ( { viewportType, isEditing, iframeViewport, hasTab
 		}
 
 		// Tablet viewport logic
-		if( viewportType === 'tablet' ) {
+		if( deviceType === 'Tablet' ) {
 			if(
 				( hasTabletSpectrum && inRange( iframeViewport ) ) ||
 				( hasTabletSpectrum && ! hasDesktopSpectrum && isInDesktopRange( iframeViewport ) )
@@ -68,13 +68,13 @@ export const Pointer = memo( ( { viewportType, isEditing, iframeViewport, hasTab
 		}
 
 		// Desktop viewport logic
-		if( viewportType === 'desktop' && hasDesktopSpectrum && inRange( iframeViewport ) ) {
+		if( deviceType === 'Desktop' && hasDesktopSpectrum && inRange( iframeViewport ) ) {
 			return { showIcons: true, editing: false };
 		}
 
 		return { showIcons: false }; // No icons to render if none of the conditions are met
 
-	}, [ viewportType, isEditing, iframeViewport, hasTabletSpectrum, hasDesktopSpectrum ] );
+	}, [ deviceType, isEditing, iframeViewport, hasTabletSpectrum, hasDesktopSpectrum ] );
 
 	// Return null if no icons should be rendered
 	if( ! shouldRenderIcons.showIcons ) {

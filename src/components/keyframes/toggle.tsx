@@ -1,4 +1,5 @@
 import { STORE_NAME } from "../../store";
+import { keyframe } from "../svgs";
 
 const {
 	data: {
@@ -13,12 +14,11 @@ const {
 	}
 } = window[ 'wp' ];
 
-const Preview = () => {
+const KeyframesToggle = () => {
 
 	// Set state dependency.
 	const {
 		isActive,
-		isEditing,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 
@@ -41,15 +41,23 @@ const Preview = () => {
 		}
 	}
 
+	// Set classname with active state.
+	let className = 'qp-viewports-keyframes-toggle';
+	if ( isActive ) {
+		className += ' active';
+	}
+
 	return (
 		<>
 			<PluginPreviewMenuItem
+				icon={ keyframe }
+				className={ className }
 				onClick={ onClickViewport }
 			>
-				{ __( 'Viewport keyframes', 'viewports' ) }
+				{ isActive ? __( 'Hide keyframes', 'viewports' ) : __( 'Show keyframes', 'viewports' ) }
 			</PluginPreviewMenuItem>
 		</>
 	)
 }
 
-export default Preview;
+export default KeyframesToggle;

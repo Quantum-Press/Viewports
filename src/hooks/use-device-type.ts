@@ -153,7 +153,7 @@ export function useDeviceType() {
 	}, [ iframeViewport ] );
 
 	// Return state and setter placeholder.
-	return [];
+	return [ deviceType ];
 };
 
 export default useDeviceType;

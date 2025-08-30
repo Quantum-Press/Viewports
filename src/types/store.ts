@@ -13,6 +13,7 @@ export type ViewportsConfig = {
 
 
 export type viewportType = 'desktop' | 'tablet' | 'mobile' | '';
+export type deviceType = 'Desktop' | 'Tablet' | 'Mobile' | '';
 export type viewport = number|string;
 export type Viewports = {
 	[ key: viewport ] : string,

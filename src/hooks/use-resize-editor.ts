@@ -23,8 +23,11 @@ export const useResizeEditor = () => {
 	// Set resize info
 	const [ resizeScale, setResizeScale ] = useState( 1 );
 
+	// Set ignore flag.
+	const [ ignore, setIgnore ] = useState( false );
+
 	// Set useDeviceType.
-	useDeviceType();
+	const [ deviceType ] = useDeviceType();
 
 	// Set resize states.
 	const resizeSkeleton = useResizeObserver( {
@@ -121,19 +124,20 @@ export const useResizeEditor = () => {
 				setResizeScale( 1 );
 			}
 		} else {
+			if ( 'Desktop' == deviceType ) {
+				// Reset sizes.
+				$iframe.style.width = '100%';
+				$iframe.style.height = '100%';
 
-			// Reset sizes.
-			$iframe.style.width = '100%';
-			$iframe.style.height = '100%';
+				$widthContainer.style.height = ( maxHeight ) + 'px';
 
-			$widthContainer.style.height = ( maxHeight ) + 'px';
+				// Reset position.
+				$iframe.style.margin = '0 auto';
+				$iframe.style.transform = null;
 
-			// Reset position.
-			$iframe.style.margin = '0';
-			$iframe.style.transform = 'scale(1)';
-
-			// Update resize scale.
-			setResizeScale( 1 );
+				// Update resize scale.
+				setResizeScale( 1 );
+			}
 		}
 	}
 
@@ -209,27 +213,28 @@ export const useResizeEditor = () => {
 				setResizeScale( 1 );
 			}
 		} else {
+			if ( 'Desktop' == deviceType ) {
+				// Reset sizes.
+				$iframe.style.width = '100%';
+				$iframe.style.height = maxHeight + 'px';
 
-			// Reset sizes.
-			$iframe.style.width = '100%';
-			$iframe.style.height = maxHeight + 'px';
+				if( $contentContainer ) {
+					$contentContainer.style.height = 'auto';
+				} else {
+					$desktopPreviewContainer.style.height = 'auto';
+				}
 
-			if( $contentContainer ) {
-				$contentContainer.style.height = 'auto';
-			} else {
-				$desktopPreviewContainer.style.height = 'auto';
+				if( $widthContainer ) {
+					$widthContainer.style.height = maxHeight + 'px';
+				}
+
+				// Reset position.
+				$iframe.style.margin = '0 auto';
+				$iframe.style.transform = null;
+
+				// Update resize scale.
+				setResizeScale( 1 );
 			}
-
-			if( $widthContainer ) {
-				$widthContainer.style.height = maxHeight + 'px';
-			}
-
-			// Reset position.
-			$iframe.style.margin = '0';
-			$iframe.style.transform = 'scale(1)';
-
-			// Update resize scale.
-			setResizeScale( 1 );
 		}
 	}
 

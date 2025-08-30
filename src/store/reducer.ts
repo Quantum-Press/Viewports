@@ -101,7 +101,6 @@ export const setViewportType = ( state : State, action : Action ) : State => {
 			if( viewportType === 'mobile' ) {
 				return {
 					... state,
-					isActive: true,
 					isEditing: smallestViewport === mobileDefaultViewport ? false : true,
 					viewport: mobileDefaultViewport,
 				}
@@ -110,7 +109,6 @@ export const setViewportType = ( state : State, action : Action ) : State => {
 			if( viewportType === 'tablet' ) {
 				return {
 					... state,
-					isActive: true,
 					isEditing: true,
 					viewport: tabletDefaultViewport,
 				}
@@ -119,7 +117,6 @@ export const setViewportType = ( state : State, action : Action ) : State => {
 			if( viewportType === 'desktop' ) {
 				return {
 					... state,
-					isActive: true,
 					isEditing: true,
 					viewport: desktopDefaultViewport,
 				}
