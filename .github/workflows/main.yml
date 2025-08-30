@@ -27,16 +27,16 @@ jobs:
       # Release-Ordner vorbereiten
       - name: Prepare release folder
         run: |
-          mkdir release
-          cp -r build config includes src vendor composer.json composer.lock viewports.php release/
+          mkdir viewports
+          cp -r build config includes src vendor composer.json composer.lock viewports.php viewports/
 
       # ZIP erstellen
       - name: Create archive
-        run: zip -r viewports-${{ github.ref_name }}.zip release/*
+        run: zip -r viewports-plugin-${{ github.ref_name }}.zip viewports/*
 
       # ZIP als Release-Asset hochladen
       - name: Upload release asset
         uses: softprops/action-gh-release@v1
         with:
-          files: viewports-${{ github.ref_name }}.zip
+          files: viewports-plugin-${{ github.ref_name }}.zip
           token: ${{ secrets.GITHUB_TOKEN }}
