@@ -28,7 +28,7 @@ jobs:
       - name: Prepare release folder
         run: |
           mkdir release
-          cp -r src vendor composer.json composer.lock release/
+          cp -r build config includes src vendor composer.json composer.lock viewports.php release/
 
       # ZIP erstellen
       - name: Create archive
