@@ -16,7 +16,7 @@ module.exports = ( env ) => ( {
 	},
 	plugins: [
 		new MiniCssExtractPlugin( {
-			filename: 'qp-viewports-[name].css',
+			filename: 'viewports-[name].css',
 		} ),
 	],
 	module: {
@@ -74,7 +74,7 @@ module.exports = ( env ) => ( {
 		},
 	},
 	output: {
-		filename: 'qp-viewports.js',
+		filename: 'viewports.js',
 		path: path.resolve( __dirname, 'build' ),
 		clean: true,
 	},
