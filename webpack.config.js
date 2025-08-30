@@ -2,6 +2,7 @@
  * Requires.
  */
 const path = require( 'path' );
+const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 
 
 /**
@@ -10,7 +11,14 @@ const path = require( 'path' );
 module.exports = ( env ) => ( {
 	devtool: env.production ? undefined : 'source-map',
 	mode: env.production ? 'production' : 'development',
-	entry: [ './src/main.ts' ],
+	entry: {
+		core: './src/main.ts',
+	},
+	plugins: [
+		new MiniCssExtractPlugin( {
+			filename: 'qp-viewports-[name].css',
+		} ),
+	],
 	module: {
 		rules: [
 			{
@@ -41,7 +49,7 @@ module.exports = ( env ) => ( {
 			{
 				test: /\.(s(a|c)ss)$/,
 				use: [
-					'style-loader',
+					MiniCssExtractPlugin.loader,
 					'css-loader',
 					{
 						loader: 'sass-loader',
@@ -54,10 +62,19 @@ module.exports = ( env ) => ( {
 		],
 	},
 	resolve: {
-		extensions: [ '.ts', '.tsx' ],
+		extensions: [ '.tsx', '.ts' ],
+		alias: {
+			'@viewports/components': path.resolve( __dirname, 'src/components' ),
+			'@viewports/config': path.resolve( __dirname, 'src/config' ),
+			'@viewports/hacks': path.resolve( __dirname, 'src/hacks' ),
+			'@viewports/hooks': path.resolve( __dirname, 'src/hooks' ),
+			'@viewports/store': path.resolve( __dirname, 'src/store' ),
+			'@viewports/types': path.resolve( __dirname, 'src/types' ),
+			'@viewports/utils': path.resolve( __dirname, 'src/utils' ),
+		},
 	},
 	output: {
-		filename: 'viewports.js',
+		filename: 'qp-viewports.js',
 		path: path.resolve( __dirname, 'build' ),
 		clean: true,
 	},

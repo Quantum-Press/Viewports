@@ -1,4 +1,4 @@
-import { useIsMounted } from '../hooks';
+import { useIsMounted } from '@viewports/hooks';
 
 const {
 	element: {

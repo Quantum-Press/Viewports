@@ -1,6 +1,7 @@
-import Indicator from './';
-import { STORE_NAME } from '../../store';
-import useEditorSidebar from '../../hooks/use-editor-sidebar';
+import { useEditorSidebar } from '@viewports/hooks/';
+import { STORE_NAME } from '@viewports/store';
+
+import { Indicator } from './';
 
 const {
 	data: {
@@ -93,5 +94,3 @@ export const IndicatorPortals = () => {
 		</>
 	);
 }
-
-export default IndicatorPortals;

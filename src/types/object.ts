@@ -1,5 +1,10 @@
 export type AnyObject = Record<string, any>;
 
+export type ObjectOccurence = {
+	found: AnyObject;
+	missing: AnyObject | null;
+}
+
 export type DeepPartial<T> = T extends (infer U)[] // If T is an Array
 	? DeepPartial<U>[] // Set DeepPartial recursively on elements type
 	: T extends object // If T is an object

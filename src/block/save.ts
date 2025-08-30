@@ -1,6 +1,6 @@
-import { STORE_NAME } from '../store/constants';
-import { debug, debugOptions } from '../utils';
-import { Block, BlockSaveProps } from '../types';
+import { STORE_NAME } from '@viewports/store';
+import { debug, debugOptions } from '@viewports/utils';
+import type { Block, BlockSaveProps } from '@viewports/types';
 
 const {
 	data: {

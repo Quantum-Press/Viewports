@@ -1,7 +1,8 @@
+import { ToggleEdit } from '@viewports/components';
+
 import Breadcrumb from './breadcrumb';
 import BlockList from './blocklist';
 import Selected from './selected';
-import ToggleEdit from '../toggle/edit';
 
 const {
 	data: {

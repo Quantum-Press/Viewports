@@ -1,6 +1,5 @@
-import useEditorSidebar from "../hooks/use-editor-sidebar";
-import useResizeEditor from "../hooks/use-resize-editor";
-import { STORE_NAME } from "../store";
+import { useEditorSidebar, useResizeEditor } from '@viewports/hooks';
+import { STORE_NAME } from '@viewports/store';
 
 const {
 	data: {

@@ -1,11 +1,6 @@
-import InspectorPortals from './components/inspector/portals';
-import IndicatorPortals from './components/indicator/portals';
-
+import { InspectorPortals, IndicatorPortals } from '@viewports/components';
 
 const {
-	data: {
-		select,
-	},
 	element: {
 		createRoot,
 	}

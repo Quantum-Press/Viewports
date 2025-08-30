@@ -1,6 +1,6 @@
-import { STORE_NAME } from '../../store';
-import { useLocalStorage } from '../../hooks';
-import ToggleInspecting from '../toggle/inspecting';
+import { ToggleInspecting } from '@viewports/components';
+import { useLocalStorage } from '@viewports/hooks';
+import { STORE_NAME } from '@viewports/store';
 
 const {
 	components: {

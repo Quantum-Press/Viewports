@@ -6,7 +6,7 @@ namespace QP\Viewports\Model;
 defined( 'ABSPATH' ) || exit;
 
 use QP\Viewports\Controller\BlockProcessor;
-use QP\Viewports\Controller\BlockSupport\Viewports\Controller\CSSParser;
+use QP\Viewports\Controller\CSSParser;
 
 /**
  * This model class handles a single block.

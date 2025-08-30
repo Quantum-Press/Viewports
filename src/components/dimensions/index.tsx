@@ -17,7 +17,7 @@ const {
 /**
  * Set component const to export Dimensions UI.
  */
-const Dimensions = () => {
+export const Dimensions = () => {
 
 	// Set state dependencies.
 	const {
@@ -44,5 +44,3 @@ const Dimensions = () => {
 		</div>
 	);
 }
-
-export default Dimensions;

@@ -5,9 +5,9 @@ import './editor.scss';
 // import './hacks/global-styles';
 
 // Import store.
-import './store/index';
+import './store';
 
 // Import implementations.
 import './plugins';
-import './register';
+import './block';
 import './subscribes';

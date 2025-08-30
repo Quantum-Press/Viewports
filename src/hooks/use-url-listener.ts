@@ -23,7 +23,7 @@ const {
  * const currentURL = useURLListener();
  * console.log( currentURL );
  */
-export default function useURLListener(): string {
+export function useURLListener(): string {
 	const [ currentURL, setCurrentURL ] = useState( window.location.href );
 
 	useEffect( () => {

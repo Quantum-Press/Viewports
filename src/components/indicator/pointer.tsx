@@ -1,4 +1,8 @@
-import { isInTabletRange, isInDesktopRange, getInRange } from '../../store';
+import {
+	isInTabletRange,
+	isInDesktopRange,
+	getInRange
+} from '@viewports/store';
 
 const {
 	components: {
@@ -25,8 +29,8 @@ const {
  *
  * @returns {JSX.Element | null}
  */
-export const Pointer = memo( ( { deviceType, isEditing, iframeViewport, hasTabletSpectrum, hasDesktopSpectrum } ) => {
-	const inRange = getInRange( deviceType );
+export const Pointer = memo( ( { viewportType, isEditing, iframeViewport, hasTabletSpectrum, hasDesktopSpectrum } ) => {
+	const inRange = getInRange( viewportType );
 
 	// Memoize icon rendering logic based on the relevant conditions
 	const shouldRenderIcons = useMemo( () => {
@@ -47,7 +51,7 @@ export const Pointer = memo( ( { deviceType, isEditing, iframeViewport, hasTable
 		}
 
 		// Mobile viewport logic
-		if( deviceType === 'Mobile' ) {
+		if( viewportType === 'mobile' ) {
 			if(
 				inRange( iframeViewport ) ||
 				( isInTabletRange( iframeViewport ) && ! hasTabletSpectrum ) ||
@@ -58,7 +62,7 @@ export const Pointer = memo( ( { deviceType, isEditing, iframeViewport, hasTable
 		}
 
 		// Tablet viewport logic
-		if( deviceType === 'Tablet' ) {
+		if( viewportType === 'tablet' ) {
 			if(
 				( hasTabletSpectrum && inRange( iframeViewport ) ) ||
 				( hasTabletSpectrum && ! hasDesktopSpectrum && isInDesktopRange( iframeViewport ) )
@@ -68,13 +72,13 @@ export const Pointer = memo( ( { deviceType, isEditing, iframeViewport, hasTable
 		}
 
 		// Desktop viewport logic
-		if( deviceType === 'Desktop' && hasDesktopSpectrum && inRange( iframeViewport ) ) {
+		if( viewportType === 'desktop' && hasDesktopSpectrum && inRange( iframeViewport ) ) {
 			return { showIcons: true, editing: false };
 		}
 
 		return { showIcons: false }; // No icons to render if none of the conditions are met
 
-	}, [ deviceType, isEditing, iframeViewport, hasTabletSpectrum, hasDesktopSpectrum ] );
+	}, [ viewportType, isEditing, iframeViewport, hasTabletSpectrum, hasDesktopSpectrum ] );
 
 	// Return null if no icons should be rendered
 	if( ! shouldRenderIcons.showIcons ) {

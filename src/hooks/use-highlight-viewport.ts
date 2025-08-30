@@ -1,5 +1,5 @@
-import { openSidebar, openStylesTab } from '../utils';
-import useHighlight from './use-highlight';
+import { useHighlight } from '@viewports/hooks';
+import { openSidebar, openStylesTab } from '@viewports/utils';
 
 const {
 	element: {

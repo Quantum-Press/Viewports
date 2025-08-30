@@ -4,7 +4,7 @@
     stopOnFailure="false"
 >
     <testsuites>
-        <testsuite name="Quantum/Viewports">
+        <testsuite name="Viewports">
             <directory>tests</directory>
         </testsuite>
     </testsuites>

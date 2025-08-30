@@ -1,5 +1,7 @@
-import KeyframesToggle from './components/keyframes/toggle';
-import { BlockStyles } from './components/block-styles';
+import {
+	Preview,
+	BlockStyles
+} from '@viewports/components';
 
 const {
 	plugins: {
@@ -11,7 +13,7 @@ const {
  * Register preview dropdown extension.
  */
 registerPlugin( 'viewports-keyframes-toggle', {
-	render: KeyframesToggle,
+	render: Preview,
 } );
 
 registerPlugin( 'viewports-block-styles', {

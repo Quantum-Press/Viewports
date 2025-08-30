@@ -18,5 +18,3 @@ export type BlockEditProps = any;
 export type BlockSaveProps = any;
 
 export type clientId = string;
-
-

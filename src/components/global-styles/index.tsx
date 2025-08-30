@@ -3,10 +3,6 @@ const {
 		useSelect,
 		dispatch,
 	},
-	element: {
-		useState,
-		useEffect
-	}
 } = window[ 'wp' ];
 
 const useGlobalBlockStyles = () => {

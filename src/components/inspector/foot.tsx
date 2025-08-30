@@ -1,6 +1,7 @@
-import { STORE_NAME } from '../../store';
-import { getVersion } from '../../utils';
-import { logo } from '../svgs';
+import { logo } from '@viewports/components';
+import { STORE_NAME } from '@viewports/store';
+import { getVersion } from '@viewports/utils';
+
 
 const {
 	components: {

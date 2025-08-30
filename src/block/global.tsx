@@ -1,9 +1,6 @@
-import useGlobalBlockStyles from '../hooks/use-global-block-styles';
-import { STORE_NAME } from '../store';
-import {
-	findObjectChanges,
-	traverseExist,
-} from '../utils';
+import { useGlobalBlockStyles } from '@viewports/hooks';
+import { STORE_NAME } from '@viewports/store';
+import { findObjectChanges, traverseExist } from '@viewports/utils';
 
 const {
 	data: {

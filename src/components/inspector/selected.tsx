@@ -1,9 +1,10 @@
-import { useOverflow, useLocalStorage } from '../../hooks';
-
-import { BlockStyleList } from './stylelist';
-import { BlockAttributeList } from './attributelist';
-import Accordion from '../accordion';
-import Dimensions from '../dimensions';
+import {
+	Accordion,
+	BlockAttributeList,
+	BlockStyleList,
+	Dimensions
+} from '@viewports/components';
+import { useOverflow, useLocalStorage } from '@viewports/hooks';
 
 const {
 	i18n: {

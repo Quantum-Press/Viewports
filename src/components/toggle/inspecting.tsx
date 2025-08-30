@@ -1,5 +1,5 @@
-import { STORE_NAME } from '../../store';
-import { inspect } from '../svgs';
+import { STORE_NAME } from '@viewports/store';
+import { inspect } from '@viewports/components';
 
 const {
 	components: {
@@ -20,7 +20,7 @@ const {
  *
  * @param object props
  */
-const ToggleInspecting = ( { showText = true, forceShow = false } : { showText?: boolean, forceShow?: boolean } ) => {
+export const ToggleInspecting = ( { showText = true, forceShow = false } : { showText?: boolean, forceShow?: boolean } ) => {
 
 	// Set states.
 	const {
@@ -80,5 +80,3 @@ const ToggleInspecting = ( { showText = true, forceShow = false } : { showText?:
 		/>
 	);
 }
-
-export default ToggleInspecting;

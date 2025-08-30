@@ -2,8 +2,7 @@ import type {
 	AnyObject,
 	Spectrum
 } from '../../../types';
-import { useHighlightProperty } from '../../../hooks';
-import { isObject, getMergedObject, isString, isNumber } from '../../../utils';
+import { isObject, isString, isNumber } from '../../../utils';
 import { ArrayList } from './array';
 
 interface Style {

@@ -20,7 +20,7 @@ const {
 /**
  * Link datastore addReducer to open up datastore to 3rd party plugins.
  */
-Object.assign( ensureObjectPath( window, 'qp.viewports.addReducer' ), addReducer );
+Object.assign( ensureObjectPath( window, [ 'qp', 'viewports', 'addReducer' ] ), addReducer );
 
 
 /**

@@ -1,8 +1,5 @@
-import { STORE_NAME } from '../store';
-import {
-	Block,
-	BlockEditProps
-} from '../types';
+import { STORE_NAME } from '@viewports/store';
+import type { Block, BlockEditProps } from '@viewports/types';
 
 const {
 	data: {

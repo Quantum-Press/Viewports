@@ -1,6 +1,8 @@
 import {
-	findObjectChanges
-} from "./";
+	findArrayChanges,
+	findObjectChanges,
+	getMergedObject
+} from '@viewports/utils';
 
 const {
 	isEqual,
@@ -8,11 +10,19 @@ const {
 
 
 /**
- * Set function to check if a given value is a plain object.
+ * Checks whether a given value is a plain object.
+ *
+ * Returns true if the value is a non-null object that is:
+ * - Not an array
+ * - Not a Date
+ * - Not a Map or Set
+ * - Not a function
+ *
+ * This is useful for identifying plain JavaScript objects (e.g., for deep comparison or merging).
  *
  * @param {unknown} item - The value to check.
  *
- * @returns {boolean} `true` if the value is a plain object, otherwise `false`.
+ * @returns {boolean} - True if the value is a plain object, false otherwise.
  */
 export const isObject = (
 	item: unknown
@@ -28,11 +38,13 @@ export const isObject = (
 
 
 /**
- * Set function to check if a given value is a string.
+ * Checks whether a given value is a string.
+ *
+ * Returns true if the value is of type "string".
  *
  * @param {unknown} item - The value to check.
  *
- * @returns {boolean} `true` if the value is a string, otherwise `false`.
+ * @returns {boolean} - True if the value is a string, false otherwise.
  */
 export const isString = (
 	item: unknown
@@ -42,11 +54,13 @@ export const isString = (
 
 
 /**
- * Set function to check if a given value is a number.
+ * Checks whether a given value is a valid number.
+ *
+ * Returns true if the value is of type "number" and is not NaN.
  *
  * @param {unknown} item - The value to check.
  *
- * @returns {boolean} `true` if the value is a number, otherwise `false`.
+ * @returns {boolean} - True if the value is a valid number, false otherwise.
  */
 export const isNumber = (
 	item: unknown
@@ -56,11 +70,17 @@ export const isNumber = (
 
 
 /**
- * Set function to check if a given value is a numeric string.
+ * Checks whether a given value is numeric (a number or a numeric string).
  *
- * @param {unknown} value - The value to check.
+ * This type guard returns true if the value is a number or a string that represents a valid number,
+ * including negative and decimal numbers.
  *
- * @returns {boolean} `true` if the value is a number, otherwise `false`.
+ * Examples of valid numeric strings: "42", "-3.14", "0"
+ * Non-numeric examples: "abc", "42abc", null, undefined
+ *
+ * @param {unknown} value - The value to evaluate.
+ *
+ * @returns {value is string | number} - True if the value is numeric, false otherwise.
  */
 export const isNumeric = (
 	value: unknown
@@ -70,11 +90,14 @@ export const isNumeric = (
 
 
 /**
- * Set function to check if a given value is a literal.
+ * Determines whether a given value is a literal (string or number).
+ *
+ * This type guard returns true if the value is either a string or a number,
+ * and narrows the type accordingly.
  *
  * @param {unknown} value - The value to check.
  *
- * @returns {boolean} `true` if the value is a literal, otherwise `false`.
+ * @returns {value is string | number} - True if the value is a string or number, false otherwise.
  */
 export const isLiteral = (
 	value: unknown
@@ -84,45 +107,50 @@ export const isLiteral = (
 
 
 /**
- * Set function to determine the differences between two values (arrays, objects, or primitives).
+ * Recursively compares two values (objects, arrays, or primitives) and returns the differences.
  *
- * @param {any} current - The current value.
- * @param {any} original - The original value.
+ * This function determines the changes between a current value and an original value.
+ * - If both values are arrays, it delegates to `findArrayChanges`.
+ * - If both values are objects, it delegates to `findObjectChanges`.
+ * - If the values are primitive and different, it returns the current value.
+ * - If there are no differences, it returns null.
  *
- * @returns {any} The detected changes or `undefined` if no changes exist.
+ * @param {any} current - The current value to compare.
+ * @param {any} original - The original value to compare against.
+ *
+ * @returns {any} - A structure representing the differences, or null if there are none.
  */
 export const findChanges = (
 	current: any,
 	original: any
 ): any => {
-
-	// Return a new copy of the array if any changes are detected
 	if( Array.isArray( current ) && Array.isArray( original ) ) {
-		return [ ... current ];
+		return findArrayChanges( current, original );
 	}
 
-	// Delegate deep object comparison to `findObjectChanges`
 	if( isObject( current ) && isObject( original ) ) {
 		return findObjectChanges( current, original );
 	}
 
-	// Return current value if it differs from the original
 	if( ! isEqual( current, original ) ) {
 		return current;
 	}
 
-	// No changes detected
-	return undefined;
+	return null;
 };
 
 
 /**
- * Deeply compares two values for equality.
+ * Performs a deep equality check between two values.
  *
- * @param {any} a - First value.
- * @param {any} b - Second value.
+ * Compares two values recursively to determine if they are deeply equal.
+ * This function handles objects and primitive values, but does not account for special cases like Dates,
+ * Maps, Sets, functions, or circular references.
  *
- * @returns True if values are deeply equal, otherwise false.
+ * @param {any} a - The first value to compare.
+ * @param {any} b - The second value to compare.
+ *
+ * @returns {boolean} - True if both values are deeply equal, false otherwise.
  */
 export function deepEqual(
 	a: any,
@@ -135,3 +163,38 @@ export function deepEqual(
 
 	return keysA.every( key => deepEqual( a[ key ], b[ key ] ) );
 }
+
+
+/**
+ * Merges two values (primitives, arrays, or objects) following specific rules:
+ *
+ * - If both values are objects (excluding arrays), it performs a deep merge using `getMergedObject`.
+ * - If both values are arrays, it always keeps the base array (`baseValue`).
+ * - If the types differ, it keeps the base value.
+ * - In all other cases, it uses the compare value.
+ *
+ * This utility is designed to handle a variety of data types while enforcing predictable merging behavior.
+ *
+ * @template T - Type of the base value
+ * @template U - Type of the value to compare/merge
+ *
+ * @param {T} baseValue - The initial or default value to preserve if conflicts occur
+ * @param {U} compareValue - The new value to merge in
+ *
+ * @returns {T | U} - The resulting merged value, respecting the rules above
+ *
+ * @example
+ * getMerged({ a: 1 }, { b: 2 }) // => { a: 1, b: 2 }
+ * getMerged([1, 2], [3, 4])     // => [1, 2]
+ * getMerged(42, "hello")        // => 42
+ */
+export const getMerged = <T extends any, U extends any>(
+	baseValue: T,
+	compareValue: U
+  ): T | U => {
+	if( isObject( baseValue ) && isObject( compareValue ) ) {
+		return getMergedObject( baseValue, compareValue );
+	}
+
+	return baseValue;
+};

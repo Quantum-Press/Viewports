@@ -1,9 +1,6 @@
-import { scrollParent } from '../utils';
+import { scrollParent } from '@viewports/utils';
 
 const {
-	dom: {
-		focus,
-	},
 	element: {
 		useEffect,
 		useState,

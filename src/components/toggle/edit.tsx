@@ -1,4 +1,4 @@
-import { STORE_NAME } from '../../store';
+import { STORE_NAME } from '@viewports/store';
 
 const {
 	components: {
@@ -16,7 +16,7 @@ const {
 /**
  * Set component const to export toggle edit ui.
  */
-const ToggleEdit = () => {
+export const ToggleEdit = () => {
 
 	// Set state dependency.
 	const {
@@ -64,5 +64,3 @@ const ToggleEdit = () => {
 		/>
 	);
 }
-
-export default ToggleEdit;

@@ -1,5 +1,5 @@
-import { STORE_NAME } from '../../store';
-import { inspect } from '../svgs';
+import { inspect } from '@viewports/components';
+import { STORE_NAME } from '@viewports/store';
 
 const {
 	components: {
@@ -184,5 +184,3 @@ export const InspectorPortals = () => {
 		</>
 	);
 }
-
-export default InspectorPortals;

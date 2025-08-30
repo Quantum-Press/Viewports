@@ -1,7 +1,6 @@
-import { STORE_NAME } from '../../store';
-import { SpectrumSet } from '../../types';
-import { StyleList } from '../inspector/stylelist';
-import ToggleEdit from '../toggle/edit';
+import { StyleList, ToggleEdit } from '@viewports/components';
+import { STORE_NAME } from '@viewports/store';
+import { SpectrumSet, viewportType } from '@viewports/types';
 
 const {
 	components: {
@@ -24,19 +23,25 @@ const {
 /**
  * Renders Popover UI for actual viewportTyoe.
  *
- * @param {deviceType} deviceType - The current device type.
+ * @param {viewportType} viewportType - The current viewport type.
  *
  * @returns {JSX.Element | null} - The rendered component or null if conditions aren't met.
  */
 export const IndicatorControls = ( {
 	isVisible,
 	setIsVisible,
+	isEditing,
 	storeId,
+	viewportType,
+	iframeViewport,
 	spectrumSet
 } : {
 	isVisible : boolean,
 	setIsVisible : Function,
+	isEditing : boolean,
 	storeId : string,
+	viewportType : viewportType,
+	iframeViewport : number,
 	spectrumSet : SpectrumSet
 } ) => {
 	const {

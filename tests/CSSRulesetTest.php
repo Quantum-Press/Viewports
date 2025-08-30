@@ -1,6 +1,6 @@
 <?php declare( strict_types = 1 );
 
-namespace QP\Viewports\Model;
+namespace Quantum\Viewports\Model;
 
 use PHPUnit\Framework\TestCase;
 

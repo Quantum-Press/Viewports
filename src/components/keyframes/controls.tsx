@@ -1,7 +1,5 @@
-import {
-	STORE_NAME,
-} from '../../store';
-import { StyleList } from '../inspector/stylelist';
+import { StyleList } from '@viewports/components';
+import { STORE_NAME } from '@viewports/store';
 
 const {
 	components: {

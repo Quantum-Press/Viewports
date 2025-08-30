@@ -1,4 +1,4 @@
-import { STORE_NAME } from '../../store';
+import { STORE_NAME } from '@viewports/store';
 
 const {
 	data: {
@@ -9,7 +9,7 @@ const {
 /**
  * Set component const to export Highlights UI.
  */
-const Editing = () => {
+export const Editing = () => {
 
 	// Set store states.
 	const {
@@ -80,5 +80,3 @@ const Editing = () => {
 		</div>
 	);
 };
-
-export default Editing;

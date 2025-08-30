@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
-import { getMergedObject, sanitizeAttributes } from '../';
+import { getMergedObject, sanitizeAttributes } from '..';
 import {
 	aragorn,
 	aragornDelivery,

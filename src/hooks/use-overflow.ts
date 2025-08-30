@@ -1,4 +1,4 @@
-import useResizeObserver from "./use-resize-observer";
+import { useResizeObserver } from '@viewports/hooks';
 
 const {
 	element: {

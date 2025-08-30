@@ -1,4 +1,3 @@
-
 /**
  * Compares two version numbers in the format "x.y.z".
  *
@@ -8,9 +7,9 @@
  * @returns {number} - Returns `-1` if `v1` is older than `v2`, `1` if `v1` is newer than `v2`, and `0` if they are equal.
  *
  * @example
- * console.log(versionCompare("1.0", "1.1")); // -1
- * console.log(versionCompare("1.2.0", "1.2")); // 0
- * console.log(versionCompare("1.3", "1.2")); // 1
+ * console.log( versionCompare( "1.0", "1.1" ) ); // -1
+ * console.log( versionCompare( "1.2.0", "1.2" ) ); // 0
+ * console.log( versionCompare( "1.3", "1.2" ) ); // 1
  */
 export const versionCompare = ( v1: string, v2: string ) : number => {
 	const parts1 = v1.split( '.' ).map( Number );
@@ -40,9 +39,9 @@ export const versionCompare = ( v1: string, v2: string ) : number => {
  * @throws {Error} - Throws an error if an invalid operator is provided.
  *
  * @example
- * console.log(versionCompareWithOperator("1.2", "1.1", ">")); // true
- * console.log(versionCompareWithOperator("1.0", "1.0", "==")); // true
- * console.log(versionCompareWithOperator("2.0", "2.1", "<")); // true
+ * console.log( versionCompareWithOperator( "1.2", "1.1", ">" ) ); // true
+ * console.log( versionCompareWithOperator( "1.0", "1.0", "==" ) ); // true
+ * console.log( versionCompareWithOperator( "2.0", "2.1", "<" ) ); // true
  */
 export const versionCompareWithOperator = ( v1: string, v2: string, operator: string ): boolean => {
 	const result = versionCompare( v1, v2 );

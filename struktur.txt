@@ -1,0 +1,248 @@
+.
+├── bootstrap.php
+├── build
+│   └── qp-viewports.js
+├── composer.json
+├── composer.lock
+├── config
+│   └── elements.json
+├── includes
+│   ├── Controller
+│   │   ├── BlockProcessor.php
+│   │   ├── BlockRender.php
+│   │   ├── BlockSave.php
+│   │   ├── BlockSupport.php
+│   │   ├── CSSParser.php
+│   │   ├── Instance.php
+│   │   ├── InstanceManager.php
+│   │   └── StyleEngine.php
+│   ├── Model
+│   │   ├── Block.php
+│   │   ├── CSSRule.php
+│   │   └── CSSRuleset.php
+│   ├── Plugin.php
+│   └── Tool
+│       ├── Activator.php
+│       ├── Deactivator.php
+│       └── Uninstaller.php
+├── jest.config.ts
+├── kitchen
+│   ├── typography.html
+│   └── viewports.html
+├── package-lock.json
+├── package.json
+├── phpunit.xml
+├── quantum-viewports.php
+├── src
+│   ├── block
+│   │   ├── edit.ts
+│   │   ├── global.tsx
+│   │   ├── save.ts
+│   │   ├── style.tsx
+│   │   └── visualizer.ts
+│   ├── components
+│   │   ├── accordion
+│   │   │   └── index.tsx
+│   │   ├── attributelist
+│   │   ├── body.tsx
+│   │   ├── dimensions
+│   │   │   ├── border.tsx
+│   │   │   ├── content.tsx
+│   │   │   ├── index.tsx
+│   │   │   ├── margin.tsx
+│   │   │   ├── padding.tsx
+│   │   │   ├── position.tsx
+│   │   │   └── utils.ts
+│   │   ├── editing
+│   │   │   └── index.tsx
+│   │   ├── global-styles
+│   │   │   └── index.tsx
+│   │   ├── indicator
+│   │   │   ├── controls.tsx
+│   │   │   ├── index.tsx
+│   │   │   ├── pointer.tsx
+│   │   │   └── portals.tsx
+│   │   ├── inspector
+│   │   │   ├── attributelist
+│   │   │   │   ├── array.tsx
+│   │   │   │   ├── attribute.tsx
+│   │   │   │   ├── index.tsx
+│   │   │   │   └── object.tsx
+│   │   │   ├── blocklist
+│   │   │   │   ├── block.tsx
+│   │   │   │   └── index.tsx
+│   │   │   ├── body.tsx
+│   │   │   ├── breadcrumb.tsx
+│   │   │   ├── foot.tsx
+│   │   │   ├── head.tsx
+│   │   │   ├── index.tsx
+│   │   │   ├── portals.tsx
+│   │   │   ├── selected.tsx
+│   │   │   └── stylelist
+│   │   │       ├── index.tsx
+│   │   │       └── style.tsx
+│   │   ├── keyframes
+│   │   │   ├── controls.tsx
+│   │   │   └── index.tsx
+│   │   ├── preview
+│   │   │   └── index.tsx
+│   │   ├── svgs
+│   │   │   ├── color.tsx
+│   │   │   ├── desktop.tsx
+│   │   │   ├── edit.tsx
+│   │   │   ├── highlight.tsx
+│   │   │   ├── index.ts
+│   │   │   ├── indicator.tsx
+│   │   │   ├── inspect.tsx
+│   │   │   ├── keyframe.tsx
+│   │   │   ├── logo.tsx
+│   │   │   ├── mobile.tsx
+│   │   │   ├── settings.tsx
+│   │   │   ├── tablet.tsx
+│   │   │   ├── view.tsx
+│   │   │   └── wrap.tsx
+│   │   ├── toggle
+│   │   │   ├── edit.tsx
+│   │   │   ├── inspecting.tsx
+│   │   │   └── view.tsx
+│   │   ├── topbar.tsx
+│   │   ├── viewports.tsx
+│   │   └── wrap.tsx
+│   ├── config.ts
+│   ├── constants.ts
+│   ├── editor.scss
+│   ├── hacks
+│   │   └── save.tsx
+│   ├── hooks
+│   │   ├── index.ts
+│   │   ├── use-device-type.ts
+│   │   ├── use-editor-sidebar.ts
+│   │   ├── use-global-block-styles.ts
+│   │   ├── use-highlight-property.ts
+│   │   ├── use-highlight-viewport.ts
+│   │   ├── use-highlight.ts
+│   │   ├── use-is-mounted.ts
+│   │   ├── use-local-storage.ts
+│   │   ├── use-overflow.ts
+│   │   ├── use-resize-editor.ts
+│   │   └── use-resize-observer.ts
+│   ├── main.ts
+│   ├── plugins.tsx
+│   ├── portals.tsx
+│   ├── register.tsx
+│   ├── setup
+│   │   ├── global.d.ts
+│   │   └── jest.global.ts
+│   ├── store
+│   │   ├── actions
+│   │   │   ├── index.ts
+│   │   │   └── tests
+│   │   │       └── actions.test.ts
+│   │   ├── constants.ts
+│   │   ├── default.ts
+│   │   ├── generator.ts
+│   │   ├── index.ts
+│   │   ├── reducer
+│   │   │   ├── index.ts
+│   │   │   ├── registerBlockInit.ts
+│   │   │   ├── removeBlock.ts
+│   │   │   ├── removeBlockSaves.ts
+│   │   │   ├── restoreBlockSaves.ts
+│   │   │   ├── saveBlock.ts
+│   │   │   ├── tests
+│   │   │   │   ├── reducer.test.ts
+│   │   │   │   ├── registerBlockInit.test.ts
+│   │   │   │   ├── removeBlock.test.ts
+│   │   │   │   ├── removeBlockSaves.test.ts
+│   │   │   │   ├── restoreBlockSaves.test.ts
+│   │   │   │   ├── saveBlock.test.ts
+│   │   │   │   └── updateBlockChanges.test.ts
+│   │   │   └── updateBlockChanges.ts
+│   │   ├── selectors
+│   │   │   ├── index.ts
+│   │   │   └── tests
+│   │   │       └── selectors.test.ts
+│   │   └── utils
+│   │       ├── cleanupViewportSet.ts
+│   │       ├── cleanupViewportStyleSets.ts
+│   │       ├── collapseViewportSet.ts
+│   │       ├── collapseViewportSetProperty.ts
+│   │       ├── findBlockDifferences-old.ts
+│   │       ├── findBlockDifferences.ts
+│   │       ├── findBlockSaves.ts
+│   │       ├── findBlockValids.ts
+│   │       ├── findCleanedChanges.ts
+│   │       ├── findRemoves.ts
+│   │       ├── findViewportSetIterators.ts
+│   │       ├── findViewportSetOccurence.ts
+│   │       ├── findViewportStyle.ts
+│   │       ├── findViewportStylePath.ts
+│   │       ├── findViewportStyleProperties.ts
+│   │       ├── index.ts
+│   │       ├── reverseViewportKeys.ts
+│   │       ├── tests
+│   │       │   ├── cleanupViewportSet.test.ts
+│   │       │   ├── cleanupViewportStyleSets.test.ts
+│   │       │   ├── collapseViewportStyleSets.test.ts
+│   │       │   ├── findBlockDifferences.test.ts
+│   │       │   ├── findBlockSaves.test.ts
+│   │       │   ├── findBlockValids.test.ts
+│   │       │   ├── findClearedChanges.test.ts
+│   │       │   ├── findRemoves.test.ts
+│   │       │   ├── findViewportSetOccurence.test.ts
+│   │       │   ├── findViewportStyle.test.ts
+│   │       │   ├── findViewportStylePath.test.ts
+│   │       │   ├── findViewportStyleProperties.test.ts
+│   │       │   ├── updateStyleProperty.test.ts
+│   │       │   └── utils.test.ts
+│   │       ├── updateBlockDifferences-old.ts
+│   │       └── updateBlockDifferences.ts
+│   ├── subscribes.ts
+│   ├── temp
+│   │   ├── findBlockDifferences.test.ts
+│   │   ├── findBlockDifferencesFull.test1.ts
+│   │   ├── temp.test1.ts
+│   │   └── updateStyleProperty.test1.ts
+│   ├── types
+│   │   ├── block.ts
+│   │   ├── generator.ts
+│   │   ├── index.ts
+│   │   ├── object.ts
+│   │   └── store.ts
+│   └── utils
+│       ├── any.ts
+│       ├── array.ts
+│       ├── attributes.ts
+│       ├── debug.ts
+│       ├── editor.ts
+│       ├── index.ts
+│       ├── longpress.ts
+│       ├── object.ts
+│       ├── scroll.ts
+│       ├── tests
+│       │   ├── any.test.ts
+│       │   ├── attributes.test.ts
+│       │   ├── cases.ts
+│       │   └── object.test.ts
+│       ├── traverse.ts
+│       └── version.ts
+├── struktur.txt
+├── tests
+│   └── CSSRulesetTest.php
+├── tsconfig.json
+├── vendor
+│   ├── autoload.php
+│   └── composer
+│       ├── ClassLoader.php
+│       ├── InstalledVersions.php
+│       ├── LICENSE
+│       ├── autoload_classmap.php
+│       ├── autoload_namespaces.php
+│       ├── autoload_psr4.php
+│       ├── autoload_real.php
+│       ├── autoload_static.php
+│       ├── installed.json
+│       └── installed.php
+└── webpack.config.js
+
+44 directories, 202 files

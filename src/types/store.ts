@@ -1,9 +1,12 @@
 import type { Size } from '../hooks';
 import type {
-	AnyObject,
 	clientId,
 	BlockStyles,
-	BlockAttributes
+	BlockAttributes,
+	Spectrum,
+	CSSViewportSets,
+	SpectrumSets,
+	ObjectOccurence,
 } from './';
 
 export type ViewportsConfig = {
@@ -11,30 +14,48 @@ export type ViewportsConfig = {
 	version: string;
 }
 
-
 export type viewportType = 'desktop' | 'tablet' | 'mobile' | '';
-export type deviceType = 'Desktop' | 'Tablet' | 'Mobile' | '';
 export type viewport = number|string;
 export type Viewports = {
 	[ key: viewport ] : string,
 }
+export type ViewportAny = {
+	[ key: viewport ] : any,
+}
 
 
-export type ClientViewportSets = {
-	[ key: clientId ] : ViewportStyleSets,
+export type ViewportSets = {
+	[ key: clientId ] : ViewportSet,
+}
+export type ViewportSet = {
+	[ key: viewport ] : ViewportStyleSets;
+}
+export type ViewportSetIterators = {
+	viewports: viewport[],
+	maxWidths: viewport[],
+}
+export type DeprecatedViewportSet = {
+	[ key: viewport ] : ViewportStyleSet;
 }
 export type ViewportStyleSets = {
-	[ key: viewport ] : ViewportStyleSet;
+	[ key: number ] : ViewportStyleSet;
 }
 export type ViewportStyleSet = {
 	style?: BlockStyles,
-	to?: number
 }
-
 
 export type BlockDifferences = {
 	changes: ViewportStyleSet,
 	removes: ViewportStyleSet,
+}
+export type ViewportSetOccurence = {
+	[ key: viewport ] : {
+		[ key: number ] : {
+			path: Array<string | number>,
+			value: any,
+			merged: any,
+		},
+	}
 }
 
 export type RendererPropertySet = {
@@ -52,82 +73,6 @@ export type RendererSet = {
 
 export type RendererMapping = {
 	[ key: string ] : string,
-}
-
-export type CSSCollectionSet = Array<CSSCollection>
-
-export type CSSCollection = {
-	selector: string,
-	declarations: string,
-};
-
-export type CSSProperties = {
-	[ key : string ]: string,
-};
-
-export type CSSViewportSets = {
-	[ key : string ]: CSSViewportSet,
-}
-
-export type CSSViewportSet = {
-	[ key : number ]: Array<CSSViewport>,
-};
-
-export type CSSViewport = {
-	[ key : number ]: string,
-}
-
-export type RuleSet = Array<Rule>;
-
-export interface Rule {
-	type: string,
-	blockName: string,
-	property: string,
-	viewport: number,
-	priority: number,
-	selector: string,
-	selectors: SelectorSet,
-	declarations: string,
-	css: string,
-	style: BlockStyles,
-	properties: CSSProperties,
-	saves: BlockStyles,
-	savesProperties: CSSProperties,
-	hasSaves: boolean,
-	changes: BlockStyles,
-	changesProperties: CSSProperties,
-	hasChanges: boolean,
-	removes: BlockStyles,
-	removesProperties: CSSProperties,
-	hasRemoves: boolean,
-}
-
-export type SpectrumSets = {
-	[ key : string ] : SpectrumSet,
-};
-
-export type SpectrumSet = Array<Spectrum>;
-
-export interface Spectrum extends Rule {
-	from: number,
-	to: number,
-	media: string,
-}
-
-export type SpectrumProperties = {
-	cssViewportSet: CSSViewportSet,
-	spectrumSet: SpectrumSet,
-	inlineStyle: InlineStyleSet,
-}
-
-export type SpectrumState = {
-	valids: ViewportStyleSets,
-	saves: ViewportStyleSets,
-	changes: ViewportStyleSets,
-	removes: ViewportStyleSets,
-	rendererPropertySet: RendererPropertySet,
-	isSaving: boolean,
-	viewport: number,
 }
 
 export type InlineStyleSets = {
@@ -158,6 +103,15 @@ export type IndicatorSelectorSet = {
 	}
 }
 
+export type Reducers = {
+	[ key : string ] : Function,
+}
+
+export type ReducerManager = {
+	reducer: Function,
+	addReducer: Function,
+}
+
 export type State = {
 	viewports: Viewports,
 	viewport: number,
@@ -175,10 +129,10 @@ export type State = {
 	desktop: number,
 	tablet: number,
 	mobile: number,
-	saves: ClientViewportSets,
-	changes: ClientViewportSets,
-	removes: ClientViewportSets,
-	valids: ClientViewportSets,
+	saves: ViewportSets,
+	changes: ViewportSets,
+	removes: ViewportSets,
+	valids: ViewportSets,
 	inspect: object | boolean,
 	lastEdit: number,
 	renderer: RendererPropertySet,
@@ -205,13 +159,4 @@ export type Action = {
 	selectors?: SelectorSet,
 	mapping?: RendererMapping,
 	position?: string,
-}
-
-export type Reducers = {
-	[ key : string ] : Function,
-}
-
-export type ReducerManager = {
-	reducer: Function,
-	addReducer: Function,
 }

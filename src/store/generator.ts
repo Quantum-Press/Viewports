@@ -1,23 +1,30 @@
 import type {
 	RendererSet,
+	ViewportSet,
 	ViewportStyleSets,
 	BlockStyles,
 	CSSProperties,
 	CSSCollectionSet,
 	CSSViewportSet,
-	RuleSet,
-	Rule,
 	SpectrumSet,
-	Spectrum,
 	SpectrumState,
 	InlineStyleSet,
+	ViewportStyleSet,
 } from '../types';
 import {
 	getMergedObject,
 	findObjectChanges,
 	findObjectDifferences,
 	traverseGet,
+	cleanupObject,
+	traverseSet,
+	findUniqueProperties,
+	findChanges,
 } from '../utils';
+import {
+	findViewportStylePath,
+	collapseViewportSet,
+} from './utils';
 
 const {
 	isEqual,
@@ -34,7 +41,6 @@ export class Generator {
 	blockName: string;
 	selector: string;
 	state: SpectrumState;
-	ruleSet: RuleSet;
 	spectrumSet: SpectrumSet;
 	css: CSSViewportSet;
 	inlineStyle: InlineStyleSet;
@@ -60,40 +66,42 @@ export class Generator {
 		this.selector = '#block-' + clientId;
 		this.state = state;
 
+		'core/group' === this.blockName && console.log( 'construct', this );
+
 		// Set property defaults.
-		this.ruleSet = null;
 		this.spectrumSet = null;
 		this.css = null;
 		this.inlineStyle = null;
 		this.properties = null;
 		this.viewports = null;
 
-		// Fill rules initial as base for further operations.
-		this.ruleSet = this.getRuleSet();
-		this.properties = this.getRuleSetProperties();
-		this.viewports = this.getRuleSetViewports();
-
 		// Fill spectrumSet.
 		this.spectrumSet = this.getSpectrumSet();
+
+		// Fill rules initial as base for further operations.
+		this.properties = this.getSpectrumSetProperties();
+		this.viewports = this.getSpectrumSetViewports();
+
+		'core/group' === this.blockName && console.log( 'constructed', this );
 	}
 
 
 	/**
-	 * Set method to return rules.
+	 * Set method to return spectrum set.
 	 */
-	getRuleSet() {
-		if( null === this.ruleSet ) {
-			this.ruleSet = this.generateRuleSet();
+	getSpectrumSet() {
+		if( null === this.spectrumSet ) {
+			this.spectrumSet = this.generateSpectrumSet();
 		}
 
-		return this.ruleSet;
+		return this.spectrumSet;
 	}
 
 
 	/**
-	 * Set method to generate ruleSet.
+	 * Set method to generate spectrumSet.
 	 */
-	generateRuleSet() {
+	generateSpectrumSet() {
 
 		// Set compiler options.
 		const options = {
@@ -101,229 +109,365 @@ export class Generator {
 		};
 
 		// Set combined valids + removes from store to build rules from.
-		let combined = {} as ViewportStyleSets;
-		if( isObject( this.state.valids ) && isObject( this.state.removes ) ) {
-			combined = getMergedObject( cloneDeep( this.state.removes ), cloneDeep( this.state.valids ) ) as ViewportStyleSets;
+		let combinedViewportSet : ViewportSet = {};
+		if( isObject( this.state.valids ) && ( isObject( this.state.removes ) && ! isEmpty( this.state.removes ) ) ) {
+			combinedViewportSet = getMergedObject( cloneDeep( this.state.removes ), cloneDeep( this.state.valids ) );
 		} else {
-			combined = cloneDeep( this.state.valids );
+			combinedViewportSet = cloneDeep( this.state.valids );
 		}
 
-		// Set initial states.
-		const ruleSet = [] as RuleSet;
-		let prevStyle = {} as BlockStyles;
-		let prevValids = {} as BlockStyles;
-		let prevRemoves = {} as BlockStyles;
+ 		// Set initial states.
+		const spectrumSet = [] as SpectrumSet;
+		let prevStyleSets = {} as ViewportStyleSets;
 
-		// Iterate over block valids.
-		Object.entries( combined ).forEach( ( [ viewportDirty, { style } ] ) => {
+		// Set function to indicate equal prev viewportStyleSet.
+		const isEqualPrevStyleSet = ( maxWidth : number, viewportStyleSet : ViewportStyleSet ) => {
+			if(
+				prevStyleSets.hasOwnProperty( maxWidth ) &&
+				isEqual( prevStyleSets[ maxWidth ], viewportStyleSet )
+			) {
+				return true;
+			}
 
-			// Cleanup viewport.
-			const viewport = parseInt( viewportDirty );
+			return false;
+		}
 
-			// Check if there are styles.
-			if( style ) {
+		'core/group' === this.blockName && console.log( 'combinedViewportSet', combinedViewportSet );
 
-				// Ignore if the style equals the previous style attributes.
-				if( isEqual( prevStyle, style ) ) {
-					return true;
-				}
+		// Iterate over block valids and removes combined.
+		for( const viewportDirty in combinedViewportSet ) {
+			if ( combinedViewportSet.hasOwnProperty( viewportDirty ) ) {
+				const viewportStyleSets = combinedViewportSet[ viewportDirty ];
+				const viewport = parseInt( viewportDirty );
 
-				// Set collapsed viewportStyleSet of saves till actual viewport.
-				const collapsedSavesSet = this.collapseViewportStyleSets( this.state.saves, viewport );
+				// Iterate over viewportStyleSet maxWidths.
+				for( const maxWidthDirty in viewportStyleSets ) {
+					if( viewportStyleSets.hasOwnProperty( maxWidthDirty ) ) {
+						const viewportStyleSet = viewportStyleSets[ maxWidthDirty ];
+						const maxWidth = parseInt( maxWidthDirty );
 
-				// Iterate over properties to handle each seperately.
-				for( const [ property ] of Object.entries( style ) ) {
+						// Check if there are styles.
+						if( viewportStyleSet.style ) {
 
-					// Set renderers for actual property and check if we got one.
-					const rendererSet = traverseGet( [ property ], this.state.rendererPropertySet ) as RendererSet;
-					const renderers = rendererSet ? Object.entries( rendererSet ) : [];
-					if( ! renderers.length ) {
-						continue;
-					}
+							// Ignore if the style equals the previous style attributes.
+							if( isEqualPrevStyleSet( maxWidth, viewportStyleSet ) ) {
+								continue;
+							}
 
-					// Set state attributes.
-					const valids = cloneDeep( traverseGet( [ viewport, 'style', property ], this.state.valids, {} ) );
-					const removes = cloneDeep( traverseGet( [ viewport, 'style', property ], this.state.removes, {} ) );
+							// Set collapsed viewportStyleSet of saves till actual viewport.
+							const collapsedSavesAttributes = collapseViewportSet( this.state.saves, viewport );
+							const collapsedChangesAttributes = this.state.changes ? collapseViewportSet( this.state.changes, viewport ) : {};
+							const collapsedRemovesAttributes = this.state.removes ? collapseViewportSet( this.state.removes, viewport ) : {};
 
-					// Check if state changes that we need to go further.
-					if(
-						prevValids.hasOwnProperty( property ) &&
-						prevRemoves.hasOwnProperty( property )
-					) {
-						if(
-							isEqual( prevValids[ property ], valids ) &&
-							isEqual( prevRemoves[ property ], removes )
-						) {
-							continue;
-						}
-					}
+							// Iterate over properties to handle each seperately.
+							for( const [ property ] of Object.entries( viewportStyleSet.style ) ) {
+								if( 'spacing' === property ) {
+									console.log( '- property', property );
+									console.log( '- viewport', viewport );
+									console.log( '- maxWidth', maxWidth );
+								}
 
-					// Set saves and changes to compare later.
-					const saves = cloneDeep( traverseGet( [ viewport, 'style', property ], this.state.saves, {} ) );
-					const changes = cloneDeep( traverseGet( [ viewport, 'style', property ], this.state.changes, {} ) );
-					const collapsedSaves = cloneDeep( traverseGet( [ property ], collapsedSavesSet, {} ) );
+								// Set renderers for actual property and check if we got one.
+								const rendererSet = traverseGet( [ property ], this.state.rendererPropertySet ) as RendererSet;
+								const renderers = rendererSet ? Object.entries( rendererSet ) : [];
+								if( ! renderers.length ) {
+									continue;
+								}
 
-					let combined = {};
+								// Set paths to each state of actual property.
+								const savesPath = findViewportStylePath( viewport, property, this.state.saves );
+								const changesPath = isObject( this.state.changes ) ? findViewportStylePath( viewport, property, this.state.changes ) : false;
+								const removesPath = isObject( this.state.removes ) ? findViewportStylePath( viewport, property, this.state.removes ) : false;
 
-					if( isEmpty( valids ) && ! isEmpty( removes ) ) {
-						combined = removes;
-					} else if( ( ! isEmpty( valids ) && isEmpty( removes ) ) || isEqual( valids, removes ) ) {
-						combined = valids;
-					} else if( ! isEqual( valids, removes ) ) {
-						combined = getMergedObject( valids, removes );
-					} else {
-						combined = valids;
-					}
+								// Continue on no states.
+								if( ! removesPath && ! savesPath && ! changesPath ) {
+									console.log( '- skip empt paths' );
+									continue;
+								}
 
-					// Set combined simulation object.
-					const combinedSimulation = {
-						[ property ]: combined,
-					}
+								// Set valids path to each of actual property.
+								const validsPath = findViewportStylePath( viewport, property, this.state.valids );
 
-					// Set valids simulation object.
-					const validsSimulation = {
-						[ property ]: valids,
-					}
+								// Set each state value of actual property
+								let validsAttribute = {};
+								if( validsPath ) {
+									validsAttribute = cloneDeep( traverseGet( validsPath, this.state.valids, {} ) );
+								}
+								let savesAttribute : BlockStyles = {};
+								let hasSavesAttribute = false;
+								if( savesPath ) {
+									hasSavesAttribute = true;
+									savesAttribute = cloneDeep( traverseGet( savesPath, this.state.saves, {} ) );
+								}
+								let changesAttribute : BlockStyles = {};
+								let hasChangesAttribute = false;
+								if( changesPath ) {
+									hasChangesAttribute = true;
+									changesAttribute = cloneDeep( traverseGet( changesPath, this.state.changes, {} ) );
+								}
+								let removesAttribute : BlockStyles = {};
+								let hasRemovesAttribute = false;
+								if( removesPath ) {
+									hasRemovesAttribute = true;
+									removesAttribute = cloneDeep( traverseGet( removesPath, this.state.removes, {} ) );
+								}
 
-					// Set saves simulation object.
-					const savesSimulation = {
-						[ property ]: saves,
-					}
+								// Set combined attributes.
+								let combined = {};
+								if( isEmpty( validsAttribute ) && ! isEmpty( removesAttribute ) ) {
+									combined = removesAttribute;
+								} else if( ( ! isEmpty( validsAttribute ) && isEmpty( removesAttribute ) ) || isEqual( validsAttribute, removesAttribute ) ) {
+									combined = validsAttribute;
+								} else if( ! isEqual( validsAttribute, removesAttribute ) ) {
+									combined = getMergedObject( validsAttribute, removesAttribute );
+								} else {
+									combined = validsAttribute;
+								}
 
-					// Set saves simulation object.
-					const collapsedSavesSimulation = {
-						[ property ]: collapsedSaves,
-					}
+								// Set combined simulation object.
+								const combinedSimulation = {
+									[ property ]: combined,
+								}
 
-					// Set removes simulation object.
-					const removesSimulation = {
-						[ property ]: removes,
-					}
+								// Set valids simulation object.
+								const validsSimulation = {
+									[ property ]: validsAttribute,
+								}
 
-					// Iterate over renderers to store its rules.
-					for( const [ priorityDirty, renderer ] of renderers ) {
+								// Set collapsed attribute.
+								const collapsedSavesAttribute = cloneDeep( traverseGet( [ property ], collapsedSavesAttributes, {} ) );
+								const collapsedChangesAttribute = cloneDeep( traverseGet( [ property ], collapsedChangesAttributes, {} ) );
+								const collapsedRemovesAttribute = cloneDeep( traverseGet( [ property ], collapsedRemovesAttributes, {} ) );
 
-						// Cleanup priorityDirty.
-						const priority = parseInt( priorityDirty );
+								if( 'spacing' === property ) {
+									console.log( '- - collapsedSavesAttribute', collapsedSavesAttribute );
+									console.log( '- - collapsedChangesAttribute', collapsedChangesAttribute );
+									console.log( '- - collapsedRemovesAttribute', collapsedRemovesAttribute );
+								}
 
-						// Set combined results of custom renderer callback and get its parts.
-						const combinedCSS = Object.keys( combined ).length ? renderer.callback( combinedSimulation, options, this.state.isSaving ) : '';
-						const combinedCSSCollectionSet = '' !== combinedCSS ? this.getCSSCollectionSet( combinedCSS ) : [];
+								// Set saves simulation object.
+								const savesSimulation = {
+									[ property ]: collapsedSavesAttribute,
+								}
 
-						// Set valids results of custom renderer callback and get its parts.
-						const validsCSS = Object.keys( valids ).length ? renderer.callback( validsSimulation, options, this.state.isSaving ) : '';
-						const validsCSSCollectionSet = '' !== validsCSS ? this.getCSSCollectionSet( validsCSS ) : [];
+								// Set changes simulation object.
+								const changesMergedSimulation = {
+									[ property ]: getMergedObject( cloneDeep( collapsedSavesAttribute ), cloneDeep( collapsedChangesAttribute ) ),
+								}
+								const changesFallbackSimulation = {
+									[ property ]: changesAttribute,
+								}
 
-						// Set saves results of custom renderer callback and get its parts.
-						const savesCSS = Object.keys( saves ).length ? renderer.callback( savesSimulation, options, this.state.isSaving ) : '';
-						const savesCSSCollectionSet = '' !== savesCSS ? this.getCSSCollectionSet( savesCSS ) : [];
+								// Set removes simulation objects.
+								const removesUniqueSimulation = {
+									[ property ]: findUniqueProperties( cloneDeep( collapsedSavesAttribute ), cloneDeep( collapsedRemovesAttribute ) )
+								}
+								const removesCollapsedSimulation = {
+									[ property ]: cloneDeep( collapsedRemovesAttribute ),
+								}
+								const removesFallbackSimulation = {
+									[ property ]: cloneDeep( removesAttribute ),
+								}
 
-						// Set saves results of custom renderer callback and get its parts.
-						const collapsedSavesCSS = Object.keys( saves ).length ? renderer.callback( collapsedSavesSimulation, options, this.state.isSaving ) : '';
-						const collapsedSavesCSSCollectionSet = '' !== collapsedSavesCSS ? this.getCSSCollectionSet( collapsedSavesCSS ) : [];
+								if( 'spacing' === property ) {
+									console.log( '- - savesSimulation', savesSimulation );
+									console.log( '- - changesMergedSimulation', changesMergedSimulation );
+									console.log( '- - changesFallbackSimulation', changesFallbackSimulation );
+									console.log( '- - removesUniqueSimulation', removesUniqueSimulation );
+									console.log( '- - removesFallbackSimulation', removesFallbackSimulation );
+								}
 
-						// Set removes results of custom renderer callback and get its parts.
-						const removesCSS = Object.keys( removes ).length ? renderer.callback( removesSimulation, options, this.state.isSaving ) : '';
-						const removesCSSCollectionSet = '' !== removesCSS ? this.getCSSCollectionSet( removesCSS ) : [];
+								// Iterate over renderers to store its rules.
+								for( const [ priorityDirty, renderer ] of renderers ) {
 
-						// Iterate over collectionSet to generate ruleSets
-						for( let index = 0; index < combinedCSSCollectionSet.length; index++ ) {
+									// Cleanup priorityDirty.
+									const priority = parseInt( priorityDirty );
 
-							// Set default selector.
-							let {
-								selector,
-								declarations: combinedDeclarations,
-							} = combinedCSSCollectionSet[ index ];
+									// Set combined results of custom renderer callback and get its parts.
+									const combinedCSS = Object.keys( combined ).length ? renderer.callback( combinedSimulation, options, this.state.isSaving ) : '';
+									const combinedCSSCollectionSet = '' !== combinedCSS ? this.getCSSCollectionSet( combinedCSS ) : [];
 
-							// Set declarations from valids when selectors are the same.
-							let declarations = '';
-							for( let index = 0; index < validsCSSCollectionSet.length; index++ ) {
-								const {
-									selector: checkSelector,
-									declarations: checkDeclarations,
-								} = validsCSSCollectionSet[ index ];
+									const validsCSS = Object.keys( validsAttribute ).length ? renderer.callback( validsSimulation, options, this.state.isSaving ) : '';
+									const validsCSSCollectionSet = '' !== validsCSS ? this.getCSSCollectionSet( validsCSS ) : [];
 
-								if( selector === checkSelector ) {
-									declarations = checkDeclarations;
-									break;
+									// Set saves results of custom renderer callback and get its parts.
+									const savesCSS = hasSavesAttribute ? renderer.callback( savesSimulation, options, this.state.isSaving ) : '';
+									const savesCSSCollectionSet = '' !== savesCSS ? this.getCSSCollectionSet( savesCSS ) : [];
+
+									// Set changes results of custom renderer callback and get its parts.
+									const changesFallbackCSS = hasChangesAttribute ? renderer.callback( changesFallbackSimulation, options, this.state.isSaving ) : '';
+									const changesFallbackCSSCollectionSet = '' !== changesFallbackCSS ? this.getCSSCollectionSet( changesFallbackCSS ) : [];
+
+									// Set unique changes results of custom renderer callback and get its parts, in case we need another type of interpretation.
+									let changesMergedCSS = '';
+									let changesMergedCSSCollectionSet = [];
+
+									// Check if we need to compare another way.
+									if( hasChangesAttribute && '' === changesFallbackCSS ) {
+										changesMergedCSS = renderer.callback( changesMergedSimulation, options, this.state.isSaving );
+										changesMergedCSSCollectionSet = '' !== changesMergedCSS ? this.getCSSCollectionSet( changesMergedCSS ) : [];
+									}
+
+									// Set fallback removes results of custom renderer callback and get its parts.
+									const removesFallbackCSS = hasRemovesAttribute ? renderer.callback( removesFallbackSimulation, options, this.state.isSaving ) : '';
+									const removesFallbackCSSCollectionSet = '' !== removesFallbackCSS ? this.getCSSCollectionSet( removesFallbackCSS ) : [];
+
+									// Set unique removes results of custom renderer callback and get its parts, in case we need another type of interpretation.
+									let removesUniqueCSS = '';
+									let removesUniqueCSSCollectionSet = [];
+
+									// Check if we need to compare another way.
+									if( hasRemovesAttribute && '' === removesFallbackCSS ) {
+										removesUniqueCSS = renderer.callback( removesUniqueSimulation, options, this.state.isSaving );
+										removesUniqueCSSCollectionSet = '' !== removesUniqueCSS ? this.getCSSCollectionSet( removesUniqueCSS ) : [];
+									}
+
+									// Iterate over collectionSet to generate spectrumSet
+									for( let index = 0; index < combinedCSSCollectionSet.length; index++ ) {
+
+										// Set default selector.
+										let {
+											selector,
+											declarations: combinedDeclarations,
+										} = combinedCSSCollectionSet[ index ];
+
+										// Set declarations from valids when selectors are the same.
+										let declarations = '';
+										for( let index = 0; index < validsCSSCollectionSet.length; index++ ) {
+											const {
+												selector: checkSelector,
+												declarations: checkDeclarations,
+											} = validsCSSCollectionSet[ index ];
+
+											if( selector === checkSelector ) {
+												declarations = checkDeclarations;
+												break;
+											}
+										}
+
+										if( renderer.mapping.hasOwnProperty( this.blockName ) ) {
+											selector = selector + ' ' + renderer.mapping[ this.blockName ];
+										}
+
+										// Set media queries.
+										const media =
+											viewport > 0 && maxWidth > 0 ?
+												'min-width:' + viewport + 'px) and (max-width:' + maxWidth + 'px' :
+											viewport > 0 ?
+												'min-width:' + viewport + 'px' :
+												'';
+
+										// Set media change
+										const hasMediaChange = false;
+
+										// Set valid css.
+										const css = selector + '{' + declarations + '}';
+										const properties = this.generateProperties( selector + '{' + combinedDeclarations + '}' );
+
+										// Set saves properties.
+										const savesDeclarations = Object.keys( savesCSSCollectionSet ).length ? this.getDeclarations( selector, savesCSSCollectionSet ) : '';
+										const savesProperties = '' !== savesDeclarations ? this.generateProperties( selector + '{' + savesDeclarations + ' }' ) : {};
+										const hasSaves = 0 < Object.keys( savesProperties ).length ? true : false;
+
+										// Set changes properties.
+										let changesProperties = {};
+										if( hasChangesAttribute ) {
+											if( '' === changesFallbackCSS ) {
+												if ( '' !== changesMergedCSS ) {
+													const changesDeclarations = Object.keys( changesMergedCSSCollectionSet ).length ? this.getDeclarations( selector, changesMergedCSSCollectionSet ) : '';
+													const changesDirtyProperties = '' !== changesDeclarations ? this.generateProperties( selector + '{' + changesDeclarations + ' }' ) : {};
+
+													changesProperties = 0 < Object.keys( changesDirtyProperties ).length ? findObjectDifferences( savesProperties, changesDirtyProperties ) : {};
+												}
+											} else {
+												const changesDeclarations = Object.keys( changesFallbackCSSCollectionSet ).length ? this.getDeclarations( selector, changesFallbackCSSCollectionSet ) : '';
+
+												changesProperties = '' !== changesDeclarations ? this.generateProperties( selector + '{' + changesDeclarations + ' }' ) : {};
+											}
+										}
+										const hasChanges = 0 < Object.keys( changesProperties ).length ? true : false;
+
+										// Set removes properties.
+										let removesProperties = {};
+										if( hasRemovesAttribute ) {
+											if( '' === removesFallbackCSS ) {
+												if ( '' !== removesUniqueCSS ) {
+													const removesDeclarations = Object.keys( removesUniqueCSSCollectionSet ).length ? this.getDeclarations( selector, removesUniqueCSSCollectionSet ) : '';
+													const removesDirtyProperties = '' !== removesDeclarations ? this.generateProperties( selector + '{' + removesDeclarations + ' }' ) : {};
+
+													removesProperties = 0 < Object.keys( removesDirtyProperties ).length ? findChanges( savesProperties, removesDirtyProperties ) : {};
+												}
+											} else {
+												const removesDeclarations = Object.keys( removesFallbackCSSCollectionSet ).length ? this.getDeclarations( selector, removesFallbackCSSCollectionSet ) : '';
+												removesProperties = '' !== removesDeclarations ? this.generateProperties( selector + '{' + removesDeclarations + ' }' ) : {};
+											}
+										}
+										const hasRemoves = 0 < Object.keys( removesProperties ).length ? true : false;
+
+										if( 'spacing' === property ) {
+											console.log( '- - - savesDeclarations', savesDeclarations );
+											console.log( '- - - savesProperties', savesProperties );
+											console.log( '- - - hasSaves', hasSaves );
+
+											console.log( '- - - changesProperties', changesProperties );
+											console.log( '- - - hasChanges', hasChanges );
+
+											console.log( '- - - removesProperties', removesProperties );
+											console.log( '- - - hasRemoves', hasRemoves );
+										}
+
+										// Set changes properties by detecting changes between saves and valids.
+										// const changesProperties = findObjectDifferences( findObjectChanges( validsProperties, collapsedSavesProperties ), removesProperties );
+										// const hasChanges = 0 < Object.keys( changesProperties ).length ? true : false;
+
+										// Set rule.
+										spectrumSet.push( {
+											type: renderer.type,
+											blockName: this.blockName,
+											property,
+											priority,
+											viewport,
+											from: viewport,
+											to: maxWidth > 0 ? maxWidth : -1,
+											media,
+											hasMediaChange,
+											selector,
+											selectors: {
+												panel: renderer.selectors.hasOwnProperty( 'panel' ) ? renderer.selectors.panel : 'missing',
+												label: renderer.selectors.hasOwnProperty( 'label' ) ? renderer.selectors.label : 'missing',
+											},
+											declarations,
+											css,
+											style: {
+												[ property ]: validsAttribute,
+											},
+											properties,
+											saves: savesAttribute,
+											savesProperties,
+											hasSaves,
+											changes: changesAttribute,
+											changesProperties: changesProperties,
+											hasChanges,
+											removes: removesAttribute,
+											removesProperties,
+											hasRemoves,
+										} );
+									}
 								}
 							}
 
-							if( renderer.mapping.hasOwnProperty( this.blockName ) ) {
-								selector = selector + ' ' + renderer.mapping[ this.blockName ];
-							}
-
-							// Set valid css.
-							const css = selector + '{' + declarations + '}';
-							const properties = this.generateProperties( selector + '{' + combinedDeclarations + '}' );
-
-							// Set saves properties.
-							const validsDeclarations = Object.keys( validsCSSCollectionSet ).length ? this.getDeclarations( selector, validsCSSCollectionSet ) : '';
-							const validsProperties = '' !== validsDeclarations ? this.generateProperties( selector + '{' + validsDeclarations + ' }' ) : {};
-
-							// Set saves properties.
-							const savesDeclarations = Object.keys( savesCSSCollectionSet ).length ? this.getDeclarations( selector, savesCSSCollectionSet ) : '';
-							const savesProperties = '' !== savesDeclarations ? this.generateProperties( selector + '{' + savesDeclarations + ' }' ) : {};
-							const hasSaves = 0 < Object.keys( savesProperties ).length ? true : false;
-
-							// Set saves properties.
-							const collapsedSavesDeclarations = Object.keys( collapsedSavesCSSCollectionSet ).length ? this.getDeclarations( selector, collapsedSavesCSSCollectionSet ) : '';
-							const collapsedSavesProperties = '' !== collapsedSavesDeclarations ? this.generateProperties( selector + '{' + collapsedSavesDeclarations + ' }' ) : {};
-
-							// Set removes properties.
-							const removesDeclarations = Object.keys( removesCSSCollectionSet ).length ? this.getDeclarations( selector, removesCSSCollectionSet ) : '';
-							const removesProperties = '' !== removesDeclarations ? this.generateProperties( selector + '{' + removesDeclarations + ' }' ) : {};
-							const hasRemoves = 0 < Object.keys( removesProperties ).length ? true : false;
-
-							// Set changes properties by detecting changes between saves and valids.
-							const changesProperties = findObjectDifferences( findObjectChanges( validsProperties, collapsedSavesProperties ), removesProperties );
-							const hasChanges = 0 < Object.keys( changesProperties ).length ? true : false;
-
-							// Set rule.
-							ruleSet.push( {
-								type: renderer.type,
-								blockName: this.blockName,
-								property,
-								viewport,
-								priority,
-								selector,
-								selectors: {
-									panel: renderer.selectors.hasOwnProperty( 'panel' ) ? renderer.selectors.panel : 'missing',
-									label: renderer.selectors.hasOwnProperty( 'label' ) ? renderer.selectors.label : 'missing',
-								},
-								declarations,
-								css,
-								style: {
-									[ property ]: valids,
-								},
-								properties,
-								saves,
-								savesProperties,
-								hasSaves,
-								changes,
-								changesProperties: changesProperties,
-								hasChanges,
-								removes,
-								removesProperties,
-								hasRemoves,
-							} );
+							// Prepare prev state for next iteration.
+							prevStyleSets[ maxWidth ] = viewportStyleSet;
 						}
 					}
-
-					// Prepare prev states for later iterations.
-					prevValids[ property ] = valids;
-					prevRemoves[ property ] = removes;
 				}
-
-				// Prepare prev state for next iteration.
-				prevStyle = style;
 			}
-		} );
+		};
 
-		// Debug ruleSet.
-		// console.log( 'ruleSet', ruleSet );
+		// Debug spectrumSet.
+		// 'core/group' === this.blockName && console.log( 'spectrumSet', spectrumSet );
 
-		return ruleSet;
+		return spectrumSet;
 	}
 
 
@@ -423,11 +567,11 @@ export class Generator {
 
 
 	/**
-	 * Set method to return properties from ruleSet.
+	 * Set method to return properties from spectrumSet.
 	 */
-	getRuleSetProperties() {
+	getSpectrumSetProperties() {
 		if( null === this.properties ) {
-			this.properties = this.createRuleSetProperties();
+			this.properties = this.createSpectrumSetProperties();
 		}
 
 		return this.properties;
@@ -435,16 +579,16 @@ export class Generator {
 
 
 	/**
-	 * Set method to return properties from ruleSet.
+	 * Set method to return properties from spectrumSet.
 	 */
-	createRuleSetProperties() {
+	createSpectrumSetProperties() {
 
 		// Set properties default.
 		const properties = new Set<string>();
 
 		// Map all properties.
-		this.ruleSet.forEach( rule => {
-			properties.add( rule.property );
+		this.spectrumSet.forEach( spectrum => {
+			properties.add( spectrum.property );
 		} );
 
 		// Return unique properties.
@@ -453,11 +597,11 @@ export class Generator {
 
 
 	/**
-	 * Set method to return viewports from ruleSet.
+	 * Set method to return viewports from SpectrumSet.
 	 */
-	getRuleSetViewports() {
+	getSpectrumSetViewports() {
 		if( null === this.viewports ) {
-			this.viewports = this.createRuleSetViewports();
+			this.viewports = this.createSpectrumSetViewports();
 		}
 
 		return this.viewports;
@@ -465,16 +609,16 @@ export class Generator {
 
 
 	/**
-	 * Set method to return viewports from ruleSet.
+	 * Set method to return viewports from spectrumSet.
 	 */
-	createRuleSetViewports() {
+	createSpectrumSetViewports() {
 
 		// Set viewports default.
 		const viewports = new Set<number>();
 
 		// Map all viewports.
-		this.ruleSet.forEach( rule => {
-			viewports.add( rule.viewport );
+		this.spectrumSet.forEach( spectrum => {
+			viewports.add( spectrum.viewport );
 		} );
 
 		// Return unique viewports.
@@ -500,7 +644,7 @@ export class Generator {
 	generateCSSViewportSet() {
 
 		// Check if we get some rules.
-		if( ! Object.entries( this.ruleSet ).length ) {
+		if( ! Object.entries( this.spectrumSet ).length ) {
 			return [];
 		}
 
@@ -537,198 +681,6 @@ export class Generator {
 
 		// Return joined css.
 		return cssViewportSet;
-	}
-
-
-	/**
-	 * Set method to collapse a viewportStyleSet.
-	 */
-	collapseViewportStyleSets( viewportStyleSets : ViewportStyleSets, tillViewport : number ) {
-		const stylesToMerge: BlockStyles[] = [];
-
-		for( const [ dirtyViewport, viewportStyleSet ] of Object.entries( viewportStyleSets ) ) {
-			const viewport = parseInt( dirtyViewport );
-
-			if( tillViewport >= viewport ) {
-				stylesToMerge.push( viewportStyleSet.style );
-			}
-		}
-
-		return getMergedObject( ... stylesToMerge );
-	}
-
-
-	/**
-	 * Set method to return spectrum set.
-	 */
-	getSpectrumSet() {
-		if( null === this.spectrumSet ) {
-			this.spectrumSet = this.generateSpectrumSet();
-		}
-
-		return this.spectrumSet;
-	}
-
-
-	/**
-	 * Set method to generate spectrum set.
-	 */
-	generateSpectrumSet() {
-
-		// Set min and minMax defaults.
-		const min = {};
-		const minMax = {};
-		const prevSet = {};
-
-		// Set prev default.
-		const prevDefault = {
-			property: '',
-			viewport: 0,
-			priority: 0,
-			selector: '',
-			css: '',
-			style: {},
-			properties: {},
-		} as Rule;
-
-		// Iterate over properties to split min from min-max queries.
-		for( let i = 0; i < this.properties.length; i++ ) {
-			const key = this.properties[ i ];
-
-			// Iterate over ruleSet to compare viewport settings.
-			this.ruleSet.forEach( ( rule : Rule ) => {
-				if( key !== rule.property ) {
-					return true;
-				}
-
-				// Set actual prev if already set.
-				let prev = {} as Rule;
-				if( prevSet.hasOwnProperty( rule.selector ) ) {
-					prev = prevSet[ rule.selector ];
-				} else {
-					prev = prevDefault;
-				}
-
-				// Debug prev.
-				// console.log( 'prev', prev, rule );
-
-				// Check if there is a difference between last and actual css.
-				if ( isEqual( prev.properties, rule.properties ) ) {
-					return true;
-				}
-
-				// Check if we need to shift the spectrum from min to minMax.
-				if ( '' !== prev.css && '' === rule.css ) {
-					delete min[ prev.viewport ][ key ];
-
-					// Set viewport if not already did.
-					if ( ! minMax.hasOwnProperty( prev.viewport ) ) {
-						minMax[ prev.viewport ] = {};
-					}
-
-					// Set key if not already did.
-					if ( ! minMax[ prev.viewport ].hasOwnProperty( key ) ) {
-						minMax[ prev.viewport ][ key ] = [];
-					}
-
-					// Set min and max if prev viewport was > 0.
-					if( prev.viewport > 0 ) {
-
-						// Shift spectrum to minmax.
-						minMax[ prev.viewport ][ key ].push( {
-							... prev,
-							from: prev.viewport,
-							to: rule.viewport - 1,
-							media: 'min-width:' + prev.viewport + 'px) and (max-width:' + ( rule.viewport - 1 ) + 'px',
-						} ) as Spectrum;
-					} else {
-
-						// Shift spectrum to minmax.
-						minMax[ prev.viewport ][ key ].push( {
-							... prev,
-							from: prev.viewport,
-							to: rule.viewport - 1,
-							media: 'max-width:' + ( rule.viewport - 1 ) + 'px',
-						} ) as Spectrum;
-					}
-
-				// Check if we need to add the spectrum to min.
-				} else if ( '' !== rule.css && ! isEqual( prev.properties, rule.properties ) ) {
-
-					// Set viewport if not already did.
-					if ( ! min.hasOwnProperty( rule.viewport ) ) {
-						min[ rule.viewport ] = {};
-					}
-
-					// Set key if not already did.
-					if ( ! min[ rule.viewport ].hasOwnProperty( key ) ) {
-						min[ rule.viewport ][ key ] = [];
-					}
-
-					min[ rule.viewport ][ key ].push( {
-						... rule,
-						from: rule.viewport,
-						to: -1,
-						media: rule.viewport > 0 ? 'min-width:' + rule.viewport + 'px' : '',
-					} ) as Spectrum;
-				}
-
-				// Prepare prev state for next iteration.
-				prevSet[ rule.selector ] = rule;
-			} );
-		}
-
-		// Debug min and minMax.
-		// console.log( 'min', min, 'minMax', minMax );
-
-		// Set spectrumSet default.
-		const spectrumSet = [] as SpectrumSet;
-
-		// Iterate over viewports to sort the right order.
-		for( let i = 0; i < this.viewports.length; i++ ) {
-			const viewport = this.viewports[ i ];
-
-			// Build sorted min spectrumSet parts.
-			if( min.hasOwnProperty( viewport ) ) {
-				const unsorted = [] as SpectrumSet;
-
-				// Collect unsorted spectrums.
-				for( const [ key ] of Object.entries( min[ viewport ] ) ) {
-					min[ viewport ][ key ].forEach( ( spectrum ) => {
-						unsorted.push( spectrum );
-					} );
-				}
-
-				// Sort the unsorted.
-				unsorted.sort( ( a, b ) => a.priority - b.priority );
-				unsorted.forEach( ( spectrum ) => {
-					spectrumSet.push( spectrum );
-				} );
-			}
-
-			// Build sorted minMax spectrumSet parts.
-			if( minMax.hasOwnProperty( viewport ) ) {
-				const unsorted = [] as SpectrumSet;
-
-				// Collect unsorted spectrums.
-				for( const [ key ] of Object.entries( minMax[ viewport ] ) ) {
-					minMax[ viewport ][ key ].forEach( ( spectrum ) => {
-						unsorted.push( spectrum );
-					} );
-				}
-
-				// Sort the unsorted.
-				unsorted.sort( ( a, b ) => a.priority - b.priority );
-				unsorted.forEach( ( spectrum ) => {
-					spectrumSet.push( spectrum );
-				} );
-			}
-		}
-
-		// Debug spectrumSet.
-		// console.log( 'spectrumSet', spectrumSet );
-
-		return spectrumSet;
 	}
 
 

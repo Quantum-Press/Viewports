@@ -1,12 +1,8 @@
-import {
-	STORE_NAME
-} from '../../store';
-import  {
-	SpectrumSet
-} from '../../types';
+import { keyframe as iconKeyframe } from '@viewports/components';
+import { useHighlight, useHighlightViewport } from '@viewports/hooks';
+import { STORE_NAME } from '@viewports/store';
+import { SpectrumSet } from '@viewports/types';
 
-import { useHighlight, useHighlightViewport } from '../../hooks';
-import { keyframe as iconKeyframe } from '../svgs';
 import { KeyframeControls } from './controls';
 
 const {
@@ -167,7 +163,7 @@ const generateKeyframes = ( props ) => {
 /**
  * Set component to render keyframes ui.
  */
-const Keyframes = () => {
+export const Keyframes = () => {
 
 	// Set states.
 	const props : {
@@ -402,5 +398,3 @@ const Keyframes = () => {
 		</div>
 	)
 }
-
-export default Keyframes;

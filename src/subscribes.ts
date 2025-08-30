@@ -1,8 +1,8 @@
+import { Inspector, Wrap } from '@viewports/components/';
+import { isSiteEditor } from '@viewports/utils';
 
-import { isSiteEditor } from './utils/editor';
 import portalHandler from './portals';
-import Wrap from './components/wrap';
-import Inspector from './components/inspector';
+
 
 const {
 	data: {

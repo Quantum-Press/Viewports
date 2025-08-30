@@ -1,7 +1,7 @@
 /**
  * Post Editor - Content division.
  */
-.edit-post-visual-editor {
+ .edit-post-visual-editor {
 	display: flex;
 	flex-direction: row;
 	align-items: flex-start;
@@ -1059,13 +1059,12 @@ table.block-editor-list-view-tree {
 
 					& > * {
 						display: inline-block;
-						width: 26px;
-						vertical-align: inherit;
+						width: 24px;
+						vertical-align: top;
 					}
 
 					button.qp-viewports-inspector-blocklist-toggle {
 						padding: 2px !important;
-						height: 30px !important;
 
 						&:hover {
 							svg.inspect {
@@ -1513,20 +1512,10 @@ body.is-active-viewports {
 
 
 /**
- * Toggle Keyframes.
+ * Disable native preview.
  */
-.qp-viewports-keyframes-toggle {
-	padding-left: 12px;
-	padding-right: 12px;
-
-	svg {
-		margin-left: 0 !important;
-		margin-right: 0px !important;
-	}
-
-	.cls-left {
-		display: none;
-	}
+.block-editor-post-preview__dropdown {
+	display: none;
 }
 
 

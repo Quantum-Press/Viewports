@@ -1,14 +1,8 @@
-import { StyleFill } from '../components/block-styles';
-import { useMount } from '../hooks';
-import { STORE_NAME } from '../store';
-import {
-	Block,
-	BlockEditProps
-} from '../types';
-import {
-	debounce,
-	debug
-} from '../utils';
+import { StyleFill } from '@viewports/components';
+import { useMount } from '@viewports/hooks';
+import { STORE_NAME } from '@viewports/store';
+import type { Block, BlockEditProps } from '@viewports/types';
+import { debounce, debug } from '@viewports/utils';
 
 const {
 	data: {
