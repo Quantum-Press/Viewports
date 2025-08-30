@@ -1,0 +1,22 @@
+name: Build Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: Create archive
+        run: zip -r viewports-${{ github.ref_name }}.zip . -x ".git/*"
+
+      - name: Upload artifact
+        uses: softprops/action-gh-release@v1
+        with:
+          files: myproject-${{ github.ref_name }}.zip
