@@ -18,7 +18,7 @@ jobs:
 
       # Alte Artefakte löschen
       - name: Clean old build files
-        run: rm -rf release *.zip
+        run: rm -rf viewports *.zip
 
       # Composer-Abhängigkeiten installieren
       - name: Install dependencies
