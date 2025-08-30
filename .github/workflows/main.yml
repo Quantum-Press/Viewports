@@ -14,9 +14,9 @@ jobs:
         run: composer install --no-dev --optimize-autoloader
 
       - name: Create archive
-        run: zip -r viewports-${{ github.ref_name }}.zip . -x ".git/*"
+        run: zip -r Viewports-${{ github.ref_name }}.zip . -x ".git/*"
 
       - name: Upload artifact
         uses: softprops/action-gh-release@v1
         with:
-          files: myproject-${{ github.ref_name }}.zip
+          files: Viewports-${{ github.ref_name }}.zip
