@@ -9,8 +9,8 @@
  * Text Domain: viewports
  * Domain Path: /languages
  *
- * Author:      conversionmedia GmbH & Co. KG
- * Author URI:  https://www.conversionmedia.de
+ * Author:      QuantumPress
+ * Author URI:  https://quantum-press.com/en/
  *
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
