@@ -1,4 +1,4 @@
-name: Build Release
+name: Build plugin release .zip file
 
 on:
   release:
@@ -32,11 +32,11 @@ jobs:
 
       # ZIP erstellen
       - name: Create archive
-        run: zip -r viewports-plugin-${{ github.ref_name }}.zip viewports/*
+        run: zip -r viewports-plugin.zip viewports/*
 
       # ZIP als Release-Asset hochladen
       - name: Upload release asset
         uses: softprops/action-gh-release@v1
         with:
-          files: viewports-plugin-${{ github.ref_name }}.zip
+          files: viewports-plugin.zip
           token: ${{ secrets.GITHUB_TOKEN }}
