@@ -1,0 +1,42 @@
+name: Build plugin release .zip file
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Repo auschecken
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Alte Artefakte löschen
+      - name: Clean old build files
+        run: rm -rf viewports *.zip
+
+      # Composer-Abhängigkeiten installieren
+      - name: Install dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      # Release-Ordner vorbereiten
+      - name: Prepare release folder
+        run: |
+          mkdir viewports
+          cp -r build config includes src vendor composer.json composer.lock viewports.php viewports/
+
+      # ZIP erstellen
+      - name: Create archive
+        run: zip -r viewports-plugin.zip viewports/*
+
+      # ZIP als Release-Asset hochladen
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: viewports-plugin.zip
+          token: ${{ secrets.GITHUB_TOKEN }}
