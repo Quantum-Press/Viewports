@@ -1,7 +1,7 @@
 import { STORE_NAME } from '../../store';
 import { SpectrumSet } from '../../types';
 import { StyleList } from '../inspector/stylelist';
-import ToggleEdit from '../toggle/edit';
+import ToggleEditing from '../editing/toggle';
 
 const {
 	components: {
@@ -53,15 +53,20 @@ export const IndicatorControls = ( {
 		}
 	}, [ isActive ] );
 
-	if( ! isVisible || ! isActive ) {
+	if( ! isVisible ) {
 		return null;
+	}
+
+	let className = 'qp-viewports-indicator-controls';
+	if( isActive ) {
+		className += ' dark';
 	}
 
 	return (
 		<Popover
 			placement="left-start"
 			offset={ 194 }
-			className="qp-viewports-indicator-controls"
+			className={ className }
 			onFocusOutside={ ( event ) => {
 				if( event.relatedTarget.classList.contains( 'indicator' ) ) {
 					return;
@@ -71,7 +76,7 @@ export const IndicatorControls = ( {
 			} }
 		>
 			<div className="qp-viewports-indicator-controls-head">
-				<ToggleEdit />
+				<ToggleEditing />
 				<Button
 					className="close"
 					onClick={ () => { setIsVisible( false ) } }

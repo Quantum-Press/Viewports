@@ -98,7 +98,6 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 			setIsVisible( true );
 		} else {
 			setIsVisible( false );
-			dispatch( STORE_NAME ).unsetActive();
 		}
 	}
 
@@ -115,12 +114,12 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 
 		switch ( size ) {
 			case 'Mobile' :
-				if( isActive && isInMobileRange( iframeViewport ) ) {
-					className.push( 'is-active' );
-				}
-
 				if( isEditing ) {
 					className.push( 'is-editing' );
+
+					if( isInMobileRange( iframeViewport ) ) {
+						className.push( 'is-active' );
+					}
 				}
 
 				for( let index = 0; index < spectrumSet.length; index++ ) {
@@ -144,12 +143,12 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 				break;
 
 			case 'Tablet' :
-				if( isActive && isInTabletRange( iframeViewport ) ) {
-					className.push( 'is-active' );
-				}
-
 				if( isEditing ) {
 					className.push( 'is-editing' );
+
+					if( isInTabletRange( iframeViewport ) ) {
+						className.push( 'is-active' );
+					}
 				}
 
 				for( let index = 0; index < spectrumSet.length; index++ ) {
@@ -177,12 +176,12 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 				break;
 
 			case 'Desktop' :
-				if( isActive && isInDesktopRange( iframeViewport ) ) {
-					className.push( 'is-active' );
-				}
-
 				if( isEditing ) {
 					className.push( 'is-editing' );
+
+					if( isInDesktopRange( iframeViewport ) ) {
+						className.push( 'is-active' );
+					}
 				}
 
 				for( let index = 0; index < spectrumSet.length; index++ ) {

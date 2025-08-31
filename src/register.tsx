@@ -5,7 +5,7 @@ import type {
 } from './types';
 import BlockEdit from './block/edit';
 import BlockSave from './block/save';
-import ToggleInspecting from './components/toggle/inspecting';
+import ToggleInspector from './components/inspector/toggle';
 import { isInBlockBlacklist } from './config';
 import BlockPreview from './block/preview';
 
@@ -57,7 +57,7 @@ addFilter( 'blocks.registerBlockType', 'qp/viewports', ( block : Block ) => {
 					/> }
 					<BlockControls>
 						<ToolbarGroup>
-							<ToggleInspecting
+							<ToggleInspector
 								showText={ false }
 							/>
 						</ToolbarGroup>

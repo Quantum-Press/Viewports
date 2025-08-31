@@ -1,7 +1,7 @@
 import Breadcrumb from './breadcrumb';
 import BlockList from './blocklist';
 import Selected from './selected';
-import ToggleEdit from '../toggle/edit';
+import ToggleEditing from '../editing/toggle';
 
 const {
 	data: {
@@ -28,7 +28,7 @@ const Body = () => {
 		<div className="qp-viewports-inspector-body">
 			<Breadcrumb />
 			{ ! selected && ( <BlockList /> ) }
-			{ selected && ( <ToggleEdit /> ) }
+			{ selected && ( <ToggleEditing /> ) }
 			{ selected && ( <Selected block={ selected }/> ) }
 		</div>
 	);

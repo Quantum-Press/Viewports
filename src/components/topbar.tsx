@@ -1,7 +1,7 @@
 import { useLongPress } from '../utils';
 import { STORE_NAME } from '../store';
 import { mobile, tablet, desktop } from './svgs';
-import ToggleInspecting from './toggle/inspecting';
+import ToggleInspector from './inspector/toggle';
 
 const {
 	components: {
@@ -122,7 +122,7 @@ const Topbar = () => {
 	return (
 		<div className="qp-viewports-topbar">
 			<div className="qp-viewports-actions left">
-				{ ! props.isInspecting && 'left' === props.inspectorPosition && ( <ToggleInspecting showText={ true } forceShow={ true } /> ) }
+				{ ! props.isInspecting && 'left' === props.inspectorPosition && ( <ToggleInspector showText={ true } forceShow={ true } /> ) }
 				<span className="chosen-zoom">Zoom: { zoom.toString().replace( '.', ',' ) }%</span>
 			</div>
 			<div className="qp-viewports-shorthands">
@@ -156,7 +156,7 @@ const Topbar = () => {
 				/>
 			</div>
 			<div className="qp-viewports-actions right">
-				{ ! props.isInspecting && 'right' === props.inspectorPosition && ( <ToggleInspecting showText={ true } forceShow={ true } /> ) }
+				{ ! props.isInspecting && 'right' === props.inspectorPosition && ( <ToggleInspector showText={ true } forceShow={ true } /> ) }
 			</div>
 		</div>
 	);

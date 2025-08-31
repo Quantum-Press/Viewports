@@ -1,5 +1,5 @@
 import { STORE_NAME } from '../../store';
-import { inspect } from '../svgs';
+import { viewports } from '../svgs';
 
 const {
 	components: {
@@ -20,7 +20,7 @@ const {
  *
  * @param object props
  */
-const ToggleInspecting = ( { showText = true, forceShow = false } : { showText?: boolean, forceShow?: boolean } ) => {
+const ToggleInspector = ( { showText = true, forceShow = false } : { showText?: boolean, forceShow?: boolean } ) => {
 
 	// Set states.
 	const {
@@ -73,7 +73,7 @@ const ToggleInspecting = ( { showText = true, forceShow = false } : { showText?:
 	return (
 		<Button
 			className={ classNames }
-			icon={ inspect }
+			icon={ viewports }
 			label={ __( 'Inspect styles', 'viewports' ) }
 			onClick={ onClickInspect }
 			text={ showText ? __( 'Inspector', 'viewports' ) : '' }
@@ -81,4 +81,4 @@ const ToggleInspecting = ( { showText = true, forceShow = false } : { showText?:
 	);
 }
 
-export default ToggleInspecting;
+export default ToggleInspector;

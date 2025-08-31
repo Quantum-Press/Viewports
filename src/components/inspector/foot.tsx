@@ -39,7 +39,9 @@ const Foot = () => {
 			<Button
 				className="qp-viewports-link"
 				icon={ logo }
-				text={ __( 'Viewports - Version', 'viewports' ) + ' ' + version }
+				href="https://quantum-press.com/en/"
+				target="_blank"
+				text={ __( 'QuantumPress Viewports - Version', 'viewports' ) + ' ' + version }
 			/>
 		</div>
 	);

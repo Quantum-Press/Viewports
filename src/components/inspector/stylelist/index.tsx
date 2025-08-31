@@ -3,10 +3,16 @@ import { SpectrumSet } from '../../../types';
 import Style from './style';
 
 const {
+	components: {
+		Icon,
+	},
 	data: {
 		select,
 		useSelect,
 	},
+	i18n: {
+		__,
+	}
 } = window[ 'wp' ];
 
 /**
@@ -20,6 +26,8 @@ export const StyleList = ( { storeId, spectrumSet } : { storeId : string, spectr
 	// Set store dependencies.
 	const {
 		iframeViewport,
+		hasBlockChanges,
+		hasBlockRemoves,
 	} = useSelect( ( select : Function ) => {
 		const store = select( STORE_NAME );
 
@@ -27,6 +35,8 @@ export const StyleList = ( { storeId, spectrumSet } : { storeId : string, spectr
 			valids: store.getBlockValids( storeId ),
 			removes: store.getBlockRemoves( storeId ),
 			iframeViewport: store.getIframeViewport(),
+			hasBlockChanges: store.hasBlockChanges( storeId ),
+			hasBlockRemoves: store.hasBlockRemoves( storeId ),
 		};
 	}, [] );
 
@@ -42,6 +52,13 @@ export const StyleList = ( { storeId, spectrumSet } : { storeId : string, spectr
 					/>
 				);
 			} ) }
+
+			{ ( hasBlockChanges || hasBlockRemoves ) &&
+				<div className="qp-viewports-stylelist-notice">
+					<Icon icon="info" />
+					{ __( 'Changes and Removes will apply on save', 'viewports' ) }
+				</div>
+			}
 		</div>
 	);
 }

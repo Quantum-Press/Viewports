@@ -327,7 +327,7 @@ body.is-active-viewports {
 			color: #fff;
 			padding: 8px;
 
-			svg.inspect {
+			svg.viewports {
 				height: 100%;
 				width: 28px;
 				margin-top: 1px;
@@ -375,7 +375,8 @@ body.is-active-viewports {
 		right: 0;
 		left: 0;
 
-		button.qp-viewports-link {
+		button.qp-viewports-link,
+		a.qp-viewports-link {
 			width: 100%;
 			height: 44px;
 			padding: 0 10px;
@@ -384,6 +385,10 @@ body.is-active-viewports {
 
 			svg.logo {
 				margin-right: 5px;
+			}
+
+			&:hover {
+				color: #fff;
 			}
 		}
 	}
@@ -862,7 +867,6 @@ body.is-active-viewports {
 	display: flex;
 	flex-direction: column;
 	margin: 0 10px;
-	color: #919191;
 }
 
 
@@ -877,24 +881,18 @@ body.is-active-viewports {
 	padding: 5px 10px;
 	font-family: monospace;
 	font-size: 10px;
-	color: #c2c7c9;
 	transition: background-color 0.3s ease;
-
-	&.is-highlighted {
-		animation: highlightDark 1.2s;
-	}
 
 	&.has-changes,
 	&.has-removes {
-		background-color: #35363a;
+		background-color: #f3f3f3;
 	}
 
 	.media {
 		width: 100%;
-		color: #919191;
 
 		&.active {
-			color: #c2c7c9;
+			color: #000;
 		}
 	}
 
@@ -917,7 +915,7 @@ body.is-active-viewports {
 			color: currentColor;
 
 			&:hover {
-				color: #fff;
+				color: var( --wp-admin-theme-color-darker-20 );
 			}
 		}
 
@@ -1002,7 +1000,7 @@ body.is-active-viewports {
 		}
 
 		.css-key {
-			color: var( --wp-admin-theme-color );
+			color: var( --wp-admin-theme-color-darker-20 );
 		}
 
 		.css-value {
@@ -1012,6 +1010,116 @@ body.is-active-viewports {
 
 	.selector-end {
 		width: 100%;
+	}
+}
+
+
+/**
+ * StyleList - Style - Dark.
+ */
+.dark .qp-viewports-inspector-style,
+.qp-viewports-inspector-style.dark {
+	color: #c2c7c9;
+
+	.qp-viewports-inspector-stylelist {
+		color: #919191;
+	}
+
+	&.is-highlighted {
+		animation: highlightDark 1.2s;
+	}
+
+	&.has-changes,
+	&.has-removes {
+		background-color: #35363a;
+	}
+
+	.media {
+		color: #919191;
+
+		&.active {
+			color: #c2c7c9;
+		}
+	}
+
+	.actions {
+		button.property {
+			&:hover {
+				color: #fff;
+			}
+		}
+
+		.state-actions {
+			button {
+				color: #919191;
+
+				&.remove {
+					&:hover {
+						color: var( --wp--preset--color--vivid-red );
+					}
+				}
+
+				&.restore {
+					&:hover {
+						color: var( --wp-admin-theme-color );
+					}
+				}
+			}
+		}
+	}
+
+	.css-wrap {
+		&.changed,
+		&.removed {
+			.css-status {
+				border: 1px solid #c2c7c9;
+				background-color: transparent;
+			}
+		}
+
+		&.changed {
+			.css-status {
+				background-color: var( --wp-admin-theme-color-darker-20 );
+			}
+		}
+
+		&.removed {
+			.css-status {
+				background-color: var( --wp--preset--color--vivid-red );
+			}
+
+			.css-key {
+				color: var( --wp--preset--color--vivid-red );
+			}
+		}
+
+		.css-key {
+			color: var( --wp-admin-theme-color );
+		}
+	}
+
+	.qp-viewports-stylelist-notice {
+		color: #c2c7c9;
+
+		svg,
+		.dashicon {
+			color: var( --wp-admin-theme-color );
+		}
+	}
+}
+
+
+.qp-viewports-stylelist-notice {
+	margin: 0 -10px;
+	padding: 4px 10px 4px 10px;
+	border-top: 1px solid;
+	font-size: 12px;
+
+	svg,
+	.dashicon {
+		font-size: 18px;
+		margin-right: 3px;
+		color: var( --wp-admin-theme-color-darker-20 );
 	}
 }
 
@@ -1068,9 +1176,9 @@ table.block-editor-list-view-tree {
 						height: 30px !important;
 
 						&:hover {
-							svg.inspect {
+							svg.viewports {
 								.cls-1 {
-									stroke: var( --wp-admin-theme-color );
+									fill: var( --wp-admin-theme-color );
 								}
 
 								.cls-2 {
@@ -1089,9 +1197,9 @@ table.block-editor-list-view-tree {
 			&.is-selected {
 				& > td {
 					&.block-editor-list-view-block__menu-cell {
-						svg.inspect {
+						svg.viewports {
 							.cls-1 {
-								stroke: #fff !important;
+								fill: #fff !important;
 							}
 
 							.cls-2 {
@@ -1199,15 +1307,12 @@ table.block-editor-list-view-tree {
 			width: 108px;
 			color: #919191;
 
-			svg.inspect {
+			svg.viewports {
 				width: auto;
 				height: 100%;
 				margin-top: 1px;
 
-				.cls-1, .cls-3 {
-					stroke: #919191;
-				}
-
+				.cls-1,
 				.cls-2 {
 					fill: #919191;
 				}
@@ -1216,10 +1321,8 @@ table.block-editor-list-view-tree {
 			&:hover {
 				color: #fff;
 
-				svg.inspect {
-					.cls-1, .cls-3 {
-						stroke: #fff;
-					}
+				svg.viewports {
+					.cls-1,
 					.cls-2 {
 						fill: #fff;
 					}
@@ -1227,13 +1330,19 @@ table.block-editor-list-view-tree {
 			}
 
 			&.is-inspecting {
-				svg.inspect {
-					.cls-1, .cls-3 {
-						stroke: var( --wp-admin-theme-color );
-					}
-
+				svg.viewports {
+					.cls-1,
 					.cls-2 {
 						fill: #fff;
+					}
+				}
+
+				&:hover {
+					svg.viewports {
+						.cls-1,
+						.cls-2 {
+							fill: var( --wp-admin-theme-color );
+						}
 					}
 				}
 			}
@@ -1866,11 +1975,8 @@ body.is-active-viewports {
 	&.is-inspecting {
 		background: #212124;
 
-		svg.inspect {
-			.cls-1, .cls-3 {
-				stroke: var( --wp-admin-theme-color );
-			}
-
+		svg.viewports {
+			.cls-1,
 			.cls-2 {
 				fill: #fff;
 			}
@@ -1889,7 +1995,7 @@ body.is-active-viewports {
 	.qp-viewports-toggle-inspecting {
 		padding: 0 !important;
 
-		svg.inspect {
+		svg.viewports {
 			width: 44px;
 			height: 44px;
 			padding: 8px;
@@ -1973,37 +2079,11 @@ svg.qp-viewports-svg {
 		}
 	}
 
-	&.inspect {
-		.cls-1 {
-			fill: none;
-			stroke: #000;
-			stroke-miterlimit: 10;
-			stroke-width: 80px;
-		}
-		.cls-2 {
-			fill: #000;
-			stroke-miterlimit: 10;
-		}
-		.cls-3 {
-			opacity: 0;
-		}
-	}
-
 	&.cls-3 {
 		stroke-linecap: square;
 	}
 	&.cls-4{
 		stroke-linecap: round;
-	}
-}
-
-button.is-inspecting {
-	svg.qp-viewports-svg {
-		&.inspect {
-			.cls-3 {
-				opacity: 1;
-			}
-		}
 	}
 }
 
@@ -2303,7 +2383,6 @@ svg.keyframe {
 
 	.components-popover__content {
 		min-width: 292px;
-		background: #212121;
 		box-shadow: 0 0 0 1px #919191,0 2px 3px #0000000d,0 4px 5px #0000000a,0 12px 12px #00000008,0 16px 16px #00000005
 	}
 
@@ -2315,23 +2394,13 @@ svg.keyframe {
 			width: calc( 100% - 40px );
 			padding: 14px;
 			margin: 0;
-			color: #919191;
 			cursor: pointer;
-
-			&:hover {
-				color: #fff;
-			}
 		}
 
 		button.close {
 			width: 44px;
 			height: 44px;
 			margin: 1px;
-			color: #919191;
-
-			&:hover {
-				color: #fff;
-			}
 		}
 	}
 
@@ -2340,8 +2409,37 @@ svg.keyframe {
 		margin: 10px;
 		border: 1px solid;
 		text-align: center;
-		color: #919191;
 		border-radius: 3px;
+	}
+
+	&.dark {
+		outline-color: #000;
+
+		.components-popover__content {
+			background: #212121;
+		}
+
+		.qp-viewports-indicator-controls-head {
+			.qp-viewports-toggle-edit {
+				color: #919191;
+
+				&:hover {
+					color: #fff;
+				}
+			}
+
+			button.close {
+				color: #919191;
+
+				&:hover {
+					color: #fff;
+				}
+			}
+		}
+
+		.controls-style-placeholder {
+			color: #919191;
+		}
 	}
 }
 

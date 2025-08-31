@@ -40,7 +40,7 @@ export const ArrayList = ( {
 	spectrum : Spectrum
 } ) => {
 
-	console.log( 'array', combined );
+	// console.log( 'array', combined );
 
 	// Render component.
 	return (
@@ -75,7 +75,7 @@ export const ArrayList = ( {
 				}
 
 				if( Array.isArray( value ) ) {
-					console.log( 'array in array', property, value );
+					// console.log( 'array in array', property, value );
 
 					return (
 						<div className={ classNames.join( ' ' ) }>

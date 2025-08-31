@@ -1,5 +1,5 @@
 import { STORE_NAME } from '../../store';
-import { inspect } from '../svgs';
+import { viewports } from '../svgs';
 
 const {
 	components: {
@@ -176,7 +176,7 @@ export const InspectorPortals = () => {
 						label={ __( 'Inspect styles', 'viewports' ) }
 						onClick={ onClickInspect }
 					>
-						<Icon icon={ inspect } />
+						<Icon icon={ viewports } />
 					</Button>,
 					$target
 				);

@@ -16,16 +16,16 @@ const {
 /**
  * Set component const to export toggle edit ui.
  */
-const ToggleEdit = () => {
+const ToggleEditing = () => {
 
 	// Set state dependency.
 	const {
-		isActive,
 		isEditing,
+		viewport,
 	} = useSelect( ( select ) => {
 		return {
-			isActive: select( STORE_NAME ).isActive(),
 			isEditing: select( STORE_NAME ).isEditing(),
+			viewport: select( STORE_NAME ).getViewport(),
 		}
 	} );
 
@@ -36,15 +36,10 @@ const ToggleEdit = () => {
 	 * Set function to fire on click.
 	 */
 	const onChange = () => {
-		if( ! isActive ) {
+		if( ! isEditing ) {
 			dispatcher.setEditing();
-			dispatcher.setLoading();
 		} else {
-			if( ! isEditing ) {
-				dispatcher.setEditing();
-			} else {
-				dispatcher.unsetEditing();
-			}
+			dispatcher.unsetEditing();
 		}
 	}
 
@@ -58,11 +53,11 @@ const ToggleEdit = () => {
 	return (
 		<ToggleControl
 			className={ classNames }
-			label={ __( 'Edit on Viewport', 'viewports' ) }
+			label={ __( 'Edit on min-width', 'viewports' ) + ': ' + viewport + 'px' }
 			onChange={ onChange }
 			checked={ isEditing }
 		/>
 	);
 }
 
-export default ToggleEdit;
+export default ToggleEditing;

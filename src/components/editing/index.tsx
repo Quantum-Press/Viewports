@@ -29,7 +29,7 @@ const Editing = () => {
 	}, [] );
 
 	// Check if we need to render.
-	if( ! isEditing || ! isActive ) {
+	if( ! isEditing ) {
 		return null;
 	}
 

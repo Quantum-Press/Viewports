@@ -1,6 +1,6 @@
 {
 	"name": "viewports",
-	"version": "0.9.5-dev",
+	"version": "0.9.5",
 	"private": true,
 	"description": "A new responsive Gutenberg Editor experience.",
 	"author": "Sebastian Buchwald",

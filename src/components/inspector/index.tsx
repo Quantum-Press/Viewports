@@ -38,7 +38,7 @@ const Inspector = () => {
 	}
 
 	// Setup classNames.
-	let classNamesWrap = 'qp-viewports-inspector';
+	let classNamesWrap = 'qp-viewports-inspector dark';
 	if( ! isActive ) {
 		classNamesWrap = classNamesWrap + ' flyout';
 	}

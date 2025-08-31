@@ -117,7 +117,7 @@ export const setViewportType = ( state : State, action : Action ) : State => {
 			if( viewportType === 'desktop' ) {
 				return {
 					... state,
-					isEditing: true,
+					isEditing: state.isActive ? true : false,
 					viewport: desktopDefaultViewport,
 				}
 			}
