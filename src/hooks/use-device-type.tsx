@@ -9,6 +9,8 @@ const {
 		useEffect,
 		useLayoutEffect,
 		useState,
+		createContext,
+		useContext,
 	}
 } = window[ 'wp' ];
 
@@ -38,7 +40,7 @@ const {
  *
  * @returns {Array} Currently an empty array (placeholder for future expansion).
  */
-export function useDeviceType() {
+function useDeviceTypeInternal() : DeviceTypeValue {
 
 	// Select state from the viewports store and core/editor.
 	const {
@@ -77,21 +79,21 @@ export function useDeviceType() {
 			setIgnore( true );
 			setPrevDeviceType( sanitizedDeviceType );
 			storeDispatch.setViewportType( sanitizedDeviceType );
-			// console.log( 'changed deviceType - desktop', ignore );
+			// console.log( 'changed deviceType - desktop', ignore, sanitizedDeviceType );
 		}
 
 		if( 'tablet' === sanitizedDeviceType && sanitizedDeviceType !== prevDeviceType ) {
 			setIgnore( true );
 			setPrevDeviceType( sanitizedDeviceType );
 			storeDispatch.setViewportType( sanitizedDeviceType );
-			// console.log( 'changed deviceType - tablet', ignore );
+			// console.log( 'changed deviceType - tablet', ignore, sanitizedDeviceType );
 		}
 
 		if( 'mobile' === sanitizedDeviceType && sanitizedDeviceType !== prevDeviceType ) {
 			setIgnore( true );
 			setPrevDeviceType( sanitizedDeviceType );
 			storeDispatch.setViewportType( sanitizedDeviceType );
-			// console.log( 'changed deviceType - mobile', ignore );
+			// console.log( 'changed deviceType - mobile', ignore, sanitizedDeviceType );
 		}
 
 	}, [ deviceType ] );
@@ -156,4 +158,33 @@ export function useDeviceType() {
 	return [ deviceType ];
 };
 
-export default useDeviceType;
+
+type DeviceTypeValue = [ string ];
+
+const DeviceTypeContext = createContext<DeviceTypeValue | null>(null);
+
+type ProviderProps = { children: any };
+
+export function DeviceTypeProvider({ children }: ProviderProps) {
+	const value = useDeviceTypeInternal();
+
+	return (
+		<DeviceTypeContext.Provider value={value}>
+			{children}
+		</DeviceTypeContext.Provider>
+	);
+}
+
+
+export function useDeviceType(): DeviceTypeValue {
+	const ctx = useContext( DeviceTypeContext );
+
+	// console.log( 'ctx', ctx );
+
+	if ( ! ctx ) {
+		console.warn( 'useDeviceType used outside DeviceTypeProvider' );
+		return null;
+	}
+
+	return ctx;
+}

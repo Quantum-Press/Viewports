@@ -5,7 +5,7 @@
  *
  * Plugin Name: Viewports
  * Description: Extends the BlockEditor with responsive controls.
- * Version:     0.9.5
+ * Version:     0.9.6
  * Text Domain: viewports
  * Domain Path: /languages
  *
@@ -15,7 +15,7 @@
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  *
- * Concept & Development by Sebastian Buchwald - 0verscore
+ * Concept & Development by Sebastian Buchwald - WebKinect
  * URI: https://profiles.wordpress.org/0verscore/
  */
 
@@ -28,7 +28,7 @@ use \QP\Viewports\Tool\Deactivator;
 use \QP\Viewports\Tool\Uninstaller;
 
 // Global variables, as few as possible
-define( 'VIEWPORTS_VERSION',    '0.9.5' );
+define( 'VIEWPORTS_VERSION',    '0.9.6' );
 define( 'VIEWPORTS_FILE',       ( __FILE__ ) );
 define( 'VIEWPORTS_URL',        untrailingslashit( plugin_dir_url( VIEWPORTS_FILE ) ) );
 define( 'VIEWPORTS_PATH',       untrailingslashit( plugin_dir_path( VIEWPORTS_FILE ) ) );

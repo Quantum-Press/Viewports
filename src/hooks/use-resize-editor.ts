@@ -10,6 +10,7 @@ const {
 	},
 	element: {
 		useState,
+		useEffect,
 		useLayoutEffect,
 	}
 } = window[ 'wp' ];
@@ -25,9 +26,6 @@ export const useResizeEditor = () => {
 
 	// Set ignore flag.
 	const [ ignore, setIgnore ] = useState( false );
-
-	// Set useDeviceType.
-	const [ deviceType ] = useDeviceType();
 
 	// Set resize states.
 	const resizeSkeleton = useResizeObserver( {
@@ -50,14 +48,22 @@ export const useResizeEditor = () => {
 		isActive,
 		viewport,
 		isReady,
+		deviceType,
+		postId,
+		templateId,
 	} = useSelect( select => {
 		const store = select( STORE_NAME );
+		const editorStore = select( 'core/editor' );
 
 		return {
 			isReady: store.isReady(),
 			isActive: store.isActive(),
 			viewport: store.getViewport(),
 			isRegistering: store.isRegistering(),
+
+			deviceType: editorStore.getDeviceType(),
+			postId: editorStore.getCurrentPostId(),
+			templateId: editorStore.getCurrentTemplateId(),
 		}
 	} );
 
@@ -246,9 +252,11 @@ export const useResizeEditor = () => {
 			calculatePostEditorSize();
 		}
 
+		// console.log( 'dispatch.setIframeSize', resizeEditor );
+
 		dispatch.setIframeSize( resizeEditor );
 
-	}, [ resizeSkeleton, resizeEditor ] );
+	}, [ resizeSkeleton, resizeEditor, templateId, postId, deviceType ] );
 
 	if( ! isReady ) {
 		return {

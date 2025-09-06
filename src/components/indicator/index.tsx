@@ -38,23 +38,17 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 
 	const editorDispatch = useDispatch( 'core/editor' );
 
-	// Set active deviceType.
-	const { deviceType } = useSelect( select => {
-		const editorStore = select( 'core/editor' );
-
-		return {
-			deviceTyoe: editorStore.getDeviceType(),
-		}
-	}, [] );
-
 	// Extract use select depending properties.
 	const {
 		isActive,
 		isEditing,
 		isInspecting,
 		iframeViewport,
+		viewport,
+		deviceType,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
+		const editorStore = select( 'core/editor' );
 
 		return {
 			isActive: store.isActive(),
@@ -62,6 +56,7 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 			isInspecting: store.isInspecting(),
 			viewport: store.getViewport(),
 			iframeViewport: store.getIframeViewport(),
+			deviceType: editorStore.getDeviceType(),
 		}
  	} );
 
@@ -83,10 +78,12 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 	 * Set function to handle toggle.
 	 */
 	const handleClick = ( deviceType : deviceType ) => {
+		const check = 0 === viewport ? iframeViewport : viewport;
+
 		if(
-			( 'Mobile' === deviceType && ! isInMobileRange( iframeViewport ) ) ||
-			( 'Tablet' === deviceType && ! isInTabletRange( iframeViewport ) ) ||
-			( 'Desktop' === deviceType && ! isInDesktopRange( iframeViewport ) )
+			( 'Mobile' === deviceType && ! isInMobileRange( check ) ) ||
+			( 'Tablet' === deviceType && ! isInTabletRange( check ) ) ||
+			( 'Desktop' === deviceType && ! isInDesktopRange( check ) )
 		) {
 			editorDispatch.setDeviceType( deviceType );
 
@@ -111,13 +108,14 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 	 */
 	const getClassName = ( size ) : string => {
 		const className = [ 'qp-viewports-indicator', size ];
+		const check = 0 === viewport ? iframeViewport : viewport;
 
 		switch ( size ) {
 			case 'Mobile' :
 				if( isEditing ) {
 					className.push( 'is-editing' );
 
-					if( isInMobileRange( iframeViewport ) ) {
+					if( isInMobileRange( check ) ) {
 						className.push( 'is-active' );
 					}
 				}
@@ -146,7 +144,7 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 				if( isEditing ) {
 					className.push( 'is-editing' );
 
-					if( isInTabletRange( iframeViewport ) ) {
+					if( isInTabletRange( check ) ) {
 						className.push( 'is-active' );
 					}
 				}
@@ -179,7 +177,7 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 				if( isEditing ) {
 					className.push( 'is-editing' );
 
-					if( isInDesktopRange( iframeViewport ) ) {
+					if( isInDesktopRange( check ) ) {
 						className.push( 'is-active' );
 					}
 				}
@@ -224,7 +222,7 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 				<Pointer
 					deviceType="Mobile"
 					isEditing={ isEditing }
-					iframeViewport={ iframeViewport }
+					iframeViewport={ 0 === viewport ? iframeViewport : viewport }
 					hasTabletSpectrum={ hasTabletSpectrum }
 					hasDesktopSpectrum={ hasDesktopSpectrum }
 				/>
@@ -242,7 +240,7 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 				<Pointer
 					deviceType="Tablet"
 					isEditing={ isEditing }
-					iframeViewport={ iframeViewport }
+					iframeViewport={ 0 === viewport ? iframeViewport : viewport }
 					hasTabletSpectrum={ hasTabletSpectrum }
 					hasDesktopSpectrum={ hasDesktopSpectrum }
 				/>
@@ -255,12 +253,18 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 						icon={ tablet }
 					/>
 				</Button>
+				{ ! isInspecting && <IndicatorControls
+					isVisible={ isVisible }
+					setIsVisible={ setIsVisible }
+					storeId={ storeId }
+					spectrumSet={ spectrumSet }
+				/> }
 			</div>
 			<div className={ classNamesDesktop }>
 				<Pointer
 					deviceType="Desktop"
 					isEditing={ isEditing }
-					iframeViewport={ iframeViewport }
+					iframeViewport={ 0 === viewport ? iframeViewport : viewport }
 					hasTabletSpectrum={ hasTabletSpectrum }
 					hasDesktopSpectrum={ hasDesktopSpectrum }
 				/>
@@ -274,12 +278,6 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 					/>
 				</Button>
 			</div>
-			{ ! isInspecting && <IndicatorControls
-				isVisible={ isVisible }
-				setIsVisible={ setIsVisible }
-				storeId={ storeId }
-				spectrumSet={ spectrumSet }
-			/> }
 		</div>
 	);
 }

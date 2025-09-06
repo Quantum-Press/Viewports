@@ -594,7 +594,6 @@ describe( 'test store reducers', () => {
 					768: 'Tablet',
 					1280: 'Desktop',
 				},
-				init: {},
 				saves: {},
 				valids: {},
 			} as State;
@@ -606,7 +605,6 @@ describe( 'test store reducers', () => {
 
 			const check = {
 				... state,
-				init: {},
 				saves: {},
 				valids: {}
 			} as State;
@@ -629,7 +627,6 @@ describe( 'test store reducers', () => {
 					768: 'Tablet',
 					1280: 'Desktop',
 				},
-				init: {},
 				saves: {},
 				valids: {},
 			} as State;
@@ -641,9 +638,6 @@ describe( 'test store reducers', () => {
 
 			const check = {
 				... state,
-				init: {
-					'client-id': true,
-				},
 				saves: {
 					'client-id': {
 						0: {
@@ -687,7 +681,6 @@ describe( 'test store reducers', () => {
 					768: 'Tablet',
 					1280: 'Desktop',
 				},
-				init: {},
 				saves: {},
 				valids: {},
 			} as State;
@@ -706,9 +699,6 @@ describe( 'test store reducers', () => {
 
 			const check = {
 				... state,
-				init: {
-					'client-id': true,
-				},
 				saves: {
 					'client-id': {
 						0: {
@@ -1320,9 +1310,6 @@ describe( 'test store reducers', () => {
 		test( 'can removeBlock()', () => {
 			const state = deepFreeze( {
 				... DEFAULT_STATE,
-				init: {
-					'client-id': true,
-				},
 				saves: {
 					'client-id': {},
 				},
@@ -1340,7 +1327,6 @@ describe( 'test store reducers', () => {
 
 			const check = {
 				... DEFAULT_STATE,
-				init: {},
 				saves: {},
 				changes: {},
 				valids: {},
@@ -1772,9 +1758,6 @@ describe( 'test store reducers', () => {
 					768: 'Tablet',
 					1280: 'Desktop',
 				},
-				init: {
-					'client-id': true,
-				},
 				saves: {
 					'client-id': {
 						768: {
@@ -1819,7 +1802,6 @@ describe( 'test store reducers', () => {
 
 			const check = {
 				... state,
-				init: {},
 				saves: {},
 				changes: {},
 				removes: {},

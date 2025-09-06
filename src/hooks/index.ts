@@ -1,4 +1,4 @@
-import useDeviceType from "./use-device-type";
+import { useDeviceType, DeviceTypeProvider } from "./use-device-type";
 import useEditorContext from "./use-editor-context";
 import useHighlightProperty from "./use-highlight-property";
 import useHighlightViewport from "./use-highlight-viewport";
@@ -12,6 +12,7 @@ import useResizeObserver from "./use-resize-observer";
 
 export {
 	useDeviceType,
+	DeviceTypeProvider,
 	useEditorContext,
 	useHighlightProperty,
 	useHighlightViewport,

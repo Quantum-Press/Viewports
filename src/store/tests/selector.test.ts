@@ -641,6 +641,9 @@ describe( 'test store selectors', () => {
 			} );
 
 			const check = {
+				0: {
+					style: {}
+				},
 				768: {
 					style: {
 						dimensions: {
@@ -706,6 +709,9 @@ describe( 'test store selectors', () => {
 			} );
 
 			const check = {
+				0: {
+					style: {}
+				},
 				768: {
 					style: {
 						dimensions: {
@@ -788,6 +794,9 @@ describe( 'test store selectors', () => {
 			} );
 
 			const check = {
+				0: {
+					style: {}
+				},
 				768: {
 					style: {
 						dimensions: {
