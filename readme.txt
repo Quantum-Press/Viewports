@@ -84,4 +84,4 @@ Yes. You can simply remove the plugin, the basic style settings will still remai
 
 == Feedback and Issues ==
 GitHub Repository: https://github.com/Quantum-Press/Viewports
-Direct contact: https://quantum-press.com/en/
+Contact us on: https://quantum-press.com/en/contact
