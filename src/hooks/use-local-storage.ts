@@ -19,7 +19,7 @@ export function useLocalStorage( storePath, defaultValue = null ) {
 
 	// Set state to handle storage entry by object traverse.
 	const [ value, setValue ] = useState( () => {
-		const storedData = localStorage.getItem( 'qp-viewports' );
+		const storedData = localStorage.getItem( 'viewports' );
 		if( storedData ) {
 			const parsedData = JSON.parse( storedData );
 			const targetPath = storePath ? storePath.split( '.' ) : [];
@@ -43,7 +43,7 @@ export function useLocalStorage( storePath, defaultValue = null ) {
 
 	// Set useEffect to handle changes on value from outside.
 	useEffect( () => {
-		const storedData = localStorage.getItem( 'qp-viewports' );
+		const storedData = localStorage.getItem( 'viewports' );
 		const parsedData = storedData ? JSON.parse( storedData ) : {};
 		const targetPath = storePath.split( '.' );
 
@@ -58,14 +58,14 @@ export function useLocalStorage( storePath, defaultValue = null ) {
 
 		obj[ targetPath[ targetPath.length - 1 ] ] = value;
 
-		localStorage.setItem( 'qp-viewports', JSON.stringify( parsedData ) );
+		localStorage.setItem( 'viewports', JSON.stringify( parsedData ) );
 	}, [ value ] );
 
 
 	// Set useEffect to handle changes on value from outside.
 	useEffect( () => {
 		const onChangeStorage = ( event ) => {
-			if ( event.key === 'qp-viewports' ) {
+			if ( event.key === 'viewports' ) {
 				const storedData = event.newValue;
 
 				if( storedData ) {

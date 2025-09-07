@@ -56,13 +56,13 @@ export const KeyframeControls = ( { visibleControls, setVisibleControls, storeId
 		>
 			{ keyframe.viewport === 0 &&
 				<div className="controls-heading">
-					<span>{ __( 'Default CSS', 'qp-viewports' ) }</span>
+					<span>{ __( 'Default CSS', 'viewports' ) }</span>
 					<span>{ 'min-width: 0px' }</span>
 				</div>
 			}
 			{ keyframe.viewport > 0 && iframeViewport !== keyframe.viewport &&
 				<div className="controls-heading">
-					<span>{ __( 'Viewport CSS', 'qp-viewports' ) }</span>
+					<span>{ __( 'Viewport CSS', 'viewports' ) }</span>
 					<Button
 						className="viewport"
 						onClick={ () => {
@@ -76,7 +76,7 @@ export const KeyframeControls = ( { visibleControls, setVisibleControls, storeId
 
 			{ keyframe.viewport > 0 && iframeViewport === keyframe.viewport &&
 				<div className="controls-heading">
-					<span>{ __( 'Viewport CSS', 'qp-viewports' ) }</span>
+					<span>{ __( 'Viewport CSS', 'viewports' ) }</span>
 					<span>{ `min-width: ${ keyframe.viewport }px` }</span>
 				</div>
 			}

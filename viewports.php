@@ -4,18 +4,18 @@
  * @wordpress-plugin
  *
  * Plugin Name: Viewports
- * Description: Extends the BlockEditor with responsive controls.
- * Version:     0.9.6
+ * Description: Extend your BlockTheme with Viewports to make standard block styles fully responsive!
+ * Version:     0.9.7
  * Text Domain: viewports
  * Domain Path: /languages
  *
- * Author:      QuantumPress
+ * Author:      Quantum-Press
  * Author URI:  https://quantum-press.com/en/
  *
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  *
- * Concept & Development by Sebastian Buchwald - WebKinect
+ * Concept & Development by Sebastian Buchwald - 0verscore / WebKinect
  * URI: https://profiles.wordpress.org/0verscore/
  */
 
@@ -28,7 +28,7 @@ use \QP\Viewports\Tool\Deactivator;
 use \QP\Viewports\Tool\Uninstaller;
 
 // Global variables, as few as possible
-define( 'VIEWPORTS_VERSION',    '0.9.6' );
+define( 'VIEWPORTS_VERSION',    '0.9.7' );
 define( 'VIEWPORTS_FILE',       ( __FILE__ ) );
 define( 'VIEWPORTS_URL',        untrailingslashit( plugin_dir_url( VIEWPORTS_FILE ) ) );
 define( 'VIEWPORTS_PATH',       untrailingslashit( plugin_dir_path( VIEWPORTS_FILE ) ) );

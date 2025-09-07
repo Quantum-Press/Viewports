@@ -2,6 +2,8 @@
  * Requires.
  */
 const path = require( 'path' );
+const TerserPlugin = require( 'terser-webpack-plugin' );
+const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 
 
 /**
@@ -10,7 +12,14 @@ const path = require( 'path' );
 module.exports = ( env ) => ( {
 	devtool: env.production ? undefined : 'source-map',
 	mode: env.production ? 'production' : 'development',
-	entry: [ './src/main.ts' ],
+	entry: {
+		core: './src/main.ts',
+	},
+	plugins: [
+		new MiniCssExtractPlugin( {
+			filename: 'viewports.css',
+		} ),
+	],
 	module: {
 		rules: [
 			{
@@ -41,7 +50,7 @@ module.exports = ( env ) => ( {
 			{
 				test: /\.(s(a|c)ss)$/,
 				use: [
-					'style-loader',
+					MiniCssExtractPlugin.loader,
 					'css-loader',
 					{
 						loader: 'sass-loader',
@@ -50,7 +59,7 @@ module.exports = ( env ) => ( {
 						},
 					},
 				]
-			 }
+			}
 		],
 	},
 	resolve: {
@@ -63,5 +72,27 @@ module.exports = ( env ) => ( {
 	},
 	cache: {
 		type: 'filesystem',
+	},
+	optimization: {
+		minimize: env.production,
+		minimizer: [
+			new TerserPlugin({
+				terserOptions: {
+					mangle: {
+						reserved: [
+							'__',
+							'_e',
+							'_x',
+							'_ex',
+							'esc_html__',
+							'esc_html_e',
+							'esc_attr__',
+							'esc_attr_e',
+							'_n'
+						],
+					},
+				},
+			}),
+		],
 	},
 } );

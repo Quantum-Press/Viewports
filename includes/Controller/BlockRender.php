@@ -83,8 +83,18 @@ class BlockRender extends Instance {
 			return;
 		}
 
-		\wp_register_style( 'viewports-inline-css', false );
-		\wp_add_inline_style( 'viewports-inline-css', $viewportsStyles );
+		\wp_register_style(
+			'viewports-inline-css',
+			false,
+			[],
+			VIEWPORTS_VERSION
+		);
+
+		\wp_add_inline_style(
+			'viewports-inline-css',
+			$viewportsStyles
+		);
+
 		\wp_enqueue_style( 'viewports-inline-css' );
 	}
 }

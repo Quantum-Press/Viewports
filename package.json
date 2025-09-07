@@ -1,6 +1,6 @@
 {
 	"name": "viewports",
-	"version": "0.9.6",
+	"version": "0.9.7",
 	"private": true,
 	"description": "A new responsive Gutenberg Editor experience.",
 	"author": "Sebastian Buchwald",
@@ -45,6 +45,7 @@
 		"jest-environment-jsdom": "^29.6.3",
 		"jsdom": "^22.1.0",
 		"lodash": "^4.17.21",
+		"mini-css-extract-plugin": "^2.9.2",
 		"npm-watch": "0.11.0",
 		"sass": "^1.65",
 		"sass-loader": "^13.3.2",
@@ -73,7 +74,7 @@
 	"scripts": {
 		"build": "webpack --env production",
 		"test": "jest",
-		"dev": "webpack",
+		"dev": "webpack --env development",
 		"watch:build": "npm-watch build"
 	}
 }

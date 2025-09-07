@@ -3,7 +3,7 @@
     "type": "wordpress-plugin",
     "description": "",
     "license": "non-public",
-    "version": "0.9.6",
+    "version": "0.9.7",
     "autoload": {
         "psr-4": {
             "QP\\Viewports\\": "includes/"

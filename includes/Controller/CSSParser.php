@@ -65,7 +65,8 @@ class CSSParser
 					// Store the property-value pair in the result array
 					$result[ $property ] = $value;
 				} else {
-					throw new \Exception( sprintf( 'There is a part of css that cant get interpreted: %s', $cssString ) );
+					// Error notice?
+					continue;
 				}
 
 				// Split the declaration into property and value by the first colon

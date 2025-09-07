@@ -48,7 +48,34 @@ class Plugin extends Instance {
 	 */
 	protected function set_hooks()
 	{
+		\add_action( 'init', [ $this, 'load_plugin_textdomain' ] );
 		\add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_block_editor_assets' ], 0 );
+	}
+
+
+	/**
+	 * Method to load localisation files.
+	 */
+	public function load_plugin_textdomain() {
+		$domain = VIEWPORTS_TEXTDOMAIN;
+		$locale = \get_locale();
+		$plugin_dir = VIEWPORTS_PATH . '/languages/';
+
+		// Pfad zur globalen Übersetzungsdatei
+		$global_mo = WP_LANG_DIR . '/plugins/' . $domain . '-' . $locale . '.mo';
+
+		// Überprüfen, ob die globale Übersetzungsdatei existiert und lesbar ist
+		if ( file_exists( $global_mo ) && is_readable( $global_mo ) ) {
+			load_textdomain( $domain, $global_mo );
+		}
+
+		// Pfad zur lokalen Übersetzungsdatei im Plugin-Verzeichnis
+		$plugin_mo = $plugin_dir . $domain . '-' . $locale . '.mo';
+
+		// Überprüfen, ob die lokale Übersetzungsdatei existiert und lesbar ist
+		if ( file_exists( $plugin_mo ) && is_readable( $plugin_mo ) ) {
+			load_textdomain( $domain, $plugin_mo );
+		}
 	}
 
 
@@ -61,7 +88,10 @@ class Plugin extends Instance {
 			'viewports-scripts',
 			sprintf( '%s/build/viewports.js', VIEWPORTS_URL ),
 			[ 'wp-blocks', 'wp-edit-post', 'wp-element', 'wp-i18n', 'lodash' ],
-			VIEWPORTS_VERSION
+			VIEWPORTS_VERSION,
+			[
+				'in_footer' => true,
+			],
 		);
 
 		\wp_localize_script(
@@ -77,9 +107,15 @@ class Plugin extends Instance {
 		);
 		\wp_enqueue_script( 'viewports-scripts' );
 
+		\wp_set_script_translations(
+			'viewports-scripts',
+			VIEWPORTS_TEXTDOMAIN,
+			VIEWPORTS_PATH . '/languages/'
+		);
+
 		\wp_enqueue_style(
 			'viewports-styles',
-			sprintf( '%s/build/viewports.js', VIEWPORTS_URL ),
+			sprintf( '%s/build/viewports.css', VIEWPORTS_URL ),
 			[],
 			VIEWPORTS_VERSION
 		);
@@ -119,8 +155,8 @@ class Plugin extends Instance {
 	 */
 	public function get_gutenberg_version() : string
 	{
-		if ( is_plugin_active( 'gutenberg/gutenberg.php' ) ) {
-			$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/gutenberg/gutenberg.php' );
+		if ( \is_plugin_active( 'gutenberg/gutenberg.php' ) ) {
+			$plugin_data = \get_plugin_data( WP_PLUGIN_DIR . '/gutenberg/gutenberg.php' );
 
 			if( ! empty( $plugin_data[ 'Version' ] ) ) {
 				return $plugin_data[ 'Version' ];
