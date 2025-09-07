@@ -80,3 +80,8 @@ Yes. Developers can register their own style components using the provided `regi
 
 = Can i deinstall the plugin without issues? ==
 Yes. You can simply remove the plugin, the basic style settings will still remain.
+
+
+== Feedback and Issues ==
+GitHub Repository: https://github.com/Quantum-Press/Viewports
+Direct contact: https://quantum-press.com/en/
