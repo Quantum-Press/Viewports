@@ -18,7 +18,7 @@ jobs:
 
       # Alte Artefakte löschen
       - name: Clean old build files
-        run: rm -rf viewports *.zip
+        run: rm -rf quantum-viewports *.zip
 
       # Composer-Abhängigkeiten installieren
       - name: Install dependencies
@@ -27,18 +27,18 @@ jobs:
       # Release-Ordner vorbereiten
       - name: Prepare release folder
         run: |
-          mkdir viewports
-          cp -r build config includes src vendor languages composer.json composer.lock viewports.php readme.txt viewports/
+          mkdir quantum-viewports
+          cp -r build config includes src vendor languages composer.json composer.lock quantum-viewports.php readme.txt quantum-viewports/
 
       # ZIP erstellen
       - name: Create archive
         run: |
-          cd viewports
-          zip -r ../viewports-playground.zip .
+          cd quantum-viewports
+          zip -r ../quantum-viewports-playground.zip .
 
       # ZIP als Release-Asset hochladen
       - name: Upload release asset
         uses: softprops/action-gh-release@v1
         with:
-          files: viewports-playground.zip
+          files: quantum-viewports-playground.zip
           token: ${{ secrets.GITHUB_TOKEN }}
