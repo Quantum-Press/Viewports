@@ -1,9 +1,8 @@
 <?php
 
-namespace QP\Viewports\Controller;
+declare( strict_types=1 );
 
-// Be sure not to load without wp.
-defined( 'ABSPATH' ) || exit;
+namespace QP\Viewports\Controller;
 
 /**
  * Instance Controller class.
@@ -17,32 +16,34 @@ defined( 'ABSPATH' ) || exit;
  */
 abstract class Instance {
 
-	/**
-	 * Generates or calls own Instance.
-	 *
-	 * @static
-	 * @return object instance
-	 */
-	public static function getInstance() {
-		if ( ! InstanceManager::hasInstance( static::class ) ) {
-			InstanceManager::addInstance( new static() );
-		}
+    /**
+     * Generates or calls own Instance.
+     *
+     * @static
+     * @return object instance
+     */
+    public static function getInstance()
+    {
+        if ( ! InstanceManager::hasInstance( static::class ) ) {
+            InstanceManager::addInstance( new static() );
+        }
 
-		return InstanceManager::getInstance( static::class );
-	}
+        return InstanceManager::getInstance( static::class );
+    }
 
 
-	/**
-	 * Generates or calls own Instance.
-	 *
-	 * @static
-	 * @return object instance
-	 */
-	public static function maybeAddInstance() {
-		if ( ! InstanceManager::hasInstance( static::class ) ) {
-			InstanceManager::addInstance( new static() );
-		}
+    /**
+     * Generates or calls own Instance.
+     *
+     * @static
+     * @return object instance
+     */
+    public static function maybeAddInstance()
+    {
+        if ( ! InstanceManager::hasInstance( static::class ) ) {
+            InstanceManager::addInstance( new static() );
+        }
 
-		return InstanceManager::getInstance( static::class );
-	}
+        return InstanceManager::getInstance( static::class );
+    }
 }

@@ -2,94 +2,94 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Viewports 0.9.7\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/viewports\n"
+"Project-Id-Version: Quantum Viewports 0.9.8\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/quantum-viewports\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-09-06T23:42:28+00:00\n"
+"POT-Creation-Date: 2025-09-27T09:14:22+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
-"X-Domain: viewports\n"
+"X-Domain: quantum-viewports\n"
 
 #. Plugin Name of the plugin
-#: viewports.php
-msgid "Viewports"
+#: quantum-viewports.php
+msgid "Quantum Viewports"
 msgstr ""
 
 #. Description of the plugin
-#: viewports.php
-msgid "Extend your BlockTheme with Viewports to make standard block styles fully responsive!"
+#: quantum-viewports.php
+msgid "Extend your BlockTheme to make standard block styles responsive!"
 msgstr ""
 
 #. Author of the plugin
-#: viewports.php
+#: quantum-viewports.php
 msgid "Quantum-Press"
 msgstr ""
 
 #. Author URI of the plugin
-#: viewports.php
+#: quantum-viewports.php
 msgid "https://quantum-press.com/en/"
 msgstr ""
 
-#: build/viewports.js:1
+#: build/quantum-viewports.js:1
 msgid "Edit on min-width"
 msgstr ""
 
-#: build/viewports.js:1
+#: build/quantum-viewports.js:1
 msgid "Empty styles"
 msgstr ""
 
-#: build/viewports.js:1
+#: build/quantum-viewports.js:1
 msgid "Select block"
 msgstr ""
 
-#: build/viewports.js:1
+#: build/quantum-viewports.js:1
 msgid "Blocks"
 msgstr ""
 
-#: build/viewports.js:1
-msgid "QuantumPress Viewports - Version"
+#: build/quantum-viewports.js:1
+msgid "by QuantumPress - Version"
 msgstr ""
 
-#: build/viewports.js:1
+#: build/quantum-viewports.js:1
 msgid "Inspect styles"
 msgstr ""
 
-#: build/viewports.js:1
+#: build/quantum-viewports.js:1
 msgid "Dimensions"
 msgstr ""
 
-#: build/viewports.js:1
+#: build/quantum-viewports.js:1
 msgid "Styles"
 msgstr ""
 
-#: build/viewports.js:1
+#: build/quantum-viewports.js:1
 msgid "Attributes"
 msgstr ""
 
-#: build/viewports.js:1
+#: build/quantum-viewports.js:1
 msgid "Changes and Removes will apply on save"
 msgstr ""
 
-#: build/viewports.js:1
+#: build/quantum-viewports.js:1
 msgid "Inspector"
 msgstr ""
 
-#: build/viewports.js:1
+#: build/quantum-viewports.js:1
 msgid "Default CSS"
 msgstr ""
 
-#: build/viewports.js:1
+#: build/quantum-viewports.js:1
 msgid "Viewport CSS"
 msgstr ""
 
-#: build/viewports.js:1
+#: build/quantum-viewports.js:1
 msgid "Hide keyframes"
 msgstr ""
 
-#: build/viewports.js:1
+#: build/quantum-viewports.js:1
 msgid "Show keyframes"
 msgstr ""

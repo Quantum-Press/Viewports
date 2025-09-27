@@ -45,7 +45,7 @@ const ToggleView = () => {
 	return (
 		<ToggleControl
 			className={ classNamesToggle }
-			label={ __( 'Viewport simulation', 'viewports' ) }
+			label={ __( 'Viewport simulation', 'quantum-viewports' ) }
 			onChange={ ! isActive ? dispatch.setLoading : dispatch.unsetActive }
 			checked={ isActive }
 		/>

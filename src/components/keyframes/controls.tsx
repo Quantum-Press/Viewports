@@ -36,7 +36,7 @@ export const KeyframeControls = ( { visibleControls, setVisibleControls, storeId
 	return (
 		<Popover
 			placement="bottom-center"
-			className="qp-viewports-keyframe-controls"
+			className="qp-viewports-keyframe-controls dark"
 			offset={ 20 }
 			onFocusOutside={ ( event ) => {
 				if( event.relatedTarget.classList.contains( 'marker' ) ) {
@@ -56,13 +56,13 @@ export const KeyframeControls = ( { visibleControls, setVisibleControls, storeId
 		>
 			{ keyframe.viewport === 0 &&
 				<div className="controls-heading">
-					<span>{ __( 'Default CSS', 'viewports' ) }</span>
+					<span>{ __( 'Default CSS', 'quantum-viewports' ) }</span>
 					<span>{ 'min-width: 0px' }</span>
 				</div>
 			}
 			{ keyframe.viewport > 0 && iframeViewport !== keyframe.viewport &&
 				<div className="controls-heading">
-					<span>{ __( 'Viewport CSS', 'viewports' ) }</span>
+					<span>{ __( 'Viewport CSS', 'quantum-viewports' ) }</span>
 					<Button
 						className="viewport"
 						onClick={ () => {
@@ -76,7 +76,7 @@ export const KeyframeControls = ( { visibleControls, setVisibleControls, storeId
 
 			{ keyframe.viewport > 0 && iframeViewport === keyframe.viewport &&
 				<div className="controls-heading">
-					<span>{ __( 'Viewport CSS', 'viewports' ) }</span>
+					<span>{ __( 'Viewport CSS', 'quantum-viewports' ) }</span>
 					<span>{ `min-width: ${ keyframe.viewport }px` }</span>
 				</div>
 			}

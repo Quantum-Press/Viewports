@@ -56,7 +56,7 @@ export const StyleList = ( { storeId, spectrumSet } : { storeId : string, spectr
 			{ ( hasBlockChanges || hasBlockRemoves ) &&
 				<div className="qp-viewports-stylelist-notice">
 					<Icon icon="info" />
-					{ __( 'Changes and Removes will apply on save', 'viewports' ) }
+					{ __( 'Changes and Removes will apply on save', 'quantum-viewports' ) }
 				</div>
 			}
 		</div>

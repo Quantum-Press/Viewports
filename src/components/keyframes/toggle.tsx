@@ -54,8 +54,8 @@ const KeyframesToggle = () => {
 				className={ className }
 				onClick={ onClickViewport }
 			>
-				{ isActive && __( 'Hide keyframes', 'viewports' ) }
-				{ ! isActive && __( 'Show keyframes', 'viewports' ) }
+				{ isActive && __( 'Hide keyframes', 'quantum-viewports' ) }
+				{ ! isActive && __( 'Show keyframes', 'quantum-viewports' ) }
 			</PluginPreviewMenuItem>
 		</>
 	)

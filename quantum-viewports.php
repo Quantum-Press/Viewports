@@ -1,0 +1,54 @@
+<?php
+
+declare( strict_types=1 );
+
+/**
+ * @wordpress-plugin
+ *
+ * Plugin Name: Quantum Viewports
+ * Description: Extend your BlockTheme to make standard block styles responsive!
+ * Version:     0.9.8
+ * Text Domain: quantum-viewports
+ * Domain Path: /languages
+ *
+ * Author:      Quantum-Press
+ * Author URI:  https://quantum-press.com/en/
+ *
+ * License: GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ *
+ * Concept & Development by Sebastian Buchwald
+ * URI: https://profiles.wordpress.org/0verscore/
+ */
+
+// Be sure not to load without wp.
+defined( 'ABSPATH' ) || exit;
+
+use \QP\Viewports\Plugin;
+
+// Global variables, as few as possible
+define( 'QUANTUM_VIEWPORTS_VERSION',    '0.9.8' );
+define( 'QUANTUM_VIEWPORTS_FILE',       ( __FILE__ ) );
+define( 'QUANTUM_VIEWPORTS_URL',        untrailingslashit( plugin_dir_url( QUANTUM_VIEWPORTS_FILE ) ) );
+define( 'QUANTUM_VIEWPORTS_PATH',       untrailingslashit( plugin_dir_path( QUANTUM_VIEWPORTS_FILE ) ) );
+define( 'QUANTUM_VIEWPORTS_BASENAME',   plugin_basename( QUANTUM_VIEWPORTS_FILE ) );
+define( 'QUANTUM_VIEWPORTS_TEXTDOMAIN', 'quantum-viewports' );
+
+// Maybe include composer autoloading.
+$autoloader                   = QUANTUM_VIEWPORTS_PATH . '/vendor/autoload.php';
+$autoloader_exists            = file_exists( $autoloader );
+$autoloading_via_main_package = class_exists( '\QP\Viewports\Plugin' );
+
+if ( $autoloader_exists ) {
+    require_once $autoloader;
+} else if ( ! $autoloading_via_main_package ) {
+    wp_die( 'Autoloading failed!' );
+}
+
+// Wrapper for main class.
+function quantum_viewports() {
+    return Plugin::getInstance();
+}
+
+// Start plugin execution.
+\add_action( 'plugins_loaded', 'quantum_viewports' );

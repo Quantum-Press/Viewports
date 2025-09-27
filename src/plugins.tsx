@@ -11,15 +11,15 @@ const {
 /**
  * Register preview dropdown extension.
  */
-registerPlugin( 'viewports-device-type', {
+registerPlugin( 'quantum-viewports-device-type', {
 	render: DeviceTypeProvider,
 } );
 
-registerPlugin( 'viewports-keyframes-toggle', {
+registerPlugin( 'quantum-viewports-keyframes-toggle', {
 	render: KeyframesToggle,
 } );
 
-registerPlugin( 'viewports-block-styles', {
+registerPlugin( 'quantum-viewports-block-styles', {
 	render: BlockStyles,
 } );
 

@@ -17,7 +17,7 @@ module.exports = ( env ) => ( {
 	},
 	plugins: [
 		new MiniCssExtractPlugin( {
-			filename: 'viewports.css',
+			filename: 'quantum-viewports.css',
 		} ),
 	],
 	module: {
@@ -66,7 +66,7 @@ module.exports = ( env ) => ( {
 		extensions: [ '.ts', '.tsx' ],
 	},
 	output: {
-		filename: 'viewports.js',
+		filename: 'quantum-viewports.js',
 		path: path.resolve( __dirname, 'build' ),
 		clean: true,
 	},
@@ -94,5 +94,9 @@ module.exports = ( env ) => ( {
 				},
 			}),
 		],
+	},
+	externals: {
+		react: 'React',
+		'react-dom': 'ReactDOM',
 	},
 } );

@@ -37,21 +37,21 @@ const Selected = ({ block }) => {
 				<Accordion
 					isOpen={ isOpenDimensions }
 					setIsOpen={ setIsOpenDimensions }
-					label={ __( 'Dimensions', 'viewports' ) }
+					label={ __( 'Dimensions', 'quantum-viewports' ) }
 				>
 					<Dimensions />
 				</Accordion>
 				<Accordion
 					isOpen={ isOpenStyles }
 					setIsOpen={ setIsOpenStyles }
-					label={ __( 'Styles', 'viewports' ) }
+					label={ __( 'Styles', 'quantum-viewports' ) }
 				>
 					<BlockStyleList />
 				</Accordion>
 				<Accordion
 					isOpen={ isOpenAttributes }
 					setIsOpen={ setIsOpenAttributes }
-					label={ __( 'Attributes', 'viewports' ) }
+					label={ __( 'Attributes', 'quantum-viewports' ) }
 				>
 					<BlockAttributeList />
 				</Accordion>

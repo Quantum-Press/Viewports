@@ -230,6 +230,14 @@ body.post-php {
 	#qp-viewports-inspector-wrap {
 		height: 100%;
 
+		.qp-viewports-inspector {
+			height: 100%;
+		}
+
+		.qp-viewports-inspector-blocklist {
+			padding-bottom: 45px;
+		}
+
 		.qp-viewports-inspector-foot {
 			bottom: 0;
 		}
@@ -360,7 +368,7 @@ body.is-active-viewports {
 		height: 100%;
 
 		.qp-viewports-inspector-selected-wrap {
-			height: calc( 100% - 80px );
+			height: calc( 100% - 75px );
 
 			&.overflow {
 				overflow-y: scroll;
@@ -374,11 +382,13 @@ body.is-active-viewports {
 		bottom: -45px;
 		right: 0;
 		left: 0;
+		z-index: 20;
+		background: #212124;
 
 		button.qp-viewports-link,
 		a.qp-viewports-link {
 			width: 100%;
-			height: 44px;
+			height: 45px;
 			padding: 0 10px;
 			color: #919191;
 			justify-content: flex-start;
@@ -866,7 +876,7 @@ body.is-active-viewports {
 .qp-viewports-inspector-stylelist {
 	display: flex;
 	flex-direction: column;
-	margin: 0 10px;
+	margin: 0;
 }
 
 
@@ -877,7 +887,7 @@ body.is-active-viewports {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
-	margin: 0 -10px;
+	margin: 0;
 	padding: 5px 10px;
 	font-family: monospace;
 	font-size: 10px;
@@ -903,6 +913,7 @@ body.is-active-viewports {
 	}
 
 	.actions {
+		position: relative;
 		display: flex;
 		flex-direction: column;
 		margin-left: auto;
@@ -920,6 +931,10 @@ body.is-active-viewports {
 		}
 
 		.state-actions {
+			position: absolute;
+			bottom: -20px;
+			right: 0;
+			z-index: 10;
 			display: flex;
 			flex-direction: row;
 			justify-content: flex-end;
@@ -1125,33 +1140,104 @@ body.is-active-viewports {
 
 
 /**
- * AtrributeList - General.
+ * Inspector - ReactJsonView.
  */
- .qp-viewports-inspector-attributelist {
-	display: flex;
-	flex-direction: column;
-	margin: 0 10px;
-	color: #919191;
-}
-
-
-.objectlist-wrap,
-.arraylist-wrap {
+.react-json-view {
 	width: 100%;
+	overflow-x: auto;
+	overflow-y: clip;
+	height: auto;
+	padding-bottom: 10px;
+
+	.icon-container {
+		.collapsed-icon,
+		.expanded-icon {
+			margin-left: 1.5px;
+
+			svg {
+				margin-top: 5px;
+			}
+		}
+	}
+
+	.object-container {
+		.object-content {
+			display: inline-flex;
+			flex-direction: column;
+			align-items: flex-start;
+		}
+	}
+
+	.variable-row,
+	.object-meta-data {
+		position: relative;
+
+		.copy-to-clipboard-container {
+			position: absolute;
+			top: -11px;
+			right: -14px;
+			vertical-align: middle;
+			margin-top: 0;
+
+			.copied-icon {
+				position: absolute;
+				top: -3px;
+				right: -6px;
+			}
+		}
+	}
+
+	.variable-row {
+		flex: 0 0 auto;
+		display: flex;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		overflow-x: visible;
+
+		& > * {
+			flex: 0 0 auto;
+		}
+
+		.copy-to-clipboard-container {
+			top: 4px;
+		}
+
+		& > .variable-value {
+			padding-right: 14px;
+		}
+	}
+
+	.object-meta-data {
+		.copy-to-clipboard-container {
+			top: -11px;
+			right: -14px;
+		}
+	}
+
+	.node-ellipsis {
+		font-size: 10px !important;
+	}
+
+	.object-key-val,
+	.variable-row {
+		&.has-changes:not( .has-removes ) {
+			& > .variable-value > div,
+			& > .brace-row > span,
+			& > span > span > span {
+				color: var( --wp--preset--color--vivid-green-cyan ) !important;
+			}
+		}
+
+		&.has-removes:not( .has-changes ) {
+			& > .variable-value > div,
+			& > .brace-row > span,
+			& > span > span > span {
+				color: var( --wp--preset--color--vivid-red ) !important;
+			}
+		}
+	}
 }
 
-.objectlist-row,
-.arraylist-row {
-	width: 100%;
-	padding-left: 10px;
-	display: flex;
-}
-
-.object-key,
-.array-key {
-	padding-left: 2px;
-	padding-right: 5px;
-}
 
 
 /**

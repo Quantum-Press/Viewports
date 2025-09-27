@@ -1,21 +1,21 @@
-=== Viewports ===
+=== Quantum Viewports ===
 Contributors: 0verscore, quantumpress, conversionmedia
 Tags: responsive, controls, mobile, breakpoints, viewports
 Requires at least: 6.7
 Tested up to: 6.8
-Stable tag: 0.9.7
+Stable tag: 0.9.8
 Requires PHP: 8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Extend your BlockTheme with Viewports to make standard block styles fully responsive!
+Extend your BlockTheme to make standard block styles responsive!
 
 ---
 
 
 == Description ==
 
-**Viewports** extends the native Gutenberg blocks with responsive style controls – no extra blocks required.
-Unlike other plugins that add custom blocks or duplicate components, Viewports integrates directly with the **standard block components**.
+**Quantum Viewports** extends the native Gutenberg blocks with responsive style controls – no extra blocks required.
+Unlike other plugins that add custom blocks or duplicate components, Quantum Viewports integrates directly with the **standard block components**.
 
 **Key Features:**
 - **Works with all Block Themes** out-of-the-box
@@ -25,12 +25,12 @@ Unlike other plugins that add custom blocks or duplicate components, Viewports i
 - Provides a **Keyframe-style UI** to preview, reset, or manage responsive styles per viewport
 - Offers a **developer-friendly API** (`registerRenderer`) to attach your own style components *(currently JavaScript only)*
 
-With Viewports, you keep your BlockTheme clean, lightweight, and future-proof.
+With Quantum Viewports, you keep your BlockTheme clean, lightweight, and future-proof.
 
 
 == Installation ==
 
-1. Upload the plugin files to the `/wp-content/plugins/viewports` directory, or install via the Plugins screen in WordPress.
+1. Upload the plugin files to the `/wp-content/plugins/quantum-viewports` directory, or install via the Plugins screen in WordPress.
 2. Activate the plugin through the ‘Plugins’ screen in WordPress.
 3. Open the block editor (Gutenberg) and edit any block. You will see new **responsive controls** in the block inspector.
 4. Switch between desktop, tablet, and mobile views to style your blocks per viewport.
@@ -70,10 +70,10 @@ With Viewports, you keep your BlockTheme clean, lightweight, and future-proof.
 == Frequently Asked Questions ==
 
 = Does it work with all block themes? =
-Yes! Viewports extends the standard block components, so it works with any Block Theme right away.
+Yes! Quantum Viewports extends the standard block components, so it works with any Block Theme right away.
 
 = Does it add new blocks? =
-No. Viewports does **not** create duplicate blocks. It enhances the existing standard blocks with responsive controls.
+No. Quantum Viewports does **not** create duplicate blocks. It enhances the existing standard blockstyles with responsive controls.
 
 = Can developers extend it? =
 Yes. Developers can register their own style components using the provided `registerRenderer` API.

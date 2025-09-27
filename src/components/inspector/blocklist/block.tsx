@@ -109,7 +109,7 @@ const Block = ( props ) => {
 					<Button
 						className={ buttonClassNames.join( ' ' ) }
 						text={ buttonText }
-						label={ __( 'Select block', 'viewports' ) }
+						label={ __( 'Select block', 'quantum-viewports' ) }
 						onClick={ onClickSelect }
 					/>
 				</div>

@@ -88,7 +88,7 @@ export const IndicatorControls = ( {
 				storeId={ storeId }
 				spectrumSet={ spectrumSet }
 			/> }
-			{ 0 === spectrumSet.length && <div className="controls-style-placeholder">{ __( 'Empty styles', 'viewports' ) }</div> }
+			{ 0 === spectrumSet.length && <div className="controls-style-placeholder">{ __( 'Empty styles', 'quantum-viewports' ) }</div> }
 		</Popover>
 	)
 }

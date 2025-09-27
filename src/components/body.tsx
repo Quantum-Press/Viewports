@@ -1,4 +1,5 @@
 import { STORE_NAME } from '../store';
+import { isSiteEditor } from '../utils';
 
 const {
 	data: {

@@ -41,7 +41,7 @@ const Foot = () => {
 				icon={ logo }
 				href="https://quantum-press.com/en/"
 				target="_blank"
-				text={ __( 'QuantumPress Viewports - Version', 'viewports' ) + ' ' + version }
+				text={ __( 'by QuantumPress - Version', 'quantum-viewports' ) + ' ' + version }
 			/>
 		</div>
 	);

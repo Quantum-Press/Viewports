@@ -74,24 +74,6 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
 	const attributesRef = useRef( attributes );
 	attributesRef.current = attributes;
 
-	/*
-	// Set useMemo to handle updates on block attributes.
-	const debouncedRegisterBlockInit = useCallback( () => {
-		store.updateBlockChanges( clientId, blockName, attributesRef.current );
-
-		const saves = select( STORE_NAME ).getGeneratedBlockSaves( clientId );
-		const inlineStyle = select( STORE_NAME ).getInlineStyle( clientId );
-
-		setAttributes( {
-			viewports: saves,
-			inlineStyles: inlineStyle,
-		} );
-	}, [ clientId, blockName, store, select, setAttributes ] );
-
-	// Set reference to handle debounced updates.
-	const debouncedRegisterRef = useRef( debounce( debouncedRegisterBlockInit, 150 ) );
-	*/
-
 	// Set useMemo to handle updates on block attributes.
 	const debouncedUpdateBlockChanges = useCallback( () => {
 		store.updateBlockChanges( clientId, blockName, attributesRef.current );

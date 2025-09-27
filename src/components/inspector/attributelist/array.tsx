@@ -1,8 +1,7 @@
 import type {
 	Spectrum
 } from '../../../types';
-import { useHighlightProperty } from '../../../hooks';
-import { isObject, getMergedObject } from '../../../utils';
+import { isObject } from '../../../utils';
 import ObjectList from './object';
 
 interface Style {

@@ -53,7 +53,7 @@ const ToggleEditing = () => {
 	return (
 		<ToggleControl
 			className={ classNames }
-			label={ __( 'Edit on min-width', 'viewports' ) + ': ' + viewport + 'px' }
+			label={ __( 'Edit on min-width', 'quantum-viewports' ) + ': ' + viewport + 'px' }
 			onChange={ onChange }
 			checked={ isEditing }
 		/>

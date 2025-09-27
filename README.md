@@ -13,7 +13,7 @@
 
 ## Overview
 
-**Viewports** extends the Gutenberg editor with viewport-specific controls for standard blocks. It allows editors and developers to adjust block properties such as **margin, padding, and other style attributes** independently for **desktop, tablet, and mobile**, without needing separate CSS or media queries.
+**Quantum Viewports** extends the Gutenberg editor with viewport-specific controls for standard blocks. It allows editors and developers to adjust block properties such as **margin, padding, and other style attributes** independently for **desktop, tablet, and mobile**, without needing separate CSS or media queries.
 
 The plugin is designed to integrate seamlessly into the block editor workflow while providing a **developer-friendly API** for extending style rendering to custom blocks.
 
@@ -54,7 +54,7 @@ This plugin is currently in **early-access / beta**. Features are functional but
 
 Currently, Viewports is **not in the WordPress plugin repository**. Use one of the following methods:
 
-1. **Download / Clone** the repository to `wp-content/plugins/viewports`.
+1. **Download / Clone** the repository to `wp-content/plugins/quantum-viewports`.
 2. Activate the plugin via the WordPress admin panel.
 3. Open the editor and check for the new viewport controls in block settings.
 
@@ -81,7 +81,7 @@ Currently, Viewports is **not in the WordPress plugin repository**. Use one of t
 
 ## Developer API
 
-Viewports also delivers a **`registerRenderer`** function to register custom style attributes.
+Quantum Viewports also delivers a **`registerRenderer`** function to register custom style attributes.
 Once registered the change detection will also watche the registered Attribute
 
 ```js
