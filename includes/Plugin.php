@@ -47,20 +47,7 @@ class Plugin extends Instance {
      */
     protected function set_hooks()
     {
-        \add_action( 'init', [ $this, 'load_plugin_textdomain' ] );
         \add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_block_editor_assets' ], 0 );
-    }
-
-
-    /**
-     * Method to load localisation files.
-     */
-    public function load_plugin_textdomain() {
-        \load_plugin_textdomain(
-            QUANTUM_VIEWPORTS_TEXTDOMAIN,
-            false,
-            dirname( \plugin_basename( __FILE__ ) ) . '/languages'
-        );
     }
 
 
