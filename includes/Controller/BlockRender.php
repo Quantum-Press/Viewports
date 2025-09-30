@@ -7,7 +7,7 @@ namespace QP\Viewports\Controller;
 use Wikimedia\CSS\Parser\Parser;
 use Wikimedia\CSS\Sanitizer\StylesheetSanitizer;
 use Wikimedia\CSS\Util as CSSUtil;
-use QP\Viewports\Model\CSSRuleset;
+use QP\Viewports\Model\CSSRuleSet;
 
 class BlockRender extends Instance {
 
@@ -50,7 +50,7 @@ class BlockRender extends Instance {
 
         $block[ 'innerHTML' ] = $block_html;
 
-        $ruleSet = new CSSRuleset( $block );
+        $ruleSet = new CSSRuleSet( $block );
         $ruleSet->compress();
 
         $className = \wp_unique_id( 'vp-' );

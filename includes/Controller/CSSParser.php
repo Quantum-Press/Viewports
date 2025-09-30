@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace QP\Viewports\Controller;
 
-use QP\Viewports\Model\CSSRuleset;
+use QP\Viewports\Model\CSSRuleSet;
 
 /**
  * CSS parser class.
@@ -19,16 +19,16 @@ use QP\Viewports\Model\CSSRuleset;
 class CSSParser
 {
     /**
-     * Parses block args to CSSRuleset object.
+     * Parses block args to CSSRuleSet object.
      *
      * @param array $blockData
      * @param null|string $blockHTML
      *
-     * @return CSSRuleset
+     * @return CSSRuleSet
      */
-    public static function parseBlock( array $blockData, null|string $blockHTML = null ) : CSSRuleset
+    public static function parseBlock( array $blockData, null|string $blockHTML = null ) : CSSRuleSet
     {
-        return new CSSRuleset( $blockData, $blockHTML );
+        return new CSSRuleSet( $blockData, $blockHTML );
     }
 
 

@@ -9,11 +9,11 @@ use QP\Viewports\Controller\CSSParser;
 /**
  * This model class handles a single css ruleset.
  *
- * @class    QP\Viewports\Model\CSSRuleset
+ * @class    QP\Viewports\Model\CSSRuleSet
  * @package  QP\Viewports\Model\
  * @category Class
  */
-class CSSRuleset {
+class CSSRuleSet {
 
     /**
      * Property contains CSSRule objects from inline styles.
@@ -59,7 +59,7 @@ class CSSRuleset {
 
 
     /**
-     * Method to construct a CSSRuleset object by block args.
+     * Method to construct a CSSRuleSet object by block args.
      *
      * @param array $block
      * @param null|string $blockHTML

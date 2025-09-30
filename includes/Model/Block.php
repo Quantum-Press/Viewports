@@ -61,9 +61,9 @@ class Block {
     /**
      * Property contains CSSuleset object.
      *
-     * @var null|CSSRuleset
+     * @var null|CSSRuleSet
      */
-    public null|CSSRuleset $cssRuleset = null;
+    public null|CSSRuleSet $cssRuleset = null;
 
 
     /**
@@ -92,7 +92,7 @@ class Block {
 
         $this->options = BlockProcessor::getOptions();
 
-        $this->cssRuleset = new CSSRuleset( [
+        $this->cssRuleset = new CSSRuleSet( [
             'blockName' => $this->blockName,
             'innerHTML' => $this->innerHTML,
             'attrs' => $this->attrs,
