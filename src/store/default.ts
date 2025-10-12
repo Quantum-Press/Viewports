@@ -6,10 +6,10 @@ const {
 	}
 } = window[ 'wp' ];
 
-declare const viewportsConfig: ViewportsConfig | undefined;
+declare const quantumViewportsConfig: ViewportsConfig | undefined;
 
 function getViewports() : Viewports {
-	if ( typeof viewportsConfig === 'undefined' ) {
+	if ( typeof quantumViewportsConfig === 'undefined' ) {
 		return {
 			1920: 'VP - Desktop large',
 			1360: 'VP - Desktop small',
@@ -19,7 +19,7 @@ function getViewports() : Viewports {
 		};
 	}
 
-	if( 'extended' === viewportsConfig.distribution ) {
+	if( 'extended' === quantumViewportsConfig.distribution ) {
 		return {
 			3440: 'VP - Desktop xxlarge',
 			2560: 'VP - Desktop xlarge',
@@ -56,11 +56,11 @@ function getDesktopViewport() : number {
 }
 
 function getTabletViewport() : number {
-	if ( typeof viewportsConfig === 'undefined' ) {
+	if ( typeof quantumViewportsConfig === 'undefined' ) {
 		return 780;
 	}
 
-	if( 'extended' === viewportsConfig.distribution ) {
+	if( 'extended' === quantumViewportsConfig.distribution ) {
 		return 768;
 	}
 
@@ -68,11 +68,11 @@ function getTabletViewport() : number {
 }
 
 function getMobileViewport() : number {
-	if ( typeof viewportsConfig === 'undefined' ) {
+	if ( typeof quantumViewportsConfig === 'undefined' ) {
 		return 360;
 	}
 
-	if( 'extended' === viewportsConfig.distribution ) {
+	if( 'extended' === quantumViewportsConfig.distribution ) {
 		return 320;
 	}
 
@@ -84,11 +84,11 @@ function getDesktopBreakpoint() : number {
 	return 1360;
 }
 function getTabletBreakpoint() : number {
-	if ( typeof viewportsConfig === 'undefined' ) {
+	if ( typeof quantumViewportsConfig === 'undefined' ) {
 		return 780;
 	}
 
-	if( 'extended' === viewportsConfig.distribution ) {
+	if( 'extended' === quantumViewportsConfig.distribution ) {
 		return 540;
 	}
 

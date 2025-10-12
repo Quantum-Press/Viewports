@@ -71,7 +71,7 @@ class Plugin extends Instance {
 
         \wp_localize_script(
             'quantum-viewports-scripts',
-            'viewportsConfig',
+            'quantumViewportsConfig',
             [
                 'distribution' => $distribution,
                 'version' => QUANTUM_VIEWPORTS_VERSION,

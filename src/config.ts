@@ -6,7 +6,7 @@ import { versionCompare } from "./utils/version";
  * @returns {Readonly<Record<string, any>>} - A frozen object containing configuration settings.
  */
 export const getConfig = (): Readonly<Record<string, any>> => {
-	return Object.freeze( ( window as any ).viewportsConfig || {} );
+	return Object.freeze( ( window as any ).quantumViewportsConfig || {} );
 };
 
 
