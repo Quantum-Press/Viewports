@@ -7,31 +7,33 @@ namespace QP\Viewports\Controller;
 use QP\Viewports\Model\Block;
 
 /**
- * This class handles block processing operations.
+ * Handles block data processing and transformation.
  *
- * @class    QP\Viewports\BlockProcessor
- * @package  QP\Viewports
- * @category Class
- * @author   Sebastian Buchwald // conversionmedia GmbH & Co. KG
+ * This controller provides utility methods for generating, modifying,
+ * and serializing WordPress block structures used by Quantum Viewports.
+ * It manages which block attributes are ignored, processes nested blocks,
+ * and returns prepared block objects or arrays for saving.
+ *
+ * @package QP\Viewports\Controller
  */
 class BlockProcessor extends Instance {
 
     /**
-     * Property contains ignore properties.
+     * Stores properties that should be ignored during block processing.
      *
      * @var array
      */
     private array $ignoreProperties = [];
 
     /**
-     * Property contains ignore nested properties.
+     * Stores nested properties that should be ignored during block processing.
      *
      * @var array
      */
     private array $ignoreNestedProperties = [];
 
     /**
-     * Property contains nested html blocks.
+     * Stores nested HTML block data.
      *
      * @var array
      */
@@ -39,18 +41,22 @@ class BlockProcessor extends Instance {
 
 
     /**
-     * Method to construct.
+     * Class constructor.
+     *
+     * Initializes block processor properties.
      */
     protected function __construct()
     {
-        $this->setProperties();
+        $this->registerProperties();
     }
 
 
     /**
-     * Method to set properties.
+     * Sets default property values and applies filters.
+     *
+     * @return void
      */
-    protected function setProperties()
+    protected function registerProperties() : void
     {
         $this->ignoreProperties = \apply_filters(
             'quantum_viewports_ignore_properties',
@@ -77,12 +83,12 @@ class BlockProcessor extends Instance {
 
 
     /**
-     * Method to return saved block objects modified.
+     * Modifies and serializes saved block data.
      *
-     * @param array $blocks
+     * @param array $blocks An array of raw block data arrays.
      *
      * @static
-     * @return array
+     * @return array The modified and serialized block data.
      */
     public static function modifySavedBlocks( array $blocks ) : array
     {
@@ -96,7 +102,7 @@ class BlockProcessor extends Instance {
         foreach( $blocks as $block ) {
             $block->modifySave();
 
-            $serializedBlock = $block->getSerializedBlock();
+            $serializedBlock = $block->serializedBlock();
 
             $modified[] = $serializedBlock;
         }
@@ -106,12 +112,12 @@ class BlockProcessor extends Instance {
 
 
     /**
-     * Method to return generated block objects.
+     * Generates an array of Block objects from raw block data.
      *
-     * @param array $blocks
+     * @param array $blocks The input array of block data arrays.
      *
      * @static
-     * @return Block[]
+     * @return Block[] The generated Block objects.
      */
     public static function generateBlocks( array $blocks ) : array
     {
@@ -131,12 +137,12 @@ class BlockProcessor extends Instance {
 
 
     /**
-     * Method to return generated a single block object.
+     * Generates a single Block object from raw block data.
      *
-     * @param array $blockData
+     * @param array $blockData The block data to process.
      *
      * @static
-     * @return Block|false
+     * @return Block|false The generated Block instance, or false on failure.
      */
     public static function generateBlock( array $blockData ) : Block|false
     {
@@ -149,7 +155,7 @@ class BlockProcessor extends Instance {
         return new Block(
             $blockData[ 'blockName' ] ?? '',
             $blockData[ 'attrs' ] ?? [],
-            $blockData[ 'innerHTML' ] ?? '',
+            $blockData[ 'innerHTML' ] ?? '', // innerHTML key needs to be named ! camelCase
             $blockData[ 'innerContent' ] ?? [],
             $blockData[ 'innerBlocks' ] ?? []
         );
@@ -157,11 +163,11 @@ class BlockProcessor extends Instance {
 
 
     /**
-     * Method to return options.
+     * Returns instance configuration options.
      *
-     * @return array
+     * @return array The instance options.
      */
-    public function _getOptions() : array
+    public function _options() : array
     {
         return [
             'ignore_properties' => $this->ignoreProperties,
@@ -170,15 +176,15 @@ class BlockProcessor extends Instance {
 
 
     /**
-     * Method to return options from instance.
+     * Returns configuration options from the current instance.
      *
      * @static
-     * @return array
+     * @return array The instance options.
      */
-    public static function getOptions() : mixed
+    public static function options() : array
     {
-        $instance = self::getInstance();
+        $instance = self::instance();
 
-        return $instance->_getOptions();
+        return $instance->_options();
     }
 }

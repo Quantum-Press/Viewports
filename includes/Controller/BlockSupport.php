@@ -5,42 +5,49 @@ declare( strict_types=1 );
 namespace QP\Viewports\Controller;
 
 /**
- * This class handles block support attributes and styles.
+ * Handles block support attributes and allowed CSS styles.
  *
- * @class    QP\Viewports\BlockSupport
- * @package  QP\Viewports
- * @category Class
- * @author   Sebastian Buchwald // conversionmedia GmbH & Co. KG
+ * This controller adds viewport support attributes to all block types
+ * and extends the list of CSS properties considered safe for blocks.
+ *
+ * @package QP\Viewports\Controller
  */
 class BlockSupport extends Instance {
 
     /**
-     * Method to construct.
+     * Class constructor.
+     *
+     * Initializes hooks for block support.
      */
     protected function __construct()
     {
-        $this->set_hooks();
+        $this->registerHooks();
     }
 
 
     /**
-     * Method to set hooks.
+     * Registers WordPress hooks required for block support.
+     *
+     * @return void
      */
-    protected function set_hooks()
+    protected function registerHooks() : void
     {
-        \add_filter( 'register_block_type_args', [ $this, 'registerBlockTypeArgs' ], 10, 2 );
+        \add_filter( 'register_block_type_args', [ $this, 'registerBlockTypeArgs' ], 10, 1 );
         \add_filter( 'safe_style_css', [ $this, 'safeStyleCSS' ], 10, 1 );
     }
 
 
     /**
-     * Method to register viewports support to all block attributes.
+     * Adds viewport and inlineStyles support to block attributes.
      *
-     * @param object (required) $block_type containing base config
+     * Ensures that every block type has 'viewports' and 'inlineStyles'
+     * attributes defined as objects.
      *
-     * @return object containing filtered block_type
+     * @param array $args The block type registration arguments.
+     *
+     * @return array The modified block type arguments.
      */
-    public function registerBlockTypeArgs( $args, $block_type )
+    public function registerBlockTypeArgs( array $args ) : array
     {
         if ( ! isset( $args[ 'attributes' ][ 'viewports' ] ) ) {
             $args[ 'attributes' ][ 'viewports' ] = [
@@ -59,13 +66,15 @@ class BlockSupport extends Instance {
 
 
     /**
-     * Method to extend the list of supported css properties.
+     * Extends the list of allowed CSS properties for blocks.
      *
-     * @param array $styles
+     * Adds 'display' and 'background-repeat' to the safe styles array.
      *
-     * @return array
+     * @param array $styles The array of currently allowed CSS properties.
+     *
+     * @return array The modified array including additional safe styles.
      */
-    public function safeStyleCSS( $styles )
+    public function safeStyleCSS( array $styles ) : array
     {
         $styles[] = 'display';
         $styles[] = 'background-repeat';

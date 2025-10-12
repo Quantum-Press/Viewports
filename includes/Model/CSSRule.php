@@ -5,79 +5,79 @@ declare( strict_types=1 );
 namespace QP\Viewports\Model;
 
 /**
- * This model class handles a single css rule.
+ * Represents a single CSS rule with selector, properties, and media queries.
  *
- * @class    QP\Viewports\Model\CSSRule
- * @package  QP\Viewports\Model\
- * @category Class
+ * Provides methods to generate CSS strings, compressed CSS, and manage properties.
+ *
+ * @package QP\Viewports\Model
  */
 class CSSRule {
 
     /**
-     * Property contains the hash of CSSProperties.
+     * MD5 hash of the CSS properties for comparison.
      *
      * @var string
      */
     private string $hash = '';
 
     /**
-     * Property contains the slug of the selector.
+     * Slug representing the selector and media info.
      *
      * @var string
      */
     private string $slug = '';
 
     /**
-     * Property contains the source of the rule.
+     * Source of the CSS rule.
      *
      * @var string
      */
     private string $source = '';
 
     /**
-     * Property contains property name.
+     * CSS property name.
      *
      * @var string
      */
     private string $property = '';
 
     /**
-     * Property contains selector.
+     * Selector string.
      *
      * @var string
      */
     private string $selector = '';
 
     /**
-     * Property contains css property value pairs.
+     * Array of CSS property => value pairs.
      *
      * @var array
      */
     private array $properties = [];
 
     /**
-     * Property contains media.
+     * Media type, e.g., "screen".
      *
      * @var string
      */
     private string $media = '';
 
     /**
-     * Property contains media query min-width.
+     * Media query minimum width in pixels.
      *
-     * @var integer
+     * @var int
      */
     private int $minWidth = 0;
 
     /**
-     * Property contains media query max-width.
+     * Media query maximum width in pixels.
      *
-     * @var integer
+     * @var int
      */
     private int $maxWidth = -1;
 
     /**
-     * Property contains css.
+     * Cached generated CSS string.
      *
      * @var string|null
      */
@@ -85,7 +85,15 @@ class CSSRule {
 
 
     /**
-     * Constructor to build CSSRule object.
+     * Constructor to initialize a CSS rule.
+     *
+     * @param string $source
+     * @param string $property
+     * @param string $selector
+     * @param array  $properties
+     * @param string $media
+     * @param int    $minWidth
+     * @param int    $maxWidth
      */
     public function __construct(
         string $source,
@@ -96,6 +104,7 @@ class CSSRule {
         int $minWidth = 0,
         int $maxWidth = -1,
     ) {
+
         $this->source = $source;
         $this->property = $property;
         $this->selector = $selector;
@@ -117,76 +126,80 @@ class CSSRule {
 
 
     /**
-     * Method to generate hash (md5) from CSSProperties to compare later.
+     * Generates MD5 hash from CSS properties for comparison.
+     *
+     * @return void
      */
-    private function generateHash()
+    private function generateHash() : void
     {
-        $this->hash = md5( serialize( $this->getCSSProperties() ) );
+        $this->hash = md5( serialize( $this->properties() ) );
     }
 
 
     /**
-     * Method to generate hash (md5) from all relevant CSSRule informations to compare later.
+     * Returns the CSS rule hash.
      *
      * @return string
      */
-    public function getHash() : string
+    public function hash() : string
     {
         return $this->hash;
     }
 
 
     /**
-     * Method to return the slug.
+     * Returns the slug of the rule.
      *
      * @return string
      */
-    public function getSlug() : string
+    public function slug() : string
     {
         return $this->slug;
     }
 
 
     /**
-     * Method to return the source.
+     * Returns the source of the rule.
      *
      * @return string
      */
-    public function getSource() : string
+    public function source() : string
     {
         return $this->source;
     }
 
 
     /**
-     * Method to return the property.
+     * Returns the property name.
      *
      * @return string
      */
-    public function getProperty() : string
+    public function property() : string
     {
         return $this->property;
     }
 
 
     /**
-     * Method to return the selector.
+     * Returns the selector string.
      *
      * @return string
      */
-    public function getSelector() : string
+    public function selector() : string
     {
         return $this->selector;
     }
 
 
     /**
-     * Method to remove a property from properties.
+     * Adds multiple CSS properties to the rule.
      *
      * @param array $properties
-     * @param boolean $compress
+     * @param bool  $compress Whether to mark as compressed.
+     *
+     * @return void
      */
-    public function addCSSProperties( $properties, $compress = false )
+    public function addCSSProperties( array $properties, bool $compress = false ) : void
     {
         foreach( $properties as $property => $value ) {
             $this->addCSSProperty( $property, $value );
@@ -201,22 +214,22 @@ class CSSRule {
 
 
     /**
-     * Method to return all properties.
+     * Returns all CSS properties.
      *
      * @return array
      */
-    public function getCSSProperties() : array
+    public function properties() : array
     {
         return $this->properties;
     }
 
 
     /**
-     * Method to return properties css.
+     * Returns CSS properties as a string.
      *
      * @return string
      */
-    public function getPropertiesCSS() : string
+    public function propertiesCss() : string
     {
         $cssString = '';
 
@@ -228,13 +241,12 @@ class CSSRule {
     }
 
 
-
     /**
-     * Method to return properties css compressed.
+     * Returns compressed CSS properties as a string.
      *
      * @return string
      */
-    public function getCompressedPropertiesCSS() : string
+    public function compressedPropertiesCss() : string
     {
         $cssString = '';
 
@@ -247,13 +259,13 @@ class CSSRule {
 
 
     /**
-     * Method to return a property from properties.
+     * Returns a single CSS property value if it exists.
      *
      * @param string $property
      *
      * @return string|null
      */
-    public function getCSSProperty( $property ) : string|null
+    public function propertyValue( string $property ) : string|null
     {
         if( isset( $this->properties[ $property ] ) ) {
             return $this->properties[ $property ];
@@ -264,11 +276,14 @@ class CSSRule {
 
 
     /**
-     * Method to remove a property from properties.
+     * Adds a single CSS property if not already set.
      *
      * @param string $property
+     * @param mixed  $value
+     *
+     * @return void
      */
-    private function addCSSProperty( $property, $value )
+    private function addCSSProperty( string $property, mixed $value ) : void
     {
         if( ! isset( $this->properties[ $property ] ) ) {
             $this->properties[ $property ] = $value;
@@ -277,11 +292,13 @@ class CSSRule {
 
 
     /**
-     * Method to remove a property from properties.
+     * Removes a CSS property if it exists.
      *
      * @param string $property
+     *
+     * @return void
      */
-    public function removeCSSProperty( $property )
+    public function removeCSSProperty( string $property ) : void
     {
         if( isset( $this->properties[ $property ] ) ) {
             unset( $this->properties[ $property ] );
@@ -290,46 +307,46 @@ class CSSRule {
 
 
     /**
-     * Method to return the media property.
+     * Returns the media type of the rule.
      *
      * @return string
      */
-    public function getMedia() : string
+    public function media() : string
     {
         return $this->media;
     }
 
 
     /**
-     * Method to return the minWidth property.
+     * Returns the media query minimum width.
      *
      * @return int
      */
-    public function getMinWidth() : int
+    public function minWidth() : int
     {
         return $this->minWidth;
     }
 
 
     /**
-     * Method to return the maxWidth property.
+     * Returns the media query maximum width.
      *
      * @return int
      */
-    public function getMaxWidth() : int
+    public function maxWidth() : int
     {
         return $this->maxWidth;
     }
 
 
     /**
-     * Method to return the css property.
+     * Returns the generated CSS string for a selector.
      *
      * @param string $selector
      *
      * @return string
      */
-    public function getCSS( $selector ) : string
+    public function css( string $selector ) : string
     {
         if( null === $this->css ) {
             $this->generateCSS( $selector );
@@ -340,11 +357,13 @@ class CSSRule {
 
 
     /**
-     * Method to generate css with replacing wildcard selector.
+     * Generates the CSS string with media query and selector replacements.
      *
      * @param string $selector
+     *
+     * @return void
      */
-    private function generateCSS( $selector )
+    private function generateCSS( string $selector ) : void
     {
         $cssBody = $this->generateCSSBody( $selector );
         if( empty( $cssBody ) ) {
@@ -392,51 +411,51 @@ class CSSRule {
 
 
     /**
-     * Method to return the css property.
+     * Generates CSS body with selector replacement.
      *
      * @param string $selector
      *
      * @return string
      */
-    public function generateCSSBody( $selector = '%' ) : string
+    public function generateCSSBody( string $selector = '%' ) : string
     {
-        $propertiesCSS = $this->getPropertiesCSS();
-        if( empty( $propertiesCSS ) ) {
+        $propertiesCss = $this->propertiesCss();
+        if( empty( $propertiesCss ) ) {
             return '';
         }
 
         return sprintf(
             "\n%s{%s\n}",
             str_replace( '%', $selector, $this->selector ),
-            $propertiesCSS
+            $propertiesCss
         );
     }
 
 
     /**
-     * Method to return the css property.
+     * Generates compressed CSS body with selector replacement.
      *
      * @param string $selector
      *
      * @return string
      */
-    public function generateCompressedCSSBody( $selector = '%' ) : string
+    public function generateCompressedCSSBody( string $selector = '%' ) : string
     {
-        $propertiesCSS = $this->getCompressedPropertiesCSS();
-        if( empty( $propertiesCSS ) ) {
+        $propertiesCss = $this->compressedPropertiesCss();
+        if( empty( $propertiesCss ) ) {
             return '';
         }
 
         return sprintf(
             "\n%s{%s\n}",
             str_replace( '%', $selector, $this->selector ),
-            $propertiesCSS
+            $propertiesCss
         );
     }
 
 
     /**
-     * Method to indicate whether the rule needs a mediaQuery container.
+     * Determines if this rule requires a media query wrapper.
      *
      * @return bool
      */
@@ -451,7 +470,7 @@ class CSSRule {
 
 
     /**
-     * Method to indicate whether the rule is an inline style.
+     * Determines if this rule is an inline style without media query.
      *
      * @return bool
      */

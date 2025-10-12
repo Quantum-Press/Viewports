@@ -7,51 +7,51 @@ namespace QP\Viewports\Model;
 use QP\Viewports\Controller\CSSParser;
 
 /**
- * This model class handles a single css ruleset.
+ * Represents a set of CSS rules for a block, including inline and attribute-based rules.
  *
- * @class    QP\Viewports\Model\CSSRuleSet
- * @package  QP\Viewports\Model\
- * @category Class
+ * Handles parsing, cleaning, and compressing CSS rules from block HTML and attributes.
+ *
+ * @package QP\Viewports\Model
  */
-class CSSRuleSet {
+class CSSRuleset {
 
     /**
-     * Property contains CSSRule objects from inline styles.
+     * CSSRule objects parsed from inline styles.
      *
      * @var array
      */
     private array $inlineRules = [];
 
     /**
-     * Property contains CSSRule objects from attributes.
+     * CSSRule objects parsed from attributes.
      *
      * @var array
      */
     private array $attributeRules = [];
 
     /**
-     * Property contains CSSRule objects compressed from attributes.
+     * Compressed CSSRule objects from attributes.
      *
      * @var array
      */
     private array $compressedRules = [];
 
     /**
-     * Property contains block name.
+     * Name of the block.
      *
      * @var string
      */
     private string $blockName = '';
 
     /**
-     * Property contains block html.
+     * Block HTML content.
      *
      * @var string
      */
-    private string $blockHTML = '';
+    private string $blockHtml = '';
 
     /**
-     * Property contains block css array.
+     * Block CSS array.
      *
      * @var array
      */
@@ -59,18 +59,19 @@ class CSSRuleSet {
 
 
     /**
-     * Method to construct a CSSRuleSet object by block args.
+     * Constructs a CSSRuleset from a block array and optional HTML.
      *
-     * @param array $block
-     * @param null|string $blockHTML
+     * @param array $block Block array with keys: blockName, innerHtml, attrs.
+     * @param string|null $blockHtml Optional HTML content.
      */
     public function __construct(
         array $block,
-        string $blockHTML = null
+        ?string $blockHtml = null
     ) {
+
         $this->blockName = isset( $block[ 'blockName' ] ) ? $block[ 'blockName' ] : '';
-        $this->blockHTML = null !== $blockHTML ? $blockHTML :
-            ( isset( $block[ 'innerHTML' ] ) ? $block[ 'innerHTML' ] : '' );
+        $this->blockHtml = null !== $blockHtml ? $blockHtml :
+            ( isset( $block[ 'innerHtml' ] ) ? $block[ 'innerHtml' ] : '' );
 
         // Init html tag processor.
         $this->generateRules( isset( $block[ 'attrs' ] ) ? $block[ 'attrs' ] : [] );
@@ -78,32 +79,27 @@ class CSSRuleSet {
 
 
     /**
-     * Method to generate rules by generating cssRules from attributes first.
-     * This allows to derive the nested rules by selectors.
+     * Generates CSS rules from attributes and inline styles.
      *
      * @param array $attributes
      */
-    protected function generateRules( $attributes = [] )
+    protected function generateRules( array $attributes = [] ) : void
     {
         // First we parse attributes, to check its selectors for nested inline css.
         $attributeParsed = $this->parseAttributes( $attributes );
-        $attributeSelectors = $this->getSelectorsFromRules( $attributeParsed );
+        $attributeSelectors = $this->selectorsFromRules( $attributeParsed );
 
         $inlineParsed = [];
 
         if( empty( $attributeSelectors ) ) {
-            $parsed = $this->parseInlineStyles( '%' );
+            $attributeSelectors = [ '%' ];
+        }
+
+        foreach( $attributeSelectors as $selector ) {
+            $parsed = $this->parseInlineStyles( $selector );
 
             if( false !== $parsed ) {
-                $inlineParsed[ '%' ] = $parsed;
-            }
-
-        } else {
-            foreach( $attributeSelectors as $selector ) {
-                $parsed = $this->parseInlineStyles( $selector );
-                if( false !== $parsed ) {
-                    $inlineParsed[ $selector ] = $parsed;
-                }
+                $inlineParsed[ $selector ] = $parsed;
             }
         }
 
@@ -117,13 +113,13 @@ class CSSRuleSet {
 
 
     /**
-     * Method to parse attribute styles.
+     * Parses CSS rules from block attributes.
      *
      * @param array $attributes
      *
      * @return array
      */
-    public function parseAttributes( $attributes = [] ) : array
+    public function parseAttributes( array $attributes = [] ) : array
     {
         $attributeRules = [];
 
@@ -144,7 +140,7 @@ class CSSRuleSet {
                     // Check if there is css to extract.
                     if( isset( $style[ 'css' ] ) && ! empty( $style[ 'css' ] ) ) {
                         $properties = CSSParser::parse( $style[ 'css' ] );
-                        $selector = CSSParser::getSelector( $style[ 'css' ] );
+                        $selector = CSSParser::extractSelector( $style[ 'css' ] );
 
                         // Check if we need to add an attribute style.
                         if( ! empty( $properties ) ) {
@@ -158,21 +154,22 @@ class CSSRuleSet {
                                     $viewport,
                                     isset( $style[ 'to' ] ) ? (int) $style[ 'to' ] : -1,
                                 );
-                            } else {
 
-                                // Allow to register non-numeric viewport types.
-                                $customRule = \apply_filters(
-                                    'quantum_viewports_custom_viewport_rule',
-                                    null,
-                                    $property,
-                                    $selector,
-                                    $properties,
-                                    $viewport
-                                );
+                                continue;
+                            }
 
-                                if( $customRule instanceOf CSSRule ) {
-                                    $attributeRules[] = $customRule;
-                                }
+                            // Allow to register non-numeric viewport types.
+                            $customRule = \apply_filters(
+                                'quantum_viewports_custom_viewport_rule',
+                                null,
+                                $property,
+                                $selector,
+                                $properties,
+                                $viewport
+                            );
+
+                            if( $customRule instanceOf CSSRule ) {
+                                $attributeRules[] = $customRule;
                             }
                         }
                     }
@@ -185,23 +182,22 @@ class CSSRuleSet {
 
 
     /**
-     * Method to clean parsed css rules.
-     * This will filter out all properties from inlineStyles controlled by style attribute.
+     * Cleans inline parsed CSS by removing properties controlled by attribute rules.
      *
      * @param array $inlineParsed
      * @param array $attributeParsed
      */
-    private function cleanParsed( array &$inlineParsed, array &$attributeParsed )
+    private function cleanParsed( array &$inlineParsed, array &$attributeParsed ) : void
     {
-        foreach( $inlineParsed as $inlineCSSRule ) {
-            foreach( $inlineCSSRule->getCSSProperties() as $inlineProperty => $value ) {
+        foreach( $inlineParsed as $inlineCssRule ) {
+            foreach( $inlineCssRule->properties() as $inlineProperty => $value ) {
                 $found = false;
 
-                foreach( $attributeParsed as $attributeCSSRule ) {
-                    foreach( $attributeCSSRule->getCSSProperties() as $attributeProperty => $value ) {
+                foreach( $attributeParsed as $attributeCssRule ) {
+                    foreach( $attributeCssRule->properties() as $attributeProperty => $value ) {
 
                         // Check if the inline property will be controlled by attributes.
-                        if( $inlineProperty == $attributeProperty && $inlineCSSRule->getSelector() === $attributeCSSRule->getSelector() ) {
+                        if( $inlineProperty == $attributeProperty && $inlineCssRule->selector() === $attributeCssRule->selector() ) {
                             $found = true;
                             break;
                         }
@@ -214,7 +210,7 @@ class CSSRuleSet {
 
                 // Check if inline property occurs in attributes to remove it from inline properties.
                 if( $found ) {
-                    $inlineCSSRule->removeCSSProperty( $inlineProperty );
+                    $inlineCssRule->removeCSSProperty( $inlineProperty );
                 }
             }
         }
@@ -222,13 +218,13 @@ class CSSRuleSet {
 
 
     /**
-     * Method to parse inline styles as CSSRule.
+     * Parses inline styles into a CSSRule object for a given selector.
      *
      * @param string $selector
      *
      * @return CSSRule|false
      */
-    public function parseInlineStyles( $selector = '' ) : CSSRule|false
+    public function parseInlineStyles( string $selector = '' ) : CSSRule|false
     {
         if( '%' !== $selector ) {
             return $this->parseInlineSelector( $selector );
@@ -239,15 +235,15 @@ class CSSRuleSet {
 
 
     /**
-     * Method to parse inline styles by selector.
+     * Parses inline styles for a specific selector.
      *
      * @param string $selector
      *
      * @return CSSRule|false
      */
-    public function parseInlineSelector( $selector = '' ) : CSSRule|false
+    public function parseInlineSelector( string $selector = '' ) : CSSRule|false
     {
-        $selectorParts = CSSParser::getSelectorParts( $selector );
+        $selectorParts = CSSParser::sanitizeSelectorParts( $selector );
         if( false === $selectorParts ) {
             return false;
         }
@@ -255,9 +251,9 @@ class CSSRuleSet {
         $inlineStyles = false;
 
         $processed = $this->processSelector(
-            $this->blockHTML,
+            $this->blockHtml,
             $selectorParts,
-            function( $processor ) use ( &$inlineStyles ) {
+            static function( \WP_HTML_Tag_Processor $processor ) use ( &$inlineStyles ) : void {
                 $inlineStyles = $processor->get_attribute( 'style' );
             }
         );
@@ -282,24 +278,29 @@ class CSSRuleSet {
 
 
     /**
-     * Method to process HTML elements based on a nested CSS selector and return them.
+     * Processes nested HTML elements based on selector parts and executes a callback on match.
      *
      * @param string $html
      * @param array $selectorParts
-     * @param callable|null $callback fires if found element
+     * @param callable|null $callback
      *
-     * @return array containing tagName strings
+     * @return array Found tag names
      */
-    protected function processSelector( $html, $selectorParts, $callback = null ) : array
+    protected function processSelector(
+        string $html,
+        array $selectorParts,
+        callable|null $callback = null
+    ) : array
     {
+
         $foundElements = [];
 
         // Start processing at the outer selector.
-        $processNestedSelector = function(
-            $html,
-            $selectorParts,
-            $callback
-        ) use ( &$foundElements, &$processNestedSelector ) {
+        $processNestedSelector = static function(
+            string $html,
+            array $selectorParts,
+            callable $callback
+        ) use ( &$foundElements, &$processNestedSelector ) : void {
             if( empty( $selectorParts ) ) {
                 return;
             }
@@ -309,7 +310,7 @@ class CSSRuleSet {
             $currentSelectorParts = explode(
                 '.',
                 $currentSelector
-            ); // Teile in Tag und Klassen auf
+            ); // Split in tag and classes
 
             $tagName = array_shift( $currentSelectorParts );
             $className = implode(
@@ -321,7 +322,7 @@ class CSSRuleSet {
             $processor = new \WP_HTML_Tag_Processor( $html );
             $processor->next_tag();
 
-            // Find matching elements for the current selector part
+            // Find matching elements for the current selector part.
             while( $processor->next_tag( [ $tagName ] ) ) {
 
                 // Check if tagName matches.
@@ -342,12 +343,12 @@ class CSSRuleSet {
                     }
 
                     $foundElements[] = $currentTagName;
-                } else {
-
-                    // Extract the inner HTML manually
-                    $innerHTML = CSSParser::extractInnerHTML( $currentTagName, $tagName );
-                    $processNestedSelector( $innerHTML, $selectorParts, $callback );
+                    continue;
                 }
+
+                // Extract the inner HTML manually.
+                $innerHtml = CSSParser::extractInnerHTML( $currentTagName, $tagName );
+                $processNestedSelector( $innerHtml, $selectorParts, $callback );
             }
         };
 
@@ -358,13 +359,13 @@ class CSSRuleSet {
 
 
     /**
-     * Method to parse inline styles from actual processor.
+     * Parses top-level inline styles from the block HTML.
      *
      * @return CSSRule|false
      */
     public function parseInline() : CSSRule|false
     {
-        $processor = new \WP_HTML_Tag_Processor( $this->blockHTML );
+        $processor = new \WP_HTML_Tag_Processor( $this->blockHtml );
         $processor->next_tag();
 
         $inlineStyles = $processor->get_attribute( 'style' );
@@ -389,45 +390,44 @@ class CSSRuleSet {
 
 
     /**
-     * Method to return inline CSSRules.
+     * Returns inline CSSRule objects.
      *
      * @return array
      */
-    public function getInlineRules() : array
+    public function inlineRules() : array
     {
         return $this->inlineRules;
     }
 
 
     /**
-     * Method to return attribute CSSRules.
+     * Returns attribute CSSRule objects.
      *
      * @return array
      */
-    public function getAttributeRules() : array
+    public function attributeRules() : array
     {
         return $this->attributeRules;
     }
 
 
     /**
-     * Method to return compressed attribute CSSRules.
+     * Returns compressed CSSRule objects.
      *
      * @return array
      */
-    public function getCompressedRules() : array
+    public function compressedRules() : array
     {
         return $this->compressedRules;
     }
 
 
-
     /**
-     * Method to return compressed CSS generated from compressed CSSRules.
+     * Returns compressed CSS strings from the compressed rules.
      *
      * @return array
      */
-    public function getCompressedCSS() : array
+    public function compressedCss() : array
     {
         if( empty( $this->compressedRules ) ) {
             return [];
@@ -436,7 +436,7 @@ class CSSRuleSet {
         $css = [];
 
         foreach( $this->compressedRules as $cssRule ) {
-            $cssString = $cssRule->getCSS();
+            $cssString = $cssRule->css();
 
             if( ! empty( $cssString ) ) {
                 $css[] = $cssString;
@@ -448,13 +448,12 @@ class CSSRuleSet {
 
 
     /**
-     * Method to return unique selectors from rules.
+     * Returns unique selectors from given CSSRules.
      *
      * @param array $cssRules
-     *
      * @return array
      */
-    public function getSelectorsFromRules( $cssRules ) : array
+    public function selectorsFromRules( array $cssRules ) : array
     {
         if( empty( $cssRules ) ) {
             return [ '%' ];
@@ -463,7 +462,7 @@ class CSSRuleSet {
         $selectors = [ '%' ];
 
         foreach( $cssRules as $cssRule ) {
-            $selector = $cssRule->getSelector();
+            $selector = $cssRule->selector();
 
             if( ! in_array( $selector, $selectors ) ) {
                 $selectors[] = $selector;
@@ -475,30 +474,31 @@ class CSSRuleSet {
 
 
     /**
-     * Method to return blockName.
+     * Returns the block name.
      *
      * @return string
      */
-    public function getBlockName() : string
+    public function blockName() : string
     {
         return $this->blockName;
     }
 
 
     /**
-     * Method to return blockHTML.
+     * Returns the block HTML.
+     * Optionally removes styles and adds a class.
      *
      * @param string $className
      *
      * @return string
      */
-    public function getBlockHTML( $className = '' ) : string
+    public function blockHtml( string $className = '' ) : string
     {
         if( empty( $className ) ) {
-            return $this->blockHTML;
+            return $this->blockHtml;
         }
 
-        $processor = new \WP_HTML_Tag_Processor( $this->blockHTML );
+        $processor = new \WP_HTML_Tag_Processor( $this->blockHtml );
         $processor->next_tag();
         $processor->remove_attribute( 'style' );
         $processor->add_class( $className );
@@ -508,18 +508,18 @@ class CSSRuleSet {
 
 
     /**
-     * Method to return css.
+     * Returns the CSS for a specific selector from compressed rules.
      *
      * @param string $selector
      *
      * @return string
      */
-    public function getCSS( $selector ) : string
+    public function css( string $selector ) : string
     {
         $css = '';
 
         foreach( $this->compressedRules as $cssRule ) {
-            $css .= $cssRule->getCSS( $selector );
+            $css .= $cssRule->css( $selector );
         }
 
         return $css;
@@ -527,25 +527,25 @@ class CSSRuleSet {
 
 
     /**
-     * Method to return inlineStyle cssRules.
+     * Returns all inline style rules, merging with attribute inline styles.
      *
      * @return array
      */
-    public function getInlineStyleRules() : array
+    public function inlineStyleRules() : array
     {
         $cssRules = [];
 
-        foreach( $this->getInlineRules() as $cssRule ) {
+        foreach( $this->inlineRules() as $cssRule ) {
             $cssRules[] = $cssRule;
         }
 
-        foreach( $this->getAttributeRules() as $cssRule ) {
+        foreach( $this->attributeRules() as $cssRule ) {
             if( $cssRule->isInlineStyle() ) {
                 $found = false;
 
                 foreach( $cssRules as &$checkRule ) {
-                    if( $checkRule->getSlug() === $cssRule->getSlug() ) {
-                        $checkRule->addCSSProperties( $cssRule->getCSSProperties(), 'compressed' );
+                    if( $checkRule->slug() === $cssRule->slug() ) {
+                        $checkRule->addCSSProperties( $cssRule->properties(), true );
                         $found = true;
                         break;
                     }
@@ -561,14 +561,15 @@ class CSSRuleSet {
     }
 
 
-
     /**
-     * Method to cleanup attribute rules by properties.
+     * Removes attribute rules matching specific properties.
+     *
+     * @param array $ignoreProperties
      */
-    public function cleanupAttributeRules( $ignoreProperties )
+    public function cleanupAttributeRules( array $ignoreProperties ) : void
     {
         foreach( $this->attributeRules as $index => $cssRule ) {
-            if( in_array( $cssRule->getProperty(), $ignoreProperties ) ) {
+            if( in_array( $cssRule->property(), $ignoreProperties ) ) {
                 unset( $this->attributeRules[ $index ] );
             }
         }
@@ -576,22 +577,22 @@ class CSSRuleSet {
 
 
     /**
-     * Method to cleanup inline rules by comparing with attributeRules.
+     * Cleans inline rules by removing properties already defined in attribute rules.
      */
-    public function cleanupInlineRules()
+    public function cleanupInlineRules() : void
     {
         foreach( $this->inlineRules as &$inlineRule ) {
-            foreach( $inlineRule->getCSSProperties() as $property => $value ) {
+            foreach( $inlineRule->properties() as $property => $value ) {
 
                 foreach( $this->attributeRules as $attributeRule ) {
                     if(
-                        0 !== $attributeRule->getMinWidth() ||
-                        'screen' !== $attributeRule->getMedia()
+                        0 !== $attributeRule->minWidth() ||
+                        'screen' !== $attributeRule->media()
                     ) {
                         continue;
                     }
 
-                    if( array_key_exists( $property, $attributeRule->getCSSProperties() ) ) {
+                    if( array_key_exists( $property, $attributeRule->properties() ) ) {
                         $inlineRule->removeCSSProperty( $property );
                     }
                 }
@@ -601,13 +602,13 @@ class CSSRuleSet {
 
 
     /**
-     * Method to compress the rules.
+     * Compresses all rules and removes empty CSS rules.
      */
-    public function compress()
+    public function compress() : void
     {
         // Cleanup empty cssRules from inlineRules.
-        foreach( $this->getInlineRules() as $index => $cssRule ) {
-            if( empty( $cssRule->getCSSProperties() ) && '%' !== $cssRule->getSelector() ) {
+        foreach( $this->inlineRules() as $index => $cssRule ) {
+            if( empty( $cssRule->properties() ) && '%' !== $cssRule->selector() ) {
                 unset( $this->inlineRules[ $index ] );
             }
         }
@@ -615,28 +616,28 @@ class CSSRuleSet {
         $compressed = [];
 
         // Compress attributeRules by selector and mediaQuery.
-        foreach( $this->getAttributeRules() as $index => $cssRule ) {
-            if( empty( $cssRule->getCSSProperties() ) ) {
+        foreach( $this->attributeRules() as $index => $cssRule ) {
+            if( empty( $cssRule->properties() ) ) {
                 unset( $this->attributeRules[ $index ] );
                 continue;
             }
 
-            $ruleSlug = $cssRule->getSlug();
+            $ruleSlug = $cssRule->slug();
 
             if( ! isset( $compressed[ $ruleSlug ] ) ) {
                 $compressed[ $ruleSlug ] = new CSSRule(
-                    $cssRule->getSource(),
+                    $cssRule->source(),
                     'compressed',
-                    $cssRule->getSelector(),
-                    $cssRule->getCSSProperties(),
-                    $cssRule->getMedia(),
-                    $cssRule->getMinWidth(),
-                    $cssRule->getMaxWidth(),
+                    $cssRule->selector(),
+                    $cssRule->properties(),
+                    $cssRule->media(),
+                    $cssRule->minWidth(),
+                    $cssRule->maxWidth(),
                 );
                 continue;
             }
 
-            $compressed[ $ruleSlug ]->addCSSProperties( $cssRule->getCSSProperties() );
+            $compressed[ $ruleSlug ]->addCSSProperties( $cssRule->properties() );
         }
 
         $this->compressedRules = array_values( $compressed );

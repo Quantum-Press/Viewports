@@ -4,26 +4,45 @@ declare( strict_types=1 );
 
 namespace QP\Viewports\Controller;
 
-use Wikimedia\CSS\Parser\Parser;
-use Wikimedia\CSS\Sanitizer\StylesheetSanitizer;
-use Wikimedia\CSS\Util as CSSUtil;
-use QP\Viewports\Model\CSSRuleSet;
+use QP\Viewports\Model\CSSRuleset;
 
+/**
+ * Handles dynamic block rendering and CSS collection.
+ *
+ * This controller hooks into WordPress block rendering to gather inline
+ * block styles, compress them, and enqueue them as inline styles
+ * on the frontend. Each block is assigned a unique class name so
+ * that its scoped CSS can be applied safely.
+ *
+ * @package QP\Viewports\Controller
+ */
 class BlockRender extends Instance {
 
     /**
-     * Method to construct.
+     * Holds the collected CSS for the current request.
+     *
+     * @var string
+     */
+    protected string $css = '';
+
+
+    /**
+     * Class constructor.
+     *
+     * Initializes the instance and registers hooks.
      */
     protected function __construct()
     {
-        $this->set_hooks();
+        $this->registerHooks();
     }
 
 
     /**
-     * Method to set hooks.
+     * Registers all required WordPress hooks.
+     *
+     * @return void
      */
-    protected function set_hooks()
+    protected function registerHooks() : void
     {
         \add_filter( 'render_block', [ $this, 'renderBlock' ], 20, 2 );
         \add_action( 'wp_enqueue_scripts', [ $this, 'enqueueBlockStyles' ], 20 );
@@ -31,105 +50,60 @@ class BlockRender extends Instance {
 
 
     /**
-     * Method to hook into block rendering to collect its css.
+     * Filters the rendered block HTML to collect its inline CSS.
      *
-     * @param string $block_html
-     * @param array $block
+     * @param string $blockHtml The block’s rendered HTML output.
+     * @param array  $block      The full block data array.
      *
-     * @return string
+     * @return string The potentially modified block HTML.
      */
-    public function renderBlock( $block_html, $block ) : string
+    public function renderBlock( string $blockHtml, array $block ) : string
     {
-        // Set style css sources and check if there is some css to render.
-        if(
+        // Check if the block contains inline styles before processing.
+        if (
             ! isset( $block[ 'attrs' ][ 'inlineStyles' ] ) ||
             empty( $block[ 'attrs' ][ 'inlineStyles' ] )
         ) {
-            return $block_html;
+            return $blockHtml;
         }
 
-        $block[ 'innerHTML' ] = $block_html;
+        $block[ 'innerHtml' ] = $blockHtml;
 
-        $ruleSet = new CSSRuleSet( $block );
+        $ruleSet = new CSSRuleset( $block );
         $ruleSet->compress();
 
         $className = \wp_unique_id( 'vp-' );
-        $selector = 'body .wp-site-blocks .' . $className;
+        $selector  = 'body .wp-site-blocks .' . $className;
 
-        $css = $ruleSet->getCSS( $selector );
+        $css = $ruleSet->css( $selector );
 
         $this->registerCSS( $css );
 
-        return $ruleSet->getBlockHTML( $className );
+        return $ruleSet->blockHtml( $className );
     }
 
 
     /**
-     * Method to register css.
+     * Appends the provided CSS to the global collection.
      *
-     * @param string $css
+     * @param string $css The CSS to register.
+     *
+     * @return void
      */
-    protected function registerCSS( $css )
+    private function registerCSS( string $css ) : void
     {
-        global $viewportsStyles;
-
-        $viewportsStyles .= $css;
+        $this->css .= $css;
     }
 
 
     /**
-     * Sanitize CSS using Wikimedia\CSS\Parser and stripping all tags.
-     * @see https://doc.wikimedia.org/css-sanitizer/master/index.html
+     * Enqueues all previously registered inline block styles.
+     *
+     * @return void
      */
-    protected function sanitizeCSS( string $css_text, bool $minify = true ) : string
+    public function enqueueBlockStyles() : void
     {
-        // Replace expression entirely to remove the whole rule later.
-        $pre_cleaned_css = \wp_strip_all_tags( preg_replace( [
-            '/expression\s*\([^\)]*\)/i',
-        ], 'expression', $css_text ) );
-
-        // Parse css with wikimedia parser and extract rulelist.
-        $parser = Parser::newFromString( $pre_cleaned_css );
-        $stylesheet = $parser->parseStylesheet();
-        $ruleList = $stylesheet->getRuleList();
-
-        // Loop through rulelist to remove invalid rules.
-        for ( $i = $ruleList->count() - 1; $i >= 0; $i-- ) {
-            $rule = $ruleList->offsetGet( $i );
-
-            $tokens = $rule->toTokenArray();
-            $found = false;
-
-            foreach ( $tokens as $token ) {
-                $value = (string) $token->value();
-
-                if (
-                    false !== strpos( $value, 'expression' ) ||
-                    false !== strpos( $value, 'javascript' )
-                ) {
-                    $found = true;
-                }
-            }
-
-            if ( $found ) {
-                $ruleList->remove( $i );
-            }
-        }
-
-        $parsed_css = CSSUtil::stringify( $stylesheet, [ 'minify' => $minify ] );
-
-        return $parsed_css;
-    }
-
-
-    /**
-     * Method to enqueue styles registered before.
-     */
-    public function enqueueBlockStyles()
-    {
-        global $viewportsStyles;
-
-        if ( empty( $viewportsStyles ) ) {
+        if ( empty( $this->css ) ) {
             return;
         }
 
@@ -140,9 +114,12 @@ class BlockRender extends Instance {
             QUANTUM_VIEWPORTS_VERSION
         );
 
+        // Note: esc_html() cannot be used here because selectors like `div > span`
+        // would be incorrectly escaped. For reference, see:
+        // @see wp-includes/theme.php:1956 wp_custom_css_cb()
         \wp_add_inline_style(
             'quantum-viewports-frontend',
-            $this->sanitizeCSS( $viewportsStyles, true ),
+            \wp_strip_all_tags( $this->css ),
         );
 
         \wp_enqueue_style( 'quantum-viewports-frontend' );

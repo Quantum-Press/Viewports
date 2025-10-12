@@ -10,51 +10,51 @@ use QP\Viewports\Controller\BlockSave;
 use QP\Viewports\Controller\BlockRender;
 
 /**
- * Viewports Plugin class.
+ * Main Plugin class for the Viewports plugin.
  *
- * This class registers assets and extend block styles.
+ * Handles registration of assets, block support, and editor integration.
  *
- * @class    QP\Viewports\Plugin
- * @package  QP\Viewports
- * @category Class
- * @author   Sebastian Buchwald // conversionmedia GmbH & Co. KG
+ * @package QP\Viewports
+ * @author Sebastian Buchwald
  */
 class Plugin extends Instance {
 
     /**
-     * Method to construct.
+     * Constructor.
+     *
+     * Protected to implement singleton via Instance base class.
      */
     protected function __construct()
     {
         $this->includes();
-        $this->set_hooks();
+        $this->registerHooks();
     }
 
 
     /**
-     * Method to set includes.
+     * Load required controllers and classes.
      */
-    protected function includes()
+    protected function includes() : void
     {
-        BlockSupport::getInstance();
-        BlockSave::getInstance();
-        BlockRender::getInstance();
+        BlockSupport::instance();
+        BlockSave::instance();
+        BlockRender::instance();
     }
 
 
     /**
-     * Method to set hooks.
+     * Set WordPress hooks.
      */
-    protected function set_hooks()
+    protected function registerHooks() : void
     {
         \add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_block_editor_assets' ], 0 );
     }
 
 
     /**
-     * Method to enqueue block editor assets.
+     * Enqueue scripts and styles for the block editor.
      */
-    public function enqueue_block_editor_assets()
+    public function enqueue_block_editor_assets() : void
     {
         \wp_register_script(
             'quantum-viewports-scripts',
@@ -75,9 +75,9 @@ class Plugin extends Instance {
             [
                 'distribution' => $distribution,
                 'version' => QUANTUM_VIEWPORTS_VERSION,
-                'blockBlacklist' => $this->get_block_blacklist(),
-                'gutenbergVersion' => $this->get_gutenberg_version(),
-                'wordpressVersion' => $this->get_wordpress_version(),
+                'blockBlacklist' => $this->blockBlacklist(),
+                'gutenbergVersion' => $this->gutenbergVersion(),
+                'wordpressVersion' => $this->wordpressVersion(),
             ]
         );
         \wp_enqueue_script( 'quantum-viewports-scripts' );
@@ -98,26 +98,30 @@ class Plugin extends Instance {
 
 
     /**
-     * Method to return the blacklist of blocks.
+     * Return an array of blocks that should be blacklisted.
+     *
+     * @return array
      */
-    public function get_block_blacklist() : array
+    public function blockBlacklist() : array
     {
-        $issue_blocks = [
+        $issueBlocks = [
             'cloudcatch/light-modal-block',
             'quantum-editor/teaser', // Old name - Still in use
             'quantumpress/teaser',
         ];
 
-        $block_blacklist = \apply_filters( 'quantum_viewports_block_blacklist', $issue_blocks );
+        $blockBlacklist = \apply_filters( 'quantum_viewports_block_blacklist', $issueBlocks );
 
-        return $block_blacklist;
+        return $blockBlacklist;
     }
 
 
     /**
-     * Method to return the used wordpress version.
+     * Return the WordPress version.
+     *
+     * @return string
      */
-    public function get_wordpress_version() : string
+    public function wordpressVersion() : string
     {
         require ABSPATH . WPINC . '/version.php';
 
@@ -126,15 +130,17 @@ class Plugin extends Instance {
 
 
     /**
-     * Method to return the used gutenberg version.
+     * Return the active Gutenberg plugin version or "unknown".
+     *
+     * @return string
      */
-    public function get_gutenberg_version() : string
+    public function gutenbergVersion() : string
     {
         if ( \is_plugin_active( 'gutenberg/gutenberg.php' ) ) {
-            $plugin_data = \get_plugin_data( WP_PLUGIN_DIR . '/gutenberg/gutenberg.php' );
+            $pluginData = \get_plugin_data( WP_PLUGIN_DIR . '/gutenberg/gutenberg.php' );
 
-            if( ! empty( $plugin_data[ 'Version' ] ) ) {
-                return $plugin_data[ 'Version' ];
+            if( ! empty( $pluginData[ 'Version' ] ) ) {
+                return $pluginData[ 'Version' ];
             }
         }
 

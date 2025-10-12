@@ -5,45 +5,47 @@ declare( strict_types=1 );
 namespace QP\Viewports\Controller;
 
 /**
- * Instance Controller class.
+ * Abstract base class for managing single object instances.
  *
- * This class is base of a single object instance.
+ * Provides methods to generate or retrieve a singleton instance
+ * of a class using the InstanceManager.
  *
- * @class    QP\Viewports\Controller\Instance
- * @package  QP\Viewports\Controller
- * @category Class
- * @author   Sebastian Buchwald // conversionmedia GmbH & Co. KG
+ * @package QP\Viewports\Controller
  */
 abstract class Instance {
 
     /**
-     * Generates or calls own Instance.
+     * Returns the singleton instance of the called class.
+     *
+     * If an instance does not exist, it will be created.
      *
      * @static
-     * @return object instance
+     * @return object|false The singleton instance of the class.
      */
-    public static function getInstance()
+    public static function instance() : object|false
     {
         if ( ! InstanceManager::hasInstance( static::class ) ) {
             InstanceManager::addInstance( new static() );
         }
 
-        return InstanceManager::getInstance( static::class );
+        return InstanceManager::instance( static::class );
     }
 
 
     /**
-     * Generates or calls own Instance.
+     * Ensures an instance exists and returns it.
+     *
+     * Similar to getInstance(), but intended for optional early initialization.
      *
      * @static
-     * @return object instance
+     * @return object|false The singleton instance of the class.
      */
-    public static function maybeAddInstance()
+    public static function maybeAddInstance() : object|false
     {
         if ( ! InstanceManager::hasInstance( static::class ) ) {
             InstanceManager::addInstance( new static() );
         }
 
-        return InstanceManager::getInstance( static::class );
+        return InstanceManager::instance( static::class );
     }
 }

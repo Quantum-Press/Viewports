@@ -5,109 +5,113 @@ declare( strict_types=1 );
 namespace QP\Viewports\Model;
 
 use QP\Viewports\Controller\BlockProcessor;
-use QP\Viewports\Controller\BlockSupport\Viewports\Controller\CSSParser;
+use QP\Viewports\Controller\CSSParser;
 
 /**
- * This model class handles a single block.
+ * Represents a single block with its attributes, content, and CSS.
  *
- * @class    QP\Viewports\Model\Block
- * @package  QP\Viewports\Model\
- * @category Class
+ * Provides methods to sanitize attributes, process inner blocks,
+ * modify styles for saving, and serialize block data.
+ *
+ * @package QP\Viewports\Model
  */
 class Block {
 
     /**
-     * Property contains block name
+     * Block name.
      *
      * @var string
      */
     public string $blockName = '';
 
     /**
-     * Property contains block attributes.
+     * Block attributes.
      *
      * @var array
      */
     public array $attrs = [];
 
     /**
-     * Property contains block innerHTML.
+     * Inner HTML content of the block.
      *
      * @var string
      */
-    public string $innerHTML = '';
+    public string $innerHtml = '';
 
     /**
-     * Property contains block innerContent.
+     * Inner content array of the block.
      *
      * @var array
      */
     public array $innerContent = [];
 
     /**
-     * Property contains block innerBlocks.
+     * Inner blocks array.
      *
      * @var array
      */
     public array $innerBlocks = [];
 
     /**
-     * Property contains options.
+     * Options retrieved from BlockProcessor.
      *
      * @var array
      */
     public array $options = [];
 
     /**
-     * Property contains CSSuleset object.
+     * CSSRuleset object for handling CSS operations.
      *
-     * @var null|CSSRuleSet
+     * @var CSSRuleset|null
      */
-    public null|CSSRuleSet $cssRuleset = null;
+    public null|CSSRuleset $cssRuleset = null;
 
 
     /**
-     * Constructor to build block object.
+     * Constructor to initialize the block.
      *
      * @param string $blockName
-     * @param array $attrs
-     * @param string $innerHTML
-     * @param array $innerContent
-     * @param array $innerBlocks
+     * @param array  $attrs
+     * @param string $innerHtml
+     * @param array  $innerContent
+     * @param array  $innerBlocks
      */
     public function __construct(
         string $blockName,
         array $attrs = [],
-        string $innerHTML = '',
+        string $innerHtml = '',
         array $innerContent = [],
         array $innerBlocks = []
     ) {
+
         $this->blockName = $blockName;
 
         $this->attrs = $this->sanitizeAttrs( $attrs );
 
-        $this->innerHTML = $innerHTML;
+        $this->innerHtml = $innerHtml;
         $this->innerContent = $innerContent;
         $this->innerBlocks = $innerBlocks;
 
-        $this->options = BlockProcessor::getOptions();
+        $this->options = BlockProcessor::options();
 
-        $this->cssRuleset = new CSSRuleSet( [
+        $this->cssRuleset = new CSSRuleset( [
             'blockName' => $this->blockName,
-            'innerHTML' => $this->innerHTML,
+            'innerHtml' => $this->innerHtml,
             'attrs' => $this->attrs,
         ] );
     }
 
 
     /**
-     * Method to sanitize attributes.
+     * Sanitizes block attributes.
+     *
+     * Shifts default viewport style to top-level style attribute.
      *
      * @param array $attrs
      *
      * @return array
      */
-    protected function sanitizeAttrs( $attrs ) : array
+    protected function sanitizeAttrs( array $attrs ) : array
     {
         // Shift the default viewport=0 to style attribute. It can differ by viewport simulation.
         if( isset( $attrs[ 'viewports' ][ 0 ][ 'style' ] ) ) {
@@ -120,9 +124,11 @@ class Block {
 
 
     /**
-     * Method to set innerBlocks to Block objects.
+     * Converts innerBlocks arrays to Block objects recursively.
+     *
+     * @return void
      */
-    public function setInnerBlocks()
+    public function convertInnerBlocks() : void
     {
         if( is_array( reset( $this->innerBlocks ) ) ) {
             $this->innerBlocks = BlockProcessor::generateBlocks( $this->innerBlocks );
@@ -131,22 +137,23 @@ class Block {
 
 
     /**
-     * Method to return inner blocks.
+     * Returns inner block objects.
      *
      * @return Block[]
      */
-    public function getInnerBlocks() : array
+    public function innerBlocks() : array
     {
         return $this->innerBlocks;
     }
 
 
     /**
-     * Method to modify block settings for save.
+     * Modifies block and inner block data before saving.
+     *
+     * @return void
      */
-    public function modifySave()
+    public function modifySave() : void
     {
-
         // Modify inline styles if there are styles.
         if( isset( $this->attrs[ 'style' ] ) ) {
             $this->modifySaveStyles();
@@ -154,7 +161,7 @@ class Block {
 
         // Modify innerBlocks recursive.
         if( ! empty( $this->innerBlocks ) ) {
-            $this->setInnerBlocks();
+            $this->convertInnerBlocks();
 
             foreach( $this->innerBlocks as &$block ) {
                 $block->modifySave();
@@ -164,15 +171,17 @@ class Block {
 
 
     /**
-     * Method to modify block styles for save.
+     * Modifies block CSS rules for saving.
+     *
+     * @return void
      */
-    public function modifySaveStyles()
+    public function modifySaveStyles() : void
     {
         $this->cssRuleset->cleanupAttributeRules( $this->options[ 'ignore_properties' ] );
         $this->cssRuleset->cleanupInlineRules();
         $this->cssRuleset->compress();
 
-        $inlineStyleRules = $this->cssRuleset->getInlineStyleRules();
+        $inlineStyleRules = $this->cssRuleset->inlineStyleRules();
         if( empty( $inlineStyleRules ) ) {
             $this->resetInlineStyles();
             return;
@@ -185,23 +194,25 @@ class Block {
 
 
     /**
-     * Method to modify save html by cssRule.
+     * Applies a CSSRule to block HTML and inner content recursively.
      *
      * @param CSSRule $cssRule
+     *
+     * @return void
      */
-    private function modifySaveHTML( $cssRule )
+    private function modifySaveHTML( CSSRule $cssRule ) : void
     {
 
         // Set selector parts depending on selector depth.
-        $selector = $cssRule->getSelector();
-        if( '%' === $selector ) {
-            $selectorParts = [ '%' ];
-        } else {
+        $selector = $cssRule->selector();
+
+        $selectorParts = [ '%' ];
+        if( '%' !== $selector ) {
             $selectorParts = CSSParser::getSelectorParts( $selector );
         }
 
         // Start processing at the outer selector.
-        $modifyNestedSelector = function( &$html, $selectorParts ) use ( &$cssRule, &$modifyNestedSelector ) {
+        $modifyNestedSelector = static function( string &$html, array $selectorParts ) use ( &$cssRule, &$modifyNestedSelector ) : void {
             if( empty( $selectorParts ) ) {
                 return;
             }
@@ -225,7 +236,7 @@ class Block {
 
             // Break out on wildcard only.
             if( empty( $selectorParts ) && '%' === $tagName ) {
-                $processor->set_attribute( 'style', $cssRule->getCompressedPropertiesCSS() );
+                $processor->set_attribute( 'style', $cssRule->compressedPropertiesCss() );
                 $html = (string) $processor;
 
                 return;
@@ -247,20 +258,19 @@ class Block {
 
                 // Check if last selector part reached.
                 if( empty( $selectorParts ) ) {
-                    $processor->set_attribute( 'style', $cssRule->getCompressedPropertiesCSS() );
+                    $processor->set_attribute( 'style', $cssRule->compressedPropertiesCss() );
                     $html = (string) $processor;
-
-                } else {
-
-                    // Extract the inner HTML manually
-                    $innerHTML = CSSParser::extractInnerHTML( $html, $tagName );
-                    $modifyNestedSelector( $innerHTML, $selectorParts );
-                    $html = CSSParser::replaceInnerHTML( $html, $innerHTML, $tagName );
+                    continue;
                 }
+
+                // Extract the inner HTML manually
+                $innerHtml = CSSParser::extractInnerHTML( $html, $tagName );
+                $modifyNestedSelector( $innerHtml, $selectorParts );
+                $html = CSSParser::replaceInnerHTML( $html, $innerHtml, $tagName );
             }
         };
 
-        $modifyNestedSelector( $this->innerHTML, $selectorParts );
+        $modifyNestedSelector( $this->innerHtml, $selectorParts );
 
         if( isset( $this->innerContent[ 0 ] ) ) {
             $modifyNestedSelector( $this->innerContent[ 0 ], $selectorParts );
@@ -270,15 +280,17 @@ class Block {
 
 
     /**
-     * Method to reset inline styles on innerHTML.
+     * Resets all inline styles on block HTML and inner content.
+     *
+     * @return void
      */
-    public function resetInlineStyles()
+    public function resetInlineStyles() : void
     {
-        $processor = new \WP_HTML_Tag_Processor( $this->innerHTML );
+        $processor = new \WP_HTML_Tag_Processor( $this->innerHtml );
         $processor->next_tag();
         $processor->remove_attribute( 'style' );
 
-        $this->innerHTML = (string) $processor;
+        $this->innerHtml = (string) $processor;
 
         if( isset( $this->innerContent[ 0 ] ) ) {
             $processor = new \WP_HTML_Tag_Processor( $this->innerContent[ 0 ] );
@@ -291,26 +303,26 @@ class Block {
 
 
     /**
-     * Method to return serialized block information.
+     * Returns serialized block data suitable for saving.
      *
      * @return array
      */
-    public function getSerializedBlock() : array
+    public function serializedBlock() : array
     {
         $innerBlocks = [];
 
         if( ! empty( $this->innerBlocks ) ) {
-            $this->setInnerBlocks();
+            $this->convertInnerBlocks();
 
             foreach( $this->innerBlocks as $block ) {
-                $innerBlocks[] = $block->getSerializedBlock();
+                $innerBlocks[] = $block->serializedBlock();
             }
         }
 
         return [
             'blockName' => $this->blockName,
             'attrs' => $this->attrs,
-            'innerHTML' => $this->innerHTML,
+            'innerHTML' => $this->innerHtml, // innerHTML key needs to be named ! camelCase
             'innerContent' => $this->innerContent,
             'innerBlocks' => $innerBlocks,
         ];

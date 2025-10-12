@@ -5,51 +5,61 @@ declare( strict_types=1 );
 namespace QP\Viewports\Controller;
 
 /**
- * This class handles block save.
+ * Handles saving of block content for supported post types.
  *
- * @class    QP\Viewports\BlockSave
- * @package  QP\Viewports
- * @category Class
- * @author   Sebastian Buchwald // conversionmedia GmbH & Co. KG
+ * This controller hooks into WordPress post data insertion to
+ * process and modify blocks before saving. It ignores unsupported
+ * post types and posts without block editor support.
+ *
+ * @package QP\Viewports\Controller
  */
 class BlockSave extends Instance {
 
     /**
-     * Property contains invalid post_types.
+     * Stores post types that should be ignored during block processing.
+     *
+     * @var array|null
      */
-    protected $invalid_post_types = null;
+    protected $invalidPostTypes = null;
 
 
     /**
-     * Method to construct.
+     * Class constructor.
+     *
+     * Initializes hooks for block save operations.
      */
     protected function __construct()
     {
-        $this->set_hooks();
+        $this->registerHooks();
     }
 
 
     /**
-     * Method to set hooks.
+     * Registers required WordPress hooks.
+     *
+     * @return void
      */
-    protected function set_hooks()
+    protected function registerHooks() : void
     {
         \add_filter( 'wp_insert_post_data', [ $this, 'wp_insert_post_data' ], 10, 2 );
     }
 
 
     /**
-     * Method to filter "wp_insert_post_data".
+     * Filters post data before it is inserted into the database.
      *
-     * @param array $data
-     * @param array $postarr
+     * Modifies the post content by processing its blocks for
+     * supported post types using BlockProcessor.
      *
-     * @return array
+     * @param array $data    The post data to be saved.
+     * @param array $postarr The original post array.
+     *
+     * @return array The modified post data.
      */
-    public function wp_insert_post_data( $data, $postarr ) : array
+    public function wp_insert_post_data( array $data, array $postarr ) : array
     {
         // Ignore invalid post_types.
-        if( in_array( $postarr[ 'post_type' ], $this->get_invalid_post_types() ) ) {
+        if( in_array( $postarr[ 'post_type' ], $this->invalidPostTypes() ) ) {
             return $data;
         }
 
@@ -69,25 +79,27 @@ class BlockSave extends Instance {
 
 
     /**
-     * Method to return invalid post_types.
+     * Returns the list of post types that should be ignored.
      *
-     * @return array
+     * The list is filtered via the 'quantum_viewports_invalid_post_types' hook.
+     *
+     * @return array The invalid post types.
      */
-    public function get_invalid_post_types() : array
+    public function invalidPostTypes() : array
     {
-        if( null === $this->invalid_post_types ) {
-            $invalid_post_types = [
+        if( null === $this->invalidPostTypes ) {
+            $invalidPostTypes = [
                 'wp_global_styles',
                 'wp_font_family',
                 'wp_font_face',
                 'customize_changeset',
             ];
-            $this->invalid_post_types = \apply_filters(
+            $this->invalidPostTypes = \apply_filters(
                 'quantum_viewports_invalid_post_types',
-                $invalid_post_types
+                $invalidPostTypes
             );
         }
 
-        return $this->invalid_post_types;
+        return $this->invalidPostTypes;
     }
 }

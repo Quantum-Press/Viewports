@@ -5,7 +5,7 @@ namespace QP\Viewports\Model;
 use PHPUnit\Framework\TestCase;
 
 
-final class CSSRuleSetTest extends TestCase {
+final class CSSRulesetTest extends TestCase {
 
 
 	/**
@@ -15,7 +15,7 @@ final class CSSRuleSetTest extends TestCase {
 	 */
 	public function testEmptyConstructor( array $block )
 	{
-		$cssRuleset = new CSSRuleSet( $block );
+		$cssRuleset = new CSSRuleset( $block );
 
 		$this->assertEmpty( $cssRuleset->getRules() );
 	}
@@ -28,7 +28,7 @@ final class CSSRuleSetTest extends TestCase {
 	 */
 	public function testGeneratingRules( array $block )
 	{
-		$cssRuleset = new CSSRuleSet( $block );
+		$cssRuleset = new CSSRuleset( $block );
 
 		$this->assertEmpty( $cssRuleset->getRules() );
 	}

@@ -5,103 +5,97 @@ declare( strict_types=1 );
 namespace QP\Viewports\Controller;
 
 /**
- * Instance Manager Controller class.
+ * Manages singleton object instances for the application.
  *
- * This class handles object instance management.
+ * Provides a centralized manager to store, retrieve, and check
+ * instances of classes. Implements a singleton pattern for
+ * the manager itself.
  *
- * @class    QP\Viewports\Controller\InstanceManager
- * @package  QP\Viewports\Controller
- * @category Class
- * @author   Sebastian Buchwald // conversionmedia GmbH & Co. KG
+ * @package QP\Viewports\Controller
  */
 class InstanceManager {
 
     /**
-     * Property contains own instance.
+     * Singleton instance of the InstanceManager.
      *
-     * @var object InstanceManager
+     * @var InstanceManager|null
      */
-    protected static $_instance = null;
+    protected static $instance = null;
 
     /**
-     * Property contains instances.
+     * Array storing instances of managed classes.
      *
      * @var array
      */
-    protected $_instances = [];
-
+    protected $instances = [];
 
 
     /**
-     * Method to return instance from manager.
+     * Retrieves a managed instance of a given class.
      *
-     * @param string (required) $classname
+     * @param string $classname Fully qualified class name.
      *
      * @static
-     * @return object instance || boolean false
+     * @return object|false The instance if it exists, otherwise false.
      */
-    public static function getInstance( $classname )
+    public static function instance( string $classname ) : object|false
     {
-        return self::_getManager()->_getInstance( $classname );
+        return self::_getManager()->_instance( $classname );
     }
 
 
-
     /**
-     * Method to check whether we have given instance.
+     * Checks whether an instance of a given class exists.
      *
-     * @param string (required) $classname
+     * @param string $classname Fully qualified class name.
      *
      * @static
-     * @return boolean for its indication
+     * @return bool True if the instance exists, false otherwise.
      */
-    public static function hasInstance( $classname )
+    public static function hasInstance( string $classname ) : bool
     {
         return self::_getManager()->_hasInstance( $classname );
     }
 
 
-
     /**
-     * Method to add instance
+     * Adds a new instance to the manager.
      *
-     * @param string (required) $instance
-     *
-     * @static
-     * @return object instance
+     * @param object $instance The instance to store.
      */
-    public static function addInstance( $instance )
+    public static function addInstance( object $instance ) : void
     {
-        return self::_getManager()->_addInstance( $instance );
+        self::_getManager()->_addInstance( $instance );
     }
 
 
-
     /**
-     * Method to return set manager.
+     * Returns the singleton manager instance.
      *
      * @static
-     * @return object instance
+     * @return InstanceManager The InstanceManager singleton.
      */
-    protected static function _getManager()
+    protected static function _getManager() : InstanceManager
     {
-        if ( is_null( self::$_instance ) ) {
-            self::$_instance = new self();
+        if ( is_null( self::$instance ) ) {
+            self::$instance = new self();
         }
-        return self::$_instance;
+
+        return self::$instance;
     }
 
 
-
     /**
-     * Method to return instance.
+     * Returns a stored instance for a given class.
      *
-     * @return object|false
+     * @param string $classname Fully qualified class name.
+     *
+     * @return object|false The instance if it exists, otherwise false.
      */
-    public function _getInstance( $classname )
+    public function _instance( string $classname ) : object|false
     {
-        if ( isset( $this->_instances[ $classname ] ) ) {
-            return $this->_instances[ $classname ];
+        if ( isset( $this->instances[ $classname ] ) ) {
+            return $this->instances[ $classname ];
         }
 
         return false;
@@ -110,15 +104,15 @@ class InstanceManager {
 
 
     /**
-     * Method to check whether we have instance.
+     * Checks if a stored instance exists for a given class.
      *
-     * @param string (required) $classname
+     * @param string $classname Fully qualified class name.
      *
-     * @return boolean for its indication
+     * @return bool True if the instance exists, false otherwise.
      */
-    public function _hasInstance( $classname )
+    public function _hasInstance( string $classname ) : bool
     {
-        if ( isset( $this->_instances[ $classname ] ) ) {
+        if ( isset( $this->instances[ $classname ] ) ) {
             return true;
         }
 
@@ -128,12 +122,14 @@ class InstanceManager {
 
 
     /**
-     * Method to add instance.
+     * Adds a new instance to the manager.
      *
-     * @param object (required) $instance
+     * @param object $instance The instance to store.
+     *
+     * @return void
      */
-    public function _addInstance( $instance )
+    public function _addInstance( object $instance ) : void
     {
-        $this->_instances[ get_class( $instance ) ] = $instance;
+        $this->instances[ get_class( $instance ) ] = $instance;
     }
 }

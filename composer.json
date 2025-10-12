@@ -3,7 +3,7 @@
     "type": "wordpress-plugin",
     "description": "Extend your BlockTheme to make standard block styles responsive!",
     "license": "non-public",
-    "version": "0.9.8",
+    "version": "0.9.9-dev",
     "autoload": {
         "psr-4": {
             "QP\\Viewports\\": "includes/"
@@ -12,18 +12,15 @@
     "require-dev": {
         "phpunit/phpunit": "*",
         "yoast/wp-test-utils": "^1.2",
-        "squizlabs/php_codesniffer": "^3.13",
-        "inpsyde/php-coding-standards": "^2.0"
-    },
-    "require": {
-        "wikimedia/css-sanitizer": "^6.0"
+        "syde/phpcs": "dev-main"
     },
     "config": {
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
         }
     },
+    "minimum-stability": "dev",
     "scripts": {
-        "phpcs": "vendor/bin/phpcs --standard=Inpsyde includes/"
+        "phpcs": "vendor/bin/phpcs --standard=Syde includes/"
     }
 }
