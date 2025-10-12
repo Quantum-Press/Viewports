@@ -7,7 +7,7 @@ declare( strict_types=1 );
  *
  * Plugin Name: Quantum Viewports
  * Description: Extend your BlockTheme to make standard block styles responsive!
- * Version:     0.9.9-dev
+ * Version:     0.9.9
  * Text Domain: quantum-viewports
  * Domain Path: /languages
  *
@@ -27,7 +27,7 @@ defined( 'ABSPATH' ) || exit;
 use \QP\Viewports\Plugin;
 
 // Global variables, as few as possible
-define( 'QUANTUM_VIEWPORTS_VERSION',    '0.9.9-dev' );
+define( 'QUANTUM_VIEWPORTS_VERSION',    '0.9.9' );
 define( 'QUANTUM_VIEWPORTS_FILE',       ( __FILE__ ) );
 define( 'QUANTUM_VIEWPORTS_URL',        untrailingslashit( plugin_dir_url( QUANTUM_VIEWPORTS_FILE ) ) );
 define( 'QUANTUM_VIEWPORTS_PATH',       untrailingslashit( plugin_dir_path( QUANTUM_VIEWPORTS_FILE ) ) );

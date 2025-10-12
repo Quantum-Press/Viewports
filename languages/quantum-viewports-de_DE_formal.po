@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Quantum Viewports 0.9.9-dev\n"
+"Project-Id-Version: Quantum Viewports 0.9.9\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/quantum-"
 "viewports\n"
 "POT-Creation-Date: 2025-09-27T09:14:22+00:00\n"

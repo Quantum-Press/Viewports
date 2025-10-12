@@ -3,7 +3,7 @@
     "type": "wordpress-plugin",
     "description": "Extend your BlockTheme to make standard block styles responsive!",
     "license": "non-public",
-    "version": "0.9.9-dev",
+    "version": "0.9.9",
     "autoload": {
         "psr-4": {
             "QP\\Viewports\\": "includes/"
