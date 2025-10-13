@@ -1,13 +1,10 @@
-import { STORE_NAME } from '../../store';
-import { getVersion } from '../../utils';
-import { logo } from '../svgs';
+import { STORE_NAME } from '@quantum-viewports/store';
+import { getVersion } from '@quantum-viewports/utils';
+import { logo } from '@quantum-viewports/components';
 
 const {
 	components: {
 		Button,
-	},
-	data: {
-		useSelect,
 	},
 	i18n: {
 		__,
@@ -17,18 +14,7 @@ const {
 /**
  * Set component const to export sidebar control-edit ui.
  */
-const Foot = () => {
-
-	// Set state dependencies.
-	const {
-		isInspecting,
-	} = useSelect( ( select : Function ) => {
-		const store = select( STORE_NAME );
-
-		return {
-			isInspecting: store.isInspecting(),
-		}
-	}, [] );
+export const Foot = () => {
 
 	// Setup version.
 	const version = getVersion();
@@ -46,5 +32,3 @@ const Foot = () => {
 		</div>
 	);
 }
-
-export default Foot;

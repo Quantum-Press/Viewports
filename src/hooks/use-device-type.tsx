@@ -1,4 +1,9 @@
-import { isInDesktopRange, isInMobileRange, isInTabletRange, STORE_NAME } from "../store";
+import {
+	isInDesktopRange,
+	isInMobileRange,
+	isInTabletRange,
+	STORE_NAME
+} from "@quantum-viewports/store";
 
 const {
 	data: {
@@ -6,7 +11,6 @@ const {
 		useDispatch,
 	},
 	element: {
-		useEffect,
 		useLayoutEffect,
 		useState,
 		createContext,

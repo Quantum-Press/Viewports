@@ -1,4 +1,4 @@
-import { STORE_NAME } from '../store';
+import { STORE_NAME } from '@quantum-viewports/store';
 
 const {
 	data: {
@@ -13,7 +13,7 @@ const {
  *
  * @param object props
  */
-const Viewports = () => {
+export const Viewports = () => {
 
 	// Set states.
 	const props = useSelect( ( select: Function ) => {
@@ -124,5 +124,3 @@ const Viewports = () => {
 		</div>
 	);
 };
-
-export default Viewports;

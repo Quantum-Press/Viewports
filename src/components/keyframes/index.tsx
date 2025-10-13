@@ -1,13 +1,11 @@
-import {
-	STORE_NAME
-} from '../../store';
-import  {
-	SpectrumSet
-} from '../../types';
+import { STORE_NAME } from '@quantum-viewports/store';
+import { SpectrumSet } from '@quantum-viewports/types';
 
-import { useHighlight, useHighlightViewport } from '../../hooks';
-import { keyframe as iconKeyframe } from '../svgs';
+import { useHighlight, useHighlightViewport } from '@quantum-viewports/hooks';
+import { keyframe as iconKeyframe } from '@quantum-viewports/components';
+
 import { KeyframeControls } from './controls';
+import { KeyframesToggle } from './toggle';
 
 const {
 	components: {
@@ -167,7 +165,7 @@ const generateKeyframes = ( props ) => {
 /**
  * Set component to render keyframes ui.
  */
-const Keyframes = () => {
+export const Keyframes = () => {
 
 	// Set states.
 	const props : {
@@ -403,4 +401,4 @@ const Keyframes = () => {
 	)
 }
 
-export default Keyframes;
+export * from './toggle';

@@ -1,13 +1,7 @@
-import useResizeEditor from '../hooks/use-resize-editor';
-import { useLocalStorage } from '../hooks';
-import { STORE_NAME } from '../store';
-import Body from './body';
-import Save from '../hacks/save';
-import Topbar from './topbar';
-import Viewports from './viewports';
-import Keyframes from './keyframes';
-import Editing from './editing';
-import Visualizer from '../block/visualizer';
+import { useResizeEditor, useLocalStorage } from '@quantum-viewports/hooks';
+import { STORE_NAME } from '@quantum-viewports/store';
+import { Body, Editing, Keyframes, Topbar, Viewports, Visualizer } from '@quantum-viewports/components';
+import { Save } from '@quantum-viewports/hacks';
 
 const {
 	data: {
@@ -23,7 +17,7 @@ const {
  *
  * @param object props
  */
-export default function Wrap() {
+export function Wrap() {
 
 	// Set state dependencies.
 	useResizeEditor();

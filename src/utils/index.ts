@@ -11,3 +11,4 @@ export * from './longpress';
 export * from './object';
 export * from './scroll';
 export * from './traverse';
+export * from './version';

@@ -1,26 +1,8 @@
-import type {
-	Spectrum
-} from '../../../types';
-import { isObject } from '../../../utils';
+import type { Spectrum } from '@quantum-viewports/types';
+import { isObject } from '@quantum-viewports/utils';
 import ObjectList from './object';
 
-interface Style {
-	baseKeys : Array<any>;
-	origKeys : Array<any>;
-	styleKey : string;
-	styleValue : any;
-	onClickFunction : Function;
-}
-
-const { isEqual, isUndefined, isNull } = window[ 'lodash' ];
-const {
-	components: {
-		Button,
-	},
-	data: {
-		dispatch,
-	}
-} = window[ 'wp' ];
+const { isUndefined, isNull } = window[ 'lodash' ];
 
 /**
  * Set function to render a style component for given spectrum.
@@ -101,5 +83,3 @@ export const ArrayList = ( {
 		</div>
 	);
 }
-
-export default ArrayList;

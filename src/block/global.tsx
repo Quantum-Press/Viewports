@@ -1,9 +1,9 @@
-import useGlobalBlockStyles from '../hooks/use-global-block-styles';
-import { STORE_NAME } from '../store';
+import { useGlobalBlockStyles } from '@quantum-viewports/hooks';
+import { STORE_NAME } from '@quantum-viewports/store';
 import {
 	findObjectChanges,
 	traverseExist,
-} from '../utils';
+} from '@quantum-viewports/utils';
 
 const {
 	data: {

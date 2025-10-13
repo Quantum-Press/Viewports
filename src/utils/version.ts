@@ -1,4 +1,3 @@
-
 /**
  * Compares two version numbers in the format "x.y.z".
  *

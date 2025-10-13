@@ -1,5 +1,4 @@
-import { desktop } from '../components/svgs';
-import type { Size } from '../hooks';
+import type { Size } from '@quantum-viewports/hooks';
 import type {
 	State,
 	RendererSet,
@@ -10,14 +9,14 @@ import type {
 	IndicatorSelectorSet,
 	BlockStyles,
 	BlockAttributes,
-} from '../types';
+} from '@quantum-viewports/types';
 
 import {
 	findObjectChanges,
 	getMergedObject,
 	traverseFilled,
 	traverseGet,
-} from '../utils';
+} from '@quantum-viewports/utils';
 import { DEFAULT_STATE } from './default';
 import {
 	isInMobileRange,

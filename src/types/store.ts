@@ -1,6 +1,5 @@
-import type { Size } from '../hooks';
+import type { Size } from '@quantum-viewports/hooks';
 import type {
-	AnyObject,
 	clientId,
 	BlockStyles,
 	BlockAttributes

@@ -1,18 +1,3 @@
-import {
-	isObject,
-	getMergedObject,
-	traverseGet,
-	traverseExist,
-	cleanupObject,
-	findObjectDifferences,
-	findObjectChanges,
-	findChanges,
-} from '../utils';
-import {
-	tabletBreakpoint,
-	desktopBreakpoint,
-} from './default';
-import { Generator } from './generator';
 import type {
 	clientId,
 	BlockStyles,
@@ -27,7 +12,22 @@ import type {
 	SpectrumSet,
 	BlockAttributes,
 	AnyObject
-} from '../types';
+} from '@quantum-viewports/types';
+import {
+	isObject,
+	getMergedObject,
+	traverseGet,
+	traverseExist,
+	cleanupObject,
+	findObjectDifferences,
+	findObjectChanges,
+	findChanges,
+} from '@quantum-viewports/utils';
+import {
+	tabletBreakpoint,
+	desktopBreakpoint,
+} from './default';
+import { Generator } from './generator';
 
 const {
 	isEqual,

@@ -1,6 +1,6 @@
-import Indicator from './';
-import { STORE_NAME } from '../../store';
-import useEditorSidebar from '../../hooks/use-editor-sidebar';
+import { STORE_NAME } from '@quantum-viewports/store';
+import { useEditorSidebar } from '@quantum-viewports/hooks';
+import { Indicator } from './';
 
 const {
 	data: {

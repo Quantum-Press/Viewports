@@ -14,7 +14,7 @@ interface AccordionProps {
 /**
  * Set function to return Accordion component.
  */
-const Accordion: React.FC<AccordionProps> = ({
+export const Accordion: React.FC<AccordionProps> = ({
 	isOpen,
 	setIsOpen,
 	label = 'Toggle Accordion',
@@ -48,5 +48,3 @@ const Accordion: React.FC<AccordionProps> = ({
 		</div>
 	);
 };
-
-export default Accordion;

@@ -63,7 +63,16 @@ module.exports = ( env ) => ( {
 		],
 	},
 	resolve: {
-		extensions: [ '.ts', '.tsx' ],
+		extensions: [ '.tsx', '.ts' ],
+		alias: {
+			'@quantum-viewports/components': path.resolve( __dirname, 'src/components' ),
+			'@quantum-viewports/config': path.resolve( __dirname, 'src/config' ),
+			'@quantum-viewports/hacks': path.resolve( __dirname, 'src/hacks' ),
+			'@quantum-viewports/hooks': path.resolve( __dirname, 'src/hooks' ),
+			'@quantum-viewports/store': path.resolve( __dirname, 'src/store' ),
+			'@quantum-viewports/types': path.resolve( __dirname, 'src/types' ),
+			'@quantum-viewports/utils': path.resolve( __dirname, 'src/utils' ),
+		},
 	},
 	output: {
 		filename: 'quantum-viewports.js',

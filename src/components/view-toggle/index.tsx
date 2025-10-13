@@ -1,5 +1,4 @@
-import { STORE_NAME } from '../../store';
-import { view } from '../svgs';
+import { STORE_NAME } from '@quantum-viewports/store';
 
 const {
 	components: {
@@ -19,7 +18,7 @@ const {
  *
  * @param object props
  */
-const ToggleView = () => {
+export const ViewToggle = () => {
 
 	// Set dispatch.
 	const dispatch = useDispatch( STORE_NAME );
@@ -51,5 +50,3 @@ const ToggleView = () => {
 		/>
 	);
 }
-
-export default ToggleView;

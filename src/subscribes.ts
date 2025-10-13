@@ -1,8 +1,7 @@
 
-import { isSiteEditor } from './utils/editor';
+import { isSiteEditor } from '@quantum-viewports/utils';
+import { Wrap, Inspector } from '@quantum-viewports/components';
 import portalHandler from './portals';
-import Wrap from './components/wrap';
-import Inspector from './components/inspector';
 
 const {
 	data: {

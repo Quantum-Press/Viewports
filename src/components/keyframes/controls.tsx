@@ -1,7 +1,5 @@
-import {
-	STORE_NAME,
-} from '../../store';
-import { StyleList } from '../inspector/stylelist';
+import { STORE_NAME } from '@quantum-viewports/store';
+import { StyleList } from '@quantum-viewports/components';
 
 const {
 	components: {

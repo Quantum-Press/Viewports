@@ -1,5 +1,4 @@
-import { STORE_NAME } from '../store';
-import { isSiteEditor } from '../utils';
+import { STORE_NAME } from '@quantum-viewports/store';
 
 const {
 	data: {
@@ -10,7 +9,7 @@ const {
 /**
  * Export component that fires events for dirty and saving state changes.
  */
-export default function Body() {
+export function Body() {
 
 	// Set states.
 	const {

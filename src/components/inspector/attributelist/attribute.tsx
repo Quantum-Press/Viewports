@@ -1,9 +1,7 @@
-import type {
-	Spectrum
-} from '../../../types';
-import { STORE_NAME } from '../../../store';
-import { useHighlightProperty } from '../../../hooks';
-import { getMergedObject } from '../../../utils';
+import type { Spectrum } from '@quantum-viewports/types';
+import { STORE_NAME } from '@quantum-viewports/store';
+import { useHighlightProperty } from '@quantum-viewports/hooks';
+import { getMergedObject } from '@quantum-viewports/utils';
 
 import ReactJson from "@webkinect/react-json-view";
 

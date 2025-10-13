@@ -1,7 +1,7 @@
-import Breadcrumb from './breadcrumb';
-import BlockList from './blocklist';
-import Selected from './selected';
-import ToggleEditing from '../editing/toggle';
+import { Breadcrumb } from './breadcrumb';
+import { BlockList } from './blocklist';
+import { Selected } from './selected';
+import { ToggleEditing } from '@quantum-viewports/components';
 
 const {
 	data: {
@@ -12,7 +12,7 @@ const {
 /**
  * Set component const to export sidebar control-edit ui.
  */
-const Body = () => {
+export const Body = () => {
 
 	// Set state dependencies.
 	const {
@@ -33,5 +33,3 @@ const Body = () => {
 		</div>
 	);
 }
-
-export default Body;

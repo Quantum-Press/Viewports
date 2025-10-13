@@ -1,6 +1,6 @@
 import {
 	findObjectChanges
-} from "./";
+} from "@quantum-viewports/utils";
 
 const {
 	isEqual,

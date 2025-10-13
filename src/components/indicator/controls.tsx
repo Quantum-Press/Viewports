@@ -1,7 +1,7 @@
-import { STORE_NAME } from '../../store';
-import { SpectrumSet } from '../../types';
-import { StyleList } from '../inspector/stylelist';
-import ToggleEditing from '../editing/toggle';
+import { STORE_NAME } from '@quantum-viewports/store';
+import { SpectrumSet } from '@quantum-viewports/types';
+import { StyleList } from '@quantum-viewports/components';
+import { ToggleEditing } from '@quantum-viewports/components';
 
 const {
 	components: {

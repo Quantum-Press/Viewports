@@ -1,4 +1,4 @@
-import { isObject, cleanupObject } from "./";
+import { isObject, cleanupObject } from "@quantum-viewports/utils";
 
 const {
 	isUndefined,

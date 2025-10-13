@@ -1,4 +1,4 @@
-import { STORE_NAME } from '../../store';
+import { STORE_NAME } from '@quantum-viewports/store';
 
 const {
 	components: {
@@ -16,7 +16,7 @@ const {
 /**
  * Set component const to export toggle edit ui.
  */
-const ToggleEditing = () => {
+export const ToggleEditing = () => {
 
 	// Set state dependency.
 	const {
@@ -59,5 +59,3 @@ const ToggleEditing = () => {
 		/>
 	);
 }
-
-export default ToggleEditing;

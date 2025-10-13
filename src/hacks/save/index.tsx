@@ -1,5 +1,5 @@
-import { STORE_NAME } from '../store';
-import { debug } from '../utils';
+import { STORE_NAME } from '@quantum-viewports/store';
+import { debug } from '@quantum-viewports/utils';
 
 const {
 	data: {
@@ -275,7 +275,7 @@ function onAutoSavingEnd() {
 /**
  * Export component that fires events for dirty and saving state changes.
  */
-export default function Save() {
+export function Save() {
 
 	/**
 	 * Set useEffect to handle onMount event registration onMount and onUnmount.

@@ -1,6 +1,5 @@
-import { gutenbergVersionCompare } from '../../config';
-import { useEditorContext } from '../../hooks';
-import { STORE_NAME } from '../../store';
+import { gutenbergVersionCompare } from '@quantum-viewports/config';
+import { useEditorContext } from '@quantum-viewports/hooks';
 
 const {
 	components: {

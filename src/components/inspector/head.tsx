@@ -1,6 +1,6 @@
-import { STORE_NAME } from '../../store';
-import { useLocalStorage } from '../../hooks';
-import ToggleInspector from '../inspector/toggle';
+import { STORE_NAME } from '@quantum-viewports/store';
+import { useLocalStorage } from '@quantum-viewports/hooks';
+import { ToggleInspector } from '@quantum-viewports/components';
 
 const {
 	components: {
@@ -22,7 +22,7 @@ const {
 /**
  * Set component const to export sidebar control-edit ui.
  */
-const Head = () => {
+export const Head = () => {
 
 	// Set state dependencies.
 	const {
@@ -64,18 +64,6 @@ const Head = () => {
 			document.body.classList.remove( 'is-inspecting' );
 		}
 	}, [] );
-
-
-	/**
-	 * Set function to fire on click close
-	 */
-	const onClickTitle = () => {
-		if( select( STORE_NAME ).isInspecting() ) {
-			dispatch( STORE_NAME ).unsetInspecting();
-		} else {
-			dispatch( STORE_NAME ).setInspecting();
-		}
-	}
 
 
 	/**
@@ -122,5 +110,3 @@ const Head = () => {
 		</div>
 	);
 }
-
-export default Head;

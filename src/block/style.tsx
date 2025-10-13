@@ -1,7 +1,7 @@
-import { gutenbergVersionCompare } from '../config';
-import { STORE_NAME } from '../store';
-import { BlockEditProps } from '../types';
-import { isSiteEditor } from '../utils';
+import { gutenbergVersionCompare } from '@quantum-viewports/config';
+import { STORE_NAME } from '@quantum-viewports/store';
+import { BlockEditProps } from '@quantum-viewports/types';
+import { isSiteEditor } from '@quantum-viewports/utils';
 
 const {
 	data: {

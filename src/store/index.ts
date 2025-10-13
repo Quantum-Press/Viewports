@@ -1,4 +1,4 @@
-import { ensureObjectPath } from '../utils';
+import { ensureObjectPath } from '@quantum-viewports/utils';
 import reducerManager from './reducer';
 import * as selectors from './selectors';
 import * as actions from './actions';

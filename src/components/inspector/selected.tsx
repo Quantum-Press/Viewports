@@ -1,9 +1,13 @@
-import { useOverflow, useLocalStorage } from '../../hooks';
-
-import { BlockStyleList } from './stylelist';
-import { BlockAttributeList } from './attributelist';
-import Accordion from '../accordion';
-import Dimensions from '../dimensions';
+import {
+	useOverflow,
+	useLocalStorage
+} from '@quantum-viewports/hooks';
+import {
+	Accordion,
+	BlockStyleList,
+	BlockAttributeList,
+	Dimensions
+} from '@quantum-viewports/components';
 
 const {
 	i18n: {
@@ -14,7 +18,7 @@ const {
 /**
  * Set component const to export selected ui.
  */
-const Selected = ({ block }) => {
+export const Selected = ({ block }) => {
 
 	// Set hook dependencies.
 	const [ isOverflowing ] = useOverflow( '.qp-viewports-inspector-selected-wrap', 'height' );
@@ -59,5 +63,3 @@ const Selected = ({ block }) => {
 		</div>
 	);
 }
-
-export default Selected;

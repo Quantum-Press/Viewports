@@ -1,4 +1,4 @@
-import { STORE_NAME } from '../../store';
+import { STORE_NAME } from '@quantum-viewports/store';
 
 const {
 	data: {
@@ -9,11 +9,10 @@ const {
 /**
  * Set component const to export Highlights UI.
  */
-const Editing = () => {
+export const Editing = () => {
 
 	// Set store states.
 	const {
-		isActive,
 		isEditing,
 	} = useSelect( ( select: Function ) => {
 		const store = select( STORE_NAME );
@@ -81,4 +80,4 @@ const Editing = () => {
 	);
 };
 
-export default Editing;
+export * from './toggle';

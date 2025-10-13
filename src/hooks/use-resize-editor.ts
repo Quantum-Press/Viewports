@@ -1,7 +1,7 @@
 
-import { STORE_NAME } from '../store';
-import { isSiteEditor } from '../utils';
-import { useResizeObserver, useDeviceType } from './';
+import { STORE_NAME } from '@quantum-viewports/store';
+import { isSiteEditor } from '@quantum-viewports/utils';
+import { useResizeObserver } from '@quantum-viewports/hooks';
 
 const {
 	data: {

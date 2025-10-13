@@ -1,4 +1,4 @@
-import useURLListener from "./use-url-listener";
+import { useUrlListener } from "@quantum-viewports/hooks";
 
 const {
 	element: {
@@ -61,10 +61,10 @@ function getQueryParam(
  *   console.log( 'Editing post with ID:', postParam );
  * }
  */
-export default function useEditorContext(): EditorContext {
+export function useEditorContext(): EditorContext {
 	const [ context, setContext ] = useState<EditorContext[ 'context' ]>( 'unknown' );
 	const [ postParam, setPostParam ] = useState( '' );
-	const url = useURLListener();
+	const url = useUrlListener();
 
 	useEffect( () => {
 		const path = window.location.pathname;

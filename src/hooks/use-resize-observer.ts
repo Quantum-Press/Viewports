@@ -1,4 +1,4 @@
-import { useIsMounted } from '../hooks';
+import { useIsMounted } from '@quantum-viewports/hooks';
 
 const {
 	element: {

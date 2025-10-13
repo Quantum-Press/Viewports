@@ -1,11 +1,10 @@
-import InspectorPortals from './components/inspector/portals';
-import IndicatorPortals from './components/indicator/portals';
+import {
+	InspectorPortals,
+	IndicatorPortals
+} from '@quantum-viewports/components';
 
 
 const {
-	data: {
-		select,
-	},
 	element: {
 		createRoot,
 	}

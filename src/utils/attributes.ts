@@ -1,4 +1,4 @@
-import { BlockAttributes } from "../types";
+import { BlockAttributes } from "@quantum-viewports/types";
 
 /**
  * Set function to sanitize attributes.

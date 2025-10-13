@@ -1,5 +1,5 @@
-import { openSidebar, openStylesTab } from '../utils';
-import useHighlight from './use-highlight';
+import { openSidebar, openStylesTab } from '@quantum-viewports/utils';
+import { useHighlight } from '@quantum-viewports/hooks';
 
 const {
 	element: {

@@ -1,7 +1,7 @@
-import { useLongPress } from '../utils';
-import { STORE_NAME } from '../store';
-import { mobile, tablet, desktop } from './svgs';
-import ToggleInspector from './inspector/toggle';
+import { useLongPress } from '@quantum-viewports/utils';
+import { STORE_NAME } from '@quantum-viewports/store';
+import { mobile, tablet, desktop } from '@quantum-viewports/components';
+import { ToggleInspector } from '@quantum-viewports/components';
 
 const {
 	components: {
@@ -22,7 +22,7 @@ const {
  *
  * @param object props
  */
-const Topbar = () => {
+export const Topbar = () => {
 
 	// Set dispatch.
 	const dispatch = useDispatch( STORE_NAME );
@@ -161,5 +161,3 @@ const Topbar = () => {
 		</div>
 	);
 }
-
-export default Topbar;

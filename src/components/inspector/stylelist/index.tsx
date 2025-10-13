@@ -1,5 +1,5 @@
-import { STORE_NAME } from '../../../store';
-import { SpectrumSet } from '../../../types';
+import { STORE_NAME } from '@quantum-viewports/store';
+import { SpectrumSet } from '@quantum-viewports/types';
 import Style from './style';
 
 const {

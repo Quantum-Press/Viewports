@@ -10,7 +10,7 @@ const {
 /**
  * Set component const to export sidebar control-edit ui.
  */
-const BlockList = () => {
+export const BlockList = () => {
 
 	// Set state dependencies.
 	const {
@@ -41,5 +41,3 @@ const BlockList = () => {
 		</div>
 	);
 }
-
-export default BlockList;

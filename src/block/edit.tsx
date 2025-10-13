@@ -1,14 +1,14 @@
-import { StyleFill } from '../components/block-styles';
-import { useMount } from '../hooks';
-import { STORE_NAME } from '../store';
+import { StyleFill } from '@quantum-viewports/components';
+import { useMount } from '@quantum-viewports/hooks';
+import { STORE_NAME } from '@quantum-viewports/store';
 import {
 	Block,
 	BlockEditProps
-} from '../types';
+} from '@quantum-viewports/types';
 import {
 	debounce,
 	debug
-} from '../utils';
+} from '@quantum-viewports/utils';
 
 const {
 	data: {

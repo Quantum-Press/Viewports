@@ -1,5 +1,5 @@
-import { STORE_NAME } from '../../store';
-import { viewports } from '../svgs';
+import { STORE_NAME } from '@quantum-viewports/store';
+import { viewports } from '@quantum-viewports/components';
 
 const {
 	components: {
@@ -184,5 +184,3 @@ export const InspectorPortals = () => {
 		</>
 	);
 }
-
-export default InspectorPortals;

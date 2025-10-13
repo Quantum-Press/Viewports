@@ -2,11 +2,12 @@ import type {
 	Block,
 	BlockEditProps,
 	BlockSaveProps,
-} from './types';
+} from '@quantum-viewports/types';
+import { isInBlockBlacklist } from '@quantum-viewports/config';
+import { ToggleInspector } from '@quantum-viewports/components';
+
 import BlockEdit from './block/edit';
 import BlockSave from './block/save';
-import ToggleInspector from './components/inspector/toggle';
-import { isInBlockBlacklist } from './config';
 import BlockPreview from './block/preview';
 
 const {

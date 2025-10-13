@@ -1,4 +1,4 @@
-import { versionCompare } from "./utils/version";
+import { versionCompare } from "@quantum-viewports/utils";
 
 /**
  * Retrieves the global configuration object for viewports.

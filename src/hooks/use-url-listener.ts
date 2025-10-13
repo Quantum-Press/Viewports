@@ -7,7 +7,7 @@ const {
 
 
 /**
- * React Hook: useURLListener
+ * React Hook: useUrlListener
  *
  * Tracks the current browser URL and updates state whenever the URL changes.
  * This includes navigation changes triggered via `pushState`, `replaceState`,
@@ -20,10 +20,10 @@ const {
  * @returns {string} - The current URL (`window.location.href`).
  *
  * @example
- * const currentURL = useURLListener();
+ * const currentURL = useUrlListener();
  * console.log( currentURL );
  */
-export default function useURLListener(): string {
+export function useUrlListener(): string {
 	const [ currentURL, setCurrentURL ] = useState( window.location.href );
 
 	useEffect( () => {

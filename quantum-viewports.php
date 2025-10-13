@@ -7,7 +7,7 @@ declare( strict_types=1 );
  *
  * Plugin Name: Quantum Viewports
  * Description: Extend your BlockTheme to make standard block styles responsive!
- * Version:     0.9.9
+ * Version:     0.9.10-dev
  * Text Domain: quantum-viewports
  * Domain Path: /languages
  *
@@ -27,7 +27,7 @@ defined( 'ABSPATH' ) || exit;
 use \QP\Viewports\Plugin;
 
 // Global variables, as few as possible
-define( 'QUANTUM_VIEWPORTS_VERSION',    '0.9.9' );
+define( 'QUANTUM_VIEWPORTS_VERSION',    '0.9.10-dev' );
 define( 'QUANTUM_VIEWPORTS_FILE',       ( __FILE__ ) );
 define( 'QUANTUM_VIEWPORTS_URL',        untrailingslashit( plugin_dir_url( QUANTUM_VIEWPORTS_FILE ) ) );
 define( 'QUANTUM_VIEWPORTS_PATH',       untrailingslashit( plugin_dir_path( QUANTUM_VIEWPORTS_FILE ) ) );
@@ -39,8 +39,8 @@ $autoloader                   = QUANTUM_VIEWPORTS_PATH . '/vendor/autoload.php';
 $autoloaderExists            = file_exists( $autoloader );
 $autoloadingViaMainPackage = class_exists( '\QP\Viewports\Plugin' );
 
-if ( ! $autoloaderExists ) {
-    if ( ! $autoloadingViaMainPackage ) {
+if ( ! $autoloadingViaMainPackage ) {
+    if( ! $autoloaderExists ) {
         wp_die( 'Autoloading failed!' );
     }
 

@@ -11,7 +11,7 @@ const {
 /**
  * Set component const to export sidebar control-edit ui.
  */
-const Breadcrumb = () => {
+export const Breadcrumb = () => {
 
 	// Set state dependencies.
 	const {
@@ -24,7 +24,6 @@ const Breadcrumb = () => {
 
 	// Set selected ClientID.
 	const clientId = selected ? selected.clientId : null;
-
 
 	/**
 	 * Set function to fire on click root.
@@ -41,5 +40,3 @@ const Breadcrumb = () => {
 		</ul>
 	);
 }
-
-export default Breadcrumb;

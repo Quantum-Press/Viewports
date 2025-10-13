@@ -1,5 +1,5 @@
-import { STORE_NAME } from "../../store";
-import { keyframe } from "../svgs";
+import { STORE_NAME } from "@quantum-viewports/store";
+import { keyframe } from "@quantum-viewports/components";
 
 const {
 	data: {
@@ -14,7 +14,7 @@ const {
 	}
 } = window[ 'wp' ];
 
-const KeyframesToggle = () => {
+export const KeyframesToggle = () => {
 
 	// Set state dependency.
 	const {
@@ -60,5 +60,3 @@ const KeyframesToggle = () => {
 		</>
 	)
 }
-
-export default KeyframesToggle;

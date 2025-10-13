@@ -1,4 +1,4 @@
-import { isObject } from "./";
+import { isObject } from "@quantum-viewports/utils";
 
 const {
 	get,

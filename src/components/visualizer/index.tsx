@@ -1,6 +1,5 @@
-import useEditorSidebar from "../hooks/use-editor-sidebar";
-import useResizeEditor from "../hooks/use-resize-editor";
-import { STORE_NAME } from "../store";
+import { STORE_NAME } from "@quantum-viewports/store";
+import { useEditorSidebar, useResizeEditor } from "@quantum-viewports/hooks";
 
 const {
 	data: {
@@ -16,7 +15,7 @@ const {
 /**
  * Set function to render blockEdit wrapped in a higher order component, depending on viewports changes.
  */
-export default function Visualizer() {
+export function Visualizer() {
 
 	// Set dependency to editor sidebar.
 	const [ tab ] = useEditorSidebar();

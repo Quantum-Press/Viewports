@@ -1,7 +1,7 @@
-import { STORE_NAME } from '../../store';
-import Head from './head';
-import Body from './body';
-import Foot from './foot';
+import { STORE_NAME } from '@quantum-viewports/store';
+import { Head } from './head';
+import { Body } from './body';
+import { Foot } from './foot';
 
 const {
 	data: {
@@ -15,7 +15,7 @@ const {
 /**
  * Set component const to export inspector ui.
  */
-const Inspector = () => {
+export const Inspector = () => {
 
 	// Set states.
 	const {
@@ -53,4 +53,8 @@ const Inspector = () => {
 	);
 }
 
-export default Inspector;
+export * from './attributelist';
+export * from './blocklist';
+export * from './stylelist';
+export * from './portals';
+export * from './toggle';

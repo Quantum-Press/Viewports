@@ -1,8 +1,18 @@
-import type { SpectrumSet, deviceType } from '../../types';
-import { isInMobileRange, isInTabletRange, isInDesktopRange, STORE_NAME, hasSpectrumSetViewportType } from '../../store';
+import type { SpectrumSet, deviceType } from '@quantum-viewports/types';
+import {
+	STORE_NAME,
+	isInMobileRange,
+	isInTabletRange,
+	isInDesktopRange,
+	hasSpectrumSetViewportType
+} from '@quantum-viewports/store';
 import { Pointer } from './pointer';
 import { IndicatorControls } from './controls';
-import { desktop, mobile, tablet } from '../svgs';
+import {
+	desktop,
+	mobile,
+	tablet
+} from '@quantum-viewports/components';
 
 const {
 	components: {
@@ -27,7 +37,7 @@ const {
 /**
  * Set component const to export inspector ui.
  */
-const Indicator = ( { target, storeId, property, spectrumSet } : { target: Element, storeId: string, property: string, spectrumSet : SpectrumSet } ) => {
+export const Indicator = ( { target, storeId, property, spectrumSet } : { target: Element, storeId: string, property: string, spectrumSet : SpectrumSet } ) => {
 
 	// Set panel element.
 	const panel = target.closest( '.components-tools-panel' );
@@ -282,4 +292,4 @@ const Indicator = ( { target, storeId, property, spectrumSet } : { target: Eleme
 	);
 }
 
-export default Indicator;
+export * from './portals';

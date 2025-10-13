@@ -5,7 +5,7 @@ const {
 	},
 } = window[ 'wp' ];
 
-const useGlobalBlockStyles = () => {
+export const useGlobalBlockStyles = () => {
 	const globalBlockStyles = useSelect( select => {
 		const settings = select( 'core/block-editor' ).getSettings();
 		if( ! settings ) {
@@ -41,5 +41,3 @@ const useGlobalBlockStyles = () => {
 
 	return [ globalBlockStyles, setGlobalBlockStyles ];
 };
-
-export default useGlobalBlockStyles;

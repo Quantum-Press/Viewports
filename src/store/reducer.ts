@@ -1,7 +1,7 @@
-import type { State, Action, ReducerManager } from '../types';
-import { DEFAULT_STATE } from './default';
-import { getMergedObject, traverseGet, traverseFilled, traverseExist } from '../utils';
+import type { State, Action, ReducerManager } from '@quantum-viewports/types';
+import { getMergedObject, traverseGet, traverseFilled, traverseExist } from '@quantum-viewports/utils';
 import {
+	DEFAULT_STATE,
 	mobileDefaultViewport,
 	tabletDefaultViewport,
 	desktopDefaultViewport,

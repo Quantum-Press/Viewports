@@ -1,4 +1,8 @@
-import { isInTabletRange, isInDesktopRange, getInRange } from '../../store';
+import {
+	isInTabletRange,
+	isInDesktopRange,
+	getInRange
+} from '@quantum-viewports/store';
 
 const {
 	components: {

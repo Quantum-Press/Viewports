@@ -1,6 +1,5 @@
-import type { Action, Viewports, viewportType } from './../types';
-import type { BlockAttributes } from '../types';
-import type { Size } from '../hooks';
+import type { BlockAttributes, Action, Viewports, viewportType } from '@quantum-viewports/types';
+import type { Size } from '@quantum-viewports/hooks';
 
 
 /**

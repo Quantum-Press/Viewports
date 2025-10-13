@@ -1,5 +1,4 @@
-import KeyframesToggle from './components/keyframes/toggle';
-import { BlockStyles } from './components/block-styles';
+import { KeyframesToggle, BlockStyles } from '@quantum-viewports/components';
 import { DeviceTypeProvider } from './hooks';
 
 const {

@@ -1,5 +1,5 @@
-import { STORE_NAME } from '../../store';
-import { viewports } from '../svgs';
+import { STORE_NAME } from '@quantum-viewports/store';
+import { viewports } from '@quantum-viewports/components';
 
 const {
 	components: {
@@ -20,7 +20,7 @@ const {
  *
  * @param object props
  */
-const ToggleInspector = ( { showText = true, forceShow = false } : { showText?: boolean, forceShow?: boolean } ) => {
+export const ToggleInspector = ( { showText = true, forceShow = false } : { showText?: boolean, forceShow?: boolean } ) => {
 
 	// Set states.
 	const {
@@ -80,5 +80,3 @@ const ToggleInspector = ( { showText = true, forceShow = false } : { showText?: 
 		/>
 	);
 }
-
-export default ToggleInspector;

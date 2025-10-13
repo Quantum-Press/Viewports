@@ -1,9 +1,8 @@
 import type {
 	AnyObject,
 	Spectrum
-} from '../../../types';
-import { useHighlightProperty } from '../../../hooks';
-import { isObject, getMergedObject, isString, isNumber } from '../../../utils';
+} from '@quantum-viewports/types';
+import { isObject, isString, isNumber } from '@quantum-viewports/utils';
 import { ArrayList } from './array';
 
 interface Style {
@@ -14,7 +13,6 @@ interface Style {
 	onClickFunction : Function;
 }
 
-const { isEqual } = window[ 'lodash' ];
 const {
 	components: {
 		Button,

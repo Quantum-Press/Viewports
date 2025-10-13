@@ -1,6 +1,6 @@
-import { STORE_NAME } from '../store/constants';
-import { debug, debugOptions } from '../utils';
-import { Block, BlockSaveProps } from '../types';
+import { STORE_NAME } from '@quantum-viewports/store';
+import { debug, debugOptions } from '@quantum-viewports/utils';
+import { Block, BlockSaveProps } from '@quantum-viewports/types';
 
 const {
 	data: {

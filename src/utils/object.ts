@@ -1,11 +1,11 @@
 import {
 	AnyObject,
 	DeepPartial
-} from "../types";
+} from "@quantum-viewports/types";
 import {
 	isObject,
 	cleanupArray
-} from "./";
+} from "@quantum-viewports/utils";
 
 const {
 	isEqual,

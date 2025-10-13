@@ -11,13 +11,13 @@ import type {
 	Spectrum,
 	SpectrumState,
 	InlineStyleSet,
-} from '../types';
+} from '@quantum-viewports/types';
 import {
 	getMergedObject,
 	findObjectChanges,
 	findObjectDifferences,
 	traverseGet,
-} from '../utils';
+} from '@quantum-viewports/utils';
 
 const {
 	isEqual,
