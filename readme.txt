@@ -11,7 +11,6 @@ Extend your BlockTheme to make standard block styles responsive!
 
 ---
 
-
 == Description ==
 
 **Quantum Viewports** extends the native Gutenberg blocks with responsive style controls – no extra blocks required.
@@ -21,11 +20,18 @@ Unlike other plugins that add custom blocks or duplicate components, Quantum Vie
 - **Works with all Block Themes** out-of-the-box
 - Adds responsive controls (mobile, tablet, desktop) directly into block styles for **margin, padding, border, shadow, background, and custom properties**
 - Wraps all generated styles into **CSS classes** for clean frontend output
-- Built with a **mobile-first approach**: all settings are assigned to the correct viewport depending on user interaction and the selected viewport
-- Provides a **Keyframe-style UI** to preview, reset, or manage responsive styles per viewport
-- Offers a **developer-friendly API** (`registerRenderer`) to attach your own style components *(currently JavaScript only)*
+- Built with a **mobile-first approach**: settings are applied to the appropriate viewport depending on which viewport is active while editing
+- Includes a **Keyframe-style UI** to preview, reset, or manage responsive styles per viewport
+- Includes a **developer-friendly API** (`registerRenderer`) to attach custom style components *(currently JavaScript only)*
 
-With Quantum Viewports, you keep your BlockTheme clean, lightweight, and future-proof.
+
+= Early Access – Feedback Welcome =
+
+Quantum Viewports is currently in **active Early Access**.
+The responsive style engine already works well with many Block Themes, but we are still gathering **real-world feedback** to ensure **broader compatibility across different themes and editor configurations**.
+
+If you encounter something unexpected – a great success story, a bug, or a theme setup that behaves differently – we would love to hear from you.
+Every report helps us shape a reliable and truly native solution for responsive Block Styles in the WordPress ecosystem.
 
 
 == Installation ==
@@ -40,48 +46,47 @@ With Quantum Viewports, you keep your BlockTheme clean, lightweight, and future-
 
 = Example: Adjusting paragraph spacing with mobile-first and breakpoints =
 
-**Insert a Paragraph block**
+1. **Insert a Paragraph block**
    - Open the Block Editor and add a Paragraph block.
 
 2. **Mobile View (base, 0px)**
    - Select the Paragraph → open **Styles panel → Spacing → Margin → Bottom**.
    - Set margin to **20px**.
-   - This applies from **0px up**, i.e., it is the baseline for all larger viewports.
+   - This applies from **0px up**, used as the baseline for all viewports.
 
-3. **Tablet View (override, starts at tablet breakpoint)**
+3. **Tablet View (override, min-width tablet)**
    - Switch to **Tablet viewport**.
    - Change bottom margin to **40px**.
-   - This applies **from tablet breakpoint upwards**, including Desktop.
+   - This applies **from the tablet breakpoint upwards**, including Desktop.
    - A **Keyframe marker** appears for Tablet.
 
-4. **Desktop View (optional, min-width specific)**
+4. **Desktop View (optional, min-width only)**
    - Switch to Desktop viewport.
    - To apply changes **only to Desktop**, toggle **“Edit on min-width”**.
    - Set bottom margin to **60px**.
    - Now a Media Query is generated for Desktop only.
-   - Tablet margin stays 40px, Mobile margin remains 20px.
+   - Tablet margin remains 40px, Mobile margin remains 20px.
 
 5. **Frontend Result**
    - Save and preview.
-   - Margin adapts perfectly: Mobile 20px, Tablet 40px, Desktop 60px.
-   - All styles are wrapped in CSS classes, mobile-first, and clean for any BlockTheme.
+   - Margins adapt: Mobile 20px, Tablet 40px, Desktop 60px.
+   - All styles are wrapped in CSS classes, mobile-first, optimized for any Block Theme.
 
 
 == Frequently Asked Questions ==
 
 = Does it work with all block themes? =
-Yes! Quantum Viewports extends the standard block components, so it works with any Block Theme right away.
+Yes! Quantum Viewports extends standard block components, so it works with any Block Theme right away.
 
 = Does it add new blocks? =
-No. Quantum Viewports does **not** create duplicate blocks. It enhances the existing standard blockstyles with responsive controls.
+No. Quantum Viewports does **not** create duplicate blocks. It enhances the existing standard block styles with responsive controls.
 
 = Can developers extend it? =
 Yes. Developers can register their own style components using the provided `registerRenderer` API.
 
-= Can i deinstall the plugin without issues? ==
-Yes. You can simply remove the plugin, the basic style settings will still remain.
-
+= Can I uninstall the plugin without issues? =
+Yes. You can remove the plugin at any time. Basic style settings will remain.
 
 == Feedback and Issues ==
 GitHub Repository: https://github.com/Quantum-Press/Viewports
-Contact us on: https://quantum-press.com/en/contact
+Contact: https://quantum-press.com/en/contact
