@@ -28,7 +28,7 @@ jobs:
       - name: Prepare release folder
         run: |
           mkdir quantum-viewports
-          cp -r build config includes src vendor languages composer.json composer.lock quantum-viewports.php readme.txt quantum-viewports/
+          cp -r build includes src vendor languages quantum-viewports.php readme.txt quantum-viewports/
 
       # ZIP erstellen
       - name: Create archive
