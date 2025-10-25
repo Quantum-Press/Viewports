@@ -13,7 +13,7 @@ Extend your BlockTheme to make standard block styles responsive!
 
 == Description ==
 
-**Quantum Viewports** extends the native Gutenberg blocks with responsive style controls – no extra blocks required.
+**Quantum Viewports** extends the native Gutenberg blocks with responsive style controls without using extra blocks.
 Unlike other plugins that add custom blocks or duplicate components, Quantum Viewports integrates directly with the **standard block components**.
 
 **Key Features:**
@@ -30,7 +30,7 @@ Unlike other plugins that add custom blocks or duplicate components, Quantum Vie
 Quantum Viewports is currently in **active Early Access**.
 The responsive style engine already works well with many Block Themes, but we are still gathering **real-world feedback** to ensure **broader compatibility across different themes and editor configurations**.
 
-If you encounter something unexpected – a great success story, a bug, or a theme setup that behaves differently – we would love to hear from you.
+If you encounter something unexpected. A great success story, a bug, or a theme setup that behaves differently, we would love to hear from you.
 Every report helps us shape a reliable and truly native solution for responsive Block Styles in the WordPress ecosystem.
 
 

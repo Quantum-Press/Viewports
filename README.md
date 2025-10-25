@@ -35,11 +35,13 @@ The plugin is designed to integrate seamlessly into the block editor workflow wh
 
 ---
 
-## Status
+## Early Access - Feedback Welcome
 
-This plugin is currently in **early-access / beta**. Features are functional but some behaviors may change as the plugin evolves. It is intended for testing and experimentation rather than production-critical sites.
+Quantum Viewports is currently in **active Early Access**.
+The responsive style engine already works well with many Block Themes, but we are still gathering **real-world feedback** to ensure **broader compatibility across different themes and editor configurations**.
 
-**Note:** Certain workarounds exist for limitations in Gutenberg or specific blocks, but the plugin is designed to remain stable and usable.
+If you encounter something unexpected. A great success story, a bug, or a theme setup that behaves differently, we would love to hear from you.
+Every report helps us shape a reliable and truly native solution for responsive Block Styles in the WordPress ecosystem.
 
 ---
 
