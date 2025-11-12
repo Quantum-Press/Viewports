@@ -24,8 +24,6 @@ declare( strict_types=1 );
 // Be sure not to load without wp.
 defined( 'ABSPATH' ) || exit;
 
-use \QP\Viewports\Plugin;
-
 // Global variables, as few as possible
 define( 'QUANTUM_VIEWPORTS_VERSION',    '0.9.11-dev' );
 define( 'QUANTUM_VIEWPORTS_FILE',       ( __FILE__ ) );
@@ -34,24 +32,56 @@ define( 'QUANTUM_VIEWPORTS_PATH',       untrailingslashit( plugin_dir_path( QUAN
 define( 'QUANTUM_VIEWPORTS_BASENAME',   plugin_basename( QUANTUM_VIEWPORTS_FILE ) );
 define( 'QUANTUM_VIEWPORTS_TEXTDOMAIN', 'quantum-viewports' );
 
-// Maybe include composer autoloading.
-$autoloader                   = QUANTUM_VIEWPORTS_PATH . '/vendor/autoload.php';
-$autoloaderExists            = file_exists( $autoloader );
-$autoloadingViaMainPackage = class_exists( '\QP\Viewports\Plugin' );
-
-if ( ! $autoloadingViaMainPackage ) {
-    if( ! $autoloaderExists ) {
-        wp_die( 'Autoloading failed!' );
+( function () {
+    $autoload_filepath = __DIR__ . '/vendor/autoload.php';
+    if ( file_exists( $autoload_filepath ) && ! class_exists( '\QP\Viewports\PluginModule' ) ) {
+        require $autoload_filepath;
     }
 
-    require_once $autoloader;
-}
+    /**
+     * Initialize the plugin and its modules.
+     */
+    function init(): void {
+        $root_dir = __DIR__;
 
-// Wrapper for main class.
-function quantum_viewports() : bool|object
-{
-    return Plugin::instance();
-}
+        static $initialized;
+        if( ! $initialized ) {
+            $bootstrap = require "$root_dir/bootstrap/bootstrap.php";
 
-// Start plugin execution.
-\add_action( 'plugins_loaded', 'quantum_viewports' );
+            $app_container = $bootstrap( $root_dir );
+
+            QP\Viewports\VP::init( $app_container );
+
+            $initialized = true;
+
+            /**
+             * The hook fired after the plugin bootstrap with the app services container as parameter.
+             */
+            do_action( 'quantum_viewports_init', $app_container );
+        }
+    }
+
+    add_action( 'plugins_loaded', function () {
+        init();
+
+        add_action( 'init', function () {
+            $current_plugin_version = (string) QP\Viewports\VP::container()->get( 'vp.plugin' )->getVersion();
+            $installed_plugin_version = get_option( 'quantum-viewports-version' );
+
+            if ( $installed_plugin_version !== $current_plugin_version ) {
+                /**
+                 * The hook fired when the plugin is installed or updated.
+                 */
+                do_action( 'quantum_viewports_migrate', $installed_plugin_version );
+
+                if ( $installed_plugin_version ) {
+                    /**
+                     * The hook fired when the plugin is updated.
+                     */
+                    do_action( 'quantum_viewports_migrate_on_update' );
+                }
+                update_option( 'quantum-viewports-version', $current_plugin_version );
+            }
+        }, -1 );
+    } );
+} )();

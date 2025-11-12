@@ -6,21 +6,83 @@
     "version": "0.9.11-dev",
     "autoload": {
         "psr-4": {
-            "QP\\Viewports\\": "includes/"
+            "QP\\Viewports\\": "includes/",
+            "QP\\Viewports\\Vendor\\": "lib/packages/",
+            "QP\\Viewports\\Styles\\": "modules/styles/src",
+            "QP\\Viewports\\Editor\\": "modules/editor/src"
         }
+    },
+    "require": {
+        "php": "^7.4 | ^8.0",
+        "ext-json": "*",
+        "psr/log": "^1.1",
+        "wikimedia/composer-merge-plugin": "^2.0",
+        "wp-oop/wordpress-interface": "^0.1.0-alpha1",
+        "dhii/versions": "^0.1.0-alpha1"
     },
     "require-dev": {
         "phpunit/phpunit": "*",
         "yoast/wp-test-utils": "^1.2",
-        "syde/phpcs": "dev-main"
-    },
-    "config": {
-        "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true
-        }
+        "syde/phpcs": "dev-main",
+        "inpsyde/composer-assets-compiler": "^2.5",
+        "psr/container": "^1.0",
+        "dhii/module-interface": "^0.2 || ^0.3",
+        "dhii/containers": "^0.1.0-alpha1",
+        "inpsyde/modularity": "^1.12",
+        "coenjacobs/mozart": "^0.7.1"
     },
     "minimum-stability": "dev",
     "scripts": {
-        "phpcs": "vendor/bin/phpcs --standard=Syde includes/"
+        "phpcs": "vendor/bin/phpcs --standard=Syde includes/",
+        "post-install-cmd": [
+            "vendor/bin/mozart compose"
+        ],
+        "post-update-cmd": [
+            "vendor/bin/mozart compose"
+        ]
+    },
+    "extra": {
+        "installer-types": [
+            "quantum-viewports-module"
+        ],
+        "installer-paths": {
+            "modules/{$name}/": [
+                "type:quantum-viewports-module"
+            ]
+        },
+        "merge-plugin": {
+            "include": [
+                "modules/*/composer.json"
+            ]
+        },
+        "composer-asset-compiler": {
+            "auto-run": false,
+            "packages": {
+                "quantum-viewports/*": {
+                    "dependencies": "install",
+                    "script": "build"
+                }
+            }
+        },
+        "mozart": {
+            "dep_namespace": "QP\\Viewports\\Vendor\\",
+            "dep_directory": "/lib/packages/",
+            "classmap_directory": "/lib/classes/",
+            "classmap_prefix": "Viewports_",
+            "packages": [
+                "psr/container",
+                "dhii/containers",
+                "dhii/module-interface",
+                "inpsyde/modularity"
+            ],
+            "delete_vendor_directories": true
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "inpsyde/composer-assets-compiler": true,
+            "wikimedia/composer-merge-plugin": true
+        }
     }
 }

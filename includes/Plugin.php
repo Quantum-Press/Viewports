@@ -4,146 +4,199 @@ declare( strict_types=1 );
 
 namespace QP\Viewports;
 
-use QP\Viewports\Controller\Instance;
-use QP\Viewports\Controller\BlockSupport;
-use QP\Viewports\Controller\BlockSave;
-use QP\Viewports\Controller\BlockRender;
+use Dhii\Package\Version\VersionInterface;
+use WpOop\WordPress\Plugin\PluginInterface;
 
 /**
- * Main Plugin class for the Viewports plugin.
- *
- * Handles registration of assets, block support, and editor integration.
- *
- * @package QP\Viewports
- * @author Sebastian Buchwald
+ * Plugin properties.
  */
-class Plugin extends Instance {
+class Plugin implements PluginInterface {
 
     /**
-     * Constructor.
+     * The plugin name.
      *
-     * Protected to implement singleton via Instance base class.
+     * @var string
      */
-    protected function __construct()
-    {
-        $this->includes();
-        $this->registerHooks();
-    }
-
+    protected $name;
 
     /**
-     * Load required controllers and classes.
+     * The plugin version.
+     *
+     * @var VersionInterface
      */
-    protected function includes() : void
-    {
-        BlockSupport::instance();
-        BlockSave::instance();
-        BlockRender::instance();
-    }
-
+    protected $version;
 
     /**
-     * Set WordPress hooks.
+     * The path to the plugin base directory.
+     *
+     * @var string
      */
-    protected function registerHooks() : void
-    {
-        \add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_block_editor_assets' ], 0 );
-    }
-
+    protected $base_dir;
 
     /**
-     * Enqueue scripts and styles for the block editor.
+     * The plugin base name.
+     *
+     * @var string
      */
-    public function enqueue_block_editor_assets() : void
-    {
-        \wp_register_script(
-            'quantum-viewports-scripts',
-            sprintf( '%s/build/quantum-viewports.js', QUANTUM_VIEWPORTS_URL ),
-            [ 'wp-blocks', 'wp-edit-post', 'wp-element', 'wp-i18n', 'lodash' ],
-            QUANTUM_VIEWPORTS_VERSION,
-            [
-                'in_footer' => true,
-            ],
+    protected $base_name;
+
+    /**
+     * The plugin URI.
+     *
+     * @var string
+     */
+    protected $plugin_uri;
+
+    /**
+     * The plugin description.
+     *
+     * @var string
+     */
+    protected $description;
+
+    /**
+     * The text domain of this plugin
+     *
+     * @var string
+     */
+    protected $text_domain;
+
+    /**
+     * The minimal version of PHP required by this plugin.
+     *
+     * @var VersionInterface
+     */
+    protected $min_php_version;
+
+    /**
+     * The minimal version of WP required by this plugin.
+     *
+     * @var VersionInterface
+     */
+    protected $min_wp_version;
+
+    /**
+     * Plugin constructor.
+     *
+     * @param string           $name The plugin name.
+     * @param VersionInterface $version The plugin version.
+     * @param string           $base_dir The path to the plugin base directory.
+     * @param string           $base_name The plugin base name.
+     * @param string           $plugin_uri The plugin URI.
+     * @param string           $description The plugin description.
+     * @param string           $text_domain The text domain of this plugin.
+     * @param VersionInterface $min_php_version The minimal version of PHP required by this plugin.
+     * @param VersionInterface $min_wp_version The minimal version of WP required by this plugin.
+     */
+    public function __construct(
+        string $name,
+        VersionInterface $version,
+        string $base_dir,
+        string $base_name,
+        string $plugin_uri,
+        string $description,
+        string $text_domain,
+        VersionInterface $min_php_version,
+        VersionInterface $min_wp_version
+    ) {
+        $this->name            = $name;
+        $this->description     = $description;
+        $this->version         = $version;
+        $this->base_dir        = $base_dir;
+        $this->base_name       = $base_name;
+        $this->plugin_uri      = $plugin_uri;
+        $this->text_domain     = $text_domain;
+        $this->min_php_version = $min_php_version;
+        $this->min_wp_version  = $min_wp_version;
+    }
+
+    /**
+     * The plugin name.
+     */
+    public function getName(): string {
+        return $this->name;
+    }
+
+    /**
+     * The plugin description.
+     */
+    public function getDescription(): string {
+
+        $allowed_tags = array(
+            'abbr'    => array( 'title' => true ),
+            'acronym' => array( 'title' => true ),
+            'code'    => true,
+            'em'      => true,
+            'strong'  => true,
+            'a'       => array(
+                'href'  => true,
+                'title' => true,
+            ),
         );
 
-        $distribution = defined( 'QUANTUM_VIEWPORTS_EXTENDED' ) &&
-            'true' === QUANTUM_VIEWPORTS_EXTENDED ? 'extended' : 'native';
+        // phpcs:disable
+        $text = \__( $this->description, $this->text_domain );
 
-        \wp_localize_script(
-            'quantum-viewports-scripts',
-            'quantumViewportsConfig',
-            [
-                'distribution' => $distribution,
-                'version' => QUANTUM_VIEWPORTS_VERSION,
-                'blockBlacklist' => $this->blockBlacklist(),
-                'gutenbergVersion' => $this->gutenbergVersion(),
-                'wordpressVersion' => $this->wordpressVersion(),
-            ]
-        );
-        \wp_enqueue_script( 'quantum-viewports-scripts' );
-
-        \wp_set_script_translations(
-            'quantum-viewports-scripts',
-            QUANTUM_VIEWPORTS_TEXTDOMAIN,
-            QUANTUM_VIEWPORTS_PATH . '/languages/'
-        );
-
-        \wp_enqueue_style(
-            'quantum-viewports-styles',
-            sprintf( '%s/build/quantum-viewports.css', QUANTUM_VIEWPORTS_URL ),
-            [],
-            QUANTUM_VIEWPORTS_VERSION
-        );
+        /**
+         * @psalm-suppress InvalidArgument
+         */
+        return wp_kses( $text, $allowed_tags );
+        // phpcs:enable
     }
 
-
     /**
-     * Return an array of blocks that should be blacklisted.
-     *
-     * @return array
+     * The plugin version.
      */
-    public function blockBlacklist() : array
-    {
-        $issueBlocks = [
-            'cloudcatch/light-modal-block',
-            'quantum-editor/teaser', // Old name - Still in use
-            'quantumpress/teaser',
-        ];
-
-        $blockBlacklist = \apply_filters( 'quantum_viewports_block_blacklist', $issueBlocks );
-
-        return $blockBlacklist;
+    public function getVersion(): VersionInterface {
+        return $this->version;
     }
 
-
     /**
-     * Return the WordPress version.
-     *
-     * @return string
+     * The path to the plugin base directory.
      */
-    public function wordpressVersion() : string
-    {
-        require ABSPATH . WPINC . '/version.php';
-
-        return $wp_version;
+    public function getBaseDir(): string {
+        return $this->base_dir;
     }
 
+    /**
+     * The plugin base name.
+     */
+    public function getBaseName(): string {
+        return $this->base_name;
+    }
 
     /**
-     * Return the active Gutenberg plugin version or "unknown".
-     *
-     * @return string
+     * The text domain of this plugin.
      */
-    public function gutenbergVersion() : string
-    {
-        if ( \is_plugin_active( 'gutenberg/gutenberg.php' ) ) {
-            $pluginData = \get_plugin_data( WP_PLUGIN_DIR . '/gutenberg/gutenberg.php' );
+    public function getTextDomain(): string {
+        return $this->text_domain;
+    }
 
-            if( ! empty( $pluginData[ 'Version' ] ) ) {
-                return $pluginData[ 'Version' ];
-            }
-        }
+    /**
+     * The plugin URI.
+     */
+    public function getUri(): string {
+        return esc_url( $this->plugin_uri );
+    }
 
-        return 'unknown';
+    /**
+     * The plugin title.
+     */
+    public function getTitle(): string {
+        return '<a href="' . $this->getUri() . '">' . $this->getName() . '</a>';
+    }
+
+    /**
+     * The minimal version of PHP required by this plugin.
+     */
+    public function getMinPhpVersion(): VersionInterface {
+        return $this->min_php_version;
+    }
+
+    /**
+     * The minimal version of WP required by this plugin.
+     */
+    public function getMinWpVersion(): VersionInterface {
+        return $this->min_wp_version;
     }
 }
