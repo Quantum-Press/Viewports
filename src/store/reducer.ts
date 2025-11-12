@@ -968,7 +968,7 @@ toggleMobile.handlesAction = ( actionType ) => actionType === 'TOGGLE_MOBILE';
 export const registerBlockInit = ( state : State, action : Action ) : State => {
 	switch ( action.type ) {
 		case 'REGISTER_BLOCK_INIT' :
-			// console.log( 'REGISTER_BLOCK_INIT' );
+			// console.log( 'REGISTER_BLOCK_INIT', action );
 
 			// Deconstruct action.
 			const {
@@ -1056,6 +1056,7 @@ registerBlockInit.handlesAction = ( actionType ) => actionType === 'REGISTER_BLO
 export const updateBlockChanges = ( state : State, action : Action ) : State => {
 	switch ( action.type ) {
 		case 'UPDATE_BLOCK_CHANGES' :
+			// console.log( 'UPDATE_BLOCK_CHANGES', action );
 
 			// Deconstruct state and action.
 			const { changes, removes, valids } = state;

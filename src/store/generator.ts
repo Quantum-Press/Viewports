@@ -141,9 +141,9 @@ export class Generator {
 						continue;
 					}
 
-					// Set state attributes.
-					const valids = cloneDeep( traverseGet( [ viewport, 'style', property ], this.state.valids, {} ) );
-					const removes = cloneDeep( traverseGet( [ viewport, 'style', property ], this.state.removes, {} ) );
+					// Set state attributes. The values could be undefined, so there is a second fallback ?? {}
+					const valids = cloneDeep( traverseGet( [ viewport, 'style', property ], this.state.valids, {} ) ?? {} );
+					const removes = cloneDeep( traverseGet( [ viewport, 'style', property ], this.state.removes, {} ) ?? {} );
 
 					// Check if state changes that we need to go further.
 					if(
@@ -158,9 +158,9 @@ export class Generator {
 						}
 					}
 
-					// Set saves and changes to compare later.
-					const saves = cloneDeep( traverseGet( [ viewport, 'style', property ], this.state.saves, {} ) );
-					const changes = cloneDeep( traverseGet( [ viewport, 'style', property ], this.state.changes, {} ) );
+					// Set saves and changes to compare later. The values could be undefined, so there is a second fallback ?? {}
+					const saves = cloneDeep( traverseGet( [ viewport, 'style', property ], this.state.saves, {} ) ?? {} );
+					const changes = cloneDeep( traverseGet( [ viewport, 'style', property ], this.state.changes, {} ) ?? {} );
 					const collapsedSaves = cloneDeep( traverseGet( [ property ], collapsedSavesSet, {} ) );
 
 					let combined = {};
