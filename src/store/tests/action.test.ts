@@ -335,17 +335,12 @@ describe( 'store actions', () => {
 			type: 'REGISTER_RENDERER',
 			prop: 'style-key',
 			callback: callback,
-			selectors: {
-				panel: '.panel',
-				label: '.label',
-			},
+			groupId: 'style',
+			panelId: '',
 			mapping: {},
 			priority: 10,
 		};
-		const result = registerRenderer( 'style-key', callback, 10, {
-			panel: '.panel',
-			label: '.label',
-		} );
+		const result = registerRenderer( 'style-key', callback, 10, 'style', '' );
 
 		expect( check ).toStrictEqual( result );
 	});

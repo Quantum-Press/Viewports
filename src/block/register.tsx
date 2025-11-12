@@ -6,9 +6,9 @@ import type {
 import { isInBlockBlacklist } from '@quantum-viewports/config';
 import { ToggleInspector } from '@quantum-viewports/components';
 
-import BlockEdit from './block/edit';
-import BlockSave from './block/save';
-import BlockPreview from './block/preview';
+import BlockEdit from './edit';
+import BlockSave from './save';
+import BlockPreview from './preview';
 
 const {
 	blockEditor: {

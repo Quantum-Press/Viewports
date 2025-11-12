@@ -1784,7 +1784,8 @@ export const registerRenderer = ( state : State, action : Action ) : State => {
 			prop,
 			callback,
 			priority,
-			selectors,
+			groupId,
+			panelId,
 			mapping
 		} = action;
 
@@ -1798,7 +1799,8 @@ export const registerRenderer = ( state : State, action : Action ) : State => {
 						[ priority ]: {
 							type: 'custom',
 							callback,
-							selectors,
+							groupId,
+							panelId,
 							mapping: mapping ?? {},
 						}
 					}
@@ -1814,7 +1816,8 @@ export const registerRenderer = ( state : State, action : Action ) : State => {
 					[ priority ]: {
 						type: 'custom',
 						callback,
-						selectors,
+						groupId,
+						panelId,
 						mapping: mapping ?? {},
 					}
 				}

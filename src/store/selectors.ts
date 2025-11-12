@@ -3,10 +3,11 @@ import type {
 	State,
 	RendererSet,
 	RendererPropertySet,
+	Spectrum,
 	SpectrumSet,
 	InlineStyleSet,
 	ViewportStyleSets,
-	IndicatorSelectorSet,
+	IndicatorPropertySet,
 	BlockStyles,
 	BlockAttributes,
 } from '@quantum-viewports/types';
@@ -809,11 +810,10 @@ export const getInlineStyle = ( state : State, clientId : string ) : InlineStyle
  * @param {State} state current
  * @param {string} clientId
  */
-export const getIndicatorSelectorSet = ( state : State, clientId : string ) : IndicatorSelectorSet => {
-	const selectorSet = {} as IndicatorSelectorSet;
-	const spectrumSet = getSpectrumSet( state, clientId );
-
+export const getIndicatorPropertySet = ( state: State, clientId: string ): IndicatorPropertySet => {
+	const propertySet = {} as IndicatorPropertySet;
 	const rendererPropertySet = getRendererPropertySet( state );
+	const spectrumSet = getSpectrumSet( state, clientId );
 
 	// Iterate over all renderer property sets.
 	for( const property in rendererPropertySet ) {
@@ -821,31 +821,17 @@ export const getIndicatorSelectorSet = ( state : State, clientId : string ) : In
 			continue;
 		}
 
-		const rendererSet = rendererPropertySet[ property ];
-
 		// Iterate over all callbacks by priority.
+		const rendererSet = rendererPropertySet[ property ];
 		for( const priorityDirty in rendererSet ) {
 			if( ! rendererSet.hasOwnProperty( priorityDirty ) ) {
 				continue;
 			}
 
-			// Cleanup to number.
 			const priority = parseInt( priorityDirty );
-
-			// Try to get selector from renderer.
-			const renderer = rendererSet[ priority ];
-
-			if( ! renderer.selectors.hasOwnProperty( 'label' ) ) {
-				continue;
-			}
-
-			// Set label.
-			const selectorLabel = renderer.selectors.label;
 
 			// Set empty spectrum to fill, if available.
 			let collected = [];
-
-			// Iterate over spectrumSets, to search the result of renderer.
 			for( let index = 0; index < spectrumSet.length; index++ ) {
 				const check = spectrumSet[ index ];
 
@@ -855,20 +841,22 @@ export const getIndicatorSelectorSet = ( state : State, clientId : string ) : In
 				}
 			}
 
-			// Set selectorSet if not already set.
-			if( ! selectorSet.hasOwnProperty( selectorLabel ) ) {
-				selectorSet[ selectorLabel ] = {
+			const renderer = rendererSet[ priority ];
+
+			if( ! propertySet.hasOwnProperty( property ) ) {
+				propertySet[ property ] = {
 					property,
+					groupId: renderer.groupId,
+					panelId: renderer.panelId,
 					spectrumSet: [],
 				}
 			}
 
-			// Check if we found a spectrum.
 			if( collected.length ) {
-				selectorSet[ selectorLabel ].spectrumSet = collected;
+				propertySet[ property ].spectrumSet = collected;
 			}
 		}
 	}
 
-	return selectorSet;
+	return propertySet;
 }

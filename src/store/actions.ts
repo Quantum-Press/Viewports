@@ -1,4 +1,4 @@
-import type { BlockAttributes, Action, Viewports, viewportType } from '@quantum-viewports/types';
+import type { BlockAttributes, Action, Viewports, viewportType, RendererMapping } from '@quantum-viewports/types';
 import type { Size } from '@quantum-viewports/hooks';
 
 
@@ -566,15 +566,25 @@ export const clearBlocks = () : Action => {
  * @param {string} prop
  * @param {Function} callback
  * @param {number} priority
- * @param {SelectorSet} selectors
+ * @param {string} groupId
+ * @param {string} panelId
+ * @param {RendererMapping} mapping
  *
  * @return {Action}
  */
-export const registerRenderer = ( prop : string, callback : Function, priority = 10, selectors = {}, mapping = {} ) : Action => ( {
+export const registerRenderer = (
+	prop: string,
+	callback: Function,
+	priority: number = 10,
+	groupId: string = '',
+	panelId: string = '',
+	mapping: RendererMapping = {}
+) : Action => ( {
 	type: 'REGISTER_RENDERER',
 	prop,
 	callback,
 	priority,
-	selectors,
+	groupId,
+	panelId,
 	mapping,
 } );

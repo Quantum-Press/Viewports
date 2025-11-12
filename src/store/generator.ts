@@ -287,10 +287,6 @@ export class Generator {
 								viewport,
 								priority,
 								selector,
-								selectors: {
-									panel: renderer.selectors.hasOwnProperty( 'panel' ) ? renderer.selectors.panel : 'missing',
-									label: renderer.selectors.hasOwnProperty( 'label' ) ? renderer.selectors.label : 'missing',
-								},
 								declarations,
 								css,
 								style: {

@@ -83,7 +83,7 @@ export const Attribute = ( attributes ) => {
 	 * Set function to fire on click property.
 	 */
 	const onClickProperty = () => {
-		setHighlightProperty( spectrum.selectors.panel );
+		// setHighlightProperty( spectrum.selectors.panel );
 	}
 
 

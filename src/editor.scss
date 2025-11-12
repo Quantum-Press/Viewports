@@ -2241,6 +2241,17 @@ svg.keyframe {
 
 
 /**
+ * Indicator Controls.
+ */
+.qp-viewports-indicator-controls {
+	grid-row: 1;
+	display: flex;
+	margin-top: -39px !important;
+	margin-right: 10px !important;
+}
+
+
+/**
  * Indicator - General.
  */
 .interface-interface-skeleton__sidebar {

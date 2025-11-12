@@ -1,6 +1,5 @@
 import {
 	InspectorPortals,
-	IndicatorPortals
 } from '@quantum-viewports/components';
 
 
@@ -48,7 +47,6 @@ const Portals = () : React.JSX.Element => {
 	return (
 		<>
 			<InspectorPortals />
-			<IndicatorPortals />
 		</>
 	);
 }

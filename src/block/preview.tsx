@@ -7,7 +7,6 @@ const {
 	},
 	element: {
 		useEffect,
-		useLayoutEffect,
 		Component
 	}
 } = window[ 'wp' ];
@@ -39,7 +38,7 @@ export default function BlockPreview({ block, props }: { block: Block; props: Bl
 
 		for ( const iframe of iframes ) {
 			const doc = iframe.contentDocument;
-			if ( ! doc ) continue;
+			if ( ! doc || ! doc.head ) continue;
 
 			const styleId = 'qp-viewports-block-style-' + clientId;
 			if ( doc.getElementById( styleId ) ) continue;

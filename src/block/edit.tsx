@@ -3,12 +3,13 @@ import { useMount } from '@quantum-viewports/hooks';
 import { STORE_NAME } from '@quantum-viewports/store';
 import {
 	Block,
-	BlockEditProps
+	BlockEditProps,
 } from '@quantum-viewports/types';
 import {
 	debounce,
 	debug
 } from '@quantum-viewports/utils';
+import { Indicators } from './indicators';
 
 const {
 	data: {
@@ -39,6 +40,11 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
 		setAttributes,
 		clientId,
 		isSelected,
+	} : {
+		name: string,
+		setAttributes: ( attrs: Record<string, any> ) => void,
+		clientId: string,
+		isSelected: boolean,
 	} = props;
 	const attributes = props.attributes;
 
@@ -221,12 +227,13 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
 
 	}, [ attributes?.style ] );
 
-	// Get css from store.
+	// Get css and selectors from store.
 	const css = select( STORE_NAME ).getCSS( clientId ) as string;
 
 	// Check if block.edit is a function or class component to return its edit function.
 	return (
 		<>
+			{ isSelected && <Indicators clientId={ clientId } /> }
 			{ typeof block.edit === 'function' && block.edit.prototype instanceof Component
 				? new block.edit( props ).render()
 				: block.edit( props ) }

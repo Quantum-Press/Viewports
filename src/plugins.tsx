@@ -1,5 +1,8 @@
-import { KeyframesToggle, BlockStyles } from '@quantum-viewports/components';
-import { DeviceTypeProvider } from './hooks';
+import {
+	KeyframesToggle,
+	BlockStyles,
+} from '@quantum-viewports/components';
+import { DeviceTypeProvider } from '@quantum-viewports/hooks';
 
 const {
 	plugins: {
@@ -21,4 +24,3 @@ registerPlugin( 'quantum-viewports-keyframes-toggle', {
 registerPlugin( 'quantum-viewports-block-styles', {
 	render: BlockStyles,
 } );
-

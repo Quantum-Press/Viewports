@@ -44,7 +44,8 @@ export type RendererSet = {
 	[ key: number ] : {
 		type?: string,
 		callback: Function,
-		selectors: SelectorSet,
+		groupId?: string,
+		panelId?: string,
 		mapping?: RendererMapping,
 	},
 }
@@ -85,7 +86,6 @@ export interface Rule {
 	viewport: number,
 	priority: number,
 	selector: string,
-	selectors: SelectorSet,
 	declarations: string,
 	css: string,
 	style: BlockStyles,
@@ -146,13 +146,11 @@ export type InlineStyle = {
 	to: number,
 }
 
-export type SelectorSet = {
-	[ key : string ]: string,
-}
-
-export type IndicatorSelectorSet = {
+export type IndicatorPropertySet = {
 	[ key : string ] : {
 		property: string,
+		groupId: string,
+		panelId: string,
 		spectrumSet: Array<Spectrum>,
 	}
 }
@@ -196,12 +194,13 @@ export type Action = {
 	viewportType?: viewportType,
 	size?: Size,
 	attributes?: BlockAttributes,
+	groupId?: string,
+	panelId?: string,
 	props?: Array<string>,
 	prop?: string,
 	callback?: Function,
 	force?: boolean,
 	priority?: number,
-	selectors?: SelectorSet,
 	mapping?: RendererMapping,
 	position?: string,
 }

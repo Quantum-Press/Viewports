@@ -20,12 +20,10 @@ const {
 		Icon,
 	},
 	data: {
-		dispatch,
 		useSelect,
 		useDispatch,
 	},
 	element: {
-		useEffect,
 		useState,
 	},
 	i18n: {
@@ -33,14 +31,17 @@ const {
 	}
 } = window[ 'wp' ];
 
+export type IndicatorProps = {
+	storeId: string,
+	property: string,
+	spectrumSet: SpectrumSet,
+};
+
 
 /**
  * Set component const to export inspector ui.
  */
-export const Indicator = ( { target, storeId, property, spectrumSet } : { target: Element, storeId: string, property: string, spectrumSet : SpectrumSet } ) => {
-
-	// Set panel element.
-	const panel = target.closest( '.components-tools-panel' );
+export const Indicator = ( { storeId, property, spectrumSet }: IndicatorProps ) => {
 
 	// Set spectrumSet indicators.
 	const hasTabletSpectrum = spectrumSet.length ? hasSpectrumSetViewportType( 'Tablet', spectrumSet ) : false;
@@ -68,20 +69,10 @@ export const Indicator = ( { target, storeId, property, spectrumSet } : { target
 			iframeViewport: store.getIframeViewport(),
 			deviceType: editorStore.getDeviceType(),
 		}
- 	} );
+ 	}, [ spectrumSet ] );
 
 	// Set visibility state of controls.
 	const [ isVisible, setIsVisible ] = useState( false );
-
-	// Set useEffect to handle changes in spectrumSet.
-	useEffect( () => {
-		if( spectrumSet.length ) {
-			panel.classList.add( 'has-viewports' );
-		} else {
-			panel.classList.remove( 'has-viewports' );
-		}
-
-	}, [ spectrumSet ] );
 
 
 	/**
@@ -291,5 +282,3 @@ export const Indicator = ( { target, storeId, property, spectrumSet } : { target
 		</div>
 	);
 }
-
-export * from './portals';

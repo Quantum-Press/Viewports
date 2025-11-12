@@ -148,10 +148,8 @@ export const DEFAULT_STATE = {
 			5: {
 				type: 'wp',
 				callback: compileCSS,
-				selectors: {
-					label: '.background-block-support-panel .components-tools-panel-header',
-					panel: '.background-block-support-panel',
-				},
+				groupId: 'background',
+				panelId: '',
 				mapping: {},
 			},
 		},
@@ -159,10 +157,8 @@ export const DEFAULT_STATE = {
 			5: {
 				type: 'wp',
 				callback: compileCSS,
-				selectors: {
-					label: '.border-block-support-panel .components-tools-panel-header',
-					panel: '.border-block-support-panel',
-				},
+				groupId: 'border',
+				panelId: '',
 				mapping: {
 					'core/image': '> img',
 				},
@@ -172,10 +168,8 @@ export const DEFAULT_STATE = {
 			5: {
 				type: 'wp',
 				callback: compileCSS,
-				selectors: {
-					label: '.dimensions-block-support-panel .components-tools-panel-item.last .block-editor-height-control',
-					panel: '.dimensions-block-support-panel .components-tools-panel-item.last',
-				},
+				groupId: 'dimensions',
+				panelId: '',
 				mapping: {},
 			},
 		},
@@ -183,10 +177,8 @@ export const DEFAULT_STATE = {
 			5: {
 				type: 'wp',
 				callback: compileCSS,
-				selectors: {
-					label: '.border-block-support-panel .components-tools-panel-header',
-					panel: '.border-block-support-panel',
-				},
+				groupId: 'shadow',
+				panelId: '',
 				mapping: {
 					'core/image': '> img',
 				},
@@ -196,10 +188,8 @@ export const DEFAULT_STATE = {
 			5: {
 				type: 'wp',
 				callback: compileCSS,
-				selectors: {
-					label: '.dimensions-block-support-panel .components-tools-panel-header',
-					panel: '.dimensions-block-support-panel .components-tools-panel-item.tools-panel-item-spacing',
-				},
+				groupId: 'dimensions',
+				panelId: '',
 				mapping: {},
 			},
 		},

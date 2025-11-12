@@ -6,5 +6,5 @@ import './store/index';
 
 // Import implementations.
 import './plugins';
-import './register';
+import './block/register';
 import './subscribes';
