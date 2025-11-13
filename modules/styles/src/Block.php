@@ -213,8 +213,7 @@ class Block {
 
         $selectorParts = [ '%' ];
         if( '%' !== $selector ) {
-            // $selectorParts = $parser->getSelectorParts( $selector );
-            echo 'Huh?'; exit;
+            $selectorParts = $parser->sanitizeSelectorParts( $selector );
         }
 
         // Start processing at the outer selector.
