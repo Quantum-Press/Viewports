@@ -610,9 +610,8 @@ describe( 'test store reducers', () => {
 			} as State;
 			const result = registerBlockInit( state, action );
 
-			// Ignore css, inlineStyle and spectrum sets to debug in generator.test.ts
+			// Ignore css and spectrum sets to debug in generator.test.ts
 			result.cssSet = check.cssSet;
-			result.inlineStyleSets = check.inlineStyleSets;
 			result.spectrumSets = check.spectrumSets;
 
 			expect( result ).toEqual( check );
@@ -664,9 +663,8 @@ describe( 'test store reducers', () => {
 			} as State;
 			const result = registerBlockInit( state, action );
 
-			// Ignore css, inlineStyle and spectrum sets to debug in generator.test.ts
+			// Ignore css and spectrum sets to debug in generator.test.ts
 			result.cssSet = check.cssSet;
-			result.inlineStyleSets = check.inlineStyleSets;
 			result.spectrumSets = check.spectrumSets;
 
 			expect( result ).toEqual( check );
@@ -750,9 +748,8 @@ describe( 'test store reducers', () => {
 			} as State;
 			const result = registerBlockInit( state, action );
 
-			// Ignore css, inlineStyle and spectrum sets to debug in generator.test.ts
+			// Ignore css and spectrum sets to debug in generator.test.ts
 			result.cssSet = check.cssSet;
-			result.inlineStyleSets = check.inlineStyleSets;
 			result.spectrumSets = check.spectrumSets;
 
 			expect( result ).toEqual( check );
@@ -933,9 +930,8 @@ describe( 'test store reducers', () => {
 			} as State;
 			const result = updateBlockChanges( state, action );
 
-			// Ignore css, inlineStyle and spectrum sets to debug in generator.test.ts
+			// Ignore css and spectrum sets to debug in generator.test.ts
 			result.cssSet = check.cssSet;
-			result.inlineStyleSets = check.inlineStyleSets;
 			result.spectrumSets = check.spectrumSets;
 
 			expect( result ).toEqual( check );
@@ -1098,9 +1094,8 @@ describe( 'test store reducers', () => {
 			} as State;
 			const result = updateBlockChanges( state, action );
 
-			// Ignore css, inlineStyle and spectrum sets to debug in generator.test.ts
+			// Ignore css and spectrum sets to debug in generator.test.ts
 			result.cssSet = check.cssSet;
-			result.inlineStyleSets = check.inlineStyleSets;
 			result.spectrumSets = check.spectrumSets;
 
 			expect( result ).toEqual( check );
@@ -1299,9 +1294,8 @@ describe( 'test store reducers', () => {
 			} as State;
 			const result = updateBlockChanges( state, action );
 
-			// Ignore css, inlineStyle and spectrum sets to debug in generator.test.ts
+			// Ignore css and spectrum sets to debug in generator.test.ts
 			result.cssSet = check.cssSet;
-			result.inlineStyleSets = check.inlineStyleSets;
 			result.spectrumSets = check.spectrumSets;
 
 			expect( result ).toEqual( check );
@@ -1333,9 +1327,8 @@ describe( 'test store reducers', () => {
 			} as State;
 			const result = removeBlock( state, action );
 
-			// Ignore css, inlineStyle and spectrum sets to debug in generator.test.ts
+			// Ignore cssawd and spectrum sets to debug in generator.test.ts
 			result.cssSet = check.cssSet;
-			result.inlineStyleSets = check.inlineStyleSets;
 			result.spectrumSets = check.spectrumSets;
 
 			expect( result ).toStrictEqual( check );
@@ -1459,9 +1452,8 @@ describe( 'test store reducers', () => {
 			} as State;
 			const result = restoreBlockSaves( state, action );
 
-			// Ignore css, inlineStyle and spectrum sets to debug in generator.test.ts
+			// Ignore css and spectrum sets to debug in generator.test.ts
 			result.cssSet = check.cssSet;
-			result.inlineStyleSets = check.inlineStyleSets;
 			result.spectrumSets = check.spectrumSets;
 
 			// Ignore lastEdit cause it is a timestamp.
@@ -1584,9 +1576,8 @@ describe( 'test store reducers', () => {
 			} as State;
 			const result = restoreBlockSaves( state, action );
 
-			// Ignore css, inlineStyle and spectrum sets to debug in generator.test.ts
+			// Ignore css and spectrum sets to debug in generator.test.ts
 			result.cssSet = check.cssSet;
-			result.inlineStyleSets = check.inlineStyleSets;
 			result.spectrumSets = check.spectrumSets;
 
 			// Ignore lastEdit cause it is a timestamp.
@@ -1742,9 +1733,8 @@ describe( 'test store reducers', () => {
 			} as State;
 			const result = saveBlock( state, action );
 
-			// Ignore css, inlineStyle and spectrum sets to debug in generator.test.ts
+			// Ignore css and spectrum sets to debug in generator.test.ts
 			result.cssSet = check.cssSet;
-			result.inlineStyleSets = check.inlineStyleSets;
 			result.spectrumSets = check.spectrumSets;
 
 			expect( result ).toEqual( check );

@@ -10,7 +10,6 @@ import type {
 	SpectrumSet,
 	Spectrum,
 	SpectrumState,
-	InlineStyleSet,
 } from '@quantum-viewports/types';
 import {
 	getMergedObject,
@@ -37,7 +36,6 @@ export class Generator {
 	ruleSet: RuleSet;
 	spectrumSet: SpectrumSet;
 	css: CSSViewportSet;
-	inlineStyle: InlineStyleSet;
 	properties: Array<any>;
 	viewports: Array<number>;
 
@@ -64,7 +62,6 @@ export class Generator {
 		this.ruleSet = null;
 		this.spectrumSet = null;
 		this.css = null;
-		this.inlineStyle = null;
 		this.properties = null;
 		this.viewports = null;
 
@@ -725,62 +722,6 @@ export class Generator {
 		// console.log( 'spectrumSet', spectrumSet );
 
 		return spectrumSet;
-	}
-
-
-	/**
-	 * Set method to get inlineStyle.
-	 */
-	getInlineStyle() {
-		if( null === this.inlineStyle ) {
-			this.inlineStyle = this.generateInlineStyle();
-		}
-
-		return this.inlineStyle;
-	}
-
-
-	/**
-	 * Set method to generate inlineStyle.
-	 */
-	generateInlineStyle() {
-		const spectrumSet = this.getSpectrumSet();
-		const inlineStyle = {} as InlineStyleSet;
-
-		// Iterate over spectrumSet to generate inlineStyle.
-		spectrumSet.forEach( ( spectrum ) => {
-
-			// Set indicators.
-			const hasSaves = Object.keys( spectrum.saves ).length ? true : false;
-			const hasRemoves = Object.keys( spectrum.removes ).length ? true : false;
-
-			// Check if we have removed all saves.
-			if( hasSaves && hasRemoves && isEqual( spectrum.removes, spectrum.saves ) ) {
-				return true;
-			}
-
-			if( ! inlineStyle.hasOwnProperty( spectrum.viewport ) ) {
-				inlineStyle[ spectrum.viewport ] = {};
-			}
-
-			if( ! inlineStyle[ spectrum.viewport ].hasOwnProperty( spectrum.property ) ) {
-				inlineStyle[ spectrum.viewport ][ spectrum.property ] = [];
-			}
-
-			const selector = spectrum.selector.replace( this.selector, '%' );
-
-			inlineStyle[ spectrum.viewport ][ spectrum.property ].push( {
-				priority: spectrum.priority,
-				css: selector + '{' + spectrum.declarations + '}',
-				from: spectrum.from,
-				to: spectrum.to,
-			} );
-		} );
-
-		// Debug inlineStyle.
-		// console.log( 'inlineStyle', inlineStyle );
-
-		return inlineStyle;
 	}
 }
 

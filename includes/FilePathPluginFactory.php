@@ -21,42 +21,95 @@ use WpOop\WordPress\Plugin\FilePathPluginFactoryInterface;
 use WpOop\WordPress\Plugin\PluginInterface;
 
 /**
- * Extracts plugin info from plugin file path.
+ * Creates Plugin instances from plugin file paths.
  */
 class FilePathPluginFactory implements FilePathPluginFactoryInterface {
 
     /**
-     * The version factory.
+     * Factory responsible for creating version instances from strings.
      *
      * @var StringVersionFactoryInterface
      */
-    protected $version_factory;
+    protected $versionFactory;
+
 
     /**
-     * FilePathPluginFactory constructor.
+     * Constructor.
      *
-     * @param StringVersionFactoryInterface $version_factory The version factory.
+     * @param StringVersionFactoryInterface $versionFactory for creating VersionInterface instances.
      */
-    public function __construct( StringVersionFactoryInterface $version_factory ) {
-        $this->version_factory = $version_factory;
+    public function __construct( StringVersionFactoryInterface $versionFactory )
+    {
+        $this->versionFactory = $versionFactory;
     }
 
+
     /**
-     * Extracts plugin info from plugin file path.
+     * Parses a plugin file and creates a Plugin instance.
      *
-     * @param string $filePath The plugin file path.
+     * @param string $filePath Absolute path to the plugin's main file.
+     *
+     * @return PluginInterface The constructed plugin instance.
+     *
+     * @throws RuntimeException         If the file is unreadable.
+     * @throws UnexpectedValueException If no valid plugin header was found.
+     * @throws Exception                If a version string is malformed.
      */
-    public function createPluginFromFilePath( string $filePath ): PluginInterface {
+    public function createPluginFromFilePath( string $filePath ): PluginInterface
+    {
+        $this->assertReadable( $filePath );
+
+        $pluginData = $this->readPluginHeader( $filePath );
+        $pluginData = $this->mergePluginDefaults( $pluginData );
+
+        $baseDir    = dirname( $filePath );
+        $baseName   = plugin_basename( $filePath );
+        $slug       = $this->pluginSlug( $baseName );
+        $textDomain = $pluginData[ 'TextDomain' ] ?: $slug;
+
+        return new Plugin(
+            $pluginData['Name'],
+            $this->createVersion( $pluginData[ 'Version' ] ),
+            $baseDir,
+            $baseName,
+            $pluginData['PluginURI'],
+            $pluginData['Description'],
+            $textDomain,
+            $this->createVersion($pluginData[ 'RequiresPHP' ] ),
+            $this->createVersion($pluginData[ 'RequiresWP' ] )
+        );
+    }
+
+
+    /**
+     * Ensures that the provided file path is readable.
+     *
+     * @param string $filePath Path to check.
+     *
+     * @throws RuntimeException If the file is not readable or does not exist.
+     */
+    private function assertReadable( string $filePath ): void
+    {
         if ( ! is_readable( $filePath ) ) {
             throw new RuntimeException(
-                sprintf(
-                    'Plugin file "%1$s" does not exist or is not readable',
-                    $filePath
-                )
+                sprintf( 'Plugin file "%s" does not exist or is not readable', $filePath )
             );
         }
+    }
 
-        $default_headers = array(
+
+    /**
+     * Reads plugin header information from a file.
+     *
+     * @param string $filePath Path to the plugin file.
+     *
+     * @return array<string,string> Associative array of plugin header fields.
+     *
+     * @throws UnexpectedValueException If no valid plugin header is found.
+     */
+    private function readPluginHeader( string $filePath ): array
+    {
+        $headers = [
             'Name'            => 'Plugin Name',
             'PluginURI'       => 'Plugin URI',
             'Version'         => 'Version',
@@ -65,21 +118,35 @@ class FilePathPluginFactory implements FilePathPluginFactoryInterface {
             'RequiresWP'      => 'Requires at least',
             'RequiresPHP'     => 'Requires PHP',
             'RequiresPlugins' => 'Requires Plugins',
+        ];
+
+        $data = get_file_data(
+            $filePath,
+            $headers,
+            'plugin'
         );
 
-        $plugin_data = \get_file_data( $filePath, $default_headers, 'plugin' );
-
-        if ( empty( $plugin_data ) ) {
+        if ( empty( $data ) ) {
             throw new UnexpectedValueException(
-                sprintf(
-                    'Plugin file "%1$s" does not have a valid plugin header',
-                    $filePath
-                )
+                sprintf( 'Plugin file "%s" does not have a valid plugin header', $filePath )
             );
         }
 
-        $plugin_data = array_merge(
-            array(
+        return $data;
+    }
+
+
+    /**
+     * Merges plugin header data with default fallback values.
+     *
+     * @param array<string,string> $data Extracted plugin header data.
+     *
+     * @return array<string,string> Complete and normalized plugin data.
+     */
+    private function mergePluginDefaults(array $data): array
+    {
+        return array_merge(
+            [
                 'Name'        => '',
                 'Version'     => '0.1.0-alpha1+default',
                 'Title'       => '',
@@ -87,60 +154,50 @@ class FilePathPluginFactory implements FilePathPluginFactoryInterface {
                 'TextDomain'  => '',
                 'RequiresWP'  => '6.5',
                 'RequiresPHP' => '7.4',
-            ),
-            $plugin_data
-        );
-
-        $base_dir    = dirname( $filePath );
-        $base_name   = plugin_basename( $filePath );
-        $slug        = $this->get_plugin_slug( $base_name );
-        $text_domain = ! empty( $plugin_data['TextDomain'] ) ? $plugin_data['TextDomain'] : $slug;
-
-        return new Plugin(
-            $plugin_data['Name'],
-            $this->create_version( $plugin_data['Version'] ),
-            $base_dir,
-            $base_name,
-            $plugin_data['PluginURI'],
-            $plugin_data['Description'],
-            $text_domain,
-            $this->create_version( $plugin_data['RequiresPHP'] ),
-            $this->create_version( $plugin_data['RequiresWP'] )
+            ],
+            $data
         );
     }
+
 
     /**
      * Creates a new version from a version string.
      *
-     * @param string $version_string The SemVer-compliant version string.
+     * @param string $versionString The SemVer-compliant version string.
      *
      * @return VersionInterface The new version.
      *
      * @throws Exception If version string is malformed.
      */
-    protected function create_version( string $version_string ): VersionInterface {
-        return $this->version_factory->createVersionFromString( $version_string );
+    protected function createVersion( string $versionString ): VersionInterface
+    {
+        return $this->versionFactory->createVersionFromString( $versionString );
     }
 
+
     /**
-     * Retrieves a plugin slug from its basename.
+     * Extracts a slug from a plugin basename.
      *
-     * @param string $base_name The plugin's basename.
+     * If the plugin resides in a directory, the directory name is used.
+     * Otherwise, the file name without extension is used.
      *
-     * @return string The plugin's slug.
+     * @param string $baseName Result of plugin_basename().
+     *
+     * @return string Slug derived from basename.
      */
-    protected function get_plugin_slug( string $base_name ): string {
-        $directory_separator = '/';
+    protected function pluginSlug( string $baseName ): string
+    {
+        $directorySeparator = '/';
 
         // If plugin is in a directory, use directory name.
-        if ( strstr( $base_name, $directory_separator ) !== false ) {
-            $parts = explode( $directory_separator, $base_name );
+        if ( strstr( $baseName, $directorySeparator ) !== false ) {
+            $parts = explode( $directorySeparator, $baseName );
             if ( $parts ) {
                 return $parts[0];
             }
         }
 
         // If plugin is not in a directory, return plugin file basename.
-        return basename( $base_name );
+        return basename( $baseName );
     }
 }

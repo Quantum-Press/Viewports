@@ -197,7 +197,6 @@ export const DEFAULT_STATE = {
 	cssSet: {},
 	ruleSets: {},
 	spectrumSets: {},
-	inlineStyleSets: {},
 
 } as State;
 

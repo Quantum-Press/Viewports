@@ -4,8 +4,6 @@ declare( strict_types=1 );
 
 namespace QP\Viewports\Styles\Services;
 
-use QP\Viewports\Styles\CSSRuleSet;
-
 /**
  * Handles parsing and manipulating CSS for blocks.
  *
@@ -17,6 +15,80 @@ use QP\Viewports\Styles\CSSRuleSet;
  */
 class Parser
 {
+    /**
+     * Stores native wp properties running on
+     * wp_style_engine_get_styles
+     *
+     * @var array
+     */
+    private array $nativeProperties = [];
+
+
+    /**
+     * Stores properties to ignore on parsing.
+     *
+     * @var array
+     */
+    private array $ignoreProperties = [];
+
+    /**
+     * Class constructor.
+     */
+    public function __construct()
+    {
+        $this->registerNativeProperties();
+        $this->registerIgnoreProperties();
+    }
+
+
+    /**
+     * Register filterable native wp properties running on
+     * wp_style_engine_get_styles
+     */
+    protected function registerNativeProperties(): void
+    {
+        $this->nativeProperties = \apply_filters(
+            'quantum_viewports_native_properties',
+            [
+                'background',
+                'border',
+                'dimensions',
+                'shadow',
+                'spacing',
+            ]
+        );
+    }
+
+
+    /**
+     * Sets default property values and applies filters.
+     */
+    protected function registerIgnoreProperties(): void
+    {
+        $this->ignoreProperties = \apply_filters(
+            'quantum_viewports_ignore_properties',
+            [
+                'background',
+                'qpBackground',
+                'qpBoxShadow',
+                'qpClipPath',
+                'qpColumn',
+                'qpDimensions',
+                'qpSingleColumn',
+                'qpColumns',
+                'qpFilter',
+                'qpFlex',
+                'qpOpacity',
+                'qpOverflow',
+                'qpPosition',
+                'qpTextShadow',
+                'qpTransform',
+                'qpVisibility',
+            ]
+        );
+    }
+
+
     /**
      * Parses a CSS string into an associative array of property-value pairs.
      *
@@ -65,6 +137,204 @@ class Parser
         }
 
         return $result;
+    }
+
+
+    /**
+     * Parses CSS rules from block attributes.
+     *
+     * @param Processor $processor
+     * @param string $attributes
+     * @param array $attributes
+     *
+     * @return array
+     */
+    public function parseAttributes(
+        Processor $processor,
+        string $blockName,
+        array $attributes = []
+    ): array
+    {
+        // Check if there is a filled inlineStyles attribute to generate rules from.
+        if(
+            ( ! isset( $attributes[ 'style' ] ) || empty( $attributes[ 'style' ] ) ) &&
+            ( ! isset( $attributes[ 'viewports' ] ) || empty( $attributes[ 'viewports' ] ) )
+        ) {
+            return [];
+        }
+
+        $viewports = $attributes[ 'viewports' ] ?? [];
+        $attributeStyle = $attributes[ 'style' ] ?? [];
+        $attributeStyleDefaults = $processor->blockStyleDefaults( $blockName );
+        $attributeStyleDefaults = $this->traverseGet(
+            [ 'default' ],
+            $attributeStyleDefaults,
+            []
+        );
+
+        $viewports[ 0 ] = [
+            'style' => $this->merge(
+                $attributeStyleDefaults,
+                $attributeStyle,
+                $this->traverseGet( [ 0, 'style' ], $viewports, [] )
+            )
+        ];
+
+        // Store valids for all properties.
+        $parsedValids = $this->parseValids( $viewports );
+        $parsedRules = $this->parseViewportRules( $processor, $parsedValids, $viewports );
+
+        return $parsedRules;
+    }
+
+
+    /**
+     * Parses CSS rules from parsed valids and viewports.
+     *
+     * @param Processor $processor
+     * @param array $parsedValids
+     * @param array $viewports
+     *
+     * @return array
+     */
+    public function parseViewportRules(
+        Processor $processor,
+        array $parsedValids,
+        array $viewports
+    ): array
+    {
+        // Iterate over viewports attributes to parse them to css.
+        $rules = [];
+        foreach( $parsedValids as $viewport => $maxWidths ) {
+            foreach( $maxWidths as $maxWidth => $validStyles ) {
+                $styles = $this->traverseGet( [ $viewport, $maxWidth ], $viewports, [] );
+                if( empty( $styles ) ) {
+                    $styles = $this->traverseGet( [ $viewport ], $viewports, [] );
+                }
+
+                foreach( $styles as $style ) {
+                    foreach( $style as $property => $value ) {
+                        $valids = $this->traverseGet(
+                            [ $viewport, $maxWidth, 'style', $property ],
+                            $parsedValids,
+                            []
+                        );
+                        $parsed = $this->parseStyleAttribute( $property, $value, $valids );
+                        if( empty( $parsed ) ) { continue; }
+
+                        foreach( $parsed as $selector => $css ) {
+
+                            // Check if we need to add an attribute style.
+                            if( ! empty( $css[ 'declarations' ] ) ) {
+                                if( is_numeric( $viewport ) ) {
+                                    $rules[] = $processor->generateCSSRule(
+                                        'attributes',
+                                        $property,
+                                        $selector,
+                                        $css[ 'declarations' ],
+                                        'screen',
+                                        $viewport,
+                                        $maxWidth > 0 ? $maxWidth : -1,
+                                    );
+                                    continue;
+                                }
+
+                                // Allow to register non-numeric viewport types.
+                                $customRule = \apply_filters(
+                                    'quantum_viewports_custom_viewport_rule',
+                                    null,
+                                    $property,
+                                    $selector,
+                                    $css[ 'declarations' ],
+                                    $viewport
+                                );
+
+                                if( $customRule instanceOf CSSRule ) {
+                                    $rules[] = $customRule;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $rules;
+    }
+
+
+    /**
+     * Parses a style property value to css.
+     *
+     * @param string $property
+     * @param array $value
+     * @param array $value
+     *
+     * @return array
+     */
+    public function parseStyleAttribute( string $property, array $value, array $valids ): array
+    {
+        if( in_array( $property, $this->nativeProperties, true ) ) {
+            $engineStyles = \wp_style_engine_get_styles( [
+                $property => $value,
+            ] );
+
+            $css = \apply_filters(
+                'quantum_viewports_register_renderer_' . $property,
+                $engineStyles[ 'css' ] ?? '',
+                $value,
+                $valids
+            );
+
+            if( is_string( $css ) && ! empty( $css ) ) {
+                return [
+                    '%' => [
+                        'css' => $css,
+                        'declarations' => $this->splitDeclarations( $css ),
+                    ]
+                ];
+            }
+
+            return [];
+        }
+
+        $css = \apply_filters(
+            'quantum_viewports_register_renderer_' . $property,
+            '',
+            $value,
+            $valids
+        );
+
+        if( is_string( $css ) && ! empty( $css ) ) {
+            return $this->splitSelectors( $css );
+        }
+
+        return [];
+    }
+
+
+    public function parseValids( array $viewports ): array
+    {
+        $valids = [];
+        $lastViewport = 0;
+
+        ksort( $viewports );
+
+        foreach( $viewports as $viewport => $styles ) {
+            $maxWidths = [ 0 ];
+
+            ksort( $maxWidths );
+
+            foreach( $maxWidths as $maxWidth ) {
+                $lastValids = $this->traverseGet( [ $lastViewport, $maxWidth ], $valids, [] );
+
+                $valids[ $viewport ] = [
+                    $maxWidth => $this->merge( $lastValids, $styles )
+                ];
+            }
+        }
+
+        return $valids;
     }
 
 
@@ -217,18 +487,52 @@ class Parser
         ); // Remove special chars for this process.
 
         $parts = explode( ';', $css ); // Split string at semicolons.
-        $split = [];
+        $declarations = [];
 
         foreach( $parts as $index => $part ) {
+            $part = trim( $part );
+            if( empty( $part ) ) {
+                continue;
+            }
 
             // Check for not existing colons, to remove declare.
             if( false !== strpos( $part, ':' ) ) {
                 $part = trim( $part );
-                $parts[ $index ] = $part;
+                $part = explode( ':', $part, 2 );
+                $declarations[ $part[ 0 ] ] = $part[ 1 ];
             }
         }
 
-        return $parts;
+        return $declarations;
+    }
+
+
+    public function splitSelectors( string $css ): array
+    {
+        if( empty( $css ) ) {
+            return [];
+        }
+
+        $selectors = explode( '}', $css );
+        $selectorCss = [];
+
+        if( count( $selectors ) > 1 ) {
+            foreach( $selectors as $cssPart ) {
+                if( empty( $cssPart ) ) {
+                    continue;
+                }
+
+                $selector = $this->extractSelector( $cssPart );
+
+                $selectorCss[ $selector ] = [
+                    'declarations' => $this->splitDeclarations( $cssPart ),
+                    'css' => $cssPart,
+                ];
+            }
+
+        }
+
+        return $selectorCss;
     }
 
 
@@ -254,6 +558,11 @@ class Parser
         // Check for ending }.
         if( ( strlen( $cleaned ) - 1 ) === strpos( $cleaned, '}' ) ) {
             $cleaned = substr( $cleaned, 0, -1 );
+        }
+
+        // Check for starting {.
+        if( ( 0 === strpos( $cleaned, '}' ) ) ) {
+            $cleaned = substr( $cleaned, 1 );
         }
 
         // Remove any remaining whitespace and newlines
@@ -296,5 +605,116 @@ class Parser
         }
 
         return rtrim( $cssString, '; ' );
+    }
+
+
+    /**
+     * Merges multiple associative arrays into one.
+     *
+     * @param array ...$arrays Arrays to merge.
+     *
+     * @return array Merged associative array.
+     */
+    public function merge( array ...$arrays ): array
+    {
+        return array_reduce( $arrays, function( array $prev, array $arr ): array {
+            foreach( $arr as $key => $value ) {
+                $prevValue = $prev[ $key ] ?? null;
+                $prev[ $key ] = $value;
+
+                if(
+                    $this->isAssoc( $prevValue ) &&
+                    $this->isAssoc( $value )
+                ) {
+                    $prev[ $key ] = $this->merge( $prevValue, $value );
+
+                } elseif(
+                    $this->isIndex( $prevValue ) &&
+                    $this->isIndex( $value ) &&
+                    count( $value ) > 0
+                ) {
+                    $prev[ $key ] = $value;
+
+                } elseif( $this->isAssoc( $value ) ) {
+                    $prev[ $key ] = $value;
+
+                }
+            }
+
+            return $prev;
+        }, [] );
+    }
+
+
+    /**
+     * Determine if an array is associative.
+     *
+     * @param mixed $arr
+     *
+     * @return bool
+     */
+    private function isAssoc( $arr ): bool
+    {
+        return is_array( $arr ) && array_keys( $arr ) !== range( 0, count( $arr ) - 1 );
+    }
+
+
+    /**
+     * Determine if an array is indexed.
+     *
+     * @param mixed $arr
+     *
+     * @return bool
+     */
+    private function isIndex( $arr ): bool
+    {
+        return is_array( $arr ) && array_keys( $arr ) === range( 0, count( $arr ) - 1 );
+    }
+
+
+    /**
+     * Traverse a nested Array or object by given path.
+     *
+     * @param array $path      The path to traverse
+     * @param mixed $data      The data to traverse
+     * @param mixed $default   The default value if nothing is found
+     *
+     * @return mixed
+     */
+    function traverseGet( array $path, mixed $data, mixed $default = null ): mixed
+    {
+        foreach ( $path as $key ) {
+            if ( is_array( $data ) && array_key_exists( $key, $data ) ) {
+                return $data[ $key ];
+            } elseif ( is_object( $data ) && isset( $data->$key ) ) {
+                return $data->$key;
+            }
+
+            return $default;
+        }
+
+        return $data;
+    }
+
+
+    /**
+     * Returns properties that are wp native.
+     *
+     * @return array containing properties
+     */
+    public function nativeProperties(): array
+    {
+       return $this->nativeProperties;
+    }
+
+
+    /**
+     * Returns properties to ignore.
+     *
+     * @return array containing properties
+     */
+    public function ignoreProperties(): array
+    {
+       return $this->ignoreProperties;
     }
 }

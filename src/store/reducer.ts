@@ -1015,7 +1015,6 @@ export const registerBlockInit = ( state : State, action : Action ) : State => {
 			const {
 				cssViewportSet,
 				spectrumSet,
-				inlineStyle,
 			} = getSpectrumProperties( clientId, blockName, spectrumState );
 
 			// Return new state.
@@ -1032,10 +1031,6 @@ export const registerBlockInit = ( state : State, action : Action ) : State => {
 				spectrumSets: {
 					... initState.spectrumSets,
 					[ clientId ]: spectrumSet,
-				},
-				inlineStyleSets: {
-					... initState.inlineStyleSets,
-					[ clientId ]: inlineStyle,
 				},
 			}
 	}
@@ -1128,7 +1123,6 @@ export const updateBlockChanges = ( state : State, action : Action ) : State => 
 			const {
 				cssViewportSet,
 				spectrumSet,
-				inlineStyle,
 			} = getSpectrumProperties( clientId, blockName, spectrumState );
 
 			// Return new state.
@@ -1147,10 +1141,6 @@ export const updateBlockChanges = ( state : State, action : Action ) : State => 
 				spectrumSets: {
 					... state.spectrumSets,
 					[ clientId ]: spectrumSet,
-				},
-				inlineStyleSets: {
-					... state.inlineStyleSets,
-					[ clientId ]: inlineStyle,
 				},
 			}
 	}
@@ -1264,7 +1254,6 @@ export const addBlockPropertyChanges = ( state : State, action : Action ) : Stat
 			const {
 				cssViewportSet,
 				spectrumSet,
-				inlineStyle,
 			} = getSpectrumProperties( clientId, blockName, spectrumState );
 
 			// Return new state.
@@ -1283,10 +1272,6 @@ export const addBlockPropertyChanges = ( state : State, action : Action ) : Stat
 				spectrumSets: {
 					... state.spectrumSets,
 					[ clientId ]: spectrumSet,
-				},
-				inlineStyleSets: {
-					... state.inlineStyleSets,
-					[ clientId ]: inlineStyle,
 				},
 			}
 	}
@@ -1416,7 +1401,6 @@ export const removeBlockSaves = ( state : State, action : Action ) : State => {
 				const {
 					cssViewportSet,
 					spectrumSet,
-					inlineStyle,
 				} = getSpectrumProperties( clientId, blockName, spectrumState );
 
 				// Return new state.
@@ -1434,11 +1418,6 @@ export const removeBlockSaves = ( state : State, action : Action ) : State => {
 						... state.spectrumSets,
 						[ clientId ]: spectrumSet,
 					},
-					inlineStyleSets: {
-						... state.inlineStyleSets,
-						[ clientId ]: inlineStyle,
-					},
-					lastEdit: Date.now(),
 				}
 			}
 	}
@@ -1605,7 +1584,6 @@ export const restoreBlockSaves = ( state : State, action : Action ) : State => {
 			const {
 				cssViewportSet,
 				spectrumSet,
-				inlineStyle,
 			} = getSpectrumProperties( clientId, blockName, spectrumState );
 
 			// Return new state.
@@ -1623,11 +1601,6 @@ export const restoreBlockSaves = ( state : State, action : Action ) : State => {
 					... state.spectrumSets,
 					[ clientId ]: spectrumSet,
 				},
-				inlineStyleSets: {
-					... state.inlineStyleSets,
-					[ clientId ]: inlineStyle,
-				},
-				lastEdit: Date.now(),
 			}
 	}
 
@@ -1717,7 +1690,6 @@ export const saveBlock = ( state : State, action : Action ) : State => {
 			const {
 				cssViewportSet,
 				spectrumSet,
-				inlineStyle,
 			} = getSpectrumProperties( clientId, blockName, spectrumState );
 
 			return {
@@ -1733,10 +1705,6 @@ export const saveBlock = ( state : State, action : Action ) : State => {
 				spectrumSets: {
 					... state.spectrumSets,
 					[ clientId ]: spectrumSet,
-				},
-				inlineStyleSets: {
-					... state.inlineStyleSets,
-					[ clientId ]: inlineStyle,
 				},
 			}
 	}

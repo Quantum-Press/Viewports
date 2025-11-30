@@ -116,7 +116,6 @@ export interface Spectrum extends Rule {
 export type SpectrumProperties = {
 	cssViewportSet: CSSViewportSet,
 	spectrumSet: SpectrumSet,
-	inlineStyle: InlineStyleSet,
 }
 
 export type SpectrumState = {
@@ -127,23 +126,6 @@ export type SpectrumState = {
 	rendererPropertySet: RendererPropertySet,
 	isSaving: boolean,
 	viewport: number,
-}
-
-export type InlineStyleSets = {
-	[ key : string ]: InlineStyleSet,
-}
-
-export type InlineStyleSet = {
-	[ key : number ]: {
-		[ key : string ] : Array<InlineStyle>,
-	}
-}
-
-export type InlineStyle = {
-	priority: number,
-	css: string,
-	from: number,
-	to: number,
 }
 
 export type IndicatorPropertySet = {
@@ -180,7 +162,6 @@ export type State = {
 	renderer: RendererPropertySet,
 	cssSet: CSSViewportSets,
 	spectrumSets: SpectrumSets,
-	inlineStyleSets: InlineStyleSets,
 }
 
 export type Action = {

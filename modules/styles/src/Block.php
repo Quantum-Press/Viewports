@@ -157,7 +157,10 @@ class Block {
     public function modifySave( Parser $parser, Processor $processor ): void
     {
         // Modify inline styles if there are styles.
-        if( isset( $this->attrs[ 'style' ] ) ) {
+        if(
+            isset( $this->attrs[ 'style' ] ) &&
+            ! $processor->inBlockBlacklist( $this->blockName )
+        ) {
             $this->modifySaveStyles( $parser, $processor );
         }
 
@@ -182,7 +185,7 @@ class Block {
      */
     public function modifySaveStyles( Parser $parser, Processor $processor ): void
     {
-        $this->cssRuleset->cleanupAttributeRules( $processor->ignoreProperties() );
+        $this->cssRuleset->cleanupAttributeRules( $parser->ignoreProperties() );
         $this->cssRuleset->cleanupInlineRules();
         $this->cssRuleset->compress( $processor );
 

@@ -17,67 +17,59 @@ class EditorModule implements ExecutableModule
      */
     public function run( ContainerInterface $container ): bool
     {
-        \add_action( 'enqueue_block_editor_assets', function() {
-            \wp_register_script(
-                'quantum-viewports-scripts',
-                sprintf( '%s/build/quantum-viewports.js', QUANTUM_VIEWPORTS_URL ),
-                [ 'wp-blocks', 'wp-edit-post', 'wp-element', 'wp-i18n', 'lodash' ],
-                QUANTUM_VIEWPORTS_VERSION,
-                [
-                    'in_footer' => true,
-                ],
-            );
+        $processor = $container->get( 'vp.styles.processor' );
 
-            $distribution = defined( 'QUANTUM_VIEWPORTS_EXTENDED' ) &&
-                'true' === QUANTUM_VIEWPORTS_EXTENDED ? 'extended' : 'native';
+        $version = $container->get( 'vp.version' );
+        $url = $container->get( 'vp.url' );
+        $path = $container->get( 'vp.path' );
+        $textdomain = $container->get( 'vp.textdomain' );
 
-            \wp_localize_script(
-                'quantum-viewports-scripts',
-                'quantumViewportsConfig',
-                [
-                    'distribution' => $distribution,
-                    'version' => QUANTUM_VIEWPORTS_VERSION,
-                    'blockBlacklist' => $this->blockBlacklist(),
-                    'gutenbergVersion' => $this->gutenbergVersion(),
-                    'wordpressVersion' => $this->wordpressVersion(),
-                ]
-            );
-            \wp_enqueue_script( 'quantum-viewports-scripts' );
+        \add_action(
+            'enqueue_block_editor_assets',
+            function() use ( $processor, $version, $url, $path, $textdomain ): void
+            {
+                \wp_register_script(
+                    'quantum-viewports-scripts',
+                    sprintf( '%s/build/quantum-viewports.js', $url ),
+                    [ 'wp-blocks', 'wp-edit-post', 'wp-element', 'wp-i18n', 'lodash' ],
+                    $version,
+                    [
+                        'in_footer' => true,
+                    ],
+                );
 
-            \wp_set_script_translations(
-                'quantum-viewports-scripts',
-                QUANTUM_VIEWPORTS_TEXTDOMAIN,
-                QUANTUM_VIEWPORTS_PATH . '/languages/'
-            );
+                $distribution = defined( 'QUANTUM_VIEWPORTS_EXTENDED' ) &&
+                    'true' === QUANTUM_VIEWPORTS_EXTENDED ? 'extended' : 'native';
 
-            \wp_enqueue_style(
-                'quantum-viewports-styles',
-                sprintf( '%s/build/quantum-viewports.css', QUANTUM_VIEWPORTS_URL ),
-                [],
-                QUANTUM_VIEWPORTS_VERSION
-            );
-        }, 0 );
+                \wp_localize_script(
+                    'quantum-viewports-scripts',
+                    'quantumViewportsConfig',
+                    [
+                        'distribution' => $distribution,
+                        'version' => $version,
+                        'blockBlacklist' => $processor->blockBlacklist(),
+                        'gutenbergVersion' => $this->gutenbergVersion(),
+                        'wordpressVersion' => $this->wordpressVersion(),
+                    ]
+                );
+                \wp_enqueue_script( 'quantum-viewports-scripts' );
+
+                \wp_set_script_translations(
+                    'quantum-viewports-scripts',
+                    $textdomain,
+                    $path . '/languages/'
+                );
+
+                \wp_enqueue_style(
+                    'quantum-viewports-styles',
+                    sprintf( '%s/build/quantum-viewports.css', $url ),
+                    [],
+                    $version
+                );
+            }, 0
+        );
 
         return true;
-    }
-
-
-    /**
-     * Return an array of blocks that should be blacklisted.
-     *
-     * @return array
-     */
-    public function blockBlacklist() : array
-    {
-        $issueBlocks = [
-            'cloudcatch/light-modal-block',
-            'quantum-editor/teaser', // Old name - Still in use
-            'quantumpress/teaser',
-        ];
-
-        $blockBlacklist = \apply_filters( 'quantum_viewports_block_blacklist', $issueBlocks );
-
-        return $blockBlacklist;
     }
 
 

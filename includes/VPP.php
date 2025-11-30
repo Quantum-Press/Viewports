@@ -8,9 +8,9 @@ use \Exception;
 use QP\Viewports\Vendor\Psr\Container\ContainerInterface;
 
 /**
- * Internal global data VP for Viewports.
+ * Internal global data VPP for Viewports Plugin.
  */
-class VP
+class VPP
 {
     /**
      * The container with services of the application modules.
@@ -26,9 +26,12 @@ class VP
      *
      * @throws Exception When no container.
      */
-    public static function container(): ContainerInterface {
+    public static function container(): ContainerInterface
+    {
         if ( ! self::$container ) {
-            throw new Exception( 'No Plugin container, probably called too early when the plugin is not initialized yet.' );
+            throw new Exception(
+                'There is no Plugin container. The plugin is not initialized yet.'
+            );
         }
         return self::$container;
     }
@@ -39,7 +42,8 @@ class VP
      *
      * @param ContainerInterface $container The app container.
      */
-    public static function init( ContainerInterface $container ): void {
+    public static function init( ContainerInterface $container ): void
+    {
         self::$container = $container;
     }
 }

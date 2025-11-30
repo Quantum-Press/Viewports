@@ -84,12 +84,8 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
 	const debouncedUpdateBlockChanges = useCallback( () => {
 		store.updateBlockChanges( clientId, blockName, attributesRef.current );
 
-		const saves = select( STORE_NAME ).getGeneratedBlockSaves( clientId );
-		const inlineStyle = select( STORE_NAME ).getInlineStyle( clientId );
-
 		setAttributes( {
-			viewports: saves,
-			inlineStyles: inlineStyle,
+			viewports: select( STORE_NAME ).getGeneratedBlockSaves( clientId ),
 		} );
 	}, [ clientId, blockName, store, select, setAttributes ] );
 
@@ -113,14 +109,9 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
 			);
 		}
 
-		// Init with fresh data from datastore after register.
-		const saves = select( STORE_NAME ).getGeneratedBlockSaves( clientId );
-		const inlineStyle = select( STORE_NAME ).getInlineStyle( clientId );
-
 		// Update viewports attributes.
 		setAttributes( {
-			viewports: saves,
-			inlineStyles: inlineStyle,
+			viewports: select( STORE_NAME ).getGeneratedBlockSaves( clientId ),
 		} );
 
 	} );
@@ -162,13 +153,11 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
 		// Set valids running on actual viewport.
 		const saves = select( STORE_NAME ).getGeneratedBlockSaves( clientId );
 		const valids = select( STORE_NAME ).getViewportBlockValids( clientId );
-		const inlineStyle = select( STORE_NAME ).getInlineStyle( clientId );
 
 		// Set attributes without change listening.
 		setAttributes( {
 			... cloneDeep( valids ),
 			viewports: saves,
-			inlineStyles: inlineStyle,
 		} );
 		setUpdateSelected( true );
 

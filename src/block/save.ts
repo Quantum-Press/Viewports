@@ -18,11 +18,6 @@ export const BlockSave = ( { block, props } : { block: Block, props: BlockSavePr
 		delete props.attributes.viewports;
 	}
 
-	// Cleanup attributes.inlineStyles if empty.
-	if( props.attributes.hasOwnProperty( 'inlineStyles' ) && props.attributes.inlineStyles && 0 === Object.keys( props.attributes.inlineStyles ).length ) {
-		delete props.attributes.inlineStyles;
-	}
-
 	// Debug saved attributes on enabled debug.
 	if( debugOptions.enabled && props.attributes.viewports && Object.keys( props.attributes.viewports ).length ) {
 		const isSaving = select( STORE_NAME ).isSaving();
@@ -34,7 +29,6 @@ export const BlockSave = ( { block, props } : { block: Block, props: BlockSavePr
 				{
 					style: props.attributes.style,
 					viewports: props.attributes.viewports,
-					inlineStyles: props.attributes.inlineStyles,
 				}
 			);
 		}

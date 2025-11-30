@@ -11,19 +11,19 @@ use QP\Viewports\Vendor\Inpsyde\Modularity\Package;
 use QP\Viewports\Vendor\Inpsyde\Modularity\Properties\PluginProperties;
 use QP\Viewports\Vendor\Psr\Container\ContainerInterface;
 
-return function (
-    string $root_dir,
-    array $additional_containers = [],
-    array $additional_modules = []
+return static function (
+    string $rootDir,
+    array $additionalContainers = [],
+    array $additionalModules = []
 ): ContainerInterface {
     /**
      * Skip path check.
      *
      * @psalm-suppress UnresolvableInclude
      */
-    $modules = ( require "$root_dir/bootstrap/modules.php" )( $root_dir );
+    $modules = ( require "$rootDir/bootstrap/modules.php" )( $rootDir );
 
-    $modules = array_merge( $modules, $additional_modules );
+    $modules = array_merge( $modules, $additionalModules );
 
     /**
      * Use this filter to add custom module or remove some of existing ones.
@@ -33,7 +33,7 @@ return function (
 
     // Initialize plugin.
     $properties = PluginProperties::new( __FILE__ );
-    $bootstrap  = Package::new( $properties );
+    $bootstrap = Package::new( $properties );
 
     foreach ( $modules as $module ) {
         $bootstrap->addModule( $module );

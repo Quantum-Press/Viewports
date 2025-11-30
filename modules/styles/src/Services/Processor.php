@@ -12,66 +12,42 @@ use QP\Viewports\Styles\CSSRuleSet;
  * Handles block data processing and transformation.
  *
  * This controller provides utility methods for generating, modifying,
- * and serializing WordPress block structures used by Quantum Viewports.
- * It manages which block attributes are ignored, processes nested blocks,
- * and returns prepared block objects or arrays for saving.
+ * and serializing WordPress block structures
  *
  * @package QP\Viewports\Controller
  */
 class Processor {
 
     /**
-     * Stores properties that should be ignored during block processing.
+     * Stores blacklist of blocks to ignore on processing
      *
      * @var array
      */
-    private array $ignoreProperties = [];
-
-    /**
-     * Stores nested properties that should be ignored during block processing.
-     *
-     * @var array
-     */
-    private array $ignoreNestedProperties = [];
+    private array $blockBlacklist = [];
 
 
     /**
-     * Class constructor.
-     *
-     * Initializes block processor properties.
+     * Service class constructor.
      */
     public function __construct()
     {
-        $this->registerProperties();
+        $this->registerNativeProperties();
     }
 
 
     /**
-     * Sets default property values and applies filters.
+     * Register filterable blacklist of blocks to ignore on processing
      *
      * @return void
      */
-    protected function registerProperties(): void
+    protected function registerNativeProperties(): void
     {
-        $this->ignoreProperties = \apply_filters(
-            'quantum_viewports_ignore_properties',
+        $this->blockBlacklist = \apply_filters(
+            'quantum_viewports_block_blacklist',
             [
-                'background',
-                'qpBackground',
-                'qpBoxShadow',
-                'qpClipPath',
-                'qpColumn',
-                'qpDimensions',
-                'qpSingleColumn',
-                'qpColumns',
-                'qpFilter',
-                'qpFlex',
-                'qpOpacity',
-                'qpOverflow',
-                'qpPosition',
-                'qpTextShadow',
-                'qpTransform',
-                'qpVisibility',
+                'cloudcatch/light-modal-block',
+                'quantum-editor/teaser', // Old name - Still in use
+                'quantumpress/teaser',
             ]
         );
     }
@@ -81,12 +57,11 @@ class Processor {
      * Modifies and serializes saved block data.
      *
      * @param Parser $parser
-     * @param Processor $processor
      * @param string $content a string for post_content
      *
      * @return array The modified and serialized block data.
      */
-    public function preparePostContent( Parser $parser, Processor $processor, string $content ): string
+    public function preparePostContent( Parser $parser, string $content ): string
     {
         $blocks = \parse_blocks( \stripslashes( $content ) );
         $blocks = $this->generateBlocks( $parser, $blocks );
@@ -97,9 +72,9 @@ class Processor {
         $modified = [];
 
         foreach( $blocks as $block ) {
-            $block->modifySave( $parser, $processor );
+            $block->modifySave( $parser, $this );
 
-            $modified[] = $block->serializedBlock( $parser, $processor );
+            $modified[] = $block->serializedBlock( $parser, $this );
         }
 
         return addslashes( \serialize_blocks( $modified ) );;
@@ -170,6 +145,7 @@ class Processor {
         ?string $blockHtml = null
     ): CSSRuleSet|false
     {
+
         if( empty( $blockData[ 'blockName' ] ) ) {
             return false;
         }
@@ -206,6 +182,7 @@ class Processor {
         int $maxWidth = -1,
     ): CSSRule|false
     {
+
         return new CSSRule(
             $source,
             $property,
@@ -219,12 +196,46 @@ class Processor {
 
 
     /**
-     * Returns properties to ignore.
+     * Return block type style defaults.
      *
-     * @return array containing properties
+     * @param string $blockName
+     *
+     * @return array containing default style attributes
      */
-    public function ignoreProperties(): array
+    public function blockStyleDefaults( string $blockName ): array
     {
-       return $this->ignoreProperties;
+        $blockType = \WP_Block_Type_Registry::get_instance()->get_registered( $blockName );
+
+        if( $blockType ) {
+            $defaultAttributes = $blockType->attributes;
+
+            if( isset( $defaultAttributes[ 'style' ] ) ) {
+                return $defaultAttributes[ 'style' ];
+            }
+        }
+
+        return [];
+    }
+
+
+    /**
+     * Check whether blockName is in block blacklist
+     *
+     * @return bool
+     */
+    public function inBlockBlacklist( string $blockName ): bool
+    {
+        return in_array( $blockName, $this->blockBlacklist() );
+    }
+
+
+    /**
+     * Return an array of blocks that should be blacklisted.
+     *
+     * @return array
+     */
+    public function blockBlacklist() : array
+    {
+        return $this->blockBlacklist;
     }
 }

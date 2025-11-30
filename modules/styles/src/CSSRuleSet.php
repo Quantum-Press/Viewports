@@ -96,120 +96,49 @@ class CSSRuleSet {
     protected function generateRules( Parser $parser, Processor $processor, array $attributes = [] ): void
     {
         // First we parse attributes, to check its selectors for nested inline css.
-        $attributeParsed = $this->parseAttributes( $parser, $processor, $attributes );
-        $attributeSelectors = $this->selectorsFromRules( $attributeParsed );
+        $attributeRules = $parser->parseAttributes( $processor, $this->blockName, $attributes );
+        $selectors = $this->selectorsFromRules( $attributeRules );
 
-        $inlineParsed = [];
+        $inlineRules = [];
 
-        if( empty( $attributeSelectors ) ) {
-            $attributeSelectors = [ '%' ];
+        if( empty( $selectors ) ) {
+            $selectors = [ '%' ];
         }
 
-        foreach( $attributeSelectors as $selector ) {
+        foreach( $selectors as $selector ) {
             $parsed = $this->parseInlineStyles( $parser, $processor, $selector );
 
             if( false !== $parsed ) {
-                $inlineParsed[ $selector ] = $parsed;
+                $inlineRules[ $selector ] = $parsed;
             }
         }
 
-        if( ! empty( $inlineParsed ) && ! empty( $attributeParsed ) ) {
-            $this->cleanParsed( $inlineParsed, $attributeParsed );
+        if( ! empty( $inlineRules ) && ! empty( $attributeRules ) ) {
+            $this->cleanParsed( $inlineRules, $attributeRules );
         }
 
-        $this->inlineRules = $inlineParsed;
-        $this->attributeRules = $attributeParsed;
-    }
-
-
-    /**
-     * Parses CSS rules from block attributes.
-     *
-     * @param Parser $parser
-     * @param Processor $processor
-     * @param array $attributes
-     *
-     * @return array
-     */
-    public function parseAttributes( Parser $parser, Processor $processor, array $attributes = [] ): array
-    {
-        $attributeRules = [];
-
-        // Check if there is a filled inlineStyles attribute to generate rules from.
-        if( ! isset( $attributes[ 'inlineStyles' ] ) || empty( $attributes[ 'inlineStyles' ] ) ) {
-            return [];
-        }
-
-        // Iterate over inlineStyles attribute to collect its css by key value.
-        foreach( $attributes[ 'inlineStyles' ] as $viewport => $properties ) {
-            if( empty( $properties ) ) {
-                continue;
-            }
-
-            foreach( $properties as $property => $styles ) {
-                foreach( $styles as $style ) {
-
-                    // Check if there is css to extract.
-                    if( isset( $style[ 'css' ] ) && ! empty( $style[ 'css' ] ) ) {
-                        $properties = $parser->parseCss( $style[ 'css' ] );
-                        $selector = $parser->extractSelector( $style[ 'css' ] );
-
-                        // Check if we need to add an attribute style.
-                        if( ! empty( $properties ) ) {
-                            if( is_numeric( $viewport ) ) {
-                                $attributeRules[] = $processor->generateCSSRule(
-                                    'attributes',
-                                    $property,
-                                    $selector,
-                                    $properties,
-                                    'screen',
-                                    $viewport,
-                                    isset( $style[ 'to' ] ) ? (int) $style[ 'to' ] : -1,
-                                );
-
-                                continue;
-                            }
-
-                            // Allow to register non-numeric viewport types.
-                            $customRule = \apply_filters(
-                                'quantum_viewports_custom_viewport_rule',
-                                null,
-                                $property,
-                                $selector,
-                                $properties,
-                                $viewport
-                            );
-
-                            if( $customRule instanceOf CSSRule ) {
-                                $attributeRules[] = $customRule;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return $attributeRules;
+        $this->inlineRules = $inlineRules;
+        $this->attributeRules = $attributeRules;
     }
 
 
     /**
      * Cleans inline parsed CSS by removing properties controlled by attribute rules.
      *
-     * @param array $inlineParsed
-     * @param array $attributeParsed
+     * @param array $inlineRules
+     * @param array $attributeRules
      */
-    private function cleanParsed( array &$inlineParsed, array &$attributeParsed ): void
+    private function cleanParsed( array &$inlineRules, array &$attributeRules ): void
     {
-        foreach( $inlineParsed as $inlineCssRule ) {
-            foreach( $inlineCssRule->properties() as $inlineProperty => $value ) {
+        foreach( $inlineRules as $inlineRule ) {
+            foreach( $inlineRule->properties() as $inlineProperty => $value ) {
                 $found = false;
 
-                foreach( $attributeParsed as $attributeCssRule ) {
-                    foreach( $attributeCssRule->properties() as $attributeProperty => $value ) {
+                foreach( $attributeRules as $attributeRule ) {
+                    foreach( $attributeRule->properties() as $attributeProperty => $value ) {
 
                         // Check if the inline property will be controlled by attributes.
-                        if( $inlineProperty == $attributeProperty && $inlineCssRule->selector() === $attributeCssRule->selector() ) {
+                        if( $inlineProperty == $attributeProperty && $inlineRule->selector() === $attributeRule->selector() ) {
                             $found = true;
                             break;
                         }
@@ -222,7 +151,7 @@ class CSSRuleSet {
 
                 // Check if inline property occurs in attributes to remove it from inline properties.
                 if( $found ) {
-                    $inlineCssRule->removeCSSProperty( $inlineProperty );
+                    $inlineRule->removeCSSProperty( $inlineProperty );
                 }
             }
         }
@@ -244,6 +173,7 @@ class CSSRuleSet {
         string $selector = ''
     ): CSSRule|false
     {
+
         if( '%' !== $selector ) {
             return $this->parseInlineSelector(
                 $parser,
@@ -271,6 +201,7 @@ class CSSRuleSet {
         string $selector = ''
     ): CSSRule|false
     {
+
         $selectorParts = $parser->sanitizeSelectorParts( $selector );
         if( false === $selectorParts ) {
             return false;
@@ -279,6 +210,7 @@ class CSSRuleSet {
         $inlineStyles = false;
 
         $processed = $this->processSelector(
+            $parser,
             $this->blockHtml,
             $selectorParts,
             static function( \WP_HTML_Tag_Processor $processor ) use ( &$inlineStyles ): void {
@@ -308,6 +240,7 @@ class CSSRuleSet {
     /**
      * Processes nested HTML elements based on selector parts and executes a callback on match.
      *
+     * @param Parser $parser
      * @param string $html
      * @param array $selectorParts
      * @param callable|null $callback
@@ -315,20 +248,19 @@ class CSSRuleSet {
      * @return array Found tag names
      */
     protected function processSelector(
+        Parser $parser,
         string $html,
         array $selectorParts,
         callable|null $callback = null
     ): array
     {
-
-        $foundElements = [];
-
         // Start processing at the outer selector.
+        $foundElements = [];
         $processNestedSelector = static function(
             string $html,
             array $selectorParts,
             callable $callback
-        ) use ( &$foundElements, &$processNestedSelector ): void {
+        ) use ( $parser, &$foundElements, &$processNestedSelector ): void {
             if( empty( $selectorParts ) ) {
                 return;
             }
@@ -375,7 +307,7 @@ class CSSRuleSet {
                 }
 
                 // Extract the inner HTML manually.
-                $innerHtml = CSSParser::extractInnerHTML( $currentTagName, $tagName );
+                $innerHtml = $parser->extractInnerHTML( $currentTagName, $tagName );
                 $processNestedSelector( $innerHtml, $selectorParts, $callback );
             }
         };
@@ -404,7 +336,7 @@ class CSSRuleSet {
             return false;
         }
 
-        $inlineParsed = $parser->parseCss( $inlineStyles );
+        $inlineParsed = $parser->splitDeclarations( $inlineStyles );
         if( empty( $inlineParsed ) ) {
             return false;
         }
@@ -673,5 +605,22 @@ class CSSRuleSet {
         }
 
         $this->compressedRules = array_values( $compressed );
+    }
+
+
+    /**
+     * Returns the CSS rule hash.
+     *
+     * @return string
+     */
+    public function hash() : string
+    {
+        $hashed = [];
+
+        foreach ( $this->compressedRules as $rule ) {
+            $hashed[] = $rule->hash();
+        }
+
+        return substr( md5( implode( $hashed ) ), 0, 9 );
     }
 }

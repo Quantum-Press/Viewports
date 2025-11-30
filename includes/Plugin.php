@@ -31,21 +31,21 @@ class Plugin implements PluginInterface {
      *
      * @var string
      */
-    protected $base_dir;
+    protected $baseDir;
 
     /**
      * The plugin base name.
      *
      * @var string
      */
-    protected $base_name;
+    protected $baseName;
 
     /**
      * The plugin URI.
      *
      * @var string
      */
-    protected $plugin_uri;
+    protected $pluginUri;
 
     /**
      * The plugin description.
@@ -59,144 +59,166 @@ class Plugin implements PluginInterface {
      *
      * @var string
      */
-    protected $text_domain;
+    protected $textDomain;
 
     /**
      * The minimal version of PHP required by this plugin.
      *
      * @var VersionInterface
      */
-    protected $min_php_version;
+    protected $minPhpVersion;
 
     /**
      * The minimal version of WP required by this plugin.
      *
      * @var VersionInterface
      */
-    protected $min_wp_version;
+    protected $minWpVersion;
+
 
     /**
      * Plugin constructor.
      *
      * @param string           $name The plugin name.
      * @param VersionInterface $version The plugin version.
-     * @param string           $base_dir The path to the plugin base directory.
-     * @param string           $base_name The plugin base name.
-     * @param string           $plugin_uri The plugin URI.
+     * @param string           $baseDir The path to the plugin base directory.
+     * @param string           $baseName The plugin base name.
+     * @param string           $pluginUri The plugin URI.
      * @param string           $description The plugin description.
-     * @param string           $text_domain The text domain of this plugin.
-     * @param VersionInterface $min_php_version The minimal version of PHP required by this plugin.
-     * @param VersionInterface $min_wp_version The minimal version of WP required by this plugin.
+     * @param string           $textDomain The text domain of this plugin.
+     * @param VersionInterface $minPhpVersion The minimal version of PHP required by this plugin.
+     * @param VersionInterface $minWpVersion The minimal version of WP required by this plugin.
      */
     public function __construct(
         string $name,
         VersionInterface $version,
-        string $base_dir,
-        string $base_name,
-        string $plugin_uri,
+        string $baseDir,
+        string $baseName,
+        string $pluginUri,
         string $description,
-        string $text_domain,
-        VersionInterface $min_php_version,
-        VersionInterface $min_wp_version
+        string $textDomain,
+        VersionInterface $minPhpVersion,
+        VersionInterface $minWpVersion
     ) {
-        $this->name            = $name;
-        $this->description     = $description;
-        $this->version         = $version;
-        $this->base_dir        = $base_dir;
-        $this->base_name       = $base_name;
-        $this->plugin_uri      = $plugin_uri;
-        $this->text_domain     = $text_domain;
-        $this->min_php_version = $min_php_version;
-        $this->min_wp_version  = $min_wp_version;
+
+        $this->name = $name;
+        $this->description = $description;
+        $this->version = $version;
+        $this->baseDir = $baseDir;
+        $this->baseName = $baseName;
+        $this->pluginUri = $pluginUri;
+        $this->textDomain = $textDomain;
+        $this->minPhpVersion = $minPhpVersion;
+        $this->minWpVersion = $minWpVersion;
     }
+
 
     /**
      * The plugin name.
      */
-    public function getName(): string {
+    public function getName(): string // phpcs:ignore
+    {
         return $this->name;
     }
+
 
     /**
      * The plugin description.
      */
-    public function getDescription(): string {
+    public function getDescription(): string // phpcs:ignore
+    {
 
-        $allowed_tags = array(
-            'abbr'    => array( 'title' => true ),
-            'acronym' => array( 'title' => true ),
+        $allowedTags = array(
+            'abbr'    => [ 'title' => true ],
+            'acronym' => [ 'title' => true ],
             'code'    => true,
             'em'      => true,
             'strong'  => true,
-            'a'       => array(
+            'a'       => [
                 'href'  => true,
                 'title' => true,
-            ),
+            ],
         );
 
         // phpcs:disable
-        $text = \__( $this->description, $this->text_domain );
+        $text = \__( $this->description, $this->textDomain );
 
         /**
          * @psalm-suppress InvalidArgument
          */
-        return wp_kses( $text, $allowed_tags );
+        return wp_kses( $text, $allowedTags );
         // phpcs:enable
     }
+
 
     /**
      * The plugin version.
      */
-    public function getVersion(): VersionInterface {
+    public function getVersion(): VersionInterface // phpcs:ignore
+    {
         return $this->version;
     }
+
 
     /**
      * The path to the plugin base directory.
      */
-    public function getBaseDir(): string {
-        return $this->base_dir;
+    public function getBaseDir(): string // phpcs:ignore
+    {
+        return $this->baseDir;
     }
+
 
     /**
      * The plugin base name.
      */
-    public function getBaseName(): string {
-        return $this->base_name;
+    public function getBaseName(): string // phpcs:ignore
+    {
+        return $this->baseName;
     }
+
 
     /**
      * The text domain of this plugin.
      */
-    public function getTextDomain(): string {
-        return $this->text_domain;
+    public function getTextDomain(): string // phpcs:ignore
+    {
+        return $this->textDomain;
     }
+
 
     /**
      * The plugin URI.
      */
-    public function getUri(): string {
-        return esc_url( $this->plugin_uri );
+    public function getUri(): string // phpcs:ignore
+    {
+        return esc_url( $this->pluginUri );
     }
+
 
     /**
      * The plugin title.
      */
-    public function getTitle(): string {
+    public function getTitle(): string // phpcs:ignore
+    {
         return '<a href="' . $this->getUri() . '">' . $this->getName() . '</a>';
     }
+
 
     /**
      * The minimal version of PHP required by this plugin.
      */
-    public function getMinPhpVersion(): VersionInterface {
-        return $this->min_php_version;
+    public function getMinPhpVersion(): VersionInterface // phpcs:ignore
+    {
+        return $this->minPhpVersion;
     }
+
 
     /**
      * The minimal version of WP required by this plugin.
      */
-    public function getMinWpVersion(): VersionInterface {
-        return $this->min_wp_version;
+    public function getMinWpVersion(): VersionInterface // phpcs:ignore
+    {
+        return $this->minWpVersion;
     }
 }

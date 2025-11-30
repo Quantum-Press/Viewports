@@ -4,7 +4,6 @@ import type {
 	RendererSet,
 	RendererPropertySet,
 	SpectrumSet,
-	InlineStyleSet,
 	ViewportStyleSets,
 	IndicatorPropertySet,
 	BlockStyles,
@@ -817,18 +816,7 @@ export const getPropertySpectrumSet = ( state: State, clientId: string, property
 
 
 /**
- * Set selector to return inlineStyle by clientId.
- *
- * @param {State} state current
- * @param {string} clientId
- */
-export const getInlineStyle = ( state: State, clientId: string ): InlineStyleSet => {
-	return state.inlineStyleSets.hasOwnProperty( clientId ) ? state.inlineStyleSets[ clientId ] : {};
-}
-
-
-/**
- * Set selector to return inlineStyle by clientId.
+ * Set selector to return indicator property set.
  *
  * @param {State} state current
  * @param {string} clientId
