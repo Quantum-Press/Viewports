@@ -2,6 +2,9 @@ import { STORE_NAME } from '@quantum-viewports/store';
 import { Block, BlockEditProps } from '@quantum-viewports/types';
 
 const {
+	blockEditor: {
+		useStyleOverride,
+	},
 	data: {
 		select
 	},
@@ -29,26 +32,7 @@ export default function BlockPreview({ block, props }: { block: Block; props: Bl
 	const { name: blockName, clientId } = props;
 	const css = select( STORE_NAME ).getPreviewCSS( clientId, blockName, props.attributes );
 
-	useEffect( () => {
-		if ( ! css ) return;
-
-		const iframes = document.querySelectorAll<HTMLIFrameElement>(
-			'.block-editor-block-preview__content iframe, iframe[name="editor-canvas"]'
-		);
-
-		for ( const iframe of iframes ) {
-			const doc = iframe.contentDocument;
-			if ( ! doc || ! doc.head ) continue;
-
-			const styleId = 'qp-viewports-block-style-' + clientId;
-			if ( doc.getElementById( styleId ) ) continue;
-
-			const style = doc.createElement( 'style' );
-			style.id = styleId;
-			style.textContent = css;
-			doc.head.appendChild( style );
-		}
-	}, [] );
+	useStyleOverride( { css } );
 
 	return typeof block.edit === 'function' && block.edit.prototype instanceof Component
 		? new block.edit( props ).render()
