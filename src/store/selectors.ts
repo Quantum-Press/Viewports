@@ -3,7 +3,6 @@ import type {
 	State,
 	RendererSet,
 	RendererPropertySet,
-	Spectrum,
 	SpectrumSet,
 	InlineStyleSet,
 	ViewportStyleSets,
@@ -788,8 +787,32 @@ export const getPreviewCSS = ( state : State, clientId : string, blockName : str
  * @param {State} state current
  * @param {string} clientId
  */
-export const getSpectrumSet = ( state : State, clientId : string ) : SpectrumSet => {
+export const getSpectrumSet = ( state: State, clientId: string ): SpectrumSet => {
 	return state.spectrumSets.hasOwnProperty( clientId ) ? state.spectrumSets[ clientId ] : [];
+}
+
+
+/**
+ * Set selector to return spectrumSet by clientId and property.
+ *
+ * @param {State} state current
+ * @param {string} clientId
+ * @param {string} property
+ */
+export const getPropertySpectrumSet = ( state: State, clientId: string, property: string ): SpectrumSet => {
+	const spectrumSet = state.spectrumSets.hasOwnProperty( clientId ) ? state.spectrumSets[ clientId ] : [];
+	const properties = Array.isArray( property ) ? property : [ property ];
+	const resultSet = [];
+
+	for( let index = 0; index < spectrumSet.length; index++ ) {
+		const spectrum = spectrumSet[ index ];
+
+		if( spectrum.hasOwnProperty( 'property' ) && properties.includes( spectrum.property ) ) {
+			resultSet.push( spectrum );
+		}
+	}
+
+	return resultSet;
 }
 
 
@@ -799,7 +822,7 @@ export const getSpectrumSet = ( state : State, clientId : string ) : SpectrumSet
  * @param {State} state current
  * @param {string} clientId
  */
-export const getInlineStyle = ( state : State, clientId : string ) : InlineStyleSet => {
+export const getInlineStyle = ( state: State, clientId: string ): InlineStyleSet => {
 	return state.inlineStyleSets.hasOwnProperty( clientId ) ? state.inlineStyleSets[ clientId ] : {};
 }
 
@@ -810,53 +833,58 @@ export const getInlineStyle = ( state : State, clientId : string ) : InlineStyle
  * @param {State} state current
  * @param {string} clientId
  */
-export const getIndicatorPropertySet = ( state: State, clientId: string ): IndicatorPropertySet => {
-	const propertySet = {} as IndicatorPropertySet;
+export const getIndicatorPropertySet = ( state: State ): IndicatorPropertySet => {
 	const rendererPropertySet = getRendererPropertySet( state );
-	const spectrumSet = getSpectrumSet( state, clientId );
+	const groups: Record<string, { groupId: string; panelId: string; property: string[] }> = {};
 
-	// Iterate over all renderer property sets.
 	for( const property in rendererPropertySet ) {
-		if( ! rendererPropertySet.hasOwnProperty( property ) ) {
+		if( ! Object.prototype.hasOwnProperty.call( rendererPropertySet, property ) ) {
 			continue;
 		}
 
-		// Iterate over all callbacks by priority.
 		const rendererSet = rendererPropertySet[ property ];
+
 		for( const priorityDirty in rendererSet ) {
-			if( ! rendererSet.hasOwnProperty( priorityDirty ) ) {
+			if( ! Object.prototype.hasOwnProperty.call( rendererSet, priorityDirty ) ) {
 				continue;
 			}
 
-			const priority = parseInt( priorityDirty );
+			const renderer = rendererSet[ priorityDirty ];
 
-			// Set empty spectrum to fill, if available.
-			let collected = [];
-			for( let index = 0; index < spectrumSet.length; index++ ) {
-				const check = spectrumSet[ index ];
-
-				// Continue as long as we find the property and priority.
-				if( property === check.property && priority === check.priority ) {
-					collected.push( check );
-				}
+			if( ! renderer.groupId && ! renderer.panelId) {
+				continue;
 			}
 
-			const renderer = rendererSet[ priority ];
+			const key = `${ renderer.groupId }::${ renderer.panelId }`;
 
-			if( ! propertySet.hasOwnProperty( property ) ) {
-				propertySet[ property ] = {
-					property,
+			if( ! groups[ key ] ) {
+				groups[ key ] = {
 					groupId: renderer.groupId,
 					panelId: renderer.panelId,
-					spectrumSet: [],
-				}
+					property: []
+				};
 			}
 
-			if( collected.length ) {
-				propertySet[ property ].spectrumSet = collected;
-			}
+			groups[ key ].property.push( property );
 		}
 	}
 
-	return propertySet;
+	const result: IndicatorPropertySet = {};
+
+	for( const key in groups ) {
+		if( ! Object.prototype.hasOwnProperty.call( groups, key ) ) continue;
+
+		const group = groups[ key ];
+		for( const prop of group.property ) {
+			const property = group.property.join( '-' );
+
+			result[ property ] = {
+				property: group.property,
+				groupId: group.groupId,
+				panelId: group.panelId
+			};
+		}
+	}
+
+	return result;
 }

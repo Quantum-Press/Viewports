@@ -177,7 +177,7 @@ export const DEFAULT_STATE = {
 			5: {
 				type: 'wp',
 				callback: compileCSS,
-				groupId: 'shadow',
+				groupId: 'border',
 				panelId: '',
 				mapping: {
 					'core/image': '> img',

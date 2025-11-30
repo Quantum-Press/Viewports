@@ -148,10 +148,9 @@ export type InlineStyle = {
 
 export type IndicatorPropertySet = {
 	[ key : string ] : {
-		property: string,
+		property: Array<string>|string,
 		groupId: string,
 		panelId: string,
-		spectrumSet: Array<Spectrum>,
 	}
 }
 

@@ -233,7 +233,7 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
 	// Check if block.edit is a function or class component to return its edit function.
 	return (
 		<>
-			{ isSelected && <Indicators clientId={ clientId } /> }
+			{ isSelected && <Indicators key={ clientId } clientId={ clientId } /> }
 			{ typeof block.edit === 'function' && block.edit.prototype instanceof Component
 				? new block.edit( props ).render()
 				: block.edit( props ) }

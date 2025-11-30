@@ -20,6 +20,7 @@ const {
 		Icon,
 	},
 	data: {
+		select,
 		useSelect,
 		useDispatch,
 	},
@@ -33,30 +34,22 @@ const {
 
 export type IndicatorProps = {
 	storeId: string,
-	property: string,
-	spectrumSet: SpectrumSet,
+	property: Array<string>|string,
 };
 
 
 /**
  * Set component const to export inspector ui.
  */
-export const Indicator = ( { storeId, property, spectrumSet }: IndicatorProps ) => {
-
-	// Set spectrumSet indicators.
-	const hasTabletSpectrum = spectrumSet.length ? hasSpectrumSetViewportType( 'Tablet', spectrumSet ) : false;
-	const hasDesktopSpectrum = spectrumSet.length ? hasSpectrumSetViewportType( 'Desktop', spectrumSet ) : false;
-
+export const Indicator = ( { storeId, property }: IndicatorProps ) => {
 	const editorDispatch = useDispatch( 'core/editor' );
 
 	// Extract use select depending properties.
 	const {
-		isActive,
 		isEditing,
 		isInspecting,
 		iframeViewport,
 		viewport,
-		deviceType,
 	} = useSelect( ( select ) => {
 		const store = select( STORE_NAME );
 		const editorStore = select( 'core/editor' );
@@ -68,8 +61,16 @@ export const Indicator = ( { storeId, property, spectrumSet }: IndicatorProps ) 
 			viewport: store.getViewport(),
 			iframeViewport: store.getIframeViewport(),
 			deviceType: editorStore.getDeviceType(),
+			valids: store.getBlockValids( storeId ),
 		}
- 	}, [ spectrumSet ] );
+ 	}, [] );
+
+	// Set spectrumSet.
+	const spectrumSet = select( STORE_NAME ).getPropertySpectrumSet( storeId, property );
+
+	// Set spectrumSet indicators.
+	const hasTabletSpectrum = spectrumSet.length ? hasSpectrumSetViewportType( 'Tablet', spectrumSet ) : false;
+	const hasDesktopSpectrum = spectrumSet.length ? hasSpectrumSetViewportType( 'Desktop', spectrumSet ) : false;
 
 	// Set visibility state of controls.
 	const [ isVisible, setIsVisible ] = useState( false );
@@ -282,3 +283,9 @@ export const Indicator = ( { storeId, property, spectrumSet }: IndicatorProps ) 
 		</div>
 	);
 }
+
+window[ 'qp' ] = window[ 'qp' ] || {};
+window[ 'qp' ].viewports = window[ 'qp' ].viewports || {};
+window[ 'qp' ].viewports.IndicatorPanelItem = Indicator;
+
+export * from './panelitem';

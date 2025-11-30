@@ -1,15 +1,10 @@
 import { STORE_NAME } from '@quantum-viewports/store';
 import { IndicatorPropertySet } from '@quantum-viewports/types';
-import { Indicator } from '@quantum-viewports/components';
+import { IndicatorPanelItem } from '@quantum-viewports/components';
 
 const {
-	blockEditor: {
-		InspectorControls,
-	},
-	components: {
-		__experimentalToolsPanelItem: ToolsPanelItem,
-	},
 	data: {
+		select,
 		useSelect,
 	},
 	i18n: {
@@ -30,16 +25,15 @@ export type IndicatorsProps = {
 export const Indicators = ( { clientId }: IndicatorsProps ) => {
 
 	// Set datastore state dependencies.
-	const {
-		propertySet,
-	} = useSelect( ( select : Function ) => {
+	useSelect( ( select: Function ) => {
 		const store = select( STORE_NAME );
 
 		return {
 			valids: store.getBlockValids( clientId ),
-			propertySet: store.getIndicatorPropertySet( clientId ) as IndicatorPropertySet,
 		};
 	}, [] );
+
+	const propertySet = select( STORE_NAME ).getIndicatorPropertySet( clientId ) as IndicatorPropertySet;
 
 	return (
 		<>
@@ -48,28 +42,18 @@ export const Indicators = ( { clientId }: IndicatorsProps ) => {
 					property,
 					groupId,
 					panelId,
-					spectrumSet
 				} = propertySet[ prop ];
 
+				const parentPanelId = '' !== panelId ? panelId : clientId;
+
 				return (
-					<>
-						<InspectorControls group={ groupId }>
-							<ToolsPanelItem
-								className={ "qp-viewports-indicator-controls property-" + property }
-								hasValue={ () => { return true } }
-								label={ __( 'Viewports', 'quantum-viewports' ) }
-								isShownByDefault={ true }
-								panelId={ '' !== panelId ? panelId : clientId }
-								onDeselect={ () => {} }
-							>
-								<Indicator
-									storeId={ clientId }
-									property={ property }
-									spectrumSet={ spectrumSet }
-								/>
-							</ToolsPanelItem>
-						</InspectorControls>
-					</>
+					<IndicatorPanelItem
+						storeId={ clientId }
+						key={ clientId + ' ' + prop }
+						property={ property }
+						groupId={ groupId }
+						panelId={ parentPanelId }
+					/>
 				);
 			} ) }
 		</>

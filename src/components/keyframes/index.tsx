@@ -32,7 +32,7 @@ interface Frame {
 	viewport: number;
 }
 
-const generateKeyframes = ( props ) => {
+const generateKeyframes = ( spectrumSet ) => {
 
 	// Set keyframes default.
 	let keyframes = [
@@ -51,8 +51,8 @@ const generateKeyframes = ( props ) => {
 	let lastFrom = 0;
 
 	// Check spectrumSet to iterate.
-	if( props.spectrumSet.length ) {
-		props.spectrumSet.forEach( ( spectrum ) => {
+	if( spectrumSet.length ) {
+		spectrumSet.forEach( ( spectrum ) => {
 
 			// Extract first keyframe to check what to do.
 			let first = keyframes.shift();
@@ -168,39 +168,36 @@ const generateKeyframes = ( props ) => {
 export const Keyframes = () => {
 
 	// Set states.
-	const props : {
+	const props: {
+		clientId: string,
 		storeId: string,
 		viewport: number,
 		iframeSize: number,
 		iframeViewport: number,
 		isActive: boolean,
-		spectrumSet: SpectrumSet,
 	} = useSelect( ( select : Function ) => {
 		const store = select( STORE_NAME );
 		const selected = select( 'core/block-editor' ).getSelectedBlock();
 
 		if( ! selected ) {
 			return {
-				spectrumSet: {},
 				isInspecting: store.isInspecting(),
 			}
 		}
 
-		const {
-			clientId,
-		} = selected;
-
 		return {
-			clientId,
+			clientId: selected.clientId,
 			viewport: store.getViewport(),
 			iframeSize: store.getIframeSize(),
 			iframeViewport: store.getIframeViewport(),
 			viewports: store.getViewports(),
 			isActive: store.isActive(),
 			isInspecting: store.isInspecting(),
-			spectrumSet: store.getSpectrumSet( clientId ),
+			lastEdit: store.getLastEdit(),
 		}
 	}, [] );
+
+	const spectrumSet = select( STORE_NAME ).getSpectrumSet( props.clientId );
 
 	// Set highlight hooks.
 	const [ highlight, setHighlight ] = useHighlight();
@@ -262,8 +259,7 @@ export const Keyframes = () => {
 	const uiWidth = $ui ? $ui.getBoundingClientRect().width - 80 : 0;
 
 	// Set keyframes.
-	const keyframes = generateKeyframes( props );
-
+	const keyframes = generateKeyframes( spectrumSet );
 
 	/**
 	 * Set function to calculate width of given frame.

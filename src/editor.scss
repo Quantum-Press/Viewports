@@ -200,8 +200,6 @@ body.is-right-inspector {
 			}
 
 			.components-tools-panel-item {
-				margin: 0 -15px;
-				padding: 0 15px;
 				transition: background-color 0.3s ease;
 
 				&.is-highlighted {
@@ -2244,10 +2242,18 @@ svg.keyframe {
  * Indicator Controls.
  */
 .qp-viewports-indicator-controls {
-	grid-row: 1;
 	display: flex;
 	margin-top: -39px !important;
+	margin-bottom: auto !important;
 	margin-right: 10px !important;
+
+	&.property-border-shadow {
+		grid-row: 1;
+	}
+
+	&.property-dimensions-spacing {
+		grid-row: 1;
+	}
 }
 
 
@@ -2303,7 +2309,7 @@ svg.keyframe {
 			flex-shrink: 0;
 			margin-left: auto;
 			margin-top: 0;
-			margin-right: 0;
+			margin-right: 16px;
 
 			.qp-viewports-indicator {
 				position: relative;

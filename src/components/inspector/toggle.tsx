@@ -24,7 +24,7 @@ export const ToggleInspector = ( { showText = true, forceShow = false } : { show
 
 	// Set states.
 	const {
-		spectrumSet,
+		selected,
 		isInspecting,
 	} = useSelect( ( select : Function ) => {
 		const store = select( STORE_NAME );
@@ -32,20 +32,18 @@ export const ToggleInspector = ( { showText = true, forceShow = false } : { show
 
 		if( ! selected ) {
 			return {
-				spectrumSet: {},
+				lastEdit: store.getLastEdit(),
 				isInspecting: store.isInspecting(),
 			}
 		}
 
-		const {
-			clientId,
-		} = selected;
-
 		return {
-			spectrumSet: store.getSpectrumSet( clientId ),
+			selected,
 			isInspecting: store.isInspecting(),
 		}
 	}, [] );
+
+	const spectrumSet = select( STORE_NAME ).getSpectrumSet( selected?.clientId );
 
 	// Break if there is no spectrumSet registered to selected block.
 	if( 0 === Object.keys( spectrumSet ).length && ! forceShow ) {
