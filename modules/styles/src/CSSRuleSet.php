@@ -106,7 +106,7 @@ class CSSRuleSet {
         }
 
         foreach( $selectors as $selector ) {
-            $parsed = $this->parseInlineStyles( $parser, $processor, $selector );
+            $parsed = $parser->parseInlineStyles( $processor, $this->blockHtml, $selector );
 
             if( false !== $parsed ) {
                 $inlineRules[ $selector ] = $parsed;
@@ -155,199 +155,6 @@ class CSSRuleSet {
                 }
             }
         }
-    }
-
-
-    /**
-     * Parses inline styles into a CSSRule object for a given selector.
-     *
-     * @param Parser $parser
-     * @param Processor $processor
-     * @param string $selector
-     *
-     * @return CSSRule|false
-     */
-    public function parseInlineStyles(
-        Parser $parser,
-        Processor $processor,
-        string $selector = ''
-    ): CSSRule|false
-    {
-
-        if( '%' !== $selector ) {
-            return $this->parseInlineSelector(
-                $parser,
-                $processor,
-                $selector
-            );
-        }
-
-        return $this->parseInline( $parser, $processor );
-    }
-
-
-    /**
-     * Parses inline styles for a specific selector.
-     *
-     * @param Parser $parser
-     * @param Processor $processor
-     * @param string $selector
-     *
-     * @return CSSRule|false
-     */
-    public function parseInlineSelector(
-        Parser $parser,
-        Processor $processor,
-        string $selector = ''
-    ): CSSRule|false
-    {
-
-        $selectorParts = $parser->sanitizeSelectorParts( $selector );
-        if( false === $selectorParts ) {
-            return false;
-        }
-
-        $inlineStyles = false;
-
-        $processed = $this->processSelector(
-            $parser,
-            $this->blockHtml,
-            $selectorParts,
-            static function( \WP_HTML_Tag_Processor $processor ) use ( &$inlineStyles ): void {
-                $inlineStyles = $processor->get_attribute( 'style' );
-            }
-        );
-
-        if( empty( $processed ) || empty( $inlineStyles ) ) {
-            return false;
-        }
-
-        $inlineParsed = $parser->parseCss( $inlineStyles );
-        if( empty( $inlineParsed ) ) {
-            return false;
-        }
-
-        return $processor->generateCSSRule(
-            'inline',
-            'inline',
-            $selector,
-            $inlineParsed,
-            'screen',
-        );
-    }
-
-
-    /**
-     * Processes nested HTML elements based on selector parts and executes a callback on match.
-     *
-     * @param Parser $parser
-     * @param string $html
-     * @param array $selectorParts
-     * @param callable|null $callback
-     *
-     * @return array Found tag names
-     */
-    protected function processSelector(
-        Parser $parser,
-        string $html,
-        array $selectorParts,
-        callable|null $callback = null
-    ): array
-    {
-        // Start processing at the outer selector.
-        $foundElements = [];
-        $processNestedSelector = static function(
-            string $html,
-            array $selectorParts,
-            callable $callback
-        ) use ( $parser, &$foundElements, &$processNestedSelector ): void {
-            if( empty( $selectorParts ) ) {
-                return;
-            }
-
-            // Set the current selectorPart.
-            $currentSelector = array_shift( $selectorParts ); // Hole den aktuellen Selektor-Teil
-            $currentSelectorParts = explode(
-                '.',
-                $currentSelector
-            ); // Split in tag and classes
-
-            $tagName = array_shift( $currentSelectorParts );
-            $className = implode(
-                '.',
-                $currentSelectorParts
-            );
-
-            // Set processor to iterate over.
-            $processor = new \WP_HTML_Tag_Processor( $html );
-            $processor->next_tag();
-
-            // Find matching elements for the current selector part.
-            while( $processor->next_tag( [ $tagName ] ) ) {
-
-                // Check if tagName matches.
-                $currentTagName = strtolower( $processor->get_tag() );
-                if( $tagName !== $currentTagName ) {
-                    continue;
-                }
-
-                // Check if optional className matches.
-                if( $className && ! $processor->has_class( $className ) ) {
-                    continue;
-                }
-
-                // Check if last selector part reached.
-                if( empty( $selectorParts ) ) {
-                    if( is_callable( $callback ) ) {
-                        $callback( $processor );
-                    }
-
-                    $foundElements[] = $currentTagName;
-                    continue;
-                }
-
-                // Extract the inner HTML manually.
-                $innerHtml = $parser->extractInnerHTML( $currentTagName, $tagName );
-                $processNestedSelector( $innerHtml, $selectorParts, $callback );
-            }
-        };
-
-        $processNestedSelector( $html, $selectorParts, $callback );
-
-        return $foundElements;
-    }
-
-
-    /**
-     * Parses top-level inline styles from the block HTML.
-     *
-     * @param Parser $parser
-     * @param Processor $processor
-     *
-     * @return CSSRule|false
-     */
-    public function parseInline( Parser $parser, Processor $processor ): CSSRule|false
-    {
-        $tagProcessor = new \WP_HTML_Tag_Processor( $this->blockHtml );
-        $tagProcessor->next_tag();
-
-        $inlineStyles = $tagProcessor->get_attribute( 'style' );
-        if( empty( $inlineStyles ) ) {
-            return false;
-        }
-
-        $inlineParsed = $parser->splitDeclarations( $inlineStyles );
-        if( empty( $inlineParsed ) ) {
-            return false;
-        }
-
-        return $processor->generateCSSRule(
-            'inline',
-            'inline',
-            '%',
-            $inlineParsed,
-            'screen',
-        );
     }
 
 
@@ -413,6 +220,7 @@ class CSSRuleSet {
      * Returns unique selectors from given CSSRules.
      *
      * @param array $cssRules
+     *
      * @return array
      */
     public function selectorsFromRules( array $cssRules ): array
@@ -524,14 +332,30 @@ class CSSRuleSet {
 
 
     /**
-     * Removes attribute rules matching specific properties.
+     * Removes attribute rules that should not be included on saving html.
      *
      * @param array $ignoreProperties
      */
     public function cleanupAttributeRules( array $ignoreProperties = [] ): void
     {
         foreach( $this->attributeRules as $index => $cssRule ) {
-            if( in_array( $cssRule->property(), $ignoreProperties ) ) {
+            $property = $cssRule->property();
+
+            if( isset( $ignoreProperties[ $property ] ) ) {
+                $ignoreCss = $ignoreProperties[ $property ];
+
+                if( is_array( $ignoreCss ) ) {
+                    foreach( $ignoreCss as $cssProperty ) {
+                        $cssRule->removeCSSProperty( $cssProperty );
+                    }
+
+                    if( empty( $cssRule->properties() ) ) {
+                        unset( $this->attributeRules[ $index ] );
+                    }
+
+                    return;
+                }
+
                 unset( $this->attributeRules[ $index ] );
             }
         }

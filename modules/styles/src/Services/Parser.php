@@ -4,6 +4,8 @@ declare( strict_types=1 );
 
 namespace QP\Viewports\Styles\Services;
 
+use QP\Viewports\Styles\CSSRule;
+
 /**
  * Handles parsing and manipulating CSS for blocks.
  *
@@ -23,13 +25,22 @@ class Parser
      */
     private array $nativeProperties = [];
 
-
     /**
-     * Stores properties to ignore on parsing.
+     * Stores properties to ignore setting inline html
+     * on saving blocks.
      *
      * @var array
      */
     private array $ignoreProperties = [];
+
+    /**
+     * Stores selectors by property to remap css properties
+     * to deeper elements. eg aspect-ratio on cover blocks
+     *
+     * @var array
+     */
+    private array $selectorMapping = [];
+
 
     /**
      * Class constructor.
@@ -38,6 +49,7 @@ class Parser
     {
         $this->registerNativeProperties();
         $this->registerIgnoreProperties();
+        $this->registerSelectorMapping();
     }
 
 
@@ -61,29 +73,51 @@ class Parser
 
 
     /**
-     * Sets default property values and applies filters.
+     * Register filterable properties that
+     * should not be included on saving html.
      */
     protected function registerIgnoreProperties(): void
     {
         $this->ignoreProperties = \apply_filters(
             'quantum_viewports_ignore_properties',
             [
-                'background',
-                'qpBackground',
-                'qpBoxShadow',
-                'qpClipPath',
-                'qpColumn',
-                'qpDimensions',
-                'qpSingleColumn',
-                'qpColumns',
-                'qpFilter',
-                'qpFlex',
-                'qpOpacity',
-                'qpOverflow',
-                'qpPosition',
-                'qpTextShadow',
-                'qpTransform',
-                'qpVisibility',
+                'dimensions' => [
+                    'aspect-ratio'
+                ],
+                'background' => true,
+                'qpBackground' => true,
+                'qpBoxShadow' => true,
+                'qpClipPath' => true,
+                'qpColumn' => true,
+                'qpDimensions' => true,
+                'qpSingleColumn' => true,
+                'qpColumns' => true,
+                'qpFilter' => true,
+                'qpFlex' => true,
+                'qpOpacity' => true,
+                'qpOverflow' => true,
+                'qpPosition' => true,
+                'qpTextShadow' => true,
+                'qpTransform' => true,
+                'qpVisibility' => true,
+            ]
+        );
+    }
+
+
+    /**
+     * Register filterable selector mapping to remap css properties
+     * to specific selectors
+     */
+    protected function registerSelectorMapping(): void
+    {
+        $this->selectorMapping = \apply_filters(
+            'quantum_viewports_selector_mapping',
+            [
+                'core/image' => [
+                    'shadow' => '% > img',
+                    'border' => '% > img',
+                ]
             ]
         );
     }
@@ -141,6 +175,204 @@ class Parser
 
 
     /**
+     * Parses inline styles into a CSSRule object for a given selector.
+     *
+     * @param Processor $processor
+     * @param string $html
+     * @param string $selector
+     *
+     * @return CSSRule|false
+     */
+    public function parseInlineStyles(
+        Processor $processor,
+        string $html,
+        string $selector = ''
+    ): CSSRule|false
+    {
+
+        if( '%' !== $selector ) {
+            return $this->parseInlineSelector(
+                $processor,
+                $html,
+                $selector
+            );
+        }
+
+        return $this->parseInline(
+            $processor,
+            $html,
+        );
+    }
+
+
+    /**
+     * Parses inline styles for a specific selector.
+     *
+     * @param Processor $processor
+     * @param string $html
+     * @param string $selector
+     *
+     * @return CSSRule|false
+     */
+    public function parseInlineSelector(
+        Processor $processor,
+        string $html,
+        string $selector = ''
+    ): CSSRule|false
+    {
+
+        $selectorParts = $this->sanitizeSelectorParts( $selector );
+        if( false === $selectorParts ) {
+            return false;
+        }
+
+        $inlineStyles = false;
+
+        $processed = $this->parseHtmlSelectors(
+            $html,
+            $selectorParts,
+            static function( \WP_HTML_Tag_Processor $processor ) use ( &$inlineStyles ): void {
+                $inlineStyles = $processor->get_attribute( 'style' );
+            }
+        );
+
+        if( empty( $processed ) || empty( $inlineStyles ) ) {
+            return false;
+        }
+
+        $inlineParsed = $this->parseCss( $inlineStyles );
+        if( empty( $inlineParsed ) ) {
+            return false;
+        }
+
+        return $processor->generateCSSRule(
+            'inline',
+            'inline',
+            $selector,
+            $inlineParsed,
+            'screen',
+        );
+    }
+
+
+    /**
+     * Parses top-level inline styles from the block HTML.
+     *
+     * @param Processor $processor
+     *
+     * @return CSSRule|false
+     */
+    public function parseInline(
+        Processor $processor,
+        string $html
+    ): CSSRule|false
+    {
+
+        $tagProcessor = new \WP_HTML_Tag_Processor( $html );
+        $tagProcessor->next_tag();
+
+        $inlineStyles = $tagProcessor->get_attribute( 'style' );
+        if( empty( $inlineStyles ) ) {
+            return false;
+        }
+
+        $inlineParsed = $this->splitDeclarations( $inlineStyles );
+        if( empty( $inlineParsed ) ) {
+            return false;
+        }
+
+        return $processor->generateCSSRule(
+            'inline',
+            'inline',
+            '%',
+            $inlineParsed,
+            'screen',
+        );
+    }
+
+
+    /**
+     * Parses nested HTML elements based on selectors and executes a callback on match.
+     *
+     * @param string $html
+     * @param array $selectors
+     * @param callable|null $callback
+     *
+     * @return array Found tag names
+     */
+    protected function parseHtmlSelectors(
+        string $html,
+        array $selectors,
+        callable|null $callback = null
+    ): array
+    {
+
+        $parser = $this;
+        $foundElements = [];
+
+        $parseNestedSelector = static function(
+            string $html,
+            array $selectors,
+            callable $callback
+        ) use ( $parser, &$foundElements, &$parseNestedSelector ): void {
+            if( empty( $selectors ) ) {
+                return;
+            }
+
+            // Set the current selectorPart.
+            $currentSelector = array_shift( $selectors ); // Hole den aktuellen Selektor-Teil
+            $currentSelectors = explode(
+                '.',
+                $currentSelector
+            ); // Split in tag and classes
+
+            $tagName = array_shift( $currentSelectors );
+            $className = implode(
+                '.',
+                $currentSelectors
+            );
+
+            // Set processor to iterate over.
+            $processor = new \WP_HTML_Tag_Processor( $html );
+            $processor->next_tag();
+
+            // Find matching elements for the current selector part.
+            while( $processor->next_tag( [ $tagName ] ) ) {
+
+                // Check if tagName matches.
+                $currentTagName = strtolower( $processor->get_tag() );
+                if( $tagName !== $currentTagName ) {
+                    continue;
+                }
+
+                // Check if optional className matches.
+                if( $className && ! $processor->has_class( $className ) ) {
+                    continue;
+                }
+
+                // Check if last selector part reached.
+                if( empty( $selectors ) ) {
+                    if( is_callable( $callback ) ) {
+                        $callback( $processor );
+                    }
+
+                    $foundElements[] = $currentTagName;
+                    continue;
+                }
+
+                // Extract the inner HTML manually.
+                $innerHtml = $parser->extractInnerHTML( $currentTagName, $tagName );
+                $parseNestedSelector( $innerHtml, $selectors, $callback );
+            }
+        };
+
+        $parseNestedSelector( $html, $selectors, $callback );
+
+        return $foundElements;
+    }
+
+
+    /**
      * Parses CSS rules from block attributes.
      *
      * @param Processor $processor
@@ -182,7 +414,12 @@ class Parser
 
         // Store valids for all properties.
         $parsedValids = $this->parseValids( $viewports );
-        $parsedRules = $this->parseViewportRules( $processor, $parsedValids, $viewports );
+        $parsedRules = $this->parseViewportRules(
+            $processor,
+            $blockName,
+            $parsedValids,
+            $viewports
+        );
 
         return $parsedRules;
     }
@@ -192,6 +429,7 @@ class Parser
      * Parses CSS rules from parsed valids and viewports.
      *
      * @param Processor $processor
+     * @param string $blockName
      * @param array $parsedValids
      * @param array $viewports
      *
@@ -199,6 +437,7 @@ class Parser
      */
     public function parseViewportRules(
         Processor $processor,
+        string $blockName,
         array $parsedValids,
         array $viewports
     ): array
@@ -219,8 +458,10 @@ class Parser
                             $parsedValids,
                             []
                         );
-                        $parsed = $this->parseStyleAttribute( $property, $value, $valids );
-                        if( empty( $parsed ) ) { continue; }
+
+                        $parsed = $this->parseStyleAttribute( $blockName, $property, $value, $valids );
+
+                        if( empty( $parsed ) ) continue;
 
                         foreach( $parsed as $selector => $css ) {
 
@@ -266,14 +507,21 @@ class Parser
     /**
      * Parses a style property value to css.
      *
+     * @param string $blockName
      * @param string $property
      * @param array $value
-     * @param array $value
+     * @param array $valids
      *
      * @return array
      */
-    public function parseStyleAttribute( string $property, array $value, array $valids ): array
+    public function parseStyleAttribute(
+        string $blockName,
+        string $property,
+        array|string $value,
+        array $valids
+    ): array
     {
+
         if( in_array( $property, $this->nativeProperties, true ) ) {
             $engineStyles = \wp_style_engine_get_styles( [
                 $property => $value,
@@ -287,12 +535,15 @@ class Parser
             );
 
             if( is_string( $css ) && ! empty( $css ) ) {
-                return [
+                return $this->remapSelectors(
+                    $blockName,
+                    $property,
+                    [
                     '%' => [
                         'css' => $css,
                         'declarations' => $this->splitDeclarations( $css ),
                     ]
-                ];
+                ] );
             }
 
             return [];
@@ -310,6 +561,63 @@ class Parser
         }
 
         return [];
+    }
+
+
+    /**
+     * Remap selectors based on filtered selector mapping property.
+     *
+     * @param string $property
+     * @param array $selectorCss
+     *
+     * @return array containing remapped selectors
+     */
+    public function remapSelectors(
+        string $blockName,
+        string $property,
+        array $selectorCss
+    ): array
+    {
+        // Check if there is a mapping to the block and property.
+        if(
+            ! isset( $this->selectorMapping[ $blockName ] ) ||
+            ! isset( $this->selectorMapping[ $blockName ][ $property ] )
+        ) {
+            return $selectorCss;
+        }
+
+        $mapping = $this->selectorMapping[ $blockName ][ $property ];
+
+        // Check whether everything of the property has to be remapped.
+        if( ! is_array( $mapping ) ) {
+            return [
+                $mapping => reset( $selectorCss )
+            ];
+        }
+
+        // It should be possible to handle css specific remapping.
+        foreach( $selectorCss as $args ) {
+            foreach( $args[ 'declarations' ] as $cssProperty => $cssValue ) {
+
+                if( isset( $mapping[ $cssProperty ] ) ) {
+                    $targetSelector = $mapping[ $cssProperty ];
+
+                    if( ! isset( $selectorCss[ $targetSelector ] ) ) {
+                        $selectorCss[ $targetSelector ] = [
+                            'css' => '',
+                            'declarations' => []
+                        ];
+                    }
+
+                    $selectorCss[ $targetSelector ][ 'css' ] .=
+                        sprintf( '%s:%s;', $cssProperty, $cssValue );
+
+                    $selectorCss[ $targetSelector ][ 'declarations' ][ $cssProperty ] = $cssValue;
+                }
+            }
+        }
+
+        return $selectorCss;
     }
 
 
@@ -442,7 +750,7 @@ class Parser
                     // Check if first match is an element.
                     $element = strtolower( $matches[ 1 ] );
                     if( ! in_array( $element, $allowedElements ) && $element !== '*' ) {
-                        return false;
+                        return [];
                     }
                 }
             }
@@ -450,7 +758,7 @@ class Parser
             return $parts;
         }
 
-        return false;
+        return [];
     }
 
 
@@ -507,6 +815,13 @@ class Parser
     }
 
 
+    /**
+     * Splits a css string into declarations and plain css.
+     *
+     * @param string $css
+     *
+     * @return array{ css: string, declarations: array[] }
+     */
     public function splitSelectors( string $css ): array
     {
         if( empty( $css ) ) {
@@ -709,12 +1024,23 @@ class Parser
 
 
     /**
-     * Returns properties to ignore.
+     * Returns properties to that should not be included on saving html.
      *
      * @return array containing properties
      */
     public function ignoreProperties(): array
     {
        return $this->ignoreProperties;
+    }
+
+
+    /**
+     * Returns selector mapping to remap css properties on elements.
+     *
+     * @return array containing properties
+     */
+    public function selectorMapping(): array
+    {
+       return $this->selectorMapping;
     }
 }
