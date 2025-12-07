@@ -73,7 +73,6 @@ class ReadOnlyContainer implements ContainerInterface
         }
 
         $error = "Service with ID {$id} not found.";
-        error_log( $error );
         throw new class (esc_html($error)) extends \Exception implements NotFoundExceptionInterface
         {
         };
