@@ -22,7 +22,7 @@ jobs:
 
       # Composer-Abhängigkeiten installieren
       - name: Install dependencies
-        run: composer install --no-dev --optimize-autoloader
+        run: composer install --optimize-autoloader
 
       # Release-Ordner vorbereiten
       - name: Prepare release folder
