@@ -35,10 +35,10 @@
     "scripts": {
         "phpcs": "vendor/bin/phpcs --standard=Syde ./includes ./modules ./bootstrap",
         "post-install-cmd": [
-            "vendor/bin/mozart compose"
+            "[ -f vendor/bin/mozart ] && vendor/bin/mozart compose || true"
         ],
         "post-update-cmd": [
-            "vendor/bin/mozart compose"
+            "[ -f vendor/bin/mozart ] && vendor/bin/mozart compose || true"
         ]
     },
     "extra": {

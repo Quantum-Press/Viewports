@@ -20,9 +20,17 @@ jobs:
       - name: Clean old build files
         run: rm -rf quantum-viewports *.zip
 
+      # Composer-Abhängigkeiten installieren mit require-dev
+      - name: Install dependencies with dev
+        run: composer install --optimize-autoloader
+
+      # Vendor löschen um no-dev zu exportieren
+      - name: Clean vendor
+        run: rm -rf vendor
+
       # Composer-Abhängigkeiten installieren
       - name: Install dependencies
-        run: composer install --optimize-autoloader
+        run: composer install --no-dev --optimize-autoloader
 
       # Release-Ordner vorbereiten
       - name: Prepare release folder
