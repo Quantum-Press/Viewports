@@ -1813,10 +1813,8 @@ describe( 'test store reducers', () => {
 						1: {
 							type: "custom",
 							callback: callback1,
-							selectors: {
-								panel: '.panel',
-								label: '.label',
-							},
+							groupId: 'dimensions',
+							panelId: undefined,
 							mapping: {},
 						}
 					}
@@ -1827,10 +1825,7 @@ describe( 'test store reducers', () => {
 				prop: 'foo',
 				callback: callback2,
 				priority: 10,
-				selectors: {
-					panel: '.custom-panel',
-					label: '.custom-label',
-				}
+				groupId: 'dimensions',
 			} as Action;
 
 			const check = {
@@ -1840,19 +1835,15 @@ describe( 'test store reducers', () => {
 						1: {
 							type: "custom",
 							callback: callback1,
-							selectors: {
-								panel: '.panel',
-								label: '.label',
-							},
+							groupId: 'dimensions',
+							panelId: undefined,
 							mapping: {},
 						},
 						10: {
 							type: "custom",
 							callback: callback2,
-							selectors: {
-								panel: '.custom-panel',
-								label: '.custom-label',
-							},
+							groupId: 'dimensions',
+							panelId: undefined,
 							mapping: {},
 						}
 					}
@@ -1873,10 +1864,8 @@ describe( 'test store reducers', () => {
 					foo: {
 						1: {
 							callback: callback1,
-							selectors: {
-								panel: '.panel',
-								label: '.label',
-							}
+							groupId: 'dimensions',
+							panelId: undefined,
 						}
 					}
 				}
@@ -1886,10 +1875,7 @@ describe( 'test store reducers', () => {
 				prop: 'foo',
 				callback: callback2,
 				priority: 1,
-				selectors: {
-					panel: '.custom-panel',
-					label: '.custom-label',
-				}
+				groupId: 'dimensions',
 			} as Action;
 
 			const check = {
@@ -1899,10 +1885,8 @@ describe( 'test store reducers', () => {
 						1: {
 							type: "custom",
 							callback: callback2,
-							selectors: {
-								panel: '.custom-panel',
-								label: '.custom-label',
-							},
+							groupId: 'dimensions',
+							panelId: undefined,
 							mapping: {},
 						}
 					}
