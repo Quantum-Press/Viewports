@@ -36,7 +36,7 @@ jobs:
       - name: Prepare release folder
         run: |
           mkdir quantum-viewports
-          cp -r build includes src vendor languages quantum-viewports.php readme.txt quantum-viewports/
+          cp -r bootstrap build includes languages lib modules src vendor boostrap.php quantum-viewports.php readme.txt quantum-viewports/
 
       # ZIP erstellen
       - name: Create archive
