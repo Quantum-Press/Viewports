@@ -48,8 +48,9 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
 	} = props;
 	const attributes = props.attributes;
 
-	// Set store dispatchers.
-	const store = useDispatch( STORE_NAME );
+	// Set store dispatcher.
+	const useDispatcher = useDispatch( STORE_NAME );
+	const selector = select( STORE_NAME );
 
 	// Set datastore state dependencies.
 	const {
@@ -78,16 +79,25 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
 
 	// Store attributes as reference to handle debounced updates.
 	const attributesRef = useRef( attributes );
+	const isSelectedRef = useRef( isSelected );
 	attributesRef.current = attributes;
+	isSelectedRef.current = isSelected;
 
 	// Set useMemo to handle updates on block attributes.
 	const debouncedUpdateBlockChanges = useCallback( () => {
-		store.updateBlockChanges( clientId, blockName, attributesRef.current );
+		if( ! isSelectedRef.current ) {
+			return;
+		}
+
+		useDispatcher.updateBlockChanges( clientId, blockName, attributesRef.current );
+
+		// console.log( 'selector', blockName, selector.getGeneratedBlockSaves( clientId ) );
 
 		setAttributes( {
-			viewports: select( STORE_NAME ).getGeneratedBlockSaves( clientId ),
+			viewports: selector.getGeneratedBlockSaves( clientId ),
 		} );
-	}, [ clientId, blockName, store, select, setAttributes ] );
+
+	}, [ clientId, blockName, useDispatcher, selector, setAttributes ] );
 
 	// Set reference to handle debounced updates.
 	const debouncedUpdateRef = useRef( debounce( debouncedUpdateBlockChanges, 150 ) );
@@ -97,7 +107,7 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
 	useMount( () => {
 
 		// Register block in datastore.
-		store.registerBlockInit( clientId, blockName, attributes );
+		useDispatcher.registerBlockInit( clientId, blockName, attributes );
 
 		// Debug statement when running attribute change detection.
 		if( attributes.hasOwnProperty( 'viewports' ) && attributes.viewports && Object.keys( attributes.viewports ).length ) {
@@ -111,7 +121,7 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
 
 		// Update viewports attributes.
 		setAttributes( {
-			viewports: select( STORE_NAME ).getGeneratedBlockSaves( clientId ),
+			viewports: selector.getGeneratedBlockSaves( clientId ),
 		} );
 
 	} );
@@ -120,7 +130,7 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
 	// Set useEffect on isSaving to handle viewports datastore and block attributes cleanup.
 	useEffect( () => {
 		if( isSaving ) {
-			store.saveBlock( clientId, blockName );
+			useDispatcher.saveBlock( clientId, blockName );
 		}
 
 	}, [ isSaving ] );
@@ -129,11 +139,13 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
 	// Set useEffect on selected block to update its attributes by user interactions with viewports.
 	useLayoutEffect( () => {
 		if( ! isSelected ) {
+			isSelectedRef.current = false;
 			return;
 		}
+		isSelectedRef.current = true;
 
 		// Check for viewport settings before we replace settings for viewport.
-		const hasBlockViewports = select( STORE_NAME ).hasBlockViewports( clientId );
+		const hasBlockViewports = selector.hasBlockViewports( clientId );
 		if( ! hasBlockViewports ) {
 			return;
 		}
@@ -151,8 +163,8 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
 		}
 
 		// Set valids running on actual viewport.
-		const saves = select( STORE_NAME ).getGeneratedBlockSaves( clientId );
-		const valids = select( STORE_NAME ).getViewportBlockValids( clientId );
+		const saves = selector.getGeneratedBlockSaves( clientId );
+		const valids = selector.getViewportBlockValids( clientId );
 
 		// Set attributes without change listening.
 		setAttributes( {
@@ -217,7 +229,7 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
 	}, [ attributes?.style ] );
 
 	// Get css and selectors from store.
-	const css = select( STORE_NAME ).getCSS( clientId ) as string;
+	const css = selector.getCSS( clientId ) as string;
 
 	// Check if block.edit is a function or class component to return its edit function.
 	return (

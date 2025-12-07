@@ -1064,9 +1064,12 @@ export const updateBlockChanges = ( state : State, action : Action ) : State => 
 			// Set new generated block changes by comparing it to the actual viewport valid.
 			// Here you will get just the difference between both.
 			const viewport = null !== action.viewport ? action.viewport : state.isEditing ? state.viewport : state.iframeViewport;
+			// console.log( 'viewport', viewport, 'action.viewport', action.viewport, 'state.isEditing', state.isEditing, 'state.viewport', state.viewport, 'state.iframeViewport', state.iframeViewport );
 
 			// Set differences resulting from new attribute state.
 			const differences = findBlockDifferences( clientId, cloneDeep( attributes ), state, viewport );
+			// console.log( 'differences', differences );
+
 			const blockChanges = differences.changes;
 			const blockRemoves = differences.removes;
 			const hasChanges = traverseExist( [ clientId ], blockChanges );
@@ -1118,6 +1121,7 @@ export const updateBlockChanges = ( state : State, action : Action ) : State => 
 				isSaving: nextState.isSaving,
 				viewport: nextState.viewport,
 			};
+			// console.log( 'spectrumState', spectrumState );
 
 			// Deconstruct spectrumProperties.
 			const {
@@ -1129,7 +1133,7 @@ export const updateBlockChanges = ( state : State, action : Action ) : State => 
 			return {
 				... nextState,
 				viewports: state.viewports,
-				lastEdit: state.lastEdit,
+				lastEdit: Date.now(),
 				valids: {
 					... valids,
 					[ clientId ]: blockValids,
@@ -1260,7 +1264,7 @@ export const addBlockPropertyChanges = ( state : State, action : Action ) : Stat
 			return {
 				... nextState,
 				viewports: state.viewports,
-				lastEdit: state.lastEdit,
+				lastEdit: Date.now(),
 				valids: {
 					... valids,
 					[ clientId ]: blockValids,
@@ -1406,6 +1410,7 @@ export const removeBlockSaves = ( state : State, action : Action ) : State => {
 				// Return new state.
 				return {
 					... nextState,
+					lastEdit: Date.now(),
 					valids: {
 						... valids,
 						[ clientId ]: blockValids
@@ -1589,6 +1594,7 @@ export const restoreBlockSaves = ( state : State, action : Action ) : State => {
 			// Return new state.
 			return {
 				... nextState,
+				lastEdit: Date.now(),
 				valids: {
 					... valids,
 					[ clientId ]: blockValids

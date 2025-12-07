@@ -72,6 +72,24 @@ function useDeviceTypeInternal() : DeviceTypeValue {
 	const editorDispatch = useDispatch( 'core/editor' );
 
 
+	useLayoutEffect( () => {
+		if( 'desktop' === sanitizedDeviceType ) {
+			setIgnore( true );
+			storeDispatch.setViewportType( sanitizedDeviceType );
+		}
+
+		if( 'tablet' === sanitizedDeviceType ) {
+			setIgnore( true );
+			storeDispatch.setViewportType( sanitizedDeviceType );
+		}
+
+		if( 'mobile' === sanitizedDeviceType ) {
+			setIgnore( true );
+			storeDispatch.setViewportType( sanitizedDeviceType );
+		}
+	}, [] );
+
+
 	// Sync when Gutenberg device type changes.
 	useLayoutEffect( () => {
 		if( ignore ) {

@@ -107,6 +107,7 @@ export class Generator {
 
 		// Set initial states.
 		const ruleSet = [] as RuleSet;
+		let prevViewport = null;
 		let prevStyle = {} as BlockStyles;
 		let prevValids = {} as BlockStyles;
 		let prevRemoves = {} as BlockStyles;
@@ -124,6 +125,15 @@ export class Generator {
 				if( isEqual( prevStyle, style ) ) {
 					return true;
 				}
+
+				if(
+					null !== prevViewport &&
+					isEqual( prevValids, style )
+				) {
+					return true;
+				}
+
+				// console.log( 'viewport', viewport, prevValids, prevStyle, style );
 
 				// Set collapsed viewportStyleSet of saves till actual viewport.
 				const collapsedSavesSet = this.collapseViewportStyleSets( this.state.saves, viewport );
@@ -261,7 +271,7 @@ export class Generator {
 							// Set saves properties.
 							const savesDeclarations = Object.keys( savesCSSCollectionSet ).length ? this.getDeclarations( selector, savesCSSCollectionSet ) : '';
 							const savesProperties = '' !== savesDeclarations ? this.generateProperties( selector + '{' + savesDeclarations + ' }' ) : {};
-							const hasSaves = 0 < Object.keys( savesProperties ).length ? true : false;
+							const hasSaves = 0 < Object.keys( saves ).length ? true : false;
 
 							// Set saves properties.
 							const collapsedSavesDeclarations = Object.keys( collapsedSavesCSSCollectionSet ).length ? this.getDeclarations( selector, collapsedSavesCSSCollectionSet ) : '';
@@ -270,11 +280,11 @@ export class Generator {
 							// Set removes properties.
 							const removesDeclarations = Object.keys( removesCSSCollectionSet ).length ? this.getDeclarations( selector, removesCSSCollectionSet ) : '';
 							const removesProperties = '' !== removesDeclarations ? this.generateProperties( selector + '{' + removesDeclarations + ' }' ) : {};
-							const hasRemoves = 0 < Object.keys( removesProperties ).length ? true : false;
+							const hasRemoves = 0 < Object.keys( removes ).length ? true : false;
 
 							// Set changes properties by detecting changes between saves and valids.
 							const changesProperties = findObjectDifferences( findObjectChanges( validsProperties, collapsedSavesProperties ), removesProperties );
-							const hasChanges = 0 < Object.keys( changesProperties ).length ? true : false;
+							const hasChanges = 0 < Object.keys( changes ).length ? true : false;
 
 							// Set rule.
 							ruleSet.push( {
@@ -310,6 +320,7 @@ export class Generator {
 
 				// Prepare prev state for next iteration.
 				prevStyle = style;
+				prevViewport = viewport;
 			}
 		} );
 

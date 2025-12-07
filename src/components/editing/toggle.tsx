@@ -20,12 +20,18 @@ export const ToggleEditing = () => {
 
 	// Set state dependency.
 	const {
+		isActive,
 		isEditing,
 		viewport,
+		iframeViewport,
 	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+
 		return {
-			isEditing: select( STORE_NAME ).isEditing(),
-			viewport: select( STORE_NAME ).getViewport(),
+			isActive: store.isActive(),
+			isEditing: store.isEditing(),
+			viewport: store.getViewport(),
+			iframeViewport: store.getIframeViewport(),
 		}
 	} );
 
@@ -49,11 +55,14 @@ export const ToggleEditing = () => {
 		classNames.push( 'is-editing' );
 	}
 
+	// console.log( 'isActive', isActive, 'viewport', viewport, 'iframeViewport', iframeViewport );
+	const minWidth = isActive ? viewport : iframeViewport;
+
 	// Render component.
 	return (
 		<ToggleControl
 			className={ classNames }
-			label={ __( 'Edit on min-width', 'quantum-viewports' ) + ': ' + viewport + 'px' }
+			label={ __( 'Edit on min-width', 'quantum-viewports' ) + ': ' + minWidth + 'px' }
 			onChange={ onChange }
 			checked={ isEditing }
 		/>

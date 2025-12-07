@@ -61,7 +61,7 @@ export const Indicator = ( { storeId, property }: IndicatorProps ) => {
 			viewport: store.getViewport(),
 			iframeViewport: store.getIframeViewport(),
 			deviceType: editorStore.getDeviceType(),
-			valids: store.getBlockValids( storeId ),
+			lastEdit: store.getLastEdit(),
 		}
  	}, [] );
 
