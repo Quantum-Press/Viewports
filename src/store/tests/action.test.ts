@@ -11,7 +11,6 @@ const {
     setDesktop,
     setTablet,
     setMobile,
-    setReady,
     setLoading,
     unsetLoading,
     setSaving,
@@ -88,15 +87,6 @@ describe( 'store actions', () => {
             type: 'SET_MOBILE',
         };
         const result = setMobile();
-
-        expect( check ).toStrictEqual( result );
-    });
-
-    test( 'setReady', () => {
-        const check = {
-            type: 'SET_READY',
-        };
-        const result = setReady();
 
         expect( check ).toStrictEqual( result );
     });

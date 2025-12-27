@@ -126,7 +126,6 @@ export const DEFAULT_STATE = {
     },
     iframeViewport: 0,
     isRegistering: false,
-    isReady: false,
     isActive: false,
     isInspecting: false,
     inspectorPosition: 'right',

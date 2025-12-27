@@ -127,18 +127,6 @@ export const setIframeSize = ( size : Size ) : Action => {
 
 
 /**
- * Set Action that updates ready indicator to true.
- *
- * @return {Action}
- */
-export const setReady = () : Action => {
-    return {
-        type: 'SET_READY',
-    };
-}
-
-
-/**
  * Set Action that updates registering indicator to true.
  *
  * @return {Action}

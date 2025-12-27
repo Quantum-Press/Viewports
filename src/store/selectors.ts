@@ -132,18 +132,6 @@ export const isRegistering = ( state : State ) : boolean => {
 
 
 /**
- * Set selector to return isReady indicator.
- *
- * @param {State} state current
- *
- * @return {boolean}
- */
-export const isReady = ( state : State ) : boolean => {
-    return state.isReady;
-};
-
-
-/**
  * Set selector to return isLoading indicator.
  *
  * @param {State} state current

@@ -24,7 +24,6 @@ import {
     setDesktop,
     setTablet,
     setMobile,
-    setReady,
     setLoading,
     unsetLoading,
     setSaving,
@@ -250,24 +249,6 @@ describe( 'test store reducers', () => {
                 mobile: 320,
             } as State;
             const result = setMobile( state, action );
-
-            expect( result ).toStrictEqual( check );
-        } );
-
-        test( 'can setReady()', () => {
-            const state = deepFreeze( {
-                ... DEFAULT_STATE,
-                isReady: false,
-            } ) as State;
-            const action = {
-                type: 'SET_READY',
-            } as Action;
-
-            const check = {
-                ... DEFAULT_STATE,
-                isReady: true,
-            } as State;
-            const result = setReady( state, action );
 
             expect( result ).toStrictEqual( check );
         } );

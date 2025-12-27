@@ -481,28 +481,6 @@ unsetRegistering.handlesAction = ( actionType ) => actionType === 'UNSET_REGISTE
 
 
 /**
- * Set reducer to update ready indicator to boolean true.
- *
- * @param {State} state current
- * @param {Action} action dispatched
- *
- * @return {State} updated state
- */
-export const setReady = ( state : State, action : Action ) : State => {
-    switch ( action.type ) {
-        case 'SET_READY' :
-            return {
-                ... state,
-                isReady: true,
-            };
-    }
-
-    return state;
-}
-setReady.handlesAction = ( actionType ) => actionType === 'SET_READY';
-
-
-/**
  * Set reducer to update loading indicator to boolean true.
  *
  * @param {State} state current
@@ -1821,7 +1799,6 @@ export const defaultReducers = {
     setIframeSize,
     setRegistering,
     unsetRegistering,
-    setReady,
     setLoading,
     unsetLoading,
     setSaving,

@@ -51,7 +51,6 @@ export const useResizeEditor = () => {
         const editorStore = select( 'core/editor' );
 
         return {
-            isReady: store.isReady(),
             isActive: store.isActive(),
             viewport: store.getViewport(),
             isRegistering: store.isRegistering(),

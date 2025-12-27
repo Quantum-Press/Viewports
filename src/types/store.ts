@@ -142,7 +142,6 @@ export type State = {
     iframeSize: Size,
     iframeViewport: number,
     isRegistering: boolean,
-    isReady: boolean,
     isActive: boolean,
     isInspecting: boolean,
     inspectorPosition: string,
