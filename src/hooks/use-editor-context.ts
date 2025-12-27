@@ -1,10 +1,10 @@
 import { useUrlListener } from "@quantum-viewports/hooks";
 
 const {
-	element: {
-		useEffect,
-		useState,
-	},
+    element: {
+        useEffect,
+        useState,
+    },
 } = window[ 'wp' ];
 
 
@@ -12,19 +12,19 @@ const {
  * Represents the available editor contexts within WordPress admin.
  */
 export type EditorContext = {
-	context:
-		| 'post-editor'
-		| 'site-editor-start'
-		| 'site-editor-edit'
-		| 'site-editor-templates'
-		| 'site-editor-pages'
-		| 'site-editor-patterns'
-		| 'site-editor-navigation'
-		| 'site-editor-styles'
-		| 'template-editor'
-		| 'patterns'
-		| 'unknown',
-	postParam: string,
+    context:
+        | 'post-editor'
+        | 'site-editor-start'
+        | 'site-editor-edit'
+        | 'site-editor-templates'
+        | 'site-editor-pages'
+        | 'site-editor-patterns'
+        | 'site-editor-navigation'
+        | 'site-editor-styles'
+        | 'template-editor'
+        | 'patterns'
+        | 'unknown',
+    postParam: string,
 };
 
 
@@ -36,11 +36,11 @@ export type EditorContext = {
  * @returns {string | null} - The value of the query parameter, or null if not found.
  */
 function getQueryParam(
-	param: string
+    param: string
 ): string | null {
-	const urlParams = new URLSearchParams( window.location.search );
+    const urlParams = new URLSearchParams( window.location.search );
 
-	return urlParams.get( param );
+    return urlParams.get( param );
 }
 
 
@@ -62,68 +62,68 @@ function getQueryParam(
  * }
  */
 export function useEditorContext(): EditorContext {
-	const [ context, setContext ] = useState<EditorContext[ 'context' ]>( 'unknown' );
-	const [ postParam, setPostParam ] = useState( '' );
-	const url = useUrlListener();
+    const [ context, setContext ] = useState<EditorContext[ 'context' ]>( 'unknown' );
+    const [ postParam, setPostParam ] = useState( '' );
+    const url = useUrlListener();
 
-	useEffect( () => {
-		const path = window.location.pathname;
-		const rawPostParam = decodeURIComponent( getQueryParam( 'p' ) || '' );
-		const canvasParam = getQueryParam( 'canvas' );
+    useEffect( () => {
+        const path = window.location.pathname;
+        const rawPostParam = decodeURIComponent( getQueryParam( 'p' ) || '' );
+        const canvasParam = getQueryParam( 'canvas' );
 
-		setPostParam( rawPostParam );
+        setPostParam( rawPostParam );
 
-		if ( path.includes( '/wp-admin/site-editor.php' ) ) {
-			if ( canvasParam === 'edit' ) {
-				setContext( 'site-editor-edit' );
-				return;
-			}
+        if ( path.includes( '/wp-admin/site-editor.php' ) ) {
+            if ( canvasParam === 'edit' ) {
+                setContext( 'site-editor-edit' );
+                return;
+            }
 
-			switch ( rawPostParam ) {
-				case '/template':
-					setContext( 'site-editor-templates' );
-					break;
-				case '/page':
-					setContext( 'site-editor-pages' );
-					break;
-				case '/pattern':
-					setContext( 'site-editor-patterns' );
-					break;
-				case '/navigation':
-					setContext( 'site-editor-navigation' );
-					break;
-				case '/styles':
-					setContext( 'site-editor-styles' );
-					break;
-				default:
-					setContext( 'site-editor-start' );
-			}
+            switch ( rawPostParam ) {
+                case '/template':
+                    setContext( 'site-editor-templates' );
+                    break;
+                case '/page':
+                    setContext( 'site-editor-pages' );
+                    break;
+                case '/pattern':
+                    setContext( 'site-editor-patterns' );
+                    break;
+                case '/navigation':
+                    setContext( 'site-editor-navigation' );
+                    break;
+                case '/styles':
+                    setContext( 'site-editor-styles' );
+                    break;
+                default:
+                    setContext( 'site-editor-start' );
+            }
 
-		} else if (
-			path.includes( '/wp-admin/post.php' ) ||
-			path.includes( '/wp-admin/post-new.php' )
-		) {
-			setContext( 'post-editor' );
+        } else if (
+            path.includes( '/wp-admin/post.php' ) ||
+            path.includes( '/wp-admin/post-new.php' )
+        ) {
+            setContext( 'post-editor' );
 
-		} else if (
-			path.includes( '/wp-admin/edit.php' ) &&
-			window.location.search.includes( 'post_type=wp_template' )
-		) {
-			setContext( 'template-editor' );
+        } else if (
+            path.includes( '/wp-admin/edit.php' ) &&
+            window.location.search.includes( 'post_type=wp_template' )
+        ) {
+            setContext( 'template-editor' );
 
-		} else if (
-			path.includes( '/wp-admin/edit.php' ) &&
-			window.location.search.includes( 'post_type=wp_block' )
-		) {
-			setContext( 'patterns' );
+        } else if (
+            path.includes( '/wp-admin/edit.php' ) &&
+            window.location.search.includes( 'post_type=wp_block' )
+        ) {
+            setContext( 'patterns' );
 
-		} else {
-			setContext( 'unknown' );
-		}
-	}, [ url ] );
+        } else {
+            setContext( 'unknown' );
+        }
+    }, [ url ] );
 
-	return {
-		context,
-		postParam,
-	};
+    return {
+        context,
+        postParam,
+    };
 }

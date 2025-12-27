@@ -4,12 +4,12 @@ import { Body, Editing, Keyframes, Topbar, Viewports, Visualizer } from '@quantu
 import { Save } from '@quantum-viewports/hacks';
 
 const {
-	data: {
-		dispatch,
-	},
-	element: {
-		useLayoutEffect,
-	},
+    data: {
+        dispatch,
+    },
+    element: {
+        useLayoutEffect,
+    },
 } = window[ 'wp' ];
 
 /**
@@ -19,26 +19,26 @@ const {
  */
 export function Wrap() {
 
-	// Set state dependencies.
-	useResizeEditor();
+    // Set state dependencies.
+    useResizeEditor();
 
-	// Set useLocalStorage to handle nested client settings.
-	const [ position ] = useLocalStorage( 'inspector.position', 'right' );
+    // Set useLocalStorage to handle nested client settings.
+    const [ position ] = useLocalStorage( 'inspector.position', 'right' );
 
-	// Set useLayoutEffect to handle on mount with runtime state.
-	useLayoutEffect( () => {
-		dispatch( STORE_NAME ).setInspectorPosition( position );
-	}, [] );
+    // Set useLayoutEffect to handle on mount with runtime state.
+    useLayoutEffect( () => {
+        dispatch( STORE_NAME ).setInspectorPosition( position );
+    }, [] );
 
-	return (
-		<>
-			<Body />
-			<Save />
-			<Topbar />
-			<Viewports />
-			<Keyframes />
-			<Editing />
-			<Visualizer />
-		</>
-	);
+    return (
+        <>
+            <Body />
+            <Save />
+            <Topbar />
+            <Viewports />
+            <Keyframes />
+            <Editing />
+            <Visualizer />
+        </>
+    );
 }

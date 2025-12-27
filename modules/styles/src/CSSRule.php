@@ -201,13 +201,13 @@ class CSSRule {
      */
     public function addCSSProperties( array $properties, bool $compress = false ): void
     {
-        foreach( $properties as $property => $value ) {
+        foreach ( $properties as $property => $value ) {
             $this->addCSSProperty( $property, $value );
         }
 
         $this->generateHash();
 
-        if( $compress ) {
+        if ( $compress ) {
             $this->property = 'compressed';
         }
     }
@@ -233,7 +233,7 @@ class CSSRule {
     {
         $cssString = '';
 
-        foreach( $this->properties as $property => $value ) {
+        foreach ( $this->properties as $property => $value ) {
             $cssString .= "\n\t$property:$value;";
         }
 
@@ -250,7 +250,7 @@ class CSSRule {
     {
         $cssString = '';
 
-        foreach( $this->properties as $property => $value ) {
+        foreach ( $this->properties as $property => $value ) {
             $cssString .= "$property:$value;";
         }
 
@@ -267,7 +267,7 @@ class CSSRule {
      */
     public function propertyValue( string $property ): string|null
     {
-        if( isset( $this->properties[ $property ] ) ) {
+        if ( isset( $this->properties[ $property ] ) ) {
             return $this->properties[ $property ];
         }
 
@@ -285,7 +285,7 @@ class CSSRule {
      */
     private function addCSSProperty( string $property, mixed $value ): void
     {
-        if( ! isset( $this->properties[ $property ] ) ) {
+        if ( ! isset( $this->properties[ $property ] ) ) {
             $this->properties[ $property ] = $value;
         }
     }
@@ -300,7 +300,7 @@ class CSSRule {
      */
     public function removeCSSProperty( string $property ): void
     {
-        if( isset( $this->properties[ $property ] ) ) {
+        if ( isset( $this->properties[ $property ] ) ) {
             unset( $this->properties[ $property ] );
         }
     }
@@ -348,7 +348,7 @@ class CSSRule {
      */
     public function css( string $selector ): string
     {
-        if( null === $this->css ) {
+        if ( null === $this->css ) {
             $this->generateCSS( $selector );
         }
 
@@ -366,7 +366,7 @@ class CSSRule {
     private function generateCSS( string $selector ): void
     {
         $cssBody = $this->generateCSSBody( $selector );
-        if( empty( $cssBody ) ) {
+        if ( empty( $cssBody ) ) {
             $this->css = '';
             return;
         }
@@ -374,7 +374,7 @@ class CSSRule {
         $css = '';
 
         // Set media query with min-width and max-width.
-        if( $this->minWidth > 0 && -1 !== $this->maxWidth ) {
+        if ( $this->minWidth > 0 && -1 !== $this->maxWidth ) {
             $css = sprintf(
                 '@media (min-width: %spx) and (max-width: %spx) { %s }',
                 $this->minWidth,
@@ -384,7 +384,7 @@ class CSSRule {
         }
 
         // Set media query with min-width.
-        if( $this->minWidth > 0 && -1 === $this->maxWidth ) {
+        if ( $this->minWidth > 0 && -1 === $this->maxWidth ) {
             $css = sprintf(
                 '@media (min-width: %spx) { %s }',
                 $this->minWidth,
@@ -393,7 +393,7 @@ class CSSRule {
         }
 
         // Set media query with max-width.
-        if( $this->minWidth === 0 && 0 < $this->maxWidth ) {
+        if ( $this->minWidth === 0 && 0 < $this->maxWidth ) {
             $css = sprintf(
                 '@media (max-width: %spx) { %s }',
                 $this->maxWidth,
@@ -402,7 +402,7 @@ class CSSRule {
         }
 
         // Set without media query as default fallback.
-        if( $this->minWidth === 0 && -1 === $this->maxWidth ) {
+        if ( $this->minWidth === 0 && -1 === $this->maxWidth ) {
             $css = $cssBody;
         }
 
@@ -420,7 +420,7 @@ class CSSRule {
     public function generateCSSBody( string $selector = '%' ): string
     {
         $propertiesCss = $this->propertiesCss();
-        if( empty( $propertiesCss ) ) {
+        if ( empty( $propertiesCss ) ) {
             return '';
         }
 
@@ -442,7 +442,7 @@ class CSSRule {
     public function generateCompressedCSSBody( string $selector = '%' ): string
     {
         $propertiesCss = $this->compressedPropertiesCss();
-        if( empty( $propertiesCss ) ) {
+        if ( empty( $propertiesCss ) ) {
             return '';
         }
 
@@ -461,7 +461,7 @@ class CSSRule {
      */
     public function needsMediaQuery(): bool
     {
-        if( 'screen' === $this->media && ( $this->minWidth > 0 || $this->maxWidth > -1 ) ) {
+        if ( 'screen' === $this->media && ( $this->minWidth > 0 || $this->maxWidth > -1 ) ) {
             return true;
         }
 
@@ -476,7 +476,7 @@ class CSSRule {
      */
     public function isInlineStyle(): bool
     {
-        if( 'screen' === $this->media && 0 === $this->minWidth && -1 === $this->maxWidth ) {
+        if ( 'screen' === $this->media && 0 === $this->minWidth && -1 === $this->maxWidth ) {
             return true;
         }
 

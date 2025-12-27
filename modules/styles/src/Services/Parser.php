@@ -139,7 +139,7 @@ class Parser
         $declarations = $this->splitDeclarations( $cssString );
 
         // Iterate over declarations.
-        foreach( $declarations as $declaration ) {
+        foreach ( $declarations as $declaration ) {
 
             // If the declaration is not empty, process it
             if ( ! empty( $declaration ) ) {
@@ -148,7 +148,7 @@ class Parser
                 $parts = explode( ':', $declaration, 2 );
 
                 // Ensure both property and value are present
-                if( count( $parts ) !== 2 ) {
+                if ( count( $parts ) !== 2 ) {
                     continue;
                 }
 
@@ -190,7 +190,7 @@ class Parser
     ): CSSRule|false
     {
 
-        if( '%' !== $selector ) {
+        if ( '%' !== $selector ) {
             return $this->parseInlineSelector(
                 $processor,
                 $html,
@@ -222,7 +222,7 @@ class Parser
     {
 
         $selectorParts = $this->sanitizeSelectorParts( $selector );
-        if( false === $selectorParts ) {
+        if ( false === $selectorParts ) {
             return false;
         }
 
@@ -236,12 +236,12 @@ class Parser
             }
         );
 
-        if( empty( $processed ) || empty( $inlineStyles ) ) {
+        if ( empty( $processed ) || empty( $inlineStyles ) ) {
             return false;
         }
 
         $inlineParsed = $this->parseCss( $inlineStyles );
-        if( empty( $inlineParsed ) ) {
+        if ( empty( $inlineParsed ) ) {
             return false;
         }
 
@@ -272,12 +272,12 @@ class Parser
         $tagProcessor->next_tag();
 
         $inlineStyles = $tagProcessor->get_attribute( 'style' );
-        if( empty( $inlineStyles ) ) {
+        if ( empty( $inlineStyles ) ) {
             return false;
         }
 
         $inlineParsed = $this->splitDeclarations( $inlineStyles );
-        if( empty( $inlineParsed ) ) {
+        if ( empty( $inlineParsed ) ) {
             return false;
         }
 
@@ -315,7 +315,7 @@ class Parser
             array $selectors,
             callable $callback
         ) use ( $parser, &$foundElements, &$parseNestedSelector ): void {
-            if( empty( $selectors ) ) {
+            if ( empty( $selectors ) ) {
                 return;
             }
 
@@ -337,22 +337,22 @@ class Parser
             $processor->next_tag();
 
             // Find matching elements for the current selector part.
-            while( $processor->next_tag( [ $tagName ] ) ) {
+            while ( $processor->next_tag( [ $tagName ] ) ) {
 
                 // Check if tagName matches.
                 $currentTagName = strtolower( $processor->get_tag() );
-                if( $tagName !== $currentTagName ) {
+                if ( $tagName !== $currentTagName ) {
                     continue;
                 }
 
                 // Check if optional className matches.
-                if( $className && ! $processor->has_class( $className ) ) {
+                if ( $className && ! $processor->has_class( $className ) ) {
                     continue;
                 }
 
                 // Check if last selector part reached.
-                if( empty( $selectors ) ) {
-                    if( is_callable( $callback ) ) {
+                if ( empty( $selectors ) ) {
+                    if ( is_callable( $callback ) ) {
                         $callback( $processor );
                     }
 
@@ -388,7 +388,7 @@ class Parser
     ): array
     {
         // Check if there is a filled inlineStyles attribute to generate rules from.
-        if(
+        if (
             ( ! isset( $attributes[ 'style' ] ) || empty( $attributes[ 'style' ] ) ) &&
             ( ! isset( $attributes[ 'viewports' ] ) || empty( $attributes[ 'viewports' ] ) )
         ) {
@@ -444,15 +444,15 @@ class Parser
     {
         // Iterate over viewports attributes to parse them to css.
         $rules = [];
-        foreach( $parsedValids as $viewport => $maxWidths ) {
-            foreach( $maxWidths as $maxWidth => $validStyles ) {
+        foreach ( $parsedValids as $viewport => $maxWidths ) {
+            foreach ( $maxWidths as $maxWidth => $validStyles ) {
                 $styles = $this->traverseGet( [ $viewport, $maxWidth ], $viewports, [] );
-                if( empty( $styles ) ) {
+                if ( empty( $styles ) ) {
                     $styles = $this->traverseGet( [ $viewport ], $viewports, [] );
                 }
 
-                foreach( $styles as $style ) {
-                    foreach( $style as $property => $value ) {
+                foreach ( $styles as $style ) {
+                    foreach ( $style as $property => $value ) {
                         $valids = $this->traverseGet(
                             [ $viewport, $maxWidth, 'style', $property ],
                             $parsedValids,
@@ -461,13 +461,13 @@ class Parser
 
                         $parsed = $this->parseStyleAttribute( $blockName, $property, $value, $valids );
 
-                        if( empty( $parsed ) ) continue;
+                        if ( empty( $parsed ) ) continue;
 
-                        foreach( $parsed as $selector => $css ) {
+                        foreach ( $parsed as $selector => $css ) {
 
                             // Check if we need to add an attribute style.
-                            if( ! empty( $css[ 'declarations' ] ) ) {
-                                if( is_numeric( $viewport ) ) {
+                            if ( ! empty( $css[ 'declarations' ] ) ) {
+                                if ( is_numeric( $viewport ) ) {
                                     $rules[] = $processor->generateCSSRule(
                                         'attributes',
                                         $property,
@@ -490,7 +490,7 @@ class Parser
                                     $viewport
                                 );
 
-                                if( $customRule instanceOf CSSRule ) {
+                                if ( $customRule instanceOf CSSRule ) {
                                     $rules[] = $customRule;
                                 }
                             }
@@ -522,7 +522,7 @@ class Parser
     ): array
     {
 
-        if( in_array( $property, $this->nativeProperties, true ) ) {
+        if ( in_array( $property, $this->nativeProperties, true ) ) {
             $engineStyles = \wp_style_engine_get_styles( [
                 $property => $value,
             ] );
@@ -534,7 +534,7 @@ class Parser
                 $valids
             );
 
-            if( is_string( $css ) && ! empty( $css ) ) {
+            if ( is_string( $css ) && ! empty( $css ) ) {
                 return $this->remapSelectors(
                     $blockName,
                     $property,
@@ -556,7 +556,7 @@ class Parser
             $valids
         );
 
-        if( is_string( $css ) && ! empty( $css ) ) {
+        if ( is_string( $css ) && ! empty( $css ) ) {
             return $this->splitSelectors( $css );
         }
 
@@ -579,7 +579,7 @@ class Parser
     ): array
     {
         // Check if there is a mapping to the block and property.
-        if(
+        if (
             ! isset( $this->selectorMapping[ $blockName ] ) ||
             ! isset( $this->selectorMapping[ $blockName ][ $property ] )
         ) {
@@ -589,20 +589,20 @@ class Parser
         $mapping = $this->selectorMapping[ $blockName ][ $property ];
 
         // Check whether everything of the property has to be remapped.
-        if( ! is_array( $mapping ) ) {
+        if ( ! is_array( $mapping ) ) {
             return [
                 $mapping => reset( $selectorCss )
             ];
         }
 
         // It should be possible to handle css specific remapping.
-        foreach( $selectorCss as $args ) {
-            foreach( $args[ 'declarations' ] as $cssProperty => $cssValue ) {
+        foreach ( $selectorCss as $args ) {
+            foreach ( $args[ 'declarations' ] as $cssProperty => $cssValue ) {
 
-                if( isset( $mapping[ $cssProperty ] ) ) {
+                if ( isset( $mapping[ $cssProperty ] ) ) {
                     $targetSelector = $mapping[ $cssProperty ];
 
-                    if( ! isset( $selectorCss[ $targetSelector ] ) ) {
+                    if ( ! isset( $selectorCss[ $targetSelector ] ) ) {
                         $selectorCss[ $targetSelector ] = [
                             'css' => '',
                             'declarations' => []
@@ -628,12 +628,12 @@ class Parser
 
         ksort( $viewports );
 
-        foreach( $viewports as $viewport => $styles ) {
+        foreach ( $viewports as $viewport => $styles ) {
             $maxWidths = [ 0 ];
 
             ksort( $maxWidths );
 
-            foreach( $maxWidths as $maxWidth ) {
+            foreach ( $maxWidths as $maxWidth ) {
                 $lastValids = $this->traverseGet( [ $lastViewport, $maxWidth ], $valids, [] );
 
                 $valids[ $viewport ] = [
@@ -662,7 +662,7 @@ class Parser
             preg_quote( $tagName, '/' )
         );
 
-        if( preg_match( $pattern, $html, $matches ) ) {
+        if ( preg_match( $pattern, $html, $matches ) ) {
             return $matches[ 1 ] ?? '';
         }
 
@@ -687,10 +687,10 @@ class Parser
             preg_quote( $tagName, '/' )
         );
 
-        if( preg_match( $pattern, $html, $matches ) ) {
+        if ( preg_match( $pattern, $html, $matches ) ) {
             $search = $matches[ 1 ] ?? '';
 
-            if( ! empty( $search ) ) {
+            if ( ! empty( $search ) ) {
                 return str_replace( $search, $innerHtml, $html );
             }
         }
@@ -708,7 +708,7 @@ class Parser
      */
     public function isValidSelector( string $selector ): bool
     {
-        if( false !== $this->sanitizeSelectorParts( $selector ) ) {
+        if ( false !== $this->sanitizeSelectorParts( $selector ) ) {
             return true;
         }
 
@@ -738,18 +738,18 @@ class Parser
         $pattern = '/^([a-zA-Z0-9]+(\.[a-zA-Z0-9_-]+)*|\*)(\s*(>|\+|~|\s)*\s*[a-zA-Z0-9]+(\.[a-zA-Z0-9_-]+)*)*(\s*(,)\s*)*$/';
 
         // Check if we match something.
-        if( preg_match( $pattern, $selector ) ) {
+        if ( preg_match( $pattern, $selector ) ) {
 
             // Split selector into parts, to check each for format issues.
             $parts = preg_split( '/[\s,]+/', $selector );
-            foreach( $parts as $part ) {
+            foreach ( $parts as $part ) {
 
                 // Check if the part is matching the expected format.
-                if( preg_match( '/^([a-zA-Z0-9]+)(\.[a-zA-Z0-9_-]+)*$/', $part, $matches ) ) {
+                if ( preg_match( '/^([a-zA-Z0-9]+)(\.[a-zA-Z0-9_-]+)*$/', $part, $matches ) ) {
 
                     // Check if first match is an element.
                     $element = strtolower( $matches[ 1 ] );
-                    if( ! in_array( $element, $allowedElements ) && $element !== '*' ) {
+                    if ( ! in_array( $element, $allowedElements ) && $element !== '*' ) {
                         return [];
                     }
                 }
@@ -797,14 +797,14 @@ class Parser
         $parts = explode( ';', $css ); // Split string at semicolons.
         $declarations = [];
 
-        foreach( $parts as $index => $part ) {
+        foreach ( $parts as $index => $part ) {
             $part = trim( $part );
-            if( empty( $part ) ) {
+            if ( empty( $part ) ) {
                 continue;
             }
 
             // Check for not existing colons, to remove declare.
-            if( false !== strpos( $part, ':' ) ) {
+            if ( false !== strpos( $part, ':' ) ) {
                 $part = trim( $part );
                 $part = explode( ':', $part, 2 );
                 $declarations[ $part[ 0 ] ] = $part[ 1 ];
@@ -824,16 +824,16 @@ class Parser
      */
     public function splitSelectors( string $css ): array
     {
-        if( empty( $css ) ) {
+        if ( empty( $css ) ) {
             return [];
         }
 
         $selectors = explode( '}', $css );
         $selectorCss = [];
 
-        if( count( $selectors ) > 1 ) {
-            foreach( $selectors as $cssPart ) {
-                if( empty( $cssPart ) ) {
+        if ( count( $selectors ) > 1 ) {
+            foreach ( $selectors as $cssPart ) {
+                if ( empty( $cssPart ) ) {
                     continue;
                 }
 
@@ -860,7 +860,7 @@ class Parser
      */
     public function removeSelectors( string $css ): string
     {
-        if( empty( $css ) ) {
+        if ( empty( $css ) ) {
             return '';
         }
 
@@ -871,12 +871,12 @@ class Parser
         $cleaned = preg_replace( $pattern, '', $css );
 
         // Check for ending }.
-        if( ( strlen( $cleaned ) - 1 ) === strpos( $cleaned, '}' ) ) {
+        if ( ( strlen( $cleaned ) - 1 ) === strpos( $cleaned, '}' ) ) {
             $cleaned = substr( $cleaned, 0, -1 );
         }
 
         // Check for starting {.
-        if( ( 0 === strpos( $cleaned, '}' ) ) ) {
+        if ( ( 0 === strpos( $cleaned, '}' ) ) ) {
             $cleaned = substr( $cleaned, 1 );
         }
 
@@ -933,24 +933,24 @@ class Parser
     public function merge( array ...$arrays ): array
     {
         return array_reduce( $arrays, function( array $prev, array $arr ): array {
-            foreach( $arr as $key => $value ) {
+            foreach ( $arr as $key => $value ) {
                 $prevValue = $prev[ $key ] ?? null;
                 $prev[ $key ] = $value;
 
-                if(
+                if (
                     $this->isAssoc( $prevValue ) &&
                     $this->isAssoc( $value )
                 ) {
                     $prev[ $key ] = $this->merge( $prevValue, $value );
 
-                } elseif(
+                } elseif (
                     $this->isIndex( $prevValue ) &&
                     $this->isIndex( $value ) &&
                     count( $value ) > 0
                 ) {
                     $prev[ $key ] = $value;
 
-                } elseif( $this->isAssoc( $value ) ) {
+                } elseif ( $this->isAssoc( $value ) ) {
                     $prev[ $key ] = $value;
 
                 }

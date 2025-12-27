@@ -8,156 +8,156 @@ import { KeyframeControls } from './controls';
 import { KeyframesToggle } from './toggle';
 
 const {
-	components: {
-		Button,
-		Icon,
-	},
-	data: {
-		select,
-		useSelect,
-	},
-	element: {
-		useEffect,
-		useState,
-	}
+    components: {
+        Button,
+        Icon,
+    },
+    data: {
+        select,
+        useSelect,
+    },
+    element: {
+        useEffect,
+        useState,
+    }
 } = window[ 'wp' ];
 
 const {
-	isEqual
+    isEqual
 } = window[ 'lodash' ];
 
 interface Frame {
-	size: number;
-	position: string;
-	viewport: number;
+    size: number;
+    position: string;
+    viewport: number;
 }
 
 const generateKeyframes = ( spectrumSet ) => {
 
-	// Set keyframes default.
-	let keyframes = [
-		{
-			viewport: 0,
-			size: 0,
-			position: 'center',
-			hasChanges: false,
-			hasRemoves: false,
-			hasSaves: false,
-			spectrumSet: [],
-		}
-	];
+    // Set keyframes default.
+    let keyframes = [
+        {
+            viewport: 0,
+            size: 0,
+            position: 'center',
+            hasChanges: false,
+            hasRemoves: false,
+            hasSaves: false,
+            spectrumSet: [],
+        }
+    ];
 
-	// Set lastFrom.
-	let lastFrom = 0;
+    // Set lastFrom.
+    let lastFrom = 0;
 
-	// Check spectrumSet to iterate.
-	if( spectrumSet.length ) {
-		spectrumSet.forEach( ( spectrum ) => {
+    // Check spectrumSet to iterate.
+    if ( spectrumSet.length ) {
+        spectrumSet.forEach( ( spectrum ) => {
 
-			// Extract first keyframe to check what to do.
-			let first = keyframes.shift();
+            // Extract first keyframe to check what to do.
+            let first = keyframes.shift();
 
-			// Check if we need to update center keyframe.
-			if( 0 === first.viewport && 'center' === first.position ) {
+            // Check if we need to update center keyframe.
+            if ( 0 === first.viewport && 'center' === first.position ) {
 
-				// Set a new keyframe.
-				let keyframe = {
-					viewport: spectrum.from,
-					size: ( ( spectrum.from - first.viewport ) / 2 ),
-					hasChanges: spectrum.hasChanges,
-					hasRemoves: spectrum.hasRemoves,
-					hasSaves: spectrum.hasSaves,
-					spectrumSet: [ spectrum ],
-				};
+                // Set a new keyframe.
+                let keyframe = {
+                    viewport: spectrum.from,
+                    size: ( ( spectrum.from - first.viewport ) / 2 ),
+                    hasChanges: spectrum.hasChanges,
+                    hasRemoves: spectrum.hasRemoves,
+                    hasSaves: spectrum.hasSaves,
+                    spectrumSet: [ spectrum ],
+                };
 
-				// Check if the spectrum is also running on viewport 0 to update center keyframe.
-				if( 0 === spectrum.from ) {
-					first.hasChanges = first.hasChanges ? true : spectrum.hasChanges;
-					first.hasRemoves = first.hasRemoves ? true : spectrum.hasRemoves;
-					first.hasSaves = first.hasSaves ? true : spectrum.hasSaves;
-					first.spectrumSet.push( spectrum );
-				}
+                // Check if the spectrum is also running on viewport 0 to update center keyframe.
+                if ( 0 === spectrum.from ) {
+                    first.hasChanges = first.hasChanges ? true : spectrum.hasChanges;
+                    first.hasRemoves = first.hasRemoves ? true : spectrum.hasRemoves;
+                    first.hasSaves = first.hasSaves ? true : spectrum.hasSaves;
+                    first.spectrumSet.push( spectrum );
+                }
 
-				// Check if the first center keyframe needs an update in size.
-				if( 0 < spectrum.from ) {
-					first.size = spectrum.from;
-				}
+                // Check if the first center keyframe needs an update in size.
+                if ( 0 < spectrum.from ) {
+                    first.size = spectrum.from;
+                }
 
-				// Add keyframe and update lastFrom.
-				keyframes = [ { position: 'first', ... keyframe }, first, { position: 'last', ... keyframe } ];
-				lastFrom = spectrum.from;
+                // Add keyframe and update lastFrom.
+                keyframes = [ { position: 'first', ... keyframe }, first, { position: 'last', ... keyframe } ];
+                lastFrom = spectrum.from;
 
-				return true;
-			}
+                return true;
+            }
 
-			// Check if we need to update viewport 0 keyframes.
-			if( 0 === first.viewport && 0 === spectrum.from && 'center' !== first.position ) {
+            // Check if we need to update viewport 0 keyframes.
+            if ( 0 === first.viewport && 0 === spectrum.from && 'center' !== first.position ) {
 
-				// Update all 3 keyframes handling viewport 0.
-				first.hasChanges = first.hasChanges ? true : spectrum.hasChanges;
-				first.hasRemoves = first.hasRemoves ? true : spectrum.hasRemoves;
-				first.hasSaves = first.hasSaves ? true : spectrum.hasSaves;
-				first.spectrumSet.push( spectrum );
+                // Update all 3 keyframes handling viewport 0.
+                first.hasChanges = first.hasChanges ? true : spectrum.hasChanges;
+                first.hasRemoves = first.hasRemoves ? true : spectrum.hasRemoves;
+                first.hasSaves = first.hasSaves ? true : spectrum.hasSaves;
+                first.spectrumSet.push( spectrum );
 
-				// Add keyframe and update lastFrom.
-				keyframes = [ { ... first, position: 'first',  }, { ... first, position: 'center' }, { ... first, position: 'last' } ];
-				lastFrom = spectrum.from;
+                // Add keyframe and update lastFrom.
+                keyframes = [ { ... first, position: 'first',  }, { ... first, position: 'center' }, { ... first, position: 'last' } ];
+                lastFrom = spectrum.from;
 
-				return true;
-			}
+                return true;
+            }
 
-			// Check if we need to update first and last keyframe.
-			if( spectrum.from === lastFrom ) {
+            // Check if we need to update first and last keyframe.
+            if ( spectrum.from === lastFrom ) {
 
-				// Extract first and last keyframe to update.
-				const last = keyframes.pop();
+                // Extract first and last keyframe to update.
+                const last = keyframes.pop();
 
-				// Update first keyframes.
-				first.hasChanges = first.hasChanges ? true : spectrum.hasChanges;
-				first.hasRemoves = first.hasRemoves ? true : spectrum.hasRemoves;
-				first.hasSaves = first.hasSaves ? true : spectrum.hasSaves;
-				first.spectrumSet.push( spectrum );
+                // Update first keyframes.
+                first.hasChanges = first.hasChanges ? true : spectrum.hasChanges;
+                first.hasRemoves = first.hasRemoves ? true : spectrum.hasRemoves;
+                first.hasSaves = first.hasSaves ? true : spectrum.hasSaves;
+                first.spectrumSet.push( spectrum );
 
-				// Update last keyframe.
-				last.hasChanges = last.hasChanges ? true : spectrum.hasChanges;
-				last.hasRemoves = last.hasRemoves ? true : spectrum.hasRemoves;
-				last.hasSaves = last.hasSaves ? true : spectrum.hasSaves;
-				last.spectrumSet.push( spectrum );
+                // Update last keyframe.
+                last.hasChanges = last.hasChanges ? true : spectrum.hasChanges;
+                last.hasRemoves = last.hasRemoves ? true : spectrum.hasRemoves;
+                last.hasSaves = last.hasSaves ? true : spectrum.hasSaves;
+                last.spectrumSet.push( spectrum );
 
-				// Update keyframes.
-				keyframes = [ first, ... keyframes, last ];
-				lastFrom = spectrum.from;
+                // Update keyframes.
+                keyframes = [ first, ... keyframes, last ];
+                lastFrom = spectrum.from;
 
-			} else {
+            } else {
 
-				// Set a new keyframe.
-				let keyframe = {
-					viewport: spectrum.from,
-					size: 80,
-					hasChanges: spectrum.hasChanges,
-					hasRemoves: spectrum.hasRemoves,
-					hasSaves: spectrum.hasSaves,
-					spectrumSet: [ spectrum ],
-				};
+                // Set a new keyframe.
+                let keyframe = {
+                    viewport: spectrum.from,
+                    size: 80,
+                    hasChanges: spectrum.hasChanges,
+                    hasRemoves: spectrum.hasRemoves,
+                    hasSaves: spectrum.hasSaves,
+                    spectrumSet: [ spectrum ],
+                };
 
-				// Extract first and last keyframe to update.
-				const last = keyframes.pop();
+                // Extract first and last keyframe to update.
+                const last = keyframes.pop();
 
-				if( 0 === first.viewport && 'center' !== first.position ) {
-					first.size = ( ( spectrum.from - first.viewport ) / 2 ) - 2;
-					last.size = ( ( spectrum.from - first.viewport ) / 2 ) - 2;
-				} else {
-					first.size = ( ( spectrum.from - first.viewport ) / 2 );
-					last.size = ( ( spectrum.from - first.viewport ) / 2 );
-				}
+                if ( 0 === first.viewport && 'center' !== first.position ) {
+                    first.size = ( ( spectrum.from - first.viewport ) / 2 ) - 2;
+                    last.size = ( ( spectrum.from - first.viewport ) / 2 ) - 2;
+                } else {
+                    first.size = ( ( spectrum.from - first.viewport ) / 2 );
+                    last.size = ( ( spectrum.from - first.viewport ) / 2 );
+                }
 
-				keyframes = [ { position: 'first', ... keyframe }, first, ... keyframes, last, { position: 'last', ... keyframe } ];
-				lastFrom = spectrum.from;
-			}
-		} );
-	}
+                keyframes = [ { position: 'first', ... keyframe }, first, ... keyframes, last, { position: 'last', ... keyframe } ];
+                lastFrom = spectrum.from;
+            }
+        } );
+    }
 
-	return keyframes;
+    return keyframes;
 }
 
 
@@ -167,234 +167,234 @@ const generateKeyframes = ( spectrumSet ) => {
  */
 export const Keyframes = () => {
 
-	// Set states.
-	const props: {
-		clientId: string,
-		storeId: string,
-		viewport: number,
-		iframeSize: number,
-		iframeViewport: number,
-		isActive: boolean,
-	} = useSelect( ( select : Function ) => {
-		const store = select( STORE_NAME );
-		const selected = select( 'core/block-editor' ).getSelectedBlock();
+    // Set states.
+    const props: {
+        clientId: string,
+        storeId: string,
+        viewport: number,
+        iframeSize: number,
+        iframeViewport: number,
+        isActive: boolean,
+    } = useSelect( ( select : Function ) => {
+        const store = select( STORE_NAME );
+        const selected = select( 'core/block-editor' ).getSelectedBlock();
 
-		if( ! selected ) {
-			return {
-				isInspecting: store.isInspecting(),
-			}
-		}
+        if ( ! selected ) {
+            return {
+                isInspecting: store.isInspecting(),
+            }
+        }
 
-		return {
-			clientId: selected.clientId,
-			viewport: store.getViewport(),
-			iframeSize: store.getIframeSize(),
-			iframeViewport: store.getIframeViewport(),
-			viewports: store.getViewports(),
-			isActive: store.isActive(),
-			isInspecting: store.isInspecting(),
-			lastEdit: store.getLastEdit(),
-		}
-	}, [] );
+        return {
+            clientId: selected.clientId,
+            viewport: store.getViewport(),
+            iframeSize: store.getIframeSize(),
+            iframeViewport: store.getIframeViewport(),
+            viewports: store.getViewports(),
+            isActive: store.isActive(),
+            isInspecting: store.isInspecting(),
+            lastEdit: store.getLastEdit(),
+        }
+    }, [] );
 
-	const spectrumSet = select( STORE_NAME ).getSpectrumSet( props.clientId );
+    const spectrumSet = select( STORE_NAME ).getSpectrumSet( props.clientId );
 
-	// Set highlight hooks.
-	const [ highlight, setHighlight ] = useHighlight();
-	const [ highlightViewport, sethighlightViewport ] = useHighlightViewport();
+    // Set highlight hooks.
+    const [ highlight, setHighlight ] = useHighlight();
+    const [ highlightViewport, sethighlightViewport ] = useHighlightViewport();
 
-	// Set useState to handle highlights on keyframe.
-	const [ highlighted, setHighlighted ] = useState( false );
+    // Set useState to handle highlights on keyframe.
+    const [ highlighted, setHighlighted ] = useState( false );
 
-	// Set useState to handle hover pairing.
-	const [ hover, setHover ] = useState( false );
+    // Set useState to handle hover pairing.
+    const [ hover, setHover ] = useState( false );
 
-	// Set useState to handle hover pairing.
-	const [ visibleControls, setVisibleControls ] = useState( [] );
+    // Set useState to handle hover pairing.
+    const [ visibleControls, setVisibleControls ] = useState( [] );
 
-	/**
-	 * Set function to fire on click open.
-	 */
-	const onClickKeyframe = ( { target }, keyframe ) => {
-		if( ! target.classList.contains( 'qp-keyframe' ) ) {
-			target = target.closest( '.qp-keyframe' );
-		}
+    /**
+     * Set function to fire on click open.
+     */
+    const onClickKeyframe = ( { target }, keyframe ) => {
+        if ( ! target.classList.contains( 'qp-keyframe' ) ) {
+            target = target.closest( '.qp-keyframe' );
+        }
 
-		if( ! target ) {
-			return;
-		}
+        if ( ! target ) {
+            return;
+        }
 
-		const newControls = [ ... visibleControls ];
+        const newControls = [ ... visibleControls ];
 
-		// Check if keyframe is inside, to remove.
-		const removeIndex = visibleControls.findIndex( obj => isEqual( obj, keyframe ) );
-		if( -1 !== removeIndex ) {
-			newControls.splice( removeIndex, 1 );
-		} else {
-			newControls.push( keyframe );
-		}
+        // Check if keyframe is inside, to remove.
+        const removeIndex = visibleControls.findIndex( obj => isEqual( obj, keyframe ) );
+        if ( -1 !== removeIndex ) {
+            newControls.splice( removeIndex, 1 );
+        } else {
+            newControls.push( keyframe );
+        }
 
-		setVisibleControls( newControls );
-	}
+        setVisibleControls( newControls );
+    }
 
-	// Set useEffect to set Highligh on size changes.
-	useEffect( () => {
-		if( ! highlighted ) {
-			return;
-		}
+    // Set useEffect to set Highligh on size changes.
+    useEffect( () => {
+        if ( ! highlighted ) {
+            return;
+        }
 
-		setHighlight( '.qp-viewports-inspector-style[data-viewport="' + highlighted + '"]' );
-		sethighlightViewport( highlighted );
-		setHighlighted( false );
+        setHighlight( '.qp-viewports-inspector-style[data-viewport="' + highlighted + '"]' );
+        sethighlightViewport( highlighted );
+        setHighlighted( false );
 
-	}, [ highlighted ] );
+    }, [ highlighted ] );
 
-	// Return instant if is not active.
-	if( ! select( STORE_NAME ).isActive() ) {
-		return null;
-	}
+    // Return instant if is not active.
+    if ( ! select( STORE_NAME ).isActive() ) {
+        return null;
+    }
 
-	// Set ui and its outerwidth for calculation
-	const $ui = document.querySelector( '.interface-interface-skeleton__content .components-resizable-box__container, .edit-post-visual-editor .edit-post-visual-editor__content-area, .edit-post-visual-editor > div:first-child:last-child' );
-	const uiWidth = $ui ? $ui.getBoundingClientRect().width - 80 : 0;
+    // Set ui and its outerwidth for calculation
+    const $ui = document.querySelector( '.interface-interface-skeleton__content .components-resizable-box__container, .edit-post-visual-editor .edit-post-visual-editor__content-area, .edit-post-visual-editor > div:first-child:last-child' );
+    const uiWidth = $ui ? $ui.getBoundingClientRect().width - 80 : 0;
 
-	// Set keyframes.
-	const keyframes = generateKeyframes( spectrumSet );
+    // Set keyframes.
+    const keyframes = generateKeyframes( spectrumSet );
 
-	/**
-	 * Set function to calculate width of given frame.
-	 */
-	const calculateWidth = ( frame : Frame ) => {
-		const { size, position, viewport } = frame;
-		const zoom = uiWidth / props.viewport;
+    /**
+     * Set function to calculate width of given frame.
+     */
+    const calculateWidth = ( frame : Frame ) => {
+        const { size, position, viewport } = frame;
+        const zoom = uiWidth / props.viewport;
 
-		if( 'center' === position && size === 0 ) {
-			return 0;
-		}
+        if ( 'center' === position && size === 0 ) {
+            return 0;
+        }
 
-		if( props.viewport >= ( uiWidth ) ) {
-			if( 0 === size ) {
-				let tempSize = ( props.viewport - viewport ) / 2;
+        if ( props.viewport >= ( uiWidth ) ) {
+            if ( 0 === size ) {
+                let tempSize = ( props.viewport - viewport ) / 2;
 
-				return zoom * tempSize + 40;
-			}
+                return zoom * tempSize + 40;
+            }
 
-			return Math.round( ( zoom * size ) * 10 ) / 10;
-		}
+            return Math.round( ( zoom * size ) * 10 ) / 10;
+        }
 
-		if( 0 === size ) {
-			return (( uiWidth - viewport ) / 2 ) + 40;
-		}
+        if ( 0 === size ) {
+            return (( uiWidth - viewport ) / 2 ) + 40;
+        }
 
-		return Math.round( size * 10 ) / 10;
-	}
-
-
-	/**
-	 * Set function to fire on mouse over.
-	 */
-	const onMouseOver = ( { target } : any ) => {
-		if( ! target.classList.contains( 'qp-keyframe' ) ) {
-			target = target.closest( '.qp-keyframe' );
-		}
-
-		if( ! target ) {
-			return;
-		}
-
-		const {
-			dataset: {
-				viewport,
-			}
-		} = target;
-
-		setHover({ viewport: parseInt( viewport ) });
-	}
+        return Math.round( size * 10 ) / 10;
+    }
 
 
-	/**
-	 * Set function to fire on mouse over.
-	 */
-	const onMouseOut = () => {
-		setHover( false );
-	}
+    /**
+     * Set function to fire on mouse over.
+     */
+    const onMouseOver = ( { target } : any ) => {
+        if ( ! target.classList.contains( 'qp-keyframe' ) ) {
+            target = target.closest( '.qp-keyframe' );
+        }
+
+        if ( ! target ) {
+            return;
+        }
+
+        const {
+            dataset: {
+                viewport,
+            }
+        } = target;
+
+        setHover({ viewport: parseInt( viewport ) });
+    }
 
 
-	/**
-	 * Return rendered component.
-	 */
-	return (
-		<div className="qp-keyframes">
-			<div className="qp-keyframes-wrap">
-				{ keyframes.map( ( keyframe, index ) => {
+    /**
+     * Set function to fire on mouse over.
+     */
+    const onMouseOut = () => {
+        setHover( false );
+    }
 
-					// Set active / non-active.
-					var classNames = `qp-keyframe-${ props.viewport } qp-keyframe ${ keyframe.position }`;
-					if( props.viewport === keyframe.viewport ) {
-						classNames = classNames + ' active';
-					}
 
-					// Set removed indicator.
-					if( keyframe.hasRemoves ) {
-						classNames = classNames + ' removed';
-					}
+    /**
+     * Return rendered component.
+     */
+    return (
+        <div className="qp-keyframes">
+            <div className="qp-keyframes-wrap">
+                { keyframes.map( ( keyframe, index ) => {
 
-					// Set changes indicator.
-					if( keyframe.hasChanges ) {
-						classNames = classNames + ' changes';
-					}
+                    // Set active / non-active.
+                    var classNames = `qp-keyframe-${ props.viewport } qp-keyframe ${ keyframe.position }`;
+                    if ( props.viewport === keyframe.viewport ) {
+                        classNames = classNames + ' active';
+                    }
 
-					// Set hover pairing indicator.
-					if( hover.viewport === keyframe.viewport ) {
-						classNames = classNames + ' hover';
-					}
+                    // Set removed indicator.
+                    if ( keyframe.hasRemoves ) {
+                        classNames = classNames + ' removed';
+                    }
 
-					const isControlling = visibleControls.some( obj => isEqual( obj, keyframe ) );
-					if( isControlling ) {
-						classNames = classNames + ' controlling';
-					}
+                    // Set changes indicator.
+                    if ( keyframe.hasChanges ) {
+                        classNames = classNames + ' changes';
+                    }
 
-					// Set calculated width.
-					const width = calculateWidth( keyframe );
+                    // Set hover pairing indicator.
+                    if ( hover.viewport === keyframe.viewport ) {
+                        classNames = classNames + ' hover';
+                    }
 
-					// Render keyframe.
-					return (
-						<div
-							key={ `qp-keyframe-${ props.viewport }-${ index }` }
-							className={ classNames }
-							style={{
-								width: `${ width }px`,
-							}}
-							data-viewport={ keyframe.viewport }
-							onMouseOver={ onMouseOver }
-							onMouseOut={ onMouseOut }
-						>
-							{ ( ( 'center' === keyframe.position && 0 < keyframe.spectrumSet.length ) || ( 'center' !== keyframe.position && 0 < keyframe.spectrumSet.length && 0 < keyframe.viewport ) ) &&
-								<>
-									<Button
-										key={ `qp-keyframe-marker-${ keyframe.viewport }-${ index }` }
-										className="marker"
-										onClick={ ( event ) => {
-											onClickKeyframe( event, keyframe )
-										} }
-									>
-										<Icon icon={ iconKeyframe } />
-									</Button>
-									<KeyframeControls
-										visibleControls={ visibleControls }
-										setVisibleControls={ setVisibleControls }
-										storeId={ props.storeId }
-										iframeViewport={ props.iframeViewport }
-										keyframe={ keyframe }
-									/>
-								</>
-							}
-						</div>
-					);
-				} ) }
-			</div>
-		</div>
-	)
+                    const isControlling = visibleControls.some( obj => isEqual( obj, keyframe ) );
+                    if ( isControlling ) {
+                        classNames = classNames + ' controlling';
+                    }
+
+                    // Set calculated width.
+                    const width = calculateWidth( keyframe );
+
+                    // Render keyframe.
+                    return (
+                        <div
+                            key={ `qp-keyframe-${ props.viewport }-${ index }` }
+                            className={ classNames }
+                            style={{
+                                width: `${ width }px`,
+                            }}
+                            data-viewport={ keyframe.viewport }
+                            onMouseOver={ onMouseOver }
+                            onMouseOut={ onMouseOut }
+                        >
+                            { ( ( 'center' === keyframe.position && 0 < keyframe.spectrumSet.length ) || ( 'center' !== keyframe.position && 0 < keyframe.spectrumSet.length && 0 < keyframe.viewport ) ) &&
+                                <>
+                                    <Button
+                                        key={ `qp-keyframe-marker-${ keyframe.viewport }-${ index }` }
+                                        className="marker"
+                                        onClick={ ( event ) => {
+                                            onClickKeyframe( event, keyframe )
+                                        } }
+                                    >
+                                        <Icon icon={ iconKeyframe } />
+                                    </Button>
+                                    <KeyframeControls
+                                        visibleControls={ visibleControls }
+                                        setVisibleControls={ setVisibleControls }
+                                        storeId={ props.storeId }
+                                        iframeViewport={ props.iframeViewport }
+                                        keyframe={ keyframe }
+                                    />
+                                </>
+                            }
+                        </div>
+                    );
+                } ) }
+            </div>
+        </div>
+    )
 }
 
 export * from './toggle';

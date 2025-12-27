@@ -3,17 +3,17 @@ import { IndicatorPropertySet } from '@quantum-viewports/types';
 import { IndicatorPanelItem } from '@quantum-viewports/components';
 
 const {
-	data: {
-		select,
-		useSelect,
-	},
-	i18n: {
-		__,
-	}
+    data: {
+        select,
+        useSelect,
+    },
+    i18n: {
+        __,
+    }
 } = window[ 'wp' ];
 
 export type IndicatorsProps = {
-	clientId: string;
+    clientId: string;
 };
 
 
@@ -24,38 +24,38 @@ export type IndicatorsProps = {
  */
 export const Indicators = ( { clientId }: IndicatorsProps ) => {
 
-	// Set datastore state dependencies.
-	useSelect( ( select: Function ) => {
-		const store = select( STORE_NAME );
+    // Set datastore state dependencies.
+    useSelect( ( select: Function ) => {
+        const store = select( STORE_NAME );
 
-		return {
-			valids: store.getBlockValids( clientId ),
-		};
-	}, [] );
+        return {
+            valids: store.getBlockValids( clientId ),
+        };
+    }, [] );
 
-	const propertySet = select( STORE_NAME ).getIndicatorPropertySet( clientId ) as IndicatorPropertySet;
+    const propertySet = select( STORE_NAME ).getIndicatorPropertySet( clientId ) as IndicatorPropertySet;
 
-	return (
-		<>
-			{ Object.keys( propertySet ).map( ( prop ) => {
-				const {
-					property,
-					groupId,
-					panelId,
-				} = propertySet[ prop ];
+    return (
+        <>
+            { Object.keys( propertySet ).map( ( prop ) => {
+                const {
+                    property,
+                    groupId,
+                    panelId,
+                } = propertySet[ prop ];
 
-				const parentPanelId = '' !== panelId ? panelId : clientId;
+                const parentPanelId = '' !== panelId ? panelId : clientId;
 
-				return (
-					<IndicatorPanelItem
-						storeId={ clientId }
-						key={ clientId + ' ' + prop }
-						property={ property }
-						groupId={ groupId }
-						panelId={ parentPanelId }
-					/>
-				);
-			} ) }
-		</>
-	);
+                return (
+                    <IndicatorPanelItem
+                        storeId={ clientId }
+                        key={ clientId + ' ' + prop }
+                        property={ property }
+                        groupId={ groupId }
+                        panelId={ parentPanelId }
+                    />
+                );
+            } ) }
+        </>
+    );
 }

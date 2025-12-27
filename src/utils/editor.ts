@@ -4,13 +4,13 @@
  * @return {object} node document
  */
 export const getEditorHead = () : HTMLElement | null => {
-	if ( isSiteEditor() ) {
-		const iframe = document.querySelector( 'iframe[name="editor-canvas"]' ) as HTMLIFrameElement;
+    if ( isSiteEditor() ) {
+        const iframe = document.querySelector( 'iframe[name="editor-canvas"]' ) as HTMLIFrameElement;
 
-		return iframe.contentWindow?.document.head || null;
-	}
+        return iframe.contentWindow?.document.head || null;
+    }
 
-	return document.head;
+    return document.head;
 }
 
 
@@ -20,11 +20,11 @@ export const getEditorHead = () : HTMLElement | null => {
  * @return {boolean} indication
  */
 export const isSiteEditor = () : boolean => {
-	if ( 'site-editor' === window[ 'pagenow' ] ) {
-		return true;
-	}
+    if ( 'site-editor' === window[ 'pagenow' ] ) {
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
 
@@ -34,11 +34,11 @@ export const isSiteEditor = () : boolean => {
  * @return {string} version
  */
 export const getVersion = () : string => {
-	const script = document.getElementById( 'quantum-viewports-scripts-js' ) as HTMLScriptElement;
-	const parts = script.src.split( '?' );
-	const params = new URLSearchParams( '?' + parts[1] );
+    const script = document.getElementById( 'quantum-viewports-scripts-js' ) as HTMLScriptElement;
+    const parts = script.src.split( '?' );
+    const params = new URLSearchParams( '?' + parts[1] );
 
-	return params.get( 'ver' ) || '';
+    return params.get( 'ver' ) || '';
 }
 
 
@@ -46,11 +46,11 @@ export const getVersion = () : string => {
  * Set function to open sidebar if not already opened.
  */
 export const openSidebar = () => {
-	const element = document.querySelector( 'button[aria-controls="edit-site:template"], button[aria-controls="edit-post:document"], button[aria-controls="edit-post:block"]' );
+    const element = document.querySelector( 'button[aria-controls="edit-site:template"], button[aria-controls="edit-post:document"], button[aria-controls="edit-post:block"]' );
 
-	if( element && 'false' === element.getAttribute( 'aria-pressed' ) ) {
-		element.dispatchEvent( new MouseEvent( 'click', { bubbles: true } ) );
-	}
+    if ( element && 'false' === element.getAttribute( 'aria-pressed' ) ) {
+        element.dispatchEvent( new MouseEvent( 'click', { bubbles: true } ) );
+    }
 }
 
 
@@ -58,11 +58,11 @@ export const openSidebar = () => {
  * Set function to open general tab if not already opened.
  */
 export const openSettingsTab = () => {
-	const element = document.querySelector( '.block-editor-block-inspector__tabs button[aria-controls$="-settings-view"]' );
+    const element = document.querySelector( '.block-editor-block-inspector__tabs button[aria-controls$="-settings-view"]' );
 
-	if( element && 'false' === element.getAttribute( 'aria-selected' ) ) {
-		element.dispatchEvent( new MouseEvent( 'click', { bubbles: true } ) );
-	}
+    if ( element && 'false' === element.getAttribute( 'aria-selected' ) ) {
+        element.dispatchEvent( new MouseEvent( 'click', { bubbles: true } ) );
+    }
 }
 
 
@@ -70,9 +70,9 @@ export const openSettingsTab = () => {
  * Set function to open styles tab if not already opened.
  */
 export const openStylesTab = () => {
-	const element = document.querySelector( '.block-editor-block-inspector__tabs button[aria-controls$="-styles-view"]' );
+    const element = document.querySelector( '.block-editor-block-inspector__tabs button[aria-controls$="-styles-view"]' );
 
-	if( element && 'false' === element.getAttribute( 'aria-selected' ) ) {
-		element.dispatchEvent( new MouseEvent( 'click', { bubbles: true } ) );
-	}
+    if ( element && 'false' === element.getAttribute( 'aria-selected' ) ) {
+        element.dispatchEvent( new MouseEvent( 'click', { bubbles: true } ) );
+    }
 }

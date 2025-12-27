@@ -4,12 +4,12 @@ import { Body } from './body';
 import { Foot } from './foot';
 
 const {
-	data: {
-		useSelect,
-	},
-	i18n: {
-		__,
-	}
+    data: {
+        useSelect,
+    },
+    i18n: {
+        __,
+    }
 } = window[ 'wp' ];
 
 /**
@@ -17,40 +17,40 @@ const {
  */
 export const Inspector = () => {
 
-	// Set states.
-	const {
-		isActive,
-		isInspecting,
-		isSaving,
-	} = useSelect( ( select : Function ) => {
-		const store = select( STORE_NAME );
+    // Set states.
+    const {
+        isActive,
+        isInspecting,
+        isSaving,
+    } = useSelect( ( select : Function ) => {
+        const store = select( STORE_NAME );
 
-		return {
-			isActive: store.isActive(),
-			isInspecting: store.isInspecting(),
-			isSaving: store.isSaving(),
-		}
-	}, [] );
+        return {
+            isActive: store.isActive(),
+            isInspecting: store.isInspecting(),
+            isSaving: store.isSaving(),
+        }
+    }, [] );
 
-	// Check if we need to render.
-	if( ! isInspecting ) {
-		return null;
-	}
+    // Check if we need to render.
+    if ( ! isInspecting ) {
+        return null;
+    }
 
-	// Setup classNames.
-	let classNamesWrap = 'qp-viewports-inspector dark';
-	if( ! isActive ) {
-		classNamesWrap = classNamesWrap + ' flyout';
-	}
+    // Setup classNames.
+    let classNamesWrap = 'qp-viewports-inspector dark';
+    if ( ! isActive ) {
+        classNamesWrap = classNamesWrap + ' flyout';
+    }
 
-	// Render component.
-	return (
-		<div className={ classNamesWrap }>
-			<Head />
-			<Body />
-			<Foot />
-		</div>
-	);
+    // Render component.
+    return (
+        <div className={ classNamesWrap }>
+            <Head />
+            <Body />
+            <Foot />
+        </div>
+    );
 }
 
 export * from './attributelist';

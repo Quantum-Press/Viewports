@@ -1,11 +1,11 @@
 const keyframe = (
-	<svg xmlns="http://www.w3.org/2000/svg" className="qp-viewports-svg keyframe" viewBox="0 0 24 24">
-		<g>
-			<path className="cls-outer" d="M12,1.8c.3,0,.5.1.7.3l9.2,9.2c.4.4.4,1,0,1.4l-9.2,9.2c-.2.2-.4.3-.7.3s-.5-.1-.7-.3L2.1,12.7c-.4-.4-.4-1,0-1.4L11.3,2.1c.2-.2.4-.3.7-.3M12,.8c-.5,0-1,.2-1.4.6L1.4,10.6c-.8.8-.8,2,0,2.8l9.2,9.2c.4.4.9.6,1.4.6s1-.2,1.4-.6l9.2-9.2c.8-.8.8-2,0-2.8L13.4,1.4c-.4-.4-.9-.6-1.4-.6h0Z"/>
-		</g>
-		<path className="cls-left" d="M12,19.1l-5.7-5.7c-.8-.8-.8-2,0-2.8l5.7-5.7v14.1Z"/>
-		<path className="cls-right" d="M12,4.9l5.7,5.7c.8.8.8,2,0,2.8l-5.7,5.7V4.9Z"/>
-	</svg>
+    <svg xmlns="http://www.w3.org/2000/svg" className="qp-viewports-svg keyframe" viewBox="0 0 24 24">
+        <g>
+            <path className="cls-outer" d="M12,1.8c.3,0,.5.1.7.3l9.2,9.2c.4.4.4,1,0,1.4l-9.2,9.2c-.2.2-.4.3-.7.3s-.5-.1-.7-.3L2.1,12.7c-.4-.4-.4-1,0-1.4L11.3,2.1c.2-.2.4-.3.7-.3M12,.8c-.5,0-1,.2-1.4.6L1.4,10.6c-.8.8-.8,2,0,2.8l9.2,9.2c.4.4.9.6,1.4.6s1-.2,1.4-.6l9.2-9.2c.8-.8.8-2,0-2.8L13.4,1.4c-.4-.4-.9-.6-1.4-.6h0Z"/>
+        </g>
+        <path className="cls-left" d="M12,19.1l-5.7-5.7c-.8-.8-.8-2,0-2.8l5.7-5.7v14.1Z"/>
+        <path className="cls-right" d="M12,4.9l5.7,5.7c.8.8.8,2,0,2.8l-5.7,5.7V4.9Z"/>
+    </svg>
 );
 
 export default keyframe;

@@ -1,149 +1,149 @@
 import { useIsMounted } from '@quantum-viewports/hooks';
 
 const {
-	element: {
-		useState,
-		useEffect,
-		useRef,
-	}
+    element: {
+        useState,
+        useEffect,
+        useRef,
+    }
 } = window[ 'wp' ];
 
 export type Size = {
-	width: number | undefined
-	height: number | undefined
+    width: number | undefined
+    height: number | undefined
 }
 
 export type UseResizeObserverOptions<T extends HTMLElement = HTMLElement> = {
-	selector: string,
-	onResize?: ( size: Size ) => void
-	box?: 'border-box' | 'content-box' | 'device-pixel-content-box'
+    selector: string,
+    onResize?: ( size: Size ) => void
+    box?: 'border-box' | 'content-box' | 'device-pixel-content-box'
 }
 
 const initialSize: Size = {
-	width: undefined,
-	height: undefined,
+    width: undefined,
+    height: undefined,
 }
 
 export function useResizeObserver<T extends HTMLElement = HTMLElement>(
-	options: UseResizeObserverOptions<T>,
+    options: UseResizeObserverOptions<T>,
 ): Size {
-	const { selector, box = 'content-box' } = options;
-	const $element = useRef<HTMLElement>( document.querySelector( selector ) );
-	const observer = useRef<ResizeObserver>( null );
+    const { selector, box = 'content-box' } = options;
+    const $element = useRef<HTMLElement>( document.querySelector( selector ) );
+    const observer = useRef<ResizeObserver>( null );
 
-	const [ { width, height }, setSize ] = useState<Size>( initialSize );
-	const [ reset, setReset ] = useState<Boolean>( false );
+    const [ { width, height }, setSize ] = useState<Size>( initialSize );
+    const [ reset, setReset ] = useState<Boolean>( false );
 
-	const isMounted = useIsMounted();
-	const previousSize = useRef<Size>( { ...initialSize } );
-	const onResize = useRef<( ( size : Size ) => void ) | undefined>( undefined );
-	onResize.current = options.onResize;
+    const isMounted = useIsMounted();
+    const previousSize = useRef<Size>( { ...initialSize } );
+    const onResize = useRef<( ( size : Size ) => void ) | undefined>( undefined );
+    onResize.current = options.onResize;
 
-	// Set useEffect to handle iframe resets.
-	useEffect( () => {
-		if( ! reset ) {
-			return;
-		}
+    // Set useEffect to handle iframe resets.
+    useEffect( () => {
+        if ( ! reset ) {
+            return;
+        }
 
-		if( null !== observer.current ) {
-			observer.current.disconnect();
-		}
+        if ( null !== observer.current ) {
+            observer.current.disconnect();
+        }
 
-		$element.current = document.querySelector( selector );
+        $element.current = document.querySelector( selector );
 
-		if( $element.current ) {
-			observer.current = getObserver();
-			observer.current.observe( $element.current, { box } )
-		}
+        if ( $element.current ) {
+            observer.current = getObserver();
+            observer.current.observe( $element.current, { box } )
+        }
 
-		setReset( false );
-	}, [ reset ] );
+        setReset( false );
+    }, [ reset ] );
 
-	// Set useEffect to handle changes on settings.
-	useEffect( () => {
-		if( typeof window === 'undefined' || ! ( 'ResizeObserver' in window ) ) {
-			return;
-		}
+    // Set useEffect to handle changes on settings.
+    useEffect( () => {
+        if ( typeof window === 'undefined' || ! ( 'ResizeObserver' in window ) ) {
+            return;
+        }
 
-		$element.current = document.querySelector( selector );
+        $element.current = document.querySelector( selector );
 
-		if( null !== observer.current ) {
-			observer.current.disconnect();
-		}
+        if ( null !== observer.current ) {
+            observer.current.disconnect();
+        }
 
-		observer.current = getObserver();
-		observer.current.observe( $element.current, { box } )
+        observer.current = getObserver();
+        observer.current.observe( $element.current, { box } )
 
-		return () => {
-			observer.current.disconnect()
-		}
+        return () => {
+            observer.current.disconnect()
+        }
 
-	}, [ box, $element, isMounted ] )
+    }, [ box, $element, isMounted ] )
 
-	// Build observer.
-	const getObserver = () => {
-		return new ResizeObserver( ( [ entry ] ) => {
-			if( ! entry[ 'target' ].isConnected ) {
-				setReset( true );
-				return;
-			}
+    // Build observer.
+    const getObserver = () => {
+        return new ResizeObserver( ( [ entry ] ) => {
+            if ( ! entry[ 'target' ].isConnected ) {
+                setReset( true );
+                return;
+            }
 
-			const boxProp =
-				box === 'border-box'
-				? 'borderBoxSize'
-				: box === 'device-pixel-content-box'
-					? 'devicePixelContentBoxSize'
-					: 'contentBoxSize'
+            const boxProp =
+                box === 'border-box'
+                ? 'borderBoxSize'
+                : box === 'device-pixel-content-box'
+                    ? 'devicePixelContentBoxSize'
+                    : 'contentBoxSize'
 
 
-			const newWidth = extractSize( entry, boxProp, 'inlineSize' );
-			const newHeight = extractSize( entry, boxProp, 'blockSize' );
+            const newWidth = extractSize( entry, boxProp, 'inlineSize' );
+            const newHeight = extractSize( entry, boxProp, 'blockSize' );
 
-			const hasChanged = previousSize.current.width !== newWidth || previousSize.current.height !== newHeight;
+            const hasChanged = previousSize.current.width !== newWidth || previousSize.current.height !== newHeight;
 
-			if( hasChanged ) {
-				const newSize: Size = { width: newWidth, height: newHeight }
+            if ( hasChanged ) {
+                const newSize: Size = { width: newWidth, height: newHeight }
 
-				previousSize.current.width = newWidth
-				previousSize.current.height = newHeight
+                previousSize.current.width = newWidth
+                previousSize.current.height = newHeight
 
-				if( onResize.current ) {
-					onResize.current( newSize )
-				} else {
-					if( isMounted() ) {
-						setSize( newSize )
-					}
-				}
-			}
-		} )
-	}
+                if ( onResize.current ) {
+                    onResize.current( newSize )
+                } else {
+                    if ( isMounted() ) {
+                        setSize( newSize )
+                    }
+                }
+            }
+        } )
+    }
 
-	return { width, height }
+    return { width, height }
 }
 
 type BoxSizesKey = keyof Pick<
-	ResizeObserverEntry,
-	'borderBoxSize' | 'contentBoxSize' | 'devicePixelContentBoxSize'
+    ResizeObserverEntry,
+    'borderBoxSize' | 'contentBoxSize' | 'devicePixelContentBoxSize'
 >
 
 function extractSize(
-	entry: ResizeObserverEntry,
-	box: BoxSizesKey,
-	sizeType: keyof ResizeObserverSize,
+    entry: ResizeObserverEntry,
+    box: BoxSizesKey,
+    sizeType: keyof ResizeObserverSize,
 ) : number | undefined {
 
-	if ( ! entry[ box ] ) {
-		if ( box === 'contentBoxSize' ) {
-			return entry.contentRect[ sizeType === 'inlineSize' ? 'width' : 'height' ]
-		}
+    if ( ! entry[ box ] ) {
+        if ( box === 'contentBoxSize' ) {
+            return entry.contentRect[ sizeType === 'inlineSize' ? 'width' : 'height' ]
+        }
 
-		return undefined
-	}
+        return undefined
+    }
 
-	return Array.isArray( entry[ box ] )
-		? entry[ box ][ 0 ][ sizeType ]
-		: // @ts-ignore Support Firefox's non-standard behavior
-		( entry[ box ][ sizeType ] as number )
+    return Array.isArray( entry[ box ] )
+        ? entry[ box ][ 0 ][ sizeType ]
+        : // @ts-ignore Support Firefox's non-standard behavior
+        ( entry[ box ][ sizeType ] as number )
 }
 
 export default useResizeObserver;

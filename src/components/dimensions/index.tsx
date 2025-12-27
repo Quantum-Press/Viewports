@@ -8,9 +8,9 @@ import Content  from './content';
  * Imports wp ressources.
  */
 const {
-	data: {
-		useSelect,
-	},
+    data: {
+        useSelect,
+    },
 } = window[ 'wp' ];
 
 
@@ -19,28 +19,28 @@ const {
  */
 export const Dimensions = () => {
 
-	// Set state dependencies.
-	const {
-		selected,
-	} = useSelect( ( select : Function ) => {
-		return {
-			selected: select( 'core/block-editor' ).getSelectedBlock(),
-		}
-	}, [] );
+    // Set state dependencies.
+    const {
+        selected,
+    } = useSelect( ( select : Function ) => {
+        return {
+            selected: select( 'core/block-editor' ).getSelectedBlock(),
+        }
+    }, [] );
 
-	// Render nothing if there is no block selected.
-	if( ! selected ) {
-		return null;
-	}
+    // Render nothing if there is no block selected.
+    if ( ! selected ) {
+        return null;
+    }
 
-	// Render component.
-	return (
-		<div className="qp-viewports-dimensions">
-			<Position block={ selected } />
-			<Margin block={ selected } />
-			<Border block={ selected } />
-			<Padding block={ selected } />
-			<Content block={ selected } />
-		</div>
-	);
+    // Render component.
+    return (
+        <div className="qp-viewports-dimensions">
+            <Position block={ selected } />
+            <Margin block={ selected } />
+            <Border block={ selected } />
+            <Padding block={ selected } />
+            <Content block={ selected } />
+        </div>
+    );
 }

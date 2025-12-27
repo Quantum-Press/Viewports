@@ -2,16 +2,16 @@ import { STORE_NAME } from '@quantum-viewports/store';
 import { Block, BlockEditProps } from '@quantum-viewports/types';
 
 const {
-	blockEditor: {
-		useStyleOverride,
-	},
-	data: {
-		select
-	},
-	element: {
-		useEffect,
-		Component
-	}
+    blockEditor: {
+        useStyleOverride,
+    },
+    data: {
+        select
+    },
+    element: {
+        useEffect,
+        Component
+    }
 } = window[ 'wp' ];
 
 /**
@@ -29,12 +29,12 @@ const {
  * @returns React.ReactNode - The rendered block preview.
  */
 export default function BlockPreview({ block, props }: { block: Block; props: BlockEditProps }): React.ReactNode {
-	const { name: blockName, clientId } = props;
-	const css = select( STORE_NAME ).getPreviewCSS( clientId, blockName, props.attributes );
+    const { name: blockName, clientId } = props;
+    const css = select( STORE_NAME ).getPreviewCSS( clientId, blockName, props.attributes );
 
-	useStyleOverride( { css } );
+    useStyleOverride( { css } );
 
-	return typeof block.edit === 'function' && block.edit.prototype instanceof Component
-		? new block.edit( props ).render()
-		: block.edit( props );
+    return typeof block.edit === 'function' && block.edit.prototype instanceof Component
+        ? new block.edit( props ).render()
+        : block.edit( props );
 }

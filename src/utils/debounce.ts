@@ -12,16 +12,16 @@
  * window.addEventListener( 'resize', debouncedFunction );
  */
 export function debounce(
-	func: Function,
-	delay: number
+    func: Function,
+    delay: number
 ): ( ... args: any[] ) => void {
-	let timeoutId: ReturnType<typeof setTimeout>;
+    let timeoutId: ReturnType<typeof setTimeout>;
 
-	return function ( ...args: any[] ): void {
-		clearTimeout( timeoutId );
+    return function ( ...args: any[] ): void {
+        clearTimeout( timeoutId );
 
-		timeoutId = setTimeout( () => {
-			func.apply( this, args );
-		}, delay );
-	};
+        timeoutId = setTimeout( () => {
+            func.apply( this, args );
+        }, delay );
+    };
 }

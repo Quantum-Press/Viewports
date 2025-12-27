@@ -1,98 +1,98 @@
 import type { State, Viewports, ViewportsConfig } from '@quantum-viewports/types';
 
 const {
-	styleEngine: {
-		compileCSS,
-	}
+    styleEngine: {
+        compileCSS,
+    }
 } = window[ 'wp' ];
 
 declare const quantumViewportsConfig: ViewportsConfig | undefined;
 
 function getViewports() : Viewports {
-	if ( typeof quantumViewportsConfig === 'undefined' ) {
-		return {
-			1920: 'VP - Desktop large',
-			1360: 'VP - Desktop small',
-			780: 'Wordpress - Tablet',
-			360: 'Wordpress - Mobile',
-			0: 'Default',
-		};
-	}
+    if ( typeof quantumViewportsConfig === 'undefined' ) {
+        return {
+            1920: 'VP - Desktop large',
+            1360: 'VP - Desktop small',
+            780: 'Wordpress - Tablet',
+            360: 'Wordpress - Mobile',
+            0: 'Default',
+        };
+    }
 
-	if( 'extended' === quantumViewportsConfig.distribution ) {
-		return {
-			3440: 'VP - Desktop xxlarge',
-			2560: 'VP - Desktop xlarge',
-			1920: 'VP - Desktop large',
-			1650: 'VP - Desktop medium',
-			1360: 'VP - Desktop small',
-			1280: 'VP - Desktop tiny',
-			1180: 'VP - Tablet xlarge',
-			1024: 'VP - Tablet large',
-			820: 'VP - Tablet medium',
-			780: 'Wordpress - Tablet',
-			768: 'VP - Tablet small',
-			540: 'VP - Tablet tiny',
-			425: 'VP - Mobile large',
-			375: 'VP - Mobile medium',
-			360: 'Wordpress - Mobile',
-			320: 'VP - Mobile small',
-			0: 'Default',
-		}
-	}
+    if ( 'extended' === quantumViewportsConfig.distribution ) {
+        return {
+            3440: 'VP - Desktop xxlarge',
+            2560: 'VP - Desktop xlarge',
+            1920: 'VP - Desktop large',
+            1650: 'VP - Desktop medium',
+            1360: 'VP - Desktop small',
+            1280: 'VP - Desktop tiny',
+            1180: 'VP - Tablet xlarge',
+            1024: 'VP - Tablet large',
+            820: 'VP - Tablet medium',
+            780: 'Wordpress - Tablet',
+            768: 'VP - Tablet small',
+            540: 'VP - Tablet tiny',
+            425: 'VP - Mobile large',
+            375: 'VP - Mobile medium',
+            360: 'Wordpress - Mobile',
+            320: 'VP - Mobile small',
+            0: 'Default',
+        }
+    }
 
-	return {
-		1920: 'VP - Desktop large',
-		1360: 'VP - Desktop small',
-		780: 'Wordpress - Tablet',
-		360: 'Wordpress - Mobile',
-		0: 'Default',
-	};
+    return {
+        1920: 'VP - Desktop large',
+        1360: 'VP - Desktop small',
+        780: 'Wordpress - Tablet',
+        360: 'Wordpress - Mobile',
+        0: 'Default',
+    };
 }
 
 
 function getDesktopViewport() : number {
-	return 1360;
+    return 1360;
 }
 
 function getTabletViewport() : number {
-	if ( typeof quantumViewportsConfig === 'undefined' ) {
-		return 780;
-	}
+    if ( typeof quantumViewportsConfig === 'undefined' ) {
+        return 780;
+    }
 
-	if( 'extended' === quantumViewportsConfig.distribution ) {
-		return 768;
-	}
+    if ( 'extended' === quantumViewportsConfig.distribution ) {
+        return 768;
+    }
 
-	return 780;
+    return 780;
 }
 
 function getMobileViewport() : number {
-	if ( typeof quantumViewportsConfig === 'undefined' ) {
-		return 360;
-	}
+    if ( typeof quantumViewportsConfig === 'undefined' ) {
+        return 360;
+    }
 
-	if( 'extended' === quantumViewportsConfig.distribution ) {
-		return 320;
-	}
+    if ( 'extended' === quantumViewportsConfig.distribution ) {
+        return 320;
+    }
 
-	return 360;
+    return 360;
 }
 
 
 function getDesktopBreakpoint() : number {
-	return 1360;
+    return 1360;
 }
 function getTabletBreakpoint() : number {
-	if ( typeof quantumViewportsConfig === 'undefined' ) {
-		return 780;
-	}
+    if ( typeof quantumViewportsConfig === 'undefined' ) {
+        return 780;
+    }
 
-	if( 'extended' === quantumViewportsConfig.distribution ) {
-		return 540;
-	}
+    if ( 'extended' === quantumViewportsConfig.distribution ) {
+        return 540;
+    }
 
-	return 780;
+    return 780;
 }
 
 /**
@@ -118,85 +118,85 @@ function getTabletBreakpoint() : number {
  * @property {object}        renderer       Object with property key based style renderer functions
  */
 export const DEFAULT_STATE = {
-	viewports: getViewports(),
-	viewport: 0,
-	iframeSize: {
-		width: 0,
-		height: 0,
-	},
-	iframeViewport: 0,
-	isRegistering: false,
-	isReady: false,
-	isActive: false,
-	isInspecting: false,
-	inspectorPosition: 'right',
-	isEditing: false,
-	isSaving: false,
-	isAutoSaving: false,
-	isLoading: false,
-	desktop: getDesktopViewport(),
-	tablet: getTabletViewport(),
-	mobile: getMobileViewport(),
-	saves: {},
-	changes: {},
-	removes: {},
-	valids: {},
-	inspect: false,
-	lastEdit: 0,
-	renderer: {
-		background: {
-			5: {
-				type: 'wp',
-				callback: compileCSS,
-				groupId: 'background',
-				panelId: '',
-				mapping: {},
-			},
-		},
-		border: {
-			5: {
-				type: 'wp',
-				callback: compileCSS,
-				groupId: 'border',
-				panelId: '',
-				mapping: {
-					'core/image': '> img',
-				},
-			},
-		},
-		dimensions: {
-			5: {
-				type: 'wp',
-				callback: compileCSS,
-				groupId: 'dimensions',
-				panelId: '',
-				mapping: {},
-			},
-		},
-		shadow: {
-			5: {
-				type: 'wp',
-				callback: compileCSS,
-				groupId: 'border',
-				panelId: '',
-				mapping: {
-					'core/image': '> img',
-				},
-			},
-		},
-		spacing: {
-			5: {
-				type: 'wp',
-				callback: compileCSS,
-				groupId: 'dimensions',
-				panelId: '',
-				mapping: {},
-			},
-		},
-	},
-	cssSet: {},
-	ruleSets: {},
-	spectrumSets: {},
+    viewports: getViewports(),
+    viewport: 0,
+    iframeSize: {
+        width: 0,
+        height: 0,
+    },
+    iframeViewport: 0,
+    isRegistering: false,
+    isReady: false,
+    isActive: false,
+    isInspecting: false,
+    inspectorPosition: 'right',
+    isEditing: false,
+    isSaving: false,
+    isAutoSaving: false,
+    isLoading: false,
+    desktop: getDesktopViewport(),
+    tablet: getTabletViewport(),
+    mobile: getMobileViewport(),
+    saves: {},
+    changes: {},
+    removes: {},
+    valids: {},
+    inspect: false,
+    lastEdit: 0,
+    renderer: {
+        background: {
+            5: {
+                type: 'wp',
+                callback: compileCSS,
+                groupId: 'background',
+                panelId: '',
+                mapping: {},
+            },
+        },
+        border: {
+            5: {
+                type: 'wp',
+                callback: compileCSS,
+                groupId: 'border',
+                panelId: '',
+                mapping: {
+                    'core/image': '> img',
+                },
+            },
+        },
+        dimensions: {
+            5: {
+                type: 'wp',
+                callback: compileCSS,
+                groupId: 'dimensions',
+                panelId: '',
+                mapping: {},
+            },
+        },
+        shadow: {
+            5: {
+                type: 'wp',
+                callback: compileCSS,
+                groupId: 'border',
+                panelId: '',
+                mapping: {
+                    'core/image': '> img',
+                },
+            },
+        },
+        spacing: {
+            5: {
+                type: 'wp',
+                callback: compileCSS,
+                groupId: 'dimensions',
+                panelId: '',
+                mapping: {},
+            },
+        },
+    },
+    cssSet: {},
+    ruleSets: {},
+    spectrumSets: {},
 
 } as State;
 

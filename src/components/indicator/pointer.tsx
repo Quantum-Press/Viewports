@@ -1,20 +1,20 @@
 import {
-	isInTabletRange,
-	isInDesktopRange,
-	getInRange
+    isInTabletRange,
+    isInDesktopRange,
+    getInRange
 } from '@quantum-viewports/store';
 
 const {
-	components: {
-		Icon,
-	},
-	element: {
-		useMemo,
-		memo,
-	},
-	i18n: {
-		__,
-	}
+    components: {
+        Icon,
+    },
+    element: {
+        useMemo,
+        memo,
+    },
+    i18n: {
+        __,
+    }
 } = window[ 'wp' ];
 
 
@@ -30,70 +30,70 @@ const {
  * @returns {JSX.Element | null}
  */
 export const Pointer = memo( ( { deviceType, isEditing, iframeViewport, hasTabletSpectrum, hasDesktopSpectrum } ) => {
-	const inRange = getInRange( deviceType );
+    const inRange = getInRange( deviceType );
 
-	// Memoize icon rendering logic based on the relevant conditions
-	const shouldRenderIcons = useMemo( () => {
+    // Memoize icon rendering logic based on the relevant conditions
+    const shouldRenderIcons = useMemo( () => {
 
-		// Editing state and viewport check
-		if( isEditing ) {
-			if( inRange( iframeViewport ) ) {
-				return {
-					showIcons: true,
-					editing: true,
-				};
-			} else {
-				return {
-					showIcons: false,
-					editing: true,
-				};
-			}
-		}
+        // Editing state and viewport check
+        if ( isEditing ) {
+            if ( inRange( iframeViewport ) ) {
+                return {
+                    showIcons: true,
+                    editing: true,
+                };
+            } else {
+                return {
+                    showIcons: false,
+                    editing: true,
+                };
+            }
+        }
 
-		// Mobile viewport logic
-		if( deviceType === 'Mobile' ) {
-			if(
-				inRange( iframeViewport ) ||
-				( isInTabletRange( iframeViewport ) && ! hasTabletSpectrum ) ||
-				( isInDesktopRange( iframeViewport ) && ! hasTabletSpectrum && ! hasDesktopSpectrum )
-			) {
-				return { showIcons: true, editing: false };
-			}
-		}
+        // Mobile viewport logic
+        if ( deviceType === 'Mobile' ) {
+            if (
+                inRange( iframeViewport ) ||
+                ( isInTabletRange( iframeViewport ) && ! hasTabletSpectrum ) ||
+                ( isInDesktopRange( iframeViewport ) && ! hasTabletSpectrum && ! hasDesktopSpectrum )
+            ) {
+                return { showIcons: true, editing: false };
+            }
+        }
 
-		// Tablet viewport logic
-		if( deviceType === 'Tablet' ) {
-			if(
-				( hasTabletSpectrum && inRange( iframeViewport ) ) ||
-				( hasTabletSpectrum && ! hasDesktopSpectrum && isInDesktopRange( iframeViewport ) )
-			) {
-				return { showIcons: true, editing: false };
-			}
-		}
+        // Tablet viewport logic
+        if ( deviceType === 'Tablet' ) {
+            if (
+                ( hasTabletSpectrum && inRange( iframeViewport ) ) ||
+                ( hasTabletSpectrum && ! hasDesktopSpectrum && isInDesktopRange( iframeViewport ) )
+            ) {
+                return { showIcons: true, editing: false };
+            }
+        }
 
-		// Desktop viewport logic
-		if( deviceType === 'Desktop' && hasDesktopSpectrum && inRange( iframeViewport ) ) {
-			return { showIcons: true, editing: false };
-		}
+        // Desktop viewport logic
+        if ( deviceType === 'Desktop' && hasDesktopSpectrum && inRange( iframeViewport ) ) {
+            return { showIcons: true, editing: false };
+        }
 
-		return { showIcons: false }; // No icons to render if none of the conditions are met
+        return { showIcons: false }; // No icons to render if none of the conditions are met
 
-	}, [ deviceType, isEditing, iframeViewport, hasTabletSpectrum, hasDesktopSpectrum ] );
+    }, [ deviceType, isEditing, iframeViewport, hasTabletSpectrum, hasDesktopSpectrum ] );
 
-	// Return null if no icons should be rendered
-	if( ! shouldRenderIcons.showIcons ) {
-		return null;
-	}
+    // Return null if no icons should be rendered
+    if ( ! shouldRenderIcons.showIcons ) {
+        return null;
+    }
 
-	// Render the icons based on the editing state
-	return (
-		<>
-			<Icon
-				icon="arrow-down"
-				className={ shouldRenderIcons.editing ? 'is-editing' : '' }
-			/>
-		</>
-	);
+    // Render the icons based on the editing state
+    return (
+        <>
+            <Icon
+                icon="arrow-down"
+                className={ shouldRenderIcons.editing ? 'is-editing' : '' }
+            />
+        </>
+    );
 } );
 
 export default Pointer;

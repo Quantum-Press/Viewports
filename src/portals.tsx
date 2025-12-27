@@ -1,16 +1,16 @@
 import {
-	InspectorPortals,
+    InspectorPortals,
 } from '@quantum-viewports/components';
 
 
 const {
-	element: {
-		createRoot,
-	}
+    element: {
+        createRoot,
+    }
 } = window[ 'wp' ];
 
 const {
-	createElement,
+    createElement,
 } = window[ 'React' ];
 
 // Set portal element base.
@@ -24,19 +24,19 @@ let portalRoot : any = false;
  */
 const portalHandler = () => {
 
-	// Set portalUI to check.
-	const portalUI = document.querySelector( '.edit-site-editor__interface-skeleton .interface-interface-skeleton__content, .edit-post-layout .interface-interface-skeleton__content, .interface-interface-skeleton__content' );
+    // Set portalUI to check.
+    const portalUI = document.querySelector( '.edit-site-editor__interface-skeleton .interface-interface-skeleton__content, .edit-post-layout .interface-interface-skeleton__content, .interface-interface-skeleton__content' );
 
-	// Set portalUI into dom to render.
-	if ( portalUI ) {
-		portalUI.before( portalWrap );
+    // Set portalUI into dom to render.
+    if ( portalUI ) {
+        portalUI.before( portalWrap );
 
-		if ( ! portalRoot ) {
-			portalRoot = createRoot( portalWrap );
-		}
+        if ( ! portalRoot ) {
+            portalRoot = createRoot( portalWrap );
+        }
 
-		portalRoot.render( createElement( Portals ) );
-	}
+        portalRoot.render( createElement( Portals ) );
+    }
 }
 
 
@@ -44,11 +44,11 @@ const portalHandler = () => {
  * Set function const to export portals component.
  */
 const Portals = () : React.JSX.Element => {
-	return (
-		<>
-			<InspectorPortals />
-		</>
-	);
+    return (
+        <>
+            <InspectorPortals />
+        </>
+    );
 }
 
 export default portalHandler;

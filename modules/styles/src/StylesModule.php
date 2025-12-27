@@ -109,7 +109,7 @@ class StylesModule implements ServiceModule, ExecutableModule
             function( array $data, array $postarr ) use ( $parser, $processor ): array
             {
                 // Ignore invalid and unsupported post_types.
-                if(
+                if (
                     in_array( $postarr[ 'post_type' ], $this->invalidPostTypes() ) ||
                     ! \use_block_editor_for_post_type( $postarr[ 'post_type' ] )
                 ) {
@@ -215,7 +215,7 @@ class StylesModule implements ServiceModule, ExecutableModule
      */
     private function registerCSS( string $hash, string $css ): void
     {
-        if( ! isset( $this->registered[ $hash ] ) ) {
+        if ( ! isset( $this->registered[ $hash ] ) ) {
             $this->registered[ $hash ] = $css;
         }
     }
@@ -230,7 +230,7 @@ class StylesModule implements ServiceModule, ExecutableModule
      */
     public function invalidPostTypes(): array
     {
-        if( null === $this->invalidPostTypes ) {
+        if ( null === $this->invalidPostTypes ) {
             $invalidPostTypes = [
                 'wp_global_styles',
                 'wp_font_family',

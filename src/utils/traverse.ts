@@ -1,8 +1,8 @@
 import { isObject } from "@quantum-viewports/utils";
 
 const {
-	get,
-	set,
+    get,
+    set,
 } = window[ 'lodash' ];
 
 
@@ -15,17 +15,17 @@ const {
  * @return {boolean}
  */
 export const traverseExist = ( path : Array<string | number>, object : object|any ) : boolean => {
-	const property = path.shift();
+    const property = path.shift();
 
-	if( object && isObject( object ) && object.hasOwnProperty( property ) ) {
-		if( path.length ) {
-			return traverseExist( path, object[ property ] );
-		}
+    if ( object && isObject( object ) && object.hasOwnProperty( property ) ) {
+        if ( path.length ) {
+            return traverseExist( path, object[ property ] );
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
 
@@ -38,17 +38,17 @@ export const traverseExist = ( path : Array<string | number>, object : object|an
  * @return {boolean}
  */
 export const traverseFilled = ( path : Array<string | number>, object : object ) : boolean => {
-	const value = traverseGet( path, object );
+    const value = traverseGet( path, object );
 
-	if( isObject( value ) && Object.keys( value ).length ) {
-		return true;
-	}
+    if ( isObject( value ) && Object.keys( value ).length ) {
+        return true;
+    }
 
-	if( Array.isArray( value ) && value.length ) {
-		return true;
-	}
+    if ( Array.isArray( value ) && value.length ) {
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
 
@@ -62,17 +62,17 @@ export const traverseFilled = ( path : Array<string | number>, object : object )
  * @return {any}
  */
 export const traverseGet = ( path : Array<string | number>, object : object, fallback : any = null ) : any => {
-	const property = path.shift();
+    const property = path.shift();
 
-	if( ! path.length && isObject( object ) && object.hasOwnProperty( property ) ) {
-		return object[ property ];
-	}
+    if ( ! path.length && isObject( object ) && object.hasOwnProperty( property ) ) {
+        return object[ property ];
+    }
 
-	if( path.length && isObject( object ) && object.hasOwnProperty( property ) ) {
-		return traverseGet( path, object[ property ], fallback );
-	}
+    if ( path.length && isObject( object ) && object.hasOwnProperty( property ) ) {
+        return traverseGet( path, object[ property ], fallback );
+    }
 
-	return fallback;
+    return fallback;
 }
 
 
@@ -86,15 +86,15 @@ export const traverseGet = ( path : Array<string | number>, object : object, fal
  * @return {object} containing the extracted properties
  */
 export const ensureObjectPath = ( obj : any, path : string ) : object => {
-	const value = {};
-	const pathTokens = path.split( '.' );
-	const ref = get( obj, pathTokens, value );
+    const value = {};
+    const pathTokens = path.split( '.' );
+    const ref = get( obj, pathTokens, value );
 
-	if( ref !== value ) {
-		return ref;
-	}
+    if ( ref !== value ) {
+        return ref;
+    }
 
-	set( obj, pathTokens, value );
+    set( obj, pathTokens, value );
 
-	return value;
+    return value;
 }

@@ -110,7 +110,7 @@ class Block {
     protected function sanitizeAttrs( array $attrs ): array
     {
         // Shift the default viewport=0 to style attribute. It can differ by viewport simulation.
-        if( isset( $attrs[ 'viewports' ][ 0 ][ 'style' ] ) ) {
+        if ( isset( $attrs[ 'viewports' ][ 0 ][ 'style' ] ) ) {
             $attrs[ 'style' ] = $attrs[ 'viewports' ][ 0 ][ 'style' ];
             unset( $attrs[ 'viewports' ][ 0 ] );
         }
@@ -129,7 +129,7 @@ class Block {
      */
     public function convertInnerBlocks( Parser $parser, Processor $processor ): void
     {
-        if( is_array( reset( $this->innerBlocks ) ) ) {
+        if ( is_array( reset( $this->innerBlocks ) ) ) {
             $this->innerBlocks = $processor->generateBlocks( $parser, $this->innerBlocks );
         }
     }
@@ -157,7 +157,7 @@ class Block {
     public function modifySave( Parser $parser, Processor $processor ): void
     {
         // Modify inline styles if there are styles.
-        if(
+        if (
             isset( $this->attrs[ 'style' ] ) &&
             ! $processor->inBlockBlacklist( $this->blockName )
         ) {
@@ -165,10 +165,10 @@ class Block {
         }
 
         // Modify innerBlocks recursive.
-        if( ! empty( $this->innerBlocks ) ) {
+        if ( ! empty( $this->innerBlocks ) ) {
             $this->convertInnerBlocks( $parser, $processor );
 
-            foreach( $this->innerBlocks as &$block ) {
+            foreach ( $this->innerBlocks as &$block ) {
                 $block->modifySave( $parser, $processor );
             }
         }
@@ -190,12 +190,12 @@ class Block {
         $this->cssRuleset->compress( $processor );
 
         $inlineStyleRules = $this->cssRuleset->inlineStyleRules();
-        if( empty( $inlineStyleRules ) ) {
+        if ( empty( $inlineStyleRules ) ) {
             $this->resetInlineStyles();
             return;
         }
 
-        foreach( $inlineStyleRules as $cssRule ) {
+        foreach ( $inlineStyleRules as $cssRule ) {
             $this->modifySaveHTML( $parser, $cssRule );
         }
     }
@@ -215,13 +215,13 @@ class Block {
         $selector = $cssRule->selector();
 
         $selectorParts = [ '%' ];
-        if( '%' !== $selector ) {
+        if ( '%' !== $selector ) {
             $selectorParts = $parser->sanitizeSelectorParts( $selector );
         }
 
         // Start processing at the outer selector.
         $modifyNestedSelector = static function( string &$html, array $selectorParts ) use ( $parser, &$cssRule, &$modifyNestedSelector ): void {
-            if( empty( $selectorParts ) ) {
+            if ( empty( $selectorParts ) ) {
                 return;
             }
 
@@ -243,7 +243,7 @@ class Block {
             $processor->next_tag();
 
             // Break out on wildcard only.
-            if( empty( $selectorParts ) && '%' === $tagName ) {
+            if ( empty( $selectorParts ) && '%' === $tagName ) {
                 $processor->set_attribute( 'style', $cssRule->compressedPropertiesCss() );
                 $html = (string) $processor;
 
@@ -251,21 +251,21 @@ class Block {
             }
 
             // Find matching elements for the current selector part
-            while( $processor->next_tag( [ $tagName ] ) ) {
+            while ( $processor->next_tag( [ $tagName ] ) ) {
 
                 // Check if tagName matches.
                 $currentTagName = strtolower( $processor->get_tag() );
-                if( $tagName !== $currentTagName ) {
+                if ( $tagName !== $currentTagName ) {
                     continue;
                 }
 
                 // Check if optional className matches.
-                if( $className && ! $processor->has_class( $className ) ) {
+                if ( $className && ! $processor->has_class( $className ) ) {
                     continue;
                 }
 
                 // Check if last selector part reached.
-                if( empty( $selectorParts ) ) {
+                if ( empty( $selectorParts ) ) {
                     $processor->set_attribute( 'style', $cssRule->compressedPropertiesCss() );
                     $html = (string) $processor;
                     continue;
@@ -280,7 +280,7 @@ class Block {
 
         $modifyNestedSelector( $this->innerHtml, $selectorParts );
 
-        if( isset( $this->innerContent[ 0 ] ) ) {
+        if ( isset( $this->innerContent[ 0 ] ) ) {
             $modifyNestedSelector( $this->innerContent[ 0 ], $selectorParts );
         }
     }
@@ -300,7 +300,7 @@ class Block {
 
         $this->innerHtml = (string) $processor;
 
-        if( isset( $this->innerContent[ 0 ] ) ) {
+        if ( isset( $this->innerContent[ 0 ] ) ) {
             $processor = new \WP_HTML_Tag_Processor( $this->innerContent[ 0 ] );
             $processor->next_tag();
             $processor->remove_attribute( 'style' );
@@ -322,10 +322,10 @@ class Block {
     {
         $innerBlocks = [];
 
-        if( ! empty( $this->innerBlocks ) ) {
+        if ( ! empty( $this->innerBlocks ) ) {
             $this->convertInnerBlocks( $parser, $processor );
 
-            foreach( $this->innerBlocks as $block ) {
+            foreach ( $this->innerBlocks as $block ) {
                 $innerBlocks[] = $block->serializedBlock( $parser, $processor );
             }
         }

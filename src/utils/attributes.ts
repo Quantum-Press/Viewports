@@ -8,7 +8,7 @@ import { BlockAttributes } from "@quantum-viewports/types";
  * @return {BlockAttributes}
  */
 export const sanitizeAttributes = ( attributes : BlockAttributes ) : BlockAttributes => {
-	return attributes.hasOwnProperty( 'style' ) ? {
-		style: attributes.style,
-	} : {};
+    return attributes.hasOwnProperty( 'style' ) ? {
+        style: attributes.style,
+    } : {};
 }

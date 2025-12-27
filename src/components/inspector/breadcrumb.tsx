@@ -1,11 +1,11 @@
 const {
-	data: {
-		dispatch,
-		useSelect,
-	},
-	i18n: {
-		__,
-	}
+    data: {
+        dispatch,
+        useSelect,
+    },
+    i18n: {
+        __,
+    }
 } = window[ 'wp' ];
 
 /**
@@ -13,30 +13,30 @@ const {
  */
 export const Breadcrumb = () => {
 
-	// Set state dependencies.
-	const {
-		selected,
-	} = useSelect( ( select : Function ) => {
-		return {
-			selected: select( 'core/block-editor' ).getSelectedBlock(),
-		}
-	}, [] );
+    // Set state dependencies.
+    const {
+        selected,
+    } = useSelect( ( select : Function ) => {
+        return {
+            selected: select( 'core/block-editor' ).getSelectedBlock(),
+        }
+    }, [] );
 
-	// Set selected ClientID.
-	const clientId = selected ? selected.clientId : null;
+    // Set selected ClientID.
+    const clientId = selected ? selected.clientId : null;
 
-	/**
-	 * Set function to fire on click root.
-	 */
-	const onClickRoot = () => {
-		dispatch( 'core/block-editor' ).selectBlock( false );
-	}
+    /**
+     * Set function to fire on click root.
+     */
+    const onClickRoot = () => {
+        dispatch( 'core/block-editor' ).selectBlock( false );
+    }
 
-	// Render component.
-	return (
-		<ul className="qp-viewports-inspector-breadcrumb">
-			<li><span onClick={ onClickRoot }>{ __( 'Blocks', 'quantum-viewports' ) }</span></li>
-			{ clientId && <li><span>{ selected.name }</span></li> }
-		</ul>
-	);
+    // Render component.
+    return (
+        <ul className="qp-viewports-inspector-breadcrumb">
+            <li><span onClick={ onClickRoot }>{ __( 'Blocks', 'quantum-viewports' ) }</span></li>
+            { clientId && <li><span>{ selected.name }</span></li> }
+        </ul>
+    );
 }

@@ -4,9 +4,9 @@ import { Selected } from './selected';
 import { ToggleEditing } from '@quantum-viewports/components';
 
 const {
-	data: {
-		useSelect,
-	},
+    data: {
+        useSelect,
+    },
 } = window[ 'wp' ];
 
 /**
@@ -14,22 +14,22 @@ const {
  */
 export const Body = () => {
 
-	// Set state dependencies.
-	const {
-		selected,
-	} = useSelect( ( select : Function ) => {
-		return {
-			selected: select( 'core/block-editor' ).getSelectedBlock(),
-		}
-	}, [] );
+    // Set state dependencies.
+    const {
+        selected,
+    } = useSelect( ( select : Function ) => {
+        return {
+            selected: select( 'core/block-editor' ).getSelectedBlock(),
+        }
+    }, [] );
 
-	// Render component.
-	return (
-		<div className="qp-viewports-inspector-body">
-			<Breadcrumb />
-			{ ! selected && ( <BlockList /> ) }
-			{ selected && ( <ToggleEditing /> ) }
-			{ selected && ( <Selected block={ selected }/> ) }
-		</div>
-	);
+    // Render component.
+    return (
+        <div className="qp-viewports-inspector-body">
+            <Breadcrumb />
+            { ! selected && ( <BlockList /> ) }
+            { selected && ( <ToggleEditing /> ) }
+            { selected && ( <Selected block={ selected }/> ) }
+        </div>
+    );
 }

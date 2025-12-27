@@ -3,9 +3,9 @@ import { debug, debugOptions } from '@quantum-viewports/utils';
 import { Block, BlockSaveProps } from '@quantum-viewports/types';
 
 const {
-	data: {
-		select,
-	},
+    data: {
+        select,
+    },
 } = window[ 'wp' ];
 
 /**
@@ -13,29 +13,29 @@ const {
  */
 export const BlockSave = ( { block, props } : { block: Block, props: BlockSaveProps } ) => {
 
-	// Cleanup attributes.viewports if empty.
-	if( props.attributes.hasOwnProperty( 'viewports' ) && props.attributes.viewports && 0 === Object.keys( props.attributes.viewports ).length ) {
-		delete props.attributes.viewports;
-	}
+    // Cleanup attributes.viewports if empty.
+    if ( props.attributes.hasOwnProperty( 'viewports' ) && props.attributes.viewports && 0 === Object.keys( props.attributes.viewports ).length ) {
+        delete props.attributes.viewports;
+    }
 
-	// Debug saved attributes on enabled debug.
-	if( debugOptions.enabled && props.attributes.viewports && Object.keys( props.attributes.viewports ).length ) {
-		const isSaving = select( STORE_NAME ).isSaving();
-		if( isSaving ) {
-			debug(
-				'log',
-				'save',
-				block.name + ' block with viewports',
-				{
-					style: props.attributes.style,
-					viewports: props.attributes.viewports,
-				}
-			);
-		}
-	}
+    // Debug saved attributes on enabled debug.
+    if ( debugOptions.enabled && props.attributes.viewports && Object.keys( props.attributes.viewports ).length ) {
+        const isSaving = select( STORE_NAME ).isSaving();
+        if ( isSaving ) {
+            debug(
+                'log',
+                'save',
+                block.name + ' block with viewports',
+                {
+                    style: props.attributes.style,
+                    viewports: props.attributes.viewports,
+                }
+            );
+        }
+    }
 
-	// Return the result of inherited save component.
-	return block.save( props );
+    // Return the result of inherited save component.
+    return block.save( props );
 }
 
 export default BlockSave;

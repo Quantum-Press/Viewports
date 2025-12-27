@@ -3,10 +3,10 @@ import { SpectrumSet } from '../../../types';
 import { Attribute } from './attribute';
 
 const {
-	data: {
-		select,
-		useSelect,
-	},
+    data: {
+        select,
+        useSelect,
+    },
 } = window[ 'wp' ];
 
 /**
@@ -17,33 +17,33 @@ const {
  */
 export const AttributeList = ( { storeId, spectrumSet } : { storeId : string, spectrumSet : SpectrumSet } ) => {
 
-	// Set store dependencies.
-	const {
-		iframeViewport,
-	} = useSelect( ( select : Function ) => {
-		const store = select( STORE_NAME );
+    // Set store dependencies.
+    const {
+        iframeViewport,
+    } = useSelect( ( select : Function ) => {
+        const store = select( STORE_NAME );
 
-		return {
-			valids: store.getBlockValids( storeId ),
-			removes: store.getBlockRemoves( storeId ),
-			iframeViewport: store.getIframeViewport(),
-		};
-	}, [] );
+        return {
+            valids: store.getBlockValids( storeId ),
+            removes: store.getBlockRemoves( storeId ),
+            iframeViewport: store.getIframeViewport(),
+        };
+    }, [] );
 
-	// Render component.
-	return (
-		<div className="qp-viewports-inspector-attributelist">
-			{ spectrumSet.map( spectrum => {
-				return (
-					<Attribute
-						clientId={ storeId }
-						spectrum={ spectrum }
-						viewport={ iframeViewport }
-					/>
-				);
-			} ) }
-		</div>
-	);
+    // Render component.
+    return (
+        <div className="qp-viewports-inspector-attributelist">
+            { spectrumSet.map( spectrum => {
+                return (
+                    <Attribute
+                        clientId={ storeId }
+                        spectrum={ spectrum }
+                        viewport={ iframeViewport }
+                    />
+                );
+            } ) }
+        </div>
+    );
 }
 
 
@@ -54,27 +54,27 @@ export const AttributeList = ( { storeId, spectrumSet } : { storeId : string, sp
  */
 export const BlockAttributeList = () => {
 
-	// Set store dependencies.
-	const {
-		selected,
-	} = useSelect( ( select : Function ) => {
-		return {
-			selected: select( 'core/block-editor' ).getSelectedBlock(),
-		};
-	}, [] );
+    // Set store dependencies.
+    const {
+        selected,
+    } = useSelect( ( select : Function ) => {
+        return {
+            selected: select( 'core/block-editor' ).getSelectedBlock(),
+        };
+    }, [] );
 
-	// Deconstruct block
-	const {
-		clientId,
-	} = selected;
+    // Deconstruct block
+    const {
+        clientId,
+    } = selected;
 
-	// Set spectrumSet.
-	const spectrumSet = select( STORE_NAME ).getSpectrumSet( clientId ) as SpectrumSet;
+    // Set spectrumSet.
+    const spectrumSet = select( STORE_NAME ).getSpectrumSet( clientId ) as SpectrumSet;
 
-	return (
-		<AttributeList
-			storeId={ clientId }
-			spectrumSet={ spectrumSet }
-		/>
-	)
+    return (
+        <AttributeList
+            storeId={ clientId }
+            spectrumSet={ spectrumSet }
+        />
+    )
 }

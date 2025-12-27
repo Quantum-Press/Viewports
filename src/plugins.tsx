@@ -1,26 +1,26 @@
 import {
-	KeyframesToggle,
-	BlockStyles,
+    KeyframesToggle,
+    BlockStyles,
 } from '@quantum-viewports/components';
 import { DeviceTypeProvider } from '@quantum-viewports/hooks';
 
 const {
-	plugins: {
-		registerPlugin,
-	},
+    plugins: {
+        registerPlugin,
+    },
 } = window[ 'wp' ];
 
 /**
  * Register preview dropdown extension.
  */
 registerPlugin( 'quantum-viewports-device-type', {
-	render: DeviceTypeProvider,
+    render: DeviceTypeProvider,
 } );
 
 registerPlugin( 'quantum-viewports-keyframes-toggle', {
-	render: KeyframesToggle,
+    render: KeyframesToggle,
 } );
 
 registerPlugin( 'quantum-viewports-block-styles', {
-	render: BlockStyles,
+    render: BlockStyles,
 } );

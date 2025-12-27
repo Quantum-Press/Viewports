@@ -101,19 +101,19 @@ class CSSRuleSet {
 
         $inlineRules = [];
 
-        if( empty( $selectors ) ) {
+        if ( empty( $selectors ) ) {
             $selectors = [ '%' ];
         }
 
-        foreach( $selectors as $selector ) {
+        foreach ( $selectors as $selector ) {
             $parsed = $parser->parseInlineStyles( $processor, $this->blockHtml, $selector );
 
-            if( false !== $parsed ) {
+            if ( false !== $parsed ) {
                 $inlineRules[ $selector ] = $parsed;
             }
         }
 
-        if( ! empty( $inlineRules ) && ! empty( $attributeRules ) ) {
+        if ( ! empty( $inlineRules ) && ! empty( $attributeRules ) ) {
             $this->cleanParsed( $inlineRules, $attributeRules );
         }
 
@@ -130,27 +130,27 @@ class CSSRuleSet {
      */
     private function cleanParsed( array &$inlineRules, array &$attributeRules ): void
     {
-        foreach( $inlineRules as $inlineRule ) {
-            foreach( $inlineRule->properties() as $inlineProperty => $value ) {
+        foreach ( $inlineRules as $inlineRule ) {
+            foreach ( $inlineRule->properties() as $inlineProperty => $value ) {
                 $found = false;
 
-                foreach( $attributeRules as $attributeRule ) {
-                    foreach( $attributeRule->properties() as $attributeProperty => $value ) {
+                foreach ( $attributeRules as $attributeRule ) {
+                    foreach ( $attributeRule->properties() as $attributeProperty => $value ) {
 
                         // Check if the inline property will be controlled by attributes.
-                        if( $inlineProperty == $attributeProperty && $inlineRule->selector() === $attributeRule->selector() ) {
+                        if ( $inlineProperty == $attributeProperty && $inlineRule->selector() === $attributeRule->selector() ) {
                             $found = true;
                             break;
                         }
                     }
 
-                    if( $found ) {
+                    if ( $found ) {
                         break;
                     }
                 }
 
                 // Check if inline property occurs in attributes to remove it from inline properties.
-                if( $found ) {
+                if ( $found ) {
                     $inlineRule->removeCSSProperty( $inlineProperty );
                 }
             }
@@ -198,16 +198,16 @@ class CSSRuleSet {
      */
     public function compressedCss(): array
     {
-        if( empty( $this->compressedRules ) ) {
+        if ( empty( $this->compressedRules ) ) {
             return [];
         }
 
         $css = [];
 
-        foreach( $this->compressedRules as $cssRule ) {
+        foreach ( $this->compressedRules as $cssRule ) {
             $cssString = $cssRule->css();
 
-            if( ! empty( $cssString ) ) {
+            if ( ! empty( $cssString ) ) {
                 $css[] = $cssString;
             }
         }
@@ -225,16 +225,16 @@ class CSSRuleSet {
      */
     public function selectorsFromRules( array $cssRules ): array
     {
-        if( empty( $cssRules ) ) {
+        if ( empty( $cssRules ) ) {
             return [ '%' ];
         }
 
         $selectors = [ '%' ];
 
-        foreach( $cssRules as $cssRule ) {
+        foreach ( $cssRules as $cssRule ) {
             $selector = $cssRule->selector();
 
-            if( ! in_array( $selector, $selectors ) ) {
+            if ( ! in_array( $selector, $selectors ) ) {
                 $selectors[] = $selector;
             }
         }
@@ -264,7 +264,7 @@ class CSSRuleSet {
      */
     public function blockHtml( string $className = '' ): string
     {
-        if( empty( $className ) ) {
+        if ( empty( $className ) ) {
             return $this->blockHtml;
         }
 
@@ -288,7 +288,7 @@ class CSSRuleSet {
     {
         $css = '';
 
-        foreach( $this->compressedRules as $cssRule ) {
+        foreach ( $this->compressedRules as $cssRule ) {
             $css .= $cssRule->css( $selector );
         }
 
@@ -305,23 +305,23 @@ class CSSRuleSet {
     {
         $cssRules = [];
 
-        foreach( $this->inlineRules() as $cssRule ) {
+        foreach ( $this->inlineRules() as $cssRule ) {
             $cssRules[] = $cssRule;
         }
 
-        foreach( $this->attributeRules() as $cssRule ) {
-            if( $cssRule->isInlineStyle() ) {
+        foreach ( $this->attributeRules() as $cssRule ) {
+            if ( $cssRule->isInlineStyle() ) {
                 $found = false;
 
-                foreach( $cssRules as &$checkRule ) {
-                    if( $checkRule->slug() === $cssRule->slug() ) {
+                foreach ( $cssRules as &$checkRule ) {
+                    if ( $checkRule->slug() === $cssRule->slug() ) {
                         $checkRule->addCSSProperties( $cssRule->properties(), true );
                         $found = true;
                         break;
                     }
                 }
 
-                if( ! $found ) {
+                if ( ! $found ) {
                     $cssRules[] = $cssRule;
                 }
             }
@@ -338,18 +338,18 @@ class CSSRuleSet {
      */
     public function cleanupAttributeRules( array $ignoreProperties = [] ): void
     {
-        foreach( $this->attributeRules as $index => $cssRule ) {
+        foreach ( $this->attributeRules as $index => $cssRule ) {
             $property = $cssRule->property();
 
-            if( isset( $ignoreProperties[ $property ] ) ) {
+            if ( isset( $ignoreProperties[ $property ] ) ) {
                 $ignoreCss = $ignoreProperties[ $property ];
 
-                if( is_array( $ignoreCss ) ) {
-                    foreach( $ignoreCss as $cssProperty ) {
+                if ( is_array( $ignoreCss ) ) {
+                    foreach ( $ignoreCss as $cssProperty ) {
                         $cssRule->removeCSSProperty( $cssProperty );
                     }
 
-                    if( empty( $cssRule->properties() ) ) {
+                    if ( empty( $cssRule->properties() ) ) {
                         unset( $this->attributeRules[ $index ] );
                     }
 
@@ -367,18 +367,18 @@ class CSSRuleSet {
      */
     public function cleanupInlineRules(): void
     {
-        foreach( $this->inlineRules as &$inlineRule ) {
-            foreach( $inlineRule->properties() as $property => $value ) {
+        foreach ( $this->inlineRules as &$inlineRule ) {
+            foreach ( $inlineRule->properties() as $property => $value ) {
 
-                foreach( $this->attributeRules as $attributeRule ) {
-                    if(
+                foreach ( $this->attributeRules as $attributeRule ) {
+                    if (
                         0 !== $attributeRule->minWidth() ||
                         'screen' !== $attributeRule->media()
                     ) {
                         continue;
                     }
 
-                    if( array_key_exists( $property, $attributeRule->properties() ) ) {
+                    if ( array_key_exists( $property, $attributeRule->properties() ) ) {
                         $inlineRule->removeCSSProperty( $property );
                     }
                 }
@@ -395,8 +395,8 @@ class CSSRuleSet {
     public function compress( Processor $processor ): void
     {
         // Cleanup empty cssRules from inlineRules.
-        foreach( $this->inlineRules() as $index => $cssRule ) {
-            if( empty( $cssRule->properties() ) && '%' !== $cssRule->selector() ) {
+        foreach ( $this->inlineRules() as $index => $cssRule ) {
+            if ( empty( $cssRule->properties() ) && '%' !== $cssRule->selector() ) {
                 unset( $this->inlineRules[ $index ] );
             }
         }
@@ -404,15 +404,15 @@ class CSSRuleSet {
         $compressed = [];
 
         // Compress attributeRules by selector and mediaQuery.
-        foreach( $this->attributeRules() as $index => $cssRule ) {
-            if( empty( $cssRule->properties() ) ) {
+        foreach ( $this->attributeRules() as $index => $cssRule ) {
+            if ( empty( $cssRule->properties() ) ) {
                 unset( $this->attributeRules[ $index ] );
                 continue;
             }
 
             $ruleSlug = $cssRule->slug();
 
-            if( ! isset( $compressed[ $ruleSlug ] ) ) {
+            if ( ! isset( $compressed[ $ruleSlug ] ) ) {
                 $compressed[ $ruleSlug ] = $processor->generateCSSRule(
                     $cssRule->source(),
                     'compressed',

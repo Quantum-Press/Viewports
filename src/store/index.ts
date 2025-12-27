@@ -5,15 +5,15 @@ import * as actions from './actions';
 import { STORE_NAME } from './constants';
 
 const {
-	reducer,
-	addReducer
+    reducer,
+    addReducer
 } = reducerManager;
 
 const {
-	data: {
-		createReduxStore,
-		register,
-	}
+    data: {
+        createReduxStore,
+        register,
+    }
 } = window[ 'wp' ];
 
 
@@ -29,9 +29,9 @@ Object.assign( ensureObjectPath( window, 'qp.viewports.addReducer' ), addReducer
  * @see https://github.com/WordPress/gutenberg/blob/HEAD/packages/data/README.md#registerStore
  */
 export const storeConfig = {
-	reducer,
-	selectors,
-	actions,
+    reducer,
+    selectors,
+    actions,
 };
 
 
@@ -41,7 +41,7 @@ export const storeConfig = {
  * @see https://github.com/WordPress/gutenberg/blob/HEAD/packages/data/README.md#createReduxStore
  */
 export const store = createReduxStore( STORE_NAME, {
-	... storeConfig,
+    ... storeConfig,
 } );
 
 

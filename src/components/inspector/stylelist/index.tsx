@@ -3,16 +3,16 @@ import { SpectrumSet } from '@quantum-viewports/types';
 import Style from './style';
 
 const {
-	components: {
-		Icon,
-	},
-	data: {
-		select,
-		useSelect,
-	},
-	i18n: {
-		__,
-	}
+    components: {
+        Icon,
+    },
+    data: {
+        select,
+        useSelect,
+    },
+    i18n: {
+        __,
+    }
 } = window[ 'wp' ];
 
 /**
@@ -23,44 +23,44 @@ const {
  */
 export const StyleList = ( { storeId, spectrumSet } : { storeId : string, spectrumSet : SpectrumSet } ) => {
 
-	// Set store dependencies.
-	const {
-		iframeViewport,
-		hasBlockChanges,
-		hasBlockRemoves,
-	} = useSelect( ( select : Function ) => {
-		const store = select( STORE_NAME );
+    // Set store dependencies.
+    const {
+        iframeViewport,
+        hasBlockChanges,
+        hasBlockRemoves,
+    } = useSelect( ( select : Function ) => {
+        const store = select( STORE_NAME );
 
-		return {
-			valids: store.getBlockValids( storeId ),
-			removes: store.getBlockRemoves( storeId ),
-			iframeViewport: store.getIframeViewport(),
-			hasBlockChanges: store.hasBlockChanges( storeId ),
-			hasBlockRemoves: store.hasBlockRemoves( storeId ),
-		};
-	}, [] );
+        return {
+            valids: store.getBlockValids( storeId ),
+            removes: store.getBlockRemoves( storeId ),
+            iframeViewport: store.getIframeViewport(),
+            hasBlockChanges: store.hasBlockChanges( storeId ),
+            hasBlockRemoves: store.hasBlockRemoves( storeId ),
+        };
+    }, [] );
 
-	// Render component.
-	return (
-		<div className="qp-viewports-inspector-stylelist">
-			{ spectrumSet.map( spectrum => {
-				return (
-					<Style
-						clientId={ storeId }
-						spectrum={ spectrum }
-						viewport={ iframeViewport }
-					/>
-				);
-			} ) }
+    // Render component.
+    return (
+        <div className="qp-viewports-inspector-stylelist">
+            { spectrumSet.map( spectrum => {
+                return (
+                    <Style
+                        clientId={ storeId }
+                        spectrum={ spectrum }
+                        viewport={ iframeViewport }
+                    />
+                );
+            } ) }
 
-			{ ( hasBlockChanges || hasBlockRemoves ) &&
-				<div className="qp-viewports-stylelist-notice">
-					<Icon icon="info" />
-					{ __( 'Changes and Removes will apply on save', 'quantum-viewports' ) }
-				</div>
-			}
-		</div>
-	);
+            { ( hasBlockChanges || hasBlockRemoves ) &&
+                <div className="qp-viewports-stylelist-notice">
+                    <Icon icon="info" />
+                    { __( 'Changes and Removes will apply on save', 'quantum-viewports' ) }
+                </div>
+            }
+        </div>
+    );
 }
 
 
@@ -71,27 +71,27 @@ export const StyleList = ( { storeId, spectrumSet } : { storeId : string, spectr
  */
 export const BlockStyleList = () => {
 
-	// Set store dependencies.
-	const {
-		selected,
-	} = useSelect( ( select : Function ) => {
-		return {
-			selected: select( 'core/block-editor' ).getSelectedBlock(),
-		};
-	}, [] );
+    // Set store dependencies.
+    const {
+        selected,
+    } = useSelect( ( select : Function ) => {
+        return {
+            selected: select( 'core/block-editor' ).getSelectedBlock(),
+        };
+    }, [] );
 
-	// Deconstruct block
-	const {
-		clientId,
-	} = selected;
+    // Deconstruct block
+    const {
+        clientId,
+    } = selected;
 
-	// Set spectrumSet.
-	const spectrumSet = select( STORE_NAME ).getSpectrumSet( clientId ) as SpectrumSet;
+    // Set spectrumSet.
+    const spectrumSet = select( STORE_NAME ).getSpectrumSet( clientId ) as SpectrumSet;
 
-	return (
-		<StyleList
-			storeId={ clientId }
-			spectrumSet={ spectrumSet }
-		/>
-	)
+    return (
+        <StyleList
+            storeId={ clientId }
+            spectrumSet={ spectrumSet }
+        />
+    )
 }

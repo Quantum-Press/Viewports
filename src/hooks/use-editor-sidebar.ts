@@ -1,11 +1,11 @@
 const {
-	data: {
-		useSelect,
-	},
-	element: {
-		useEffect,
-		useState,
-	}
+    data: {
+        useSelect,
+    },
+    element: {
+        useEffect,
+        useState,
+    }
 } = window[ 'wp' ];
 
 /**
@@ -13,95 +13,95 @@ const {
  */
 export function useEditorSidebar() {
 
-	// Set initial state.
-	const [ tab, setTab ] = useState( false );
+    // Set initial state.
+    const [ tab, setTab ] = useState( false );
 
-	// Set useSelect dependencies.
-	const {
-		selected,
-	} = useSelect( ( select ) => {
-		return {
-			selected: select( 'core/block-editor' ).getSelectedBlock(),
-		}
-	}, [] );
-
-
-	// Set selectors.
-	const selectorTabSettings = '[id^="tabs-"][id$="-settings"]';
-	const selectorTabStyles = '[id^="tabs-"][id$="-styles"]';
+    // Set useSelect dependencies.
+    const {
+        selected,
+    } = useSelect( ( select ) => {
+        return {
+            selected: select( 'core/block-editor' ).getSelectedBlock(),
+        }
+    }, [] );
 
 
-	// Set dependencies to wp store.
-	const {
-		isEditorSidebarOpened,
-	} = useSelect( select => {
-		return {
-			isEditorSidebarOpened: select( 'core/edit-post').isEditorSidebarOpened(),
-		};
-	} );
+    // Set selectors.
+    const selectorTabSettings = '[id^="tabs-"][id$="-settings"]';
+    const selectorTabStyles = '[id^="tabs-"][id$="-styles"]';
 
 
-	/**
-	 * Set function to return active tab name.
-	 */
-	const getActiveTab = () => {
-		if( document.querySelectorAll( selectorTabSettings + '[data-active-item]' ).length ) {
-			return 'settings';
-		}
-
-		if( document.querySelectorAll( selectorTabStyles + '[data-active-item]' ).length ) {
-			return 'styles';
-		}
-
-		return false;
-	}
+    // Set dependencies to wp store.
+    const {
+        isEditorSidebarOpened,
+    } = useSelect( select => {
+        return {
+            isEditorSidebarOpened: select( 'core/edit-post').isEditorSidebarOpened(),
+        };
+    } );
 
 
-	// Set useEffect to handle sidebar opening state.
-	useEffect( () => {
-		if( ! isEditorSidebarOpened ) {
-			setTab( false );
-		} else {
-			setTab( getActiveTab() );
-		}
+    /**
+     * Set function to return active tab name.
+     */
+    const getActiveTab = () => {
+        if ( document.querySelectorAll( selectorTabSettings + '[data-active-item]' ).length ) {
+            return 'settings';
+        }
 
-		return () => {
-			setTab( false );
-		}
+        if ( document.querySelectorAll( selectorTabStyles + '[data-active-item]' ).length ) {
+            return 'styles';
+        }
 
-	}, [ isEditorSidebarOpened, selected ] );
-
-
-	/**
-	 * Set function to handle event register.
-	 */
-	const setEvents = () => {
-		const settings = document.querySelector( selectorTabSettings );
-		const styles = document.querySelector( selectorTabStyles );
-
-		if( settings ) {
-			settings.addEventListener( 'click', handleTabClick );
-		}
-
-		if( styles ) {
-			styles.addEventListener( 'click', handleTabClick );
-		}
-	}
+        return false;
+    }
 
 
-	/**
-	 * Set function to handle click.
-	 */
-	const handleTabClick = () => {
-		setTab( getActiveTab() );
-	}
+    // Set useEffect to handle sidebar opening state.
+    useEffect( () => {
+        if ( ! isEditorSidebarOpened ) {
+            setTab( false );
+        } else {
+            setTab( getActiveTab() );
+        }
+
+        return () => {
+            setTab( false );
+        }
+
+    }, [ isEditorSidebarOpened, selected ] );
 
 
-	setEvents();
+    /**
+     * Set function to handle event register.
+     */
+    const setEvents = () => {
+        const settings = document.querySelector( selectorTabSettings );
+        const styles = document.querySelector( selectorTabStyles );
+
+        if ( settings ) {
+            settings.addEventListener( 'click', handleTabClick );
+        }
+
+        if ( styles ) {
+            styles.addEventListener( 'click', handleTabClick );
+        }
+    }
 
 
-	// Return state and setter.
-	return [ tab, setTab ];
+    /**
+     * Set function to handle click.
+     */
+    const handleTabClick = () => {
+        setTab( getActiveTab() );
+    }
+
+
+    setEvents();
+
+
+    // Return state and setter.
+    return [ tab, setTab ];
 };
 
 export default useEditorSidebar;

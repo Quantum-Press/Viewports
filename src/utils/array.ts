@@ -1,8 +1,8 @@
 import { isObject, cleanupObject } from "@quantum-viewports/utils";
 
 const {
-	isUndefined,
-	isNull
+    isUndefined,
+    isNull
 } = window[ 'lodash' ];
 
 
@@ -14,21 +14,21 @@ const {
  * @return {T}
  */
 export const cleanupArray = <T extends Array<any>>( arr : T ) : T => {
-	for( let i = 0; i < arr.length; i++ ) {
-		const value = arr[ i ];
+    for ( let i = 0; i < arr.length; i++ ) {
+        const value = arr[ i ];
 
-		if( isNull( value ) || isUndefined( value ) ) {
-			continue;
-		}
+        if ( isNull( value ) || isUndefined( value ) ) {
+            continue;
+        }
 
-		if( isObject( value ) ) {
-			arr[ i ] = cleanupObject( value );
-		} else if( Array.isArray( value ) ) {
-			arr[ i ] = cleanupArray( value );
-		} else {
-			arr[ i ] = value;
-		}
-	}
+        if ( isObject( value ) ) {
+            arr[ i ] = cleanupObject( value );
+        } else if ( Array.isArray( value ) ) {
+            arr[ i ] = cleanupArray( value );
+        } else {
+            arr[ i ] = value;
+        }
+    }
 
-	return arr;
+    return arr;
 }

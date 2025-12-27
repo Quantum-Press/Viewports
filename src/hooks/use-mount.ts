@@ -1,8 +1,8 @@
 const {
-	element: {
-		useEffect,
-		useRef,
-	},
+    element: {
+        useEffect,
+        useRef,
+    },
 } = window[ 'wp' ];
 
 
@@ -30,23 +30,23 @@ const {
  * } );
  */
 export function useMount(
-	effect: () => void | ( () => void )
+    effect: () => void | ( () => void )
 ): void {
-	const hasMountedRef = useRef( false );
+    const hasMountedRef = useRef( false );
 
-	useEffect( () => {
-		if( hasMountedRef.current ) return;
+    useEffect( () => {
+        if ( hasMountedRef.current ) return;
 
-		hasMountedRef.current = true;
+        hasMountedRef.current = true;
 
-		const cleanup = effect();
+        const cleanup = effect();
 
-		return () => {
-			if( typeof cleanup === 'function' ) {
-				cleanup();
-			}
-		};
-	}, [] );
+        return () => {
+            if ( typeof cleanup === 'function' ) {
+                cleanup();
+            }
+        };
+    }, [] );
 }
 
 export default useMount;

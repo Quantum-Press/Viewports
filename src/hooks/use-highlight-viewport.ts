@@ -2,10 +2,10 @@ import { openSidebar, openStylesTab } from '@quantum-viewports/utils';
 import { useHighlight } from '@quantum-viewports/hooks';
 
 const {
-	element: {
-		useEffect,
-		useState,
-	}
+    element: {
+        useEffect,
+        useState,
+    }
 } = window[ 'wp' ];
 
 
@@ -14,34 +14,34 @@ const {
  */
 export function useHighlightViewport() {
 
-	// Set initial state.
-	const [ viewport, setViewport ] = useState( false );
+    // Set initial state.
+    const [ viewport, setViewport ] = useState( false );
 
-	// Set highlight state.
-	const [ highlight, setHighlight ] = useHighlight();
+    // Set highlight state.
+    const [ highlight, setHighlight ] = useHighlight();
 
-	// Set useEffect to handle $element changes.
-	useEffect( () => {
-		if( ! viewport ) {
-			return;
-		}
+    // Set useEffect to handle $element changes.
+    useEffect( () => {
+        if ( ! viewport ) {
+            return;
+        }
 
-		// Open sidebar first.
-		openSidebar();
+        // Open sidebar first.
+        openSidebar();
 
-		// Open styles or general tab.
-		openStylesTab();
+        // Open styles or general tab.
+        openStylesTab();
 
-		// Set selector.
-		const selector = '.dimensions-block-support-panel';
+        // Set selector.
+        const selector = '.dimensions-block-support-panel';
 
-		// Set element to highlight.
-		setHighlight( selector );
-		setViewport( false );
-	}, [ viewport ] );
+        // Set element to highlight.
+        setHighlight( selector );
+        setViewport( false );
+    }, [ viewport ] );
 
-	// Return setter.
-	return [ viewport, setViewport ];
+    // Return setter.
+    return [ viewport, setViewport ];
 };
 
 export default useHighlightViewport;

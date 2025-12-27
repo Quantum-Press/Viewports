@@ -1,8 +1,8 @@
 const {
-	element: {
-		useEffect,
-		useState,
-	},
+    element: {
+        useEffect,
+        useState,
+    },
 } = window[ 'wp' ];
 
 
@@ -24,47 +24,47 @@ const {
  * console.log( currentURL );
  */
 export function useUrlListener(): string {
-	const [ currentURL, setCurrentURL ] = useState( window.location.href );
+    const [ currentURL, setCurrentURL ] = useState( window.location.href );
 
-	useEffect( () => {
-		/**
-		 * Updates the state with the current location.
-		 */
-		const handleURLChange = (): void => {
-			setCurrentURL( window.location.href );
-		};
+    useEffect( () => {
+        /**
+         * Updates the state with the current location.
+         */
+        const handleURLChange = (): void => {
+            setCurrentURL( window.location.href );
+        };
 
-		/**
-		 * Monkey-patches a History API method to emit a custom 'locationchange' event.
-		 *
-		 * This allows the hook to detect navigation events triggered via
-		 * `pushState` or `replaceState`, which do not emit native events.
-		 *
-		 * @param { 'pushState' | 'replaceState' } method - The history method to patch.
-		 */
-		const patchHistoryMethod = (
-			method: 'pushState' | 'replaceState'
-		): void => {
-			const original = history[ method ];
+        /**
+         * Monkey-patches a History API method to emit a custom 'locationchange' event.
+         *
+         * This allows the hook to detect navigation events triggered via
+         * `pushState` or `replaceState`, which do not emit native events.
+         *
+         * @param { 'pushState' | 'replaceState' } method - The history method to patch.
+         */
+        const patchHistoryMethod = (
+            method: 'pushState' | 'replaceState'
+        ): void => {
+            const original = history[ method ];
 
-			history[ method ] = function ( ...args: any[] ): any {
-				const result = original.apply( this, args );
-				window.dispatchEvent( new Event( 'locationchange' ) );
-				return result;
-			};
-		};
+            history[ method ] = function ( ...args: any[] ): any {
+                const result = original.apply( this, args );
+                window.dispatchEvent( new Event( 'locationchange' ) );
+                return result;
+            };
+        };
 
-		patchHistoryMethod( 'pushState' );
-		patchHistoryMethod( 'replaceState' );
+        patchHistoryMethod( 'pushState' );
+        patchHistoryMethod( 'replaceState' );
 
-		window.addEventListener( 'popstate', handleURLChange );
-		window.addEventListener( 'locationchange', handleURLChange );
+        window.addEventListener( 'popstate', handleURLChange );
+        window.addEventListener( 'locationchange', handleURLChange );
 
-		return () => {
-			window.removeEventListener( 'popstate', handleURLChange );
-			window.removeEventListener( 'locationchange', handleURLChange );
-		};
-	}, [] );
+        return () => {
+            window.removeEventListener( 'popstate', handleURLChange );
+            window.removeEventListener( 'locationchange', handleURLChange );
+        };
+    }, [] );
 
-	return currentURL;
+    return currentURL;
 }

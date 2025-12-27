@@ -2,246 +2,246 @@ import { StyleFill } from '@quantum-viewports/components';
 import { useMount } from '@quantum-viewports/hooks';
 import { STORE_NAME } from '@quantum-viewports/store';
 import {
-	Block,
-	BlockEditProps,
+    Block,
+    BlockEditProps,
 } from '@quantum-viewports/types';
 import {
-	debounce,
-	debug
+    debounce,
+    debug
 } from '@quantum-viewports/utils';
 import { Indicators } from './indicators';
 
 const {
-	data: {
-		useDispatch,
-		useSelect,
-		select,
-	},
-	element: {
-		useCallback,
-		useEffect,
-		useLayoutEffect,
-		useRef,
-		useState,
-		Component
-	}
+    data: {
+        useDispatch,
+        useSelect,
+        select,
+    },
+    element: {
+        useCallback,
+        useEffect,
+        useLayoutEffect,
+        useRef,
+        useState,
+        Component
+    }
 } = window[ 'wp' ];
 
 const {
-	cloneDeep,
+    cloneDeep,
 } = window[ 'lodash' ];
 
 /**
  * Export functional BlockEdit component to handle block changes.
  */
 export default function BlockEdit( { block, props } : { block: Block, props: BlockEditProps } ) {
-	const {
-		name: blockName,
-		setAttributes,
-		clientId,
-		isSelected,
-	} : {
-		name: string,
-		setAttributes: ( attrs: Record<string, any> ) => void,
-		clientId: string,
-		isSelected: boolean,
-	} = props;
-	const attributes = props.attributes;
+    const {
+        name: blockName,
+        setAttributes,
+        clientId,
+        isSelected,
+    } : {
+        name: string,
+        setAttributes: ( attrs: Record<string, any> ) => void,
+        clientId: string,
+        isSelected: boolean,
+    } = props;
+    const attributes = props.attributes;
 
-	// Set store dispatcher.
-	const useDispatcher = useDispatch( STORE_NAME );
-	const selector = select( STORE_NAME );
+    // Set store dispatcher.
+    const useDispatcher = useDispatch( STORE_NAME );
+    const selector = select( STORE_NAME );
 
-	// Set datastore state dependencies.
-	const {
-		isSaving,
-		iframeViewport,
-		lastEdit,
-	} = useSelect( ( select : Function ) => {
-		const store = select( STORE_NAME );
+    // Set datastore state dependencies.
+    const {
+        isSaving,
+        iframeViewport,
+        lastEdit,
+    } = useSelect( ( select : Function ) => {
+        const store = select( STORE_NAME );
 
-		return {
-			isSaving: store.isSaving(),
-			isActive: store.isActive(),
-			isEditing: store.isEditing(),
-			isLoading: store.isLoading(),
-			viewport: store.getViewport(),
-			iframeViewport: store.getIframeViewport(),
-			lastEdit: store.getLastEdit(),
-		};
-	}, [] );
+        return {
+            isSaving: store.isSaving(),
+            isActive: store.isActive(),
+            isEditing: store.isEditing(),
+            isLoading: store.isLoading(),
+            viewport: store.getViewport(),
+            iframeViewport: store.getIframeViewport(),
+            lastEdit: store.getLastEdit(),
+        };
+    }, [] );
 
-	// Set useState indicator flags.
-	const [ isRegistered, setIsRegistered ] = useState( false );
-	const [ isRegistering, setIsRegistering ] = useState( true );
-	const [ updateSelected, setUpdateSelected ] = useState( false );
-	const [ updateSelectedViewport, setUpdateSelectedViewport ] = useState( false );
+    // Set useState indicator flags.
+    const [ isRegistered, setIsRegistered ] = useState( false );
+    const [ isRegistering, setIsRegistering ] = useState( true );
+    const [ updateSelected, setUpdateSelected ] = useState( false );
+    const [ updateSelectedViewport, setUpdateSelectedViewport ] = useState( false );
 
-	// Store attributes as reference to handle debounced updates.
-	const attributesRef = useRef( attributes );
-	const isSelectedRef = useRef( isSelected );
-	attributesRef.current = attributes;
-	isSelectedRef.current = isSelected;
+    // Store attributes as reference to handle debounced updates.
+    const attributesRef = useRef( attributes );
+    const isSelectedRef = useRef( isSelected );
+    attributesRef.current = attributes;
+    isSelectedRef.current = isSelected;
 
-	// Set useMemo to handle updates on block attributes.
-	const debouncedUpdateBlockChanges = useCallback( () => {
-		if( ! isSelectedRef.current ) {
-			return;
-		}
+    // Set useMemo to handle updates on block attributes.
+    const debouncedUpdateBlockChanges = useCallback( () => {
+        if ( ! isSelectedRef.current ) {
+            return;
+        }
 
-		useDispatcher.updateBlockChanges( clientId, blockName, attributesRef.current );
+        useDispatcher.updateBlockChanges( clientId, blockName, attributesRef.current );
 
-		// console.log( 'selector', blockName, selector.getGeneratedBlockSaves( clientId ) );
+        // console.log( 'selector', blockName, selector.getGeneratedBlockSaves( clientId ) );
 
-		setAttributes( {
-			viewports: selector.getGeneratedBlockSaves( clientId ),
-		} );
+        setAttributes( {
+            viewports: selector.getGeneratedBlockSaves( clientId ),
+        } );
 
-	}, [ clientId, blockName, useDispatcher, selector, setAttributes ] );
+    }, [ clientId, blockName, useDispatcher, selector, setAttributes ] );
 
-	// Set reference to handle debounced updates.
-	const debouncedUpdateRef = useRef( debounce( debouncedUpdateBlockChanges, 150 ) );
-
-
-	// Set useEffect on mount to skip first render cycle via state delay.
-	useMount( () => {
-
-		// Register block in datastore.
-		useDispatcher.registerBlockInit( clientId, blockName, attributes );
-
-		// Debug statement when running attribute change detection.
-		if( attributes.hasOwnProperty( 'viewports' ) && attributes.viewports && Object.keys( attributes.viewports ).length ) {
-			debug(
-				'log',
-				'init',
-				'init with viewports',
-				attributes,
-			);
-		}
-
-		// Update viewports attributes.
-		setAttributes( {
-			viewports: selector.getGeneratedBlockSaves( clientId ),
-		} );
-
-	} );
+    // Set reference to handle debounced updates.
+    const debouncedUpdateRef = useRef( debounce( debouncedUpdateBlockChanges, 150 ) );
 
 
-	// Set useEffect on isSaving to handle viewports datastore and block attributes cleanup.
-	useEffect( () => {
-		if( isSaving ) {
-			useDispatcher.saveBlock( clientId, blockName );
-		}
+    // Set useEffect on mount to skip first render cycle via state delay.
+    useMount( () => {
 
-	}, [ isSaving ] );
+        // Register block in datastore.
+        useDispatcher.registerBlockInit( clientId, blockName, attributes );
 
+        // Debug statement when running attribute change detection.
+        if ( attributes.hasOwnProperty( 'viewports' ) && attributes.viewports && Object.keys( attributes.viewports ).length ) {
+            debug(
+                'log',
+                'init',
+                'init with viewports',
+                attributes,
+            );
+        }
 
-	// Set useEffect on selected block to update its attributes by user interactions with viewports.
-	useLayoutEffect( () => {
-		if( ! isSelected ) {
-			isSelectedRef.current = false;
-			return;
-		}
-		isSelectedRef.current = true;
+        // Update viewports attributes.
+        setAttributes( {
+            viewports: selector.getGeneratedBlockSaves( clientId ),
+        } );
 
-		// Check for viewport settings before we replace settings for viewport.
-		const hasBlockViewports = selector.hasBlockViewports( clientId );
-		if( ! hasBlockViewports ) {
-			return;
-		}
-
-		// Update states.
-		setUpdateSelectedViewport( true );
-
-	}, [ iframeViewport, isSelected, lastEdit ] );
+    } );
 
 
-	// Set useEffect on updating selected block to update its attributes silently.
-	useEffect( () => {
-		if( ! updateSelectedViewport ) {
-			return;
-		}
+    // Set useEffect on isSaving to handle viewports datastore and block attributes cleanup.
+    useEffect( () => {
+        if ( isSaving ) {
+            useDispatcher.saveBlock( clientId, blockName );
+        }
 
-		// Set valids running on actual viewport.
-		const saves = selector.getGeneratedBlockSaves( clientId );
-		const valids = selector.getViewportBlockValids( clientId );
-
-		// Set attributes without change listening.
-		setAttributes( {
-			... cloneDeep( valids ),
-			viewports: saves,
-		} );
-		setUpdateSelected( true );
-
-	}, [ updateSelectedViewport ] );
+    }, [ isSaving ] );
 
 
-	// Use useEffect to handle resets on selected block via viewport change.
-	useEffect( () => {
-		if( ! updateSelected ) {
-			return;
-		}
+    // Set useEffect on selected block to update its attributes by user interactions with viewports.
+    useLayoutEffect( () => {
+        if ( ! isSelected ) {
+            isSelectedRef.current = false;
+            return;
+        }
+        isSelectedRef.current = true;
 
-		// Reset states to listen again.
-		setUpdateSelectedViewport( false );
-		setUpdateSelected( false );
+        // Check for viewport settings before we replace settings for viewport.
+        const hasBlockViewports = selector.hasBlockViewports( clientId );
+        if ( ! hasBlockViewports ) {
+            return;
+        }
 
-	}, [ updateSelected ] );
+        // Update states.
+        setUpdateSelectedViewport( true );
+
+    }, [ iframeViewport, isSelected, lastEdit ] );
 
 
-	// Use useEffect to handle style attribute changes.
-	useLayoutEffect( () => {
+    // Set useEffect on updating selected block to update its attributes silently.
+    useEffect( () => {
+        if ( ! updateSelectedViewport ) {
+            return;
+        }
 
-		// Skip if there is no attribute.
-		if( null === attributes ) {
-			return;
-		}
+        // Set valids running on actual viewport.
+        const saves = selector.getGeneratedBlockSaves( clientId );
+        const valids = selector.getViewportBlockValids( clientId );
 
-		// Skip and reset on updateTempId to ignore just the init rerender.
-		if( ! isRegistered && isRegistering ) {
-			setIsRegistered( true );
-			setIsRegistering( false );
-			return;
-		}
+        // Set attributes without change listening.
+        setAttributes( {
+            ... cloneDeep( valids ),
+            viewports: saves,
+        } );
+        setUpdateSelected( true );
 
-		// Skip and reset on changing iframe size to ignore just the update rerender.
-		if( updateSelectedViewport ) {
-			setUpdateSelectedViewport( false );
-			return;
-		}
+    }, [ updateSelectedViewport ] );
 
-		// Skip and reset on changing selected block to ignore just the update rereder.
-		if( updateSelected ) {
-			setUpdateSelected( false );
-			return;
-		}
 
-		// Debug statement when running attribute change detection.
-		debug(
-			'log',
-			'edit',
-			'change attributes',
-			attributes
-		);
+    // Use useEffect to handle resets on selected block via viewport change.
+    useEffect( () => {
+        if ( ! updateSelected ) {
+            return;
+        }
 
-		debouncedUpdateRef.current();
+        // Reset states to listen again.
+        setUpdateSelectedViewport( false );
+        setUpdateSelected( false );
 
-	}, [ attributes?.style ] );
+    }, [ updateSelected ] );
 
-	// Get css and selectors from store.
-	const css = selector.getCSS( clientId ) as string;
 
-	// Check if block.edit is a function or class component to return its edit function.
-	return (
-		<>
-			{ isSelected && <Indicators key={ clientId } clientId={ clientId } /> }
-			{ typeof block.edit === 'function' && block.edit.prototype instanceof Component
-				? new block.edit( props ).render()
-				: block.edit( props ) }
+    // Use useEffect to handle style attribute changes.
+    useLayoutEffect( () => {
 
-			{ '' !== css && <StyleFill>
-				{ css }
-			</StyleFill> }
-		</>
-	);
+        // Skip if there is no attribute.
+        if ( null === attributes ) {
+            return;
+        }
+
+        // Skip and reset on updateTempId to ignore just the init rerender.
+        if ( ! isRegistered && isRegistering ) {
+            setIsRegistered( true );
+            setIsRegistering( false );
+            return;
+        }
+
+        // Skip and reset on changing iframe size to ignore just the update rerender.
+        if ( updateSelectedViewport ) {
+            setUpdateSelectedViewport( false );
+            return;
+        }
+
+        // Skip and reset on changing selected block to ignore just the update rereder.
+        if ( updateSelected ) {
+            setUpdateSelected( false );
+            return;
+        }
+
+        // Debug statement when running attribute change detection.
+        debug(
+            'log',
+            'edit',
+            'change attributes',
+            attributes
+        );
+
+        debouncedUpdateRef.current();
+
+    }, [ attributes?.style ] );
+
+    // Get css and selectors from store.
+    const css = selector.getCSS( clientId ) as string;
+
+    // Check if block.edit is a function or class component to return its edit function.
+    return (
+        <>
+            { isSelected && <Indicators key={ clientId } clientId={ clientId } /> }
+            { typeof block.edit === 'function' && block.edit.prototype instanceof Component
+                ? new block.edit( props ).render()
+                : block.edit( props ) }
+
+            { '' !== css && <StyleFill>
+                { css }
+            </StyleFill> }
+        </>
+    );
 }

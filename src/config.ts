@@ -6,7 +6,7 @@ import { versionCompare } from "@quantum-viewports/utils";
  * @returns {Readonly<Record<string, any>>} - A frozen object containing configuration settings.
  */
 export const getConfig = (): Readonly<Record<string, any>> => {
-	return Object.freeze( ( window as any ).quantumViewportsConfig || {} );
+    return Object.freeze( ( window as any ).quantumViewportsConfig || {} );
 };
 
 
@@ -21,9 +21,9 @@ export const getConfig = (): Readonly<Record<string, any>> => {
  * @returns {T} - The value associated with the key, or the default value if the key does not exist.
  */
 export const getConfigValue = <T>( key: string, defaultValue: T = null ): T => {
-	const settings = getConfig();
+    const settings = getConfig();
 
-	return ( key in settings ? settings[ key ] : defaultValue ) as T;
+    return ( key in settings ? settings[ key ] : defaultValue ) as T;
 };
 
 
@@ -37,16 +37,16 @@ export const getConfigValue = <T>( key: string, defaultValue: T = null ): T => {
  * @throws {Error} - Throws an error if `gutenbergVersion` is not found in the configuration.
  */
 export const gutenbergVersionCompare = ( compareVersion: string ): number => {
-	const gutenbergVersion = getConfigValue( 'gutenbergVersion' ) as string|null;
-	if( ! gutenbergVersion ) {
-		throw new Error( 'gutenbergVersion not found in the config' );
-	}
+    const gutenbergVersion = getConfigValue( 'gutenbergVersion' ) as string|null;
+    if ( ! gutenbergVersion ) {
+        throw new Error( 'gutenbergVersion not found in the config' );
+    }
 
-	if( 'unknown' === gutenbergVersion ) {
-		return null;
-	}
+    if ( 'unknown' === gutenbergVersion ) {
+        return null;
+    }
 
-	return versionCompare( gutenbergVersion, compareVersion );
+    return versionCompare( gutenbergVersion, compareVersion );
 };
 
 
@@ -60,10 +60,10 @@ export const gutenbergVersionCompare = ( compareVersion: string ): number => {
  * @throws {Error} - Throws an error if `blockBlacklist` is not found in the configuration.
  */
 export const isInBlockBlacklist = ( blockName: string ): boolean => {
-	const blockBlacklist = getConfigValue( 'blockBlacklist' ) as string[]|null;
-	if( ! blockBlacklist ) {
-		throw new Error( 'blockBlacklist not found in the config' );
-	}
+    const blockBlacklist = getConfigValue( 'blockBlacklist' ) as string[]|null;
+    if ( ! blockBlacklist ) {
+        throw new Error( 'blockBlacklist not found in the config' );
+    }
 
-	return blockBlacklist.includes( blockName );
+    return blockBlacklist.includes( blockName );
 };

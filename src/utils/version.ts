@@ -12,18 +12,18 @@
  * console.log(versionCompare("1.3", "1.2")); // 1
  */
 export const versionCompare = ( v1: string, v2: string ) : number => {
-	const parts1 = v1.split( '.' ).map( Number );
-	const parts2 = v2.split( '.' ).map( Number );
+    const parts1 = v1.split( '.' ).map( Number );
+    const parts2 = v2.split( '.' ).map( Number );
 
-	for( let i = 0; i < Math.max( parts1.length, parts2.length ); i++ ) {
-		const num1 = parts1[ i ] || 0;
-		const num2 = parts2[ i ] || 0;
+    for ( let i = 0; i < Math.max( parts1.length, parts2.length ); i++ ) {
+        const num1 = parts1[ i ] || 0;
+        const num2 = parts2[ i ] || 0;
 
-		if( num1 > num2 ) return 1;
-		if( num1 < num2 ) return -1;
-	}
+        if ( num1 > num2 ) return 1;
+        if ( num1 < num2 ) return -1;
+    }
 
-	return 0;
+    return 0;
 }
 
 
@@ -44,15 +44,15 @@ export const versionCompare = ( v1: string, v2: string ) : number => {
  * console.log(versionCompareWithOperator("2.0", "2.1", "<")); // true
  */
 export const versionCompareWithOperator = ( v1: string, v2: string, operator: string ): boolean => {
-	const result = versionCompare( v1, v2 );
+    const result = versionCompare( v1, v2 );
 
-	switch( operator ) {
-		case '>': return result > 0;
-		case '<': return result < 0;
-		case '>=': return result >= 0;
-		case '<=': return result <= 0;
-		case '==': return result === 0;
-		case '!=': return result !== 0;
-		default: throw new Error( "Invalid operator" );
-	}
+    switch( operator ) {
+        case '>': return result > 0;
+        case '<': return result < 0;
+        case '>=': return result >= 0;
+        case '<=': return result <= 0;
+        case '==': return result === 0;
+        case '!=': return result !== 0;
+        default: throw new Error( "Invalid operator" );
+    }
 }

@@ -96,7 +96,7 @@ class EditorModule implements ExecutableModule
         if ( \is_plugin_active( 'gutenberg/gutenberg.php' ) ) {
             $pluginData = \get_plugin_data( WP_PLUGIN_DIR . '/gutenberg/gutenberg.php' );
 
-            if( ! empty( $pluginData[ 'Version' ] ) ) {
+            if ( ! empty( $pluginData[ 'Version' ] ) ) {
                 return $pluginData[ 'Version' ];
             }
         }

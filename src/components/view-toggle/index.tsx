@@ -1,16 +1,16 @@
 import { STORE_NAME } from '@quantum-viewports/store';
 
 const {
-	components: {
-		ToggleControl,
-	},
-	data: {
-		useSelect,
-		useDispatch,
-	},
-	i18n: {
-		__,
-	}
+    components: {
+        ToggleControl,
+    },
+    data: {
+        useSelect,
+        useDispatch,
+    },
+    i18n: {
+        __,
+    }
 } = window[ 'wp' ];
 
 /**
@@ -20,33 +20,33 @@ const {
  */
 export const ViewToggle = () => {
 
-	// Set dispatch.
-	const dispatch = useDispatch( STORE_NAME );
+    // Set dispatch.
+    const dispatch = useDispatch( STORE_NAME );
 
-	// Set states.
-	const {
-		isActive
-	} = useSelect( ( select: Function ) => {
-		const store = select( STORE_NAME );
+    // Set states.
+    const {
+        isActive
+    } = useSelect( ( select: Function ) => {
+        const store = select( STORE_NAME );
 
-		return {
-			isActive: store.isActive(),
-		}
-	}, [] );
+        return {
+            isActive: store.isActive(),
+        }
+    }, [] );
 
-	// Set classNames for toggle.
-	let classNamesToggle = 'qp-viewports-toggle-view';
-	if ( isActive ) {
-		classNamesToggle = classNamesToggle + ' active';
-	}
+    // Set classNames for toggle.
+    let classNamesToggle = 'qp-viewports-toggle-view';
+    if ( isActive ) {
+        classNamesToggle = classNamesToggle + ' active';
+    }
 
-	// Render component.
-	return (
-		<ToggleControl
-			className={ classNamesToggle }
-			label={ __( 'Viewport simulation', 'quantum-viewports' ) }
-			onChange={ ! isActive ? dispatch.setLoading : dispatch.unsetActive }
-			checked={ isActive }
-		/>
-	);
+    // Render component.
+    return (
+        <ToggleControl
+            className={ classNamesToggle }
+            label={ __( 'Viewport simulation', 'quantum-viewports' ) }
+            onChange={ ! isActive ? dispatch.setLoading : dispatch.unsetActive }
+            checked={ isActive }
+        />
+    );
 }

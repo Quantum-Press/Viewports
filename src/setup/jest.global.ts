@@ -2,7 +2,6 @@
 import _ from 'lodash';
 import * as React from 'react';
 
-
 // Globale Zuweisung von lodash zu window
 ( global as any ).window = global;
 ( global as any ).window.lodash = _;

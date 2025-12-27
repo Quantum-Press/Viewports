@@ -6,9 +6,9 @@ import * as styleEngine from '@wordpress/style-engine';
 
 // Extend global window object.
 global.window[ 'wp' ] = {
-	data,
-	element,
-	styleEngine
+    data,
+    element,
+    styleEngine
 };
 
 // Import test environment.
@@ -17,7 +17,7 @@ import { describe, expect, test } from '@jest/globals';
 // Import store parts.
 import { DEFAULT_STATE } from '../default';
 import {
-	findBlockDifferences,
+    findBlockDifferences,
 } from '../utils';
 
 

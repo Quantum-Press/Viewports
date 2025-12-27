@@ -1,7 +1,7 @@
 const {
-	useCallback,
-	useRef,
-	useState
+    useCallback,
+    useRef,
+    useState
 } = window[ 'React' ];
 
 
@@ -16,43 +16,43 @@ const {
  * @return {object}
  */
 export const useLongPress = ( onLongPress: Function, onClick: Function, { shouldPreventDefault = true, delay = 300 } = {} ) => {
-	const [ longPressTriggered, setLongPressTriggered ] = useState( false );
+    const [ longPressTriggered, setLongPressTriggered ] = useState( false );
 
-	const timeout = useRef<ReturnType<typeof setTimeout>>();
-	const target  = useRef<HTMLElement>();
+    const timeout = useRef<ReturnType<typeof setTimeout>>();
+    const target  = useRef<HTMLElement>();
 
-	const start = useCallback( ( event: { target: HTMLElement | undefined; } ) => {
-		if ( shouldPreventDefault && event.target ) {
-			event.target.addEventListener( "touchend", preventDefault, { passive: false });
+    const start = useCallback( ( event: { target: HTMLElement | undefined; } ) => {
+        if ( shouldPreventDefault && event.target ) {
+            event.target.addEventListener( "touchend", preventDefault, { passive: false });
 
-			target.current = event.target;
-		}
+            target.current = event.target;
+        }
 
-		timeout.current = setTimeout( () => {
-			onLongPress( event );
-			setLongPressTriggered( true );
-		}, delay );
+        timeout.current = setTimeout( () => {
+            onLongPress( event );
+            setLongPressTriggered( true );
+        }, delay );
 
-	}, [ onLongPress, delay, shouldPreventDefault ] );
+    }, [ onLongPress, delay, shouldPreventDefault ] );
 
-	const clear = useCallback( ( shouldTriggerClick = true ) => {
-		timeout.current && clearTimeout( timeout.current );
-		shouldTriggerClick && ! longPressTriggered && onClick();
-		setLongPressTriggered( false );
+    const clear = useCallback( ( shouldTriggerClick = true ) => {
+        timeout.current && clearTimeout( timeout.current );
+        shouldTriggerClick && ! longPressTriggered && onClick();
+        setLongPressTriggered( false );
 
-		if ( shouldPreventDefault && target.current ) {
-			target.current.removeEventListener( "touchend", preventDefault );
-		}
+        if ( shouldPreventDefault && target.current ) {
+            target.current.removeEventListener( "touchend", preventDefault );
+        }
 
-	}, [shouldPreventDefault, onClick, longPressTriggered] );
+    }, [shouldPreventDefault, onClick, longPressTriggered] );
 
-	return {
-		onMouseDown: ( e: { target: any; } ) => start( e ),
-		onTouchStart: ( e: { target: any; } ) => start( e ),
-		onMouseUp: () => clear(),
-		onMouseLeave: () => clear( false ),
-		onTouchEnd: () => clear()
-	};
+    return {
+        onMouseDown: ( e: { target: any; } ) => start( e ),
+        onTouchStart: ( e: { target: any; } ) => start( e ),
+        onMouseUp: () => clear(),
+        onMouseLeave: () => clear( false ),
+        onTouchEnd: () => clear()
+    };
 };
 
 
@@ -64,7 +64,7 @@ export const useLongPress = ( onLongPress: Function, onClick: Function, { should
  * @return {boolean}
  */
 const isTouchEvent = ( event : Event ) => {
-	return "touches" in event;
+    return "touches" in event;
 };
 
 
@@ -76,9 +76,9 @@ const isTouchEvent = ( event : Event ) => {
  * @return {boolean}
  */
 const preventDefault = ( event : TouchEvent ) => {
-	if ( ! isTouchEvent( event ) ) return;
+    if ( ! isTouchEvent( event ) ) return;
 
-	if ( event.touches.length < 2 && event.preventDefault ) {
-		event.preventDefault();
-	}
+    if ( event.touches.length < 2 && event.preventDefault ) {
+        event.preventDefault();
+    }
 };

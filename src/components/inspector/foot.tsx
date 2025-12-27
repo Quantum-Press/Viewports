@@ -3,12 +3,12 @@ import { getVersion } from '@quantum-viewports/utils';
 import { logo } from '@quantum-viewports/components';
 
 const {
-	components: {
-		Button,
-	},
-	i18n: {
-		__,
-	}
+    components: {
+        Button,
+    },
+    i18n: {
+        __,
+    }
 } = window[ 'wp' ];
 
 /**
@@ -16,19 +16,19 @@ const {
  */
 export const Foot = () => {
 
-	// Setup version.
-	const version = getVersion();
+    // Setup version.
+    const version = getVersion();
 
-	// Render component.
-	return (
-		<div className="qp-viewports-inspector-foot">
-			<Button
-				className="qp-viewports-link"
-				icon={ logo }
-				href="https://quantum-press.com/en/"
-				target="_blank"
-				text={ __( 'by QuantumPress - Version', 'quantum-viewports' ) + ' ' + version }
-			/>
-		</div>
-	);
+    // Render component.
+    return (
+        <div className="qp-viewports-inspector-foot">
+            <Button
+                className="qp-viewports-link"
+                icon={ logo }
+                href="https://quantum-press.com/en/"
+                target="_blank"
+                text={ __( 'by QuantumPress - Version', 'quantum-viewports' ) + ' ' + version }
+            />
+        </div>
+    );
 }

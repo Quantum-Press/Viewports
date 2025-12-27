@@ -65,13 +65,13 @@ class Processor {
     {
         $blocks = \parse_blocks( \stripslashes( $content ) );
         $blocks = $this->generateBlocks( $parser, $blocks );
-        if( empty( $blocks ) ) {
+        if ( empty( $blocks ) ) {
             return '';
         }
 
         $modified = [];
 
-        foreach( $blocks as $block ) {
+        foreach ( $blocks as $block ) {
             $block->modifySave( $parser, $this );
 
             $modified[] = $block->serializedBlock( $parser, $this );
@@ -93,9 +93,9 @@ class Processor {
     {
         $generated = [];
 
-        foreach( $blocks as $blockData ) {
+        foreach ( $blocks as $blockData ) {
             $block = $this->generateBlock( $parser, $blockData );
-            if( $block ) {
+            if ( $block ) {
                 $generated[] = $block;
             }
         }
@@ -114,7 +114,7 @@ class Processor {
      */
     public function generateBlock( Parser $parser, array $blockData ): Block|false
     {
-        if( empty( $blockData[ 'blockName' ] ) ) {
+        if ( empty( $blockData[ 'blockName' ] ) ) {
             return false;
         }
 
@@ -146,7 +146,7 @@ class Processor {
     ): CSSRuleSet|false
     {
 
-        if( empty( $blockData[ 'blockName' ] ) ) {
+        if ( empty( $blockData[ 'blockName' ] ) ) {
             return false;
         }
 
@@ -206,10 +206,10 @@ class Processor {
     {
         $blockType = \WP_Block_Type_Registry::get_instance()->get_registered( $blockName );
 
-        if( $blockType ) {
+        if ( $blockType ) {
             $defaultAttributes = $blockType->attributes;
 
-            if( isset( $defaultAttributes[ 'style' ] ) ) {
+            if ( isset( $defaultAttributes[ 'style' ] ) ) {
                 return $defaultAttributes[ 'style' ];
             }
         }

@@ -1,21 +1,21 @@
 import {
-	isInDesktopRange,
-	isInMobileRange,
-	isInTabletRange,
-	STORE_NAME
+    isInDesktopRange,
+    isInMobileRange,
+    isInTabletRange,
+    STORE_NAME
 } from "@quantum-viewports/store";
 
 const {
-	data: {
-		useSelect,
-		useDispatch,
-	},
-	element: {
-		useLayoutEffect,
-		useState,
-		createContext,
-		useContext,
-	}
+    data: {
+        useSelect,
+        useDispatch,
+    },
+    element: {
+        useLayoutEffect,
+        useState,
+        createContext,
+        useContext,
+    }
 } = window[ 'wp' ];
 
 
@@ -46,138 +46,138 @@ const {
  */
 function useDeviceTypeInternal() : DeviceTypeValue {
 
-	// Select state from the viewports store and core/editor.
-	const {
-		isActive,
-		viewport,
-		iframeViewport,
-		deviceType,
-	} = useSelect( ( select: Function ) => {
-		const store = select( STORE_NAME );
+    // Select state from the viewports store and core/editor.
+    const {
+        isActive,
+        viewport,
+        iframeViewport,
+        deviceType,
+    } = useSelect( ( select: Function ) => {
+        const store = select( STORE_NAME );
 
-		return {
-			isActive: store.isActive(),
-			viewport: store.getViewport(),
-			iframeViewport: store.getIframeViewport(),
-			deviceType: select( 'core/editor' ).getDeviceType(),
-		}
-	}, [] );
+        return {
+            isActive: store.isActive(),
+            viewport: store.getViewport(),
+            iframeViewport: store.getIframeViewport(),
+            deviceType: select( 'core/editor' ).getDeviceType(),
+        }
+    }, [] );
 
-	const sanitizedDeviceType = deviceType.toLowerCase();
-	const [ prevDeviceType, setPrevDeviceType ] = useState( 'desktop' );
-	const [ prevViewport, setPrevViewport ] = useState( viewport );
-	const [ ignore, setIgnore ] = useState( false );
+    const sanitizedDeviceType = deviceType.toLowerCase();
+    const [ prevDeviceType, setPrevDeviceType ] = useState( 'desktop' );
+    const [ prevViewport, setPrevViewport ] = useState( viewport );
+    const [ ignore, setIgnore ] = useState( false );
 
-	const storeDispatch = useDispatch( STORE_NAME );
-	const editorDispatch = useDispatch( 'core/editor' );
-
-
-	useLayoutEffect( () => {
-		if( 'desktop' === sanitizedDeviceType ) {
-			setIgnore( true );
-			storeDispatch.setViewportType( sanitizedDeviceType );
-		}
-
-		if( 'tablet' === sanitizedDeviceType ) {
-			setIgnore( true );
-			storeDispatch.setViewportType( sanitizedDeviceType );
-		}
-
-		if( 'mobile' === sanitizedDeviceType ) {
-			setIgnore( true );
-			storeDispatch.setViewportType( sanitizedDeviceType );
-		}
-	}, [] );
+    const storeDispatch = useDispatch( STORE_NAME );
+    const editorDispatch = useDispatch( 'core/editor' );
 
 
-	// Sync when Gutenberg device type changes.
-	useLayoutEffect( () => {
-		if( ignore ) {
-			setIgnore( false );
-			return;
-		}
+    useLayoutEffect( () => {
+        if ( 'desktop' === sanitizedDeviceType ) {
+            setIgnore( true );
+            storeDispatch.setViewportType( sanitizedDeviceType );
+        }
 
-		if( 'desktop' === sanitizedDeviceType && sanitizedDeviceType !== prevDeviceType ) {
-			setIgnore( true );
-			setPrevDeviceType( sanitizedDeviceType );
-			storeDispatch.setViewportType( sanitizedDeviceType );
-			// console.log( 'changed deviceType - desktop', ignore, sanitizedDeviceType );
-		}
+        if ( 'tablet' === sanitizedDeviceType ) {
+            setIgnore( true );
+            storeDispatch.setViewportType( sanitizedDeviceType );
+        }
 
-		if( 'tablet' === sanitizedDeviceType && sanitizedDeviceType !== prevDeviceType ) {
-			setIgnore( true );
-			setPrevDeviceType( sanitizedDeviceType );
-			storeDispatch.setViewportType( sanitizedDeviceType );
-			// console.log( 'changed deviceType - tablet', ignore, sanitizedDeviceType );
-		}
-
-		if( 'mobile' === sanitizedDeviceType && sanitizedDeviceType !== prevDeviceType ) {
-			setIgnore( true );
-			setPrevDeviceType( sanitizedDeviceType );
-			storeDispatch.setViewportType( sanitizedDeviceType );
-			// console.log( 'changed deviceType - mobile', ignore, sanitizedDeviceType );
-		}
-
-	}, [ deviceType ] );
+        if ( 'mobile' === sanitizedDeviceType ) {
+            setIgnore( true );
+            storeDispatch.setViewportType( sanitizedDeviceType );
+        }
+    }, [] );
 
 
-	// Sync when viewport changes while the store is active.
-	useLayoutEffect( () => {
-		if( ignore ) {
-			setIgnore( false );
-			return;
-		}
+    // Sync when Gutenberg device type changes.
+    useLayoutEffect( () => {
+        if ( ignore ) {
+            setIgnore( false );
+            return;
+        }
 
-		if( viewport !== prevViewport && isActive && isInDesktopRange( viewport ) && deviceType !== 'Desktop' ) {
-			setIgnore( true );
-			editorDispatch.setDeviceType( 'Desktop' );
-			// console.log( 'changed viewport - Desktop', ignore );
-		}
+        if ( 'desktop' === sanitizedDeviceType && sanitizedDeviceType !== prevDeviceType ) {
+            setIgnore( true );
+            setPrevDeviceType( sanitizedDeviceType );
+            storeDispatch.setViewportType( sanitizedDeviceType );
+            // console.log( 'changed deviceType - desktop', ignore, sanitizedDeviceType );
+        }
 
-		if( viewport !== prevViewport && isActive && isInTabletRange( viewport ) && deviceType !== 'Tablet' ) {
-			setIgnore( true );
-			editorDispatch.setDeviceType( 'Tablet' );
-			// console.log( 'changed viewport - tablet', ignore );
-		}
+        if ( 'tablet' === sanitizedDeviceType && sanitizedDeviceType !== prevDeviceType ) {
+            setIgnore( true );
+            setPrevDeviceType( sanitizedDeviceType );
+            storeDispatch.setViewportType( sanitizedDeviceType );
+            // console.log( 'changed deviceType - tablet', ignore, sanitizedDeviceType );
+        }
 
-		if( viewport !== prevViewport && isActive && isInMobileRange( viewport ) && deviceType !== 'Mobile' ) {
-			setIgnore( true );
-			editorDispatch.setDeviceType( 'Mobile' );
-			// console.log( 'changed viewport - mobile', ignore );
-		}
+        if ( 'mobile' === sanitizedDeviceType && sanitizedDeviceType !== prevDeviceType ) {
+            setIgnore( true );
+            setPrevDeviceType( sanitizedDeviceType );
+            storeDispatch.setViewportType( sanitizedDeviceType );
+            // console.log( 'changed deviceType - mobile', ignore, sanitizedDeviceType );
+        }
 
-	}, [ viewport ] );
+    }, [ deviceType ] );
 
 
-	// Sync when iframe viewport changes while the store is inactive.
-	useLayoutEffect( () => {
-		if( ignore ) {
-			setIgnore( false );
-			return;
-		}
+    // Sync when viewport changes while the store is active.
+    useLayoutEffect( () => {
+        if ( ignore ) {
+            setIgnore( false );
+            return;
+        }
 
-		if( viewport !== prevViewport && ! isActive && isInDesktopRange( viewport ) && deviceType !== 'Desktop' ) {
-			setIgnore( true );
-			editorDispatch.setDeviceType( 'Desktop' );
-			// console.log( 'changed iframeViewport - desktop', ignore );
-		}
+        if ( viewport !== prevViewport && isActive && isInDesktopRange( viewport ) && deviceType !== 'Desktop' ) {
+            setIgnore( true );
+            editorDispatch.setDeviceType( 'Desktop' );
+            // console.log( 'changed viewport - Desktop', ignore );
+        }
 
-		if( viewport !== prevViewport && isActive && isInTabletRange( viewport ) && deviceType !== 'Tablet' ) {
-			setIgnore( true );
-			editorDispatch.setDeviceType( 'Tablet' );
-			// console.log( 'changed iframeViewport - tablet', ignore );
-		}
+        if ( viewport !== prevViewport && isActive && isInTabletRange( viewport ) && deviceType !== 'Tablet' ) {
+            setIgnore( true );
+            editorDispatch.setDeviceType( 'Tablet' );
+            // console.log( 'changed viewport - tablet', ignore );
+        }
 
-		if( viewport !== prevViewport && isActive && isInMobileRange( viewport ) && deviceType !== 'Mobile' ) {
-			setIgnore( true );
-			editorDispatch.setDeviceType( 'Mobile' );
-			// console.log( 'changed iframeViewport - mobile', ignore );
-		}
+        if ( viewport !== prevViewport && isActive && isInMobileRange( viewport ) && deviceType !== 'Mobile' ) {
+            setIgnore( true );
+            editorDispatch.setDeviceType( 'Mobile' );
+            // console.log( 'changed viewport - mobile', ignore );
+        }
 
-	}, [ iframeViewport ] );
+    }, [ viewport ] );
 
-	// Return state and setter placeholder.
-	return [ deviceType ];
+
+    // Sync when iframe viewport changes while the store is inactive.
+    useLayoutEffect( () => {
+        if ( ignore ) {
+            setIgnore( false );
+            return;
+        }
+
+        if ( viewport !== prevViewport && ! isActive && isInDesktopRange( viewport ) && deviceType !== 'Desktop' ) {
+            setIgnore( true );
+            editorDispatch.setDeviceType( 'Desktop' );
+            // console.log( 'changed iframeViewport - desktop', ignore );
+        }
+
+        if ( viewport !== prevViewport && isActive && isInTabletRange( viewport ) && deviceType !== 'Tablet' ) {
+            setIgnore( true );
+            editorDispatch.setDeviceType( 'Tablet' );
+            // console.log( 'changed iframeViewport - tablet', ignore );
+        }
+
+        if ( viewport !== prevViewport && isActive && isInMobileRange( viewport ) && deviceType !== 'Mobile' ) {
+            setIgnore( true );
+            editorDispatch.setDeviceType( 'Mobile' );
+            // console.log( 'changed iframeViewport - mobile', ignore );
+        }
+
+    }, [ iframeViewport ] );
+
+    // Return state and setter placeholder.
+    return [ deviceType ];
 };
 
 
@@ -188,25 +188,25 @@ const DeviceTypeContext = createContext<DeviceTypeValue | null>(null);
 type ProviderProps = { children: any };
 
 export function DeviceTypeProvider({ children }: ProviderProps) {
-	const value = useDeviceTypeInternal();
+    const value = useDeviceTypeInternal();
 
-	return (
-		<DeviceTypeContext.Provider value={value}>
-			{children}
-		</DeviceTypeContext.Provider>
-	);
+    return (
+        <DeviceTypeContext.Provider value={value}>
+            {children}
+        </DeviceTypeContext.Provider>
+    );
 }
 
 
 export function useDeviceType(): DeviceTypeValue {
-	const ctx = useContext( DeviceTypeContext );
+    const ctx = useContext( DeviceTypeContext );
 
-	// console.log( 'ctx', ctx );
+    // console.log( 'ctx', ctx );
 
-	if ( ! ctx ) {
-		console.warn( 'useDeviceType used outside DeviceTypeProvider' );
-		return null;
-	}
+    if ( ! ctx ) {
+        console.warn( 'useDeviceType used outside DeviceTypeProvider' );
+        return null;
+    }
 
-	return ctx;
+    return ctx;
 }

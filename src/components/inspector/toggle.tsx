@@ -2,17 +2,17 @@ import { STORE_NAME } from '@quantum-viewports/store';
 import { viewports } from '@quantum-viewports/components';
 
 const {
-	components: {
-		Button,
-	},
-	data: {
-		useSelect,
-		select,
-		dispatch,
-	},
-	i18n: {
-		__,
-	}
+    components: {
+        Button,
+    },
+    data: {
+        useSelect,
+        select,
+        dispatch,
+    },
+    i18n: {
+        __,
+    }
 } = window[ 'wp' ];
 
 /**
@@ -22,59 +22,59 @@ const {
  */
 export const ToggleInspector = ( { showText = true, forceShow = false } : { showText?: boolean, forceShow?: boolean } ) => {
 
-	// Set states.
-	const {
-		selected,
-		isInspecting,
-	} = useSelect( ( select : Function ) => {
-		const store = select( STORE_NAME );
-		const selected = select( 'core/block-editor' ).getSelectedBlock();
+    // Set states.
+    const {
+        selected,
+        isInspecting,
+    } = useSelect( ( select : Function ) => {
+        const store = select( STORE_NAME );
+        const selected = select( 'core/block-editor' ).getSelectedBlock();
 
-		if( ! selected ) {
-			return {
-				lastEdit: store.getLastEdit(),
-				isInspecting: store.isInspecting(),
-			}
-		}
+        if ( ! selected ) {
+            return {
+                lastEdit: store.getLastEdit(),
+                isInspecting: store.isInspecting(),
+            }
+        }
 
-		return {
-			selected,
-			isInspecting: store.isInspecting(),
-		}
-	}, [] );
+        return {
+            selected,
+            isInspecting: store.isInspecting(),
+        }
+    }, [] );
 
-	const spectrumSet = select( STORE_NAME ).getSpectrumSet( selected?.clientId );
+    const spectrumSet = select( STORE_NAME ).getSpectrumSet( selected?.clientId );
 
-	// Break if there is no spectrumSet registered to selected block.
-	if( 0 === Object.keys( spectrumSet ).length && ! forceShow ) {
-		return null;
-	}
+    // Break if there is no spectrumSet registered to selected block.
+    if ( 0 === Object.keys( spectrumSet ).length && ! forceShow ) {
+        return null;
+    }
 
-	/**
-	 * Set function to fire on click inspect to trigger ui.
-	 */
-	const onClickInspect = () => {
-		if( select( STORE_NAME ).isInspecting() ) {
-			dispatch( STORE_NAME ).unsetInspecting();
-		} else {
-			dispatch( STORE_NAME ).setInspecting();
-		}
-	}
+    /**
+     * Set function to fire on click inspect to trigger ui.
+     */
+    const onClickInspect = () => {
+        if ( select( STORE_NAME ).isInspecting() ) {
+            dispatch( STORE_NAME ).unsetInspecting();
+        } else {
+            dispatch( STORE_NAME ).setInspecting();
+        }
+    }
 
-	// Set button classnames.
-	let classNames = 'qp-viewports-toggle-inspecting';
-	if( isInspecting ) {
-		classNames = classNames + ' is-inspecting';
-	}
+    // Set button classnames.
+    let classNames = 'qp-viewports-toggle-inspecting';
+    if ( isInspecting ) {
+        classNames = classNames + ' is-inspecting';
+    }
 
-	// Render component.
-	return (
-		<Button
-			className={ classNames }
-			icon={ viewports }
-			label={ __( 'Inspect styles', 'quantum-viewports' ) }
-			onClick={ onClickInspect }
-			text={ showText ? __( 'Inspector', 'quantum-viewports' ) : '' }
-		/>
-	);
+    // Render component.
+    return (
+        <Button
+            className={ classNames }
+            icon={ viewports }
+            label={ __( 'Inspect styles', 'quantum-viewports' ) }
+            onClick={ onClickInspect }
+            text={ showText ? __( 'Inspector', 'quantum-viewports' ) : '' }
+        />
+    );
 }
