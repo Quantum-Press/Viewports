@@ -383,7 +383,7 @@ export const Keyframes = () => {
                                     <KeyframeControls
                                         visibleControls={ visibleControls }
                                         setVisibleControls={ setVisibleControls }
-                                        storeId={ props.storeId }
+                                        storeId={ props.clientId }
                                         iframeViewport={ props.iframeViewport }
                                         keyframe={ keyframe }
                                     />
