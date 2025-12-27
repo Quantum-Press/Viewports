@@ -13,11 +13,6 @@ const {
  */
 export const BlockSave = ( { block, props } : { block: Block, props: BlockSaveProps } ) => {
 
-    // Cleanup attributes.viewports if empty.
-    if ( props.attributes.hasOwnProperty( 'viewports' ) && props.attributes.viewports && 0 === Object.keys( props.attributes.viewports ).length ) {
-        delete props.attributes.viewports;
-    }
-
     // Debug saved attributes on enabled debug.
     if ( debugOptions.enabled && props.attributes.viewports && Object.keys( props.attributes.viewports ).length ) {
         const isSaving = select( STORE_NAME ).isSaving();

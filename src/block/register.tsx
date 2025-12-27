@@ -31,13 +31,6 @@ addFilter( 'blocks.registerBlockType', 'qp/viewports-block', ( block : Block ) =
         return block;
     }
 
-    // Add viewports attributes.
-    Object.assign( block.attributes, {
-        viewports: {
-            type: 'object',
-        }
-    } );
-
     // Return wrapped edit and save.
     return {
         ... block,
