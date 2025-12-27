@@ -10,7 +10,6 @@ const {
     },
     element: {
         useState,
-        useEffect,
         useLayoutEffect,
     }
 } = window[ 'wp' ];
@@ -23,9 +22,6 @@ export const useResizeEditor = () => {
 
     // Set resize info
     const [ resizeScale, setResizeScale ] = useState( 1 );
-
-    // Set ignore flag.
-    const [ ignore, setIgnore ] = useState( false );
 
     // Set resize states.
     const resizeSkeleton = useResizeObserver( {
@@ -47,7 +43,6 @@ export const useResizeEditor = () => {
     const {
         isActive,
         viewport,
-        isReady,
         deviceType,
         postId,
         templateId,
@@ -75,18 +70,18 @@ export const useResizeEditor = () => {
      */
     const calculateSiteEditorSize = () => {
 
-        // Set maxWidth.
+        // Set containers.
         const $widthContainer = document.querySelector( '.interface-interface-skeleton__content .components-resizable-box__container' ) as HTMLElement;
-        const maxWidth = $widthContainer ? $widthContainer.getBoundingClientRect().width - 80 : 0;
-
-        // Set maxHeight.
         const $heightContainer = document.querySelector( '.edit-site-visual-editor, .edit-post-visual-editor' ) as HTMLElement;
-        const maxHeight = $heightContainer ? $heightContainer.getBoundingClientRect().height : 0;
 
         // Check validity.
         if ( ! $widthContainer || ! $heightContainer ) {
             return;
         }
+
+        // Set maxWidth and maxHeight.
+        const maxWidth = $widthContainer ? $widthContainer.getBoundingClientRect().width - 80 : 0;
+        const maxHeight = $heightContainer ? $heightContainer.getBoundingClientRect().height : 0;
 
         // Set iframe element.
         const $iframe = document.querySelector( 'iframe[name="editor-canvas"], .edit-site-editor-canvas-container' ) as HTMLElement;
@@ -153,25 +148,23 @@ export const useResizeEditor = () => {
      */
     const calculatePostEditorSize = () => {
 
-        // Set metaboxes indicator.
-        const $metaBoxes = document.querySelector( '.edit-post-layout__metaboxes .meta-box-sortables > div' );
-        const hasMetaBoxes = $metaBoxes ? true : false;
-
-        // Set maxWidth.
+        // Set containers.
         const $desktopPreviewContainer =  document.querySelector( '.edit-post-visual-editor__content-area .is-desktop-preview, .edit-post-visual-editor > div:first-child:last-child' ) as HTMLElement;
-        const maxWidth = $desktopPreviewContainer ? $desktopPreviewContainer.getBoundingClientRect().width - 80 : 0;
-
-        // Set widthcontainer.
-        const $widthContainer = document.querySelector( '.interface-interface-skeleton__content .components-resizable-box__container' ) as HTMLElement;
-
-        // Set maxHeight.
         const $contentContainer = document.querySelector( '.edit-post-visual-editor, .edit-post-visual-editor__content-area' ) as HTMLElement;
-        const maxHeight = $contentContainer ? $contentContainer.getBoundingClientRect().height : 0;
 
         // Check validity.
         if ( ! $desktopPreviewContainer || ! $contentContainer ) {
             return;
         }
+
+        // Set maxHeight and maxWidth.
+        const $widthContainer = document.querySelector( '.interface-interface-skeleton__content .components-resizable-box__container' ) as HTMLElement;
+        const maxHeight = $contentContainer ? $contentContainer.getBoundingClientRect().height : 0;
+        const maxWidth = $desktopPreviewContainer ? $desktopPreviewContainer.getBoundingClientRect().width - 80 : 0;
+
+        // Check for meta boxes.
+        // const $metaBoxes = document.querySelector( '.edit-post-layout__metaboxes .meta-box-sortables > div' );
+        // const hasMetaBoxes = $metaBoxes ? true : false;
 
         // Set iframe element.
         const $iframe = document.querySelector( 'iframe[name="editor-canvas"], .editor-styles-wrapper' ) as HTMLElement;
@@ -253,18 +246,9 @@ export const useResizeEditor = () => {
         }
 
         // console.log( 'dispatch.setIframeSize', resizeEditor );
-
         dispatch.setIframeSize( resizeEditor );
 
     }, [ resizeSkeleton, resizeEditor, templateId, postId, deviceType ] );
-
-    if ( ! isReady ) {
-        return {
-            editor: resizeEditor,
-            skeleton: resizeSkeleton,
-            scale: resizeScale,
-        };
-    }
 
     return {
         editor: resizeEditor,

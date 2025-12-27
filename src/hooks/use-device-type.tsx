@@ -71,24 +71,26 @@ function useDeviceTypeInternal() : DeviceTypeValue {
     const storeDispatch = useDispatch( STORE_NAME );
     const editorDispatch = useDispatch( 'core/editor' );
 
-
+    // Initial sync on mount.
     useLayoutEffect( () => {
         if ( 'desktop' === sanitizedDeviceType ) {
             setIgnore( true );
             storeDispatch.setViewportType( sanitizedDeviceType );
+            return;
         }
 
         if ( 'tablet' === sanitizedDeviceType ) {
             setIgnore( true );
             storeDispatch.setViewportType( sanitizedDeviceType );
+            return;
         }
 
         if ( 'mobile' === sanitizedDeviceType ) {
             setIgnore( true );
             storeDispatch.setViewportType( sanitizedDeviceType );
+            return;
         }
     }, [] );
-
 
     // Sync when Gutenberg device type changes.
     useLayoutEffect( () => {
@@ -102,6 +104,7 @@ function useDeviceTypeInternal() : DeviceTypeValue {
             setPrevDeviceType( sanitizedDeviceType );
             storeDispatch.setViewportType( sanitizedDeviceType );
             // console.log( 'changed deviceType - desktop', ignore, sanitizedDeviceType );
+            return;
         }
 
         if ( 'tablet' === sanitizedDeviceType && sanitizedDeviceType !== prevDeviceType ) {
@@ -109,6 +112,7 @@ function useDeviceTypeInternal() : DeviceTypeValue {
             setPrevDeviceType( sanitizedDeviceType );
             storeDispatch.setViewportType( sanitizedDeviceType );
             // console.log( 'changed deviceType - tablet', ignore, sanitizedDeviceType );
+            return;
         }
 
         if ( 'mobile' === sanitizedDeviceType && sanitizedDeviceType !== prevDeviceType ) {
@@ -116,10 +120,10 @@ function useDeviceTypeInternal() : DeviceTypeValue {
             setPrevDeviceType( sanitizedDeviceType );
             storeDispatch.setViewportType( sanitizedDeviceType );
             // console.log( 'changed deviceType - mobile', ignore, sanitizedDeviceType );
+            return;
         }
 
     }, [ deviceType ] );
-
 
     // Sync when viewport changes while the store is active.
     useLayoutEffect( () => {
@@ -132,22 +136,24 @@ function useDeviceTypeInternal() : DeviceTypeValue {
             setIgnore( true );
             editorDispatch.setDeviceType( 'Desktop' );
             // console.log( 'changed viewport - Desktop', ignore );
+            return;
         }
 
         if ( viewport !== prevViewport && isActive && isInTabletRange( viewport ) && deviceType !== 'Tablet' ) {
             setIgnore( true );
             editorDispatch.setDeviceType( 'Tablet' );
             // console.log( 'changed viewport - tablet', ignore );
+            return;
         }
 
         if ( viewport !== prevViewport && isActive && isInMobileRange( viewport ) && deviceType !== 'Mobile' ) {
             setIgnore( true );
             editorDispatch.setDeviceType( 'Mobile' );
             // console.log( 'changed viewport - mobile', ignore );
+            return;
         }
 
     }, [ viewport ] );
-
 
     // Sync when iframe viewport changes while the store is inactive.
     useLayoutEffect( () => {
@@ -160,18 +166,21 @@ function useDeviceTypeInternal() : DeviceTypeValue {
             setIgnore( true );
             editorDispatch.setDeviceType( 'Desktop' );
             // console.log( 'changed iframeViewport - desktop', ignore );
+            return;
         }
 
         if ( viewport !== prevViewport && isActive && isInTabletRange( viewport ) && deviceType !== 'Tablet' ) {
             setIgnore( true );
             editorDispatch.setDeviceType( 'Tablet' );
             // console.log( 'changed iframeViewport - tablet', ignore );
+            return;
         }
 
         if ( viewport !== prevViewport && isActive && isInMobileRange( viewport ) && deviceType !== 'Mobile' ) {
             setIgnore( true );
             editorDispatch.setDeviceType( 'Mobile' );
             // console.log( 'changed iframeViewport - mobile', ignore );
+            return;
         }
 
     }, [ iframeViewport ] );
@@ -179,7 +188,6 @@ function useDeviceTypeInternal() : DeviceTypeValue {
     // Return state and setter placeholder.
     return [ deviceType ];
 };
-
 
 type DeviceTypeValue = [ string ];
 

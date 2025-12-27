@@ -79,7 +79,7 @@ export const Indicator = ( { storeId, property }: IndicatorProps ) => {
     /**
      * Set function to handle toggle.
      */
-    const handleClick = ( deviceType : deviceType ) => {
+    const handleClick = ( deviceType: deviceType ) => {
         const check = 0 === viewport ? iframeViewport : viewport;
 
         if (
@@ -108,7 +108,7 @@ export const Indicator = ( { storeId, property }: IndicatorProps ) => {
      *
      * @return {string}
      */
-    const getClassName = ( size ) : string => {
+    const getClassName = ( size: string ): string => {
         const className = [ 'qp-viewports-indicator', size ];
         const check = 0 === viewport ? iframeViewport : viewport;
 
