@@ -91,8 +91,6 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
 
         useDispatcher.updateBlockChanges( clientId, blockName, attributesRef.current );
 
-        // console.log( 'selector', blockName, selector.getGeneratedBlockSaves( clientId ) );
-
         setAttributes( {
             viewports: selector.getGeneratedBlockSaves( clientId ),
         } );
@@ -101,7 +99,6 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
 
     // Set reference to handle debounced updates.
     const debouncedUpdateRef = useRef( debounce( debouncedUpdateBlockChanges, 150 ) );
-
 
     // Set useEffect on mount to skip first render cycle via state delay.
     useMount( () => {
@@ -118,14 +115,7 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
                 attributes,
             );
         }
-
-        // Update viewports attributes.
-        setAttributes( {
-            viewports: selector.getGeneratedBlockSaves( clientId ),
-        } );
-
     } );
-
 
     // Set useEffect on isSaving to handle viewports datastore and block attributes cleanup.
     useEffect( () => {
