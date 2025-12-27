@@ -4,7 +4,7 @@ import {
     isInMobileRange,
     isInTabletRange,
     isInDesktopRange,
-    hasSpectrumSetViewportType
+    hasSpectrumSetViewportType,
 } from '@quantum-viewports/store';
 import { Pointer } from './pointer';
 import { IndicatorPopup } from './popup';
@@ -43,13 +43,16 @@ export type IndicatorProps = {
  */
 export const Indicator = ( { storeId, property }: IndicatorProps ) => {
     const editorDispatch = useDispatch( 'core/editor' );
+    const storeDispatch = useDispatch( STORE_NAME );
 
     // Extract use select depending properties.
     const {
+        isActive,
         isEditing,
         isInspecting,
-        iframeViewport,
         viewport,
+        iframeViewport,
+        editorDeviceType,
     } = useSelect( ( select ) => {
         const store = select( STORE_NAME );
         const editorStore = select( 'core/editor' );
@@ -60,10 +63,10 @@ export const Indicator = ( { storeId, property }: IndicatorProps ) => {
             isInspecting: store.isInspecting(),
             viewport: store.getViewport(),
             iframeViewport: store.getIframeViewport(),
-            deviceType: editorStore.getDeviceType(),
+            editorDeviceType: editorStore.getDeviceType(),
             lastEdit: store.getLastEdit(),
         }
-     }, [] );
+    }, [] );
 
     // Set spectrumSet.
     const spectrumSet = select( STORE_NAME ).getPropertySpectrumSet( storeId, property );
@@ -72,7 +75,7 @@ export const Indicator = ( { storeId, property }: IndicatorProps ) => {
     const hasTabletSpectrum = spectrumSet.length ? hasSpectrumSetViewportType( 'Tablet', spectrumSet ) : false;
     const hasDesktopSpectrum = spectrumSet.length ? hasSpectrumSetViewportType( 'Desktop', spectrumSet ) : false;
 
-    // Set visibility state of controls.
+    // Set visibility state of popup.
     const [ isVisible, setIsVisible ] = useState( false );
 
 
@@ -80,13 +83,23 @@ export const Indicator = ( { storeId, property }: IndicatorProps ) => {
      * Set function to handle toggle.
      */
     const handleClick = ( deviceType: deviceType ) => {
-        const check = 0 === viewport ? iframeViewport : viewport;
+        const minWidth = isActive ? viewport : iframeViewport;
 
         if (
-            ( 'Mobile' === deviceType && ! isInMobileRange( check ) ) ||
-            ( 'Tablet' === deviceType && ! isInTabletRange( check ) ) ||
-            ( 'Desktop' === deviceType && ! isInDesktopRange( check ) )
+            ( 'Mobile' === deviceType && ! isInMobileRange( minWidth ) ) ||
+            ( 'Tablet' === deviceType && ! isInTabletRange( minWidth ) ) ||
+            ( 'Desktop' === deviceType && ! isInDesktopRange( minWidth ) )
         ) {
+            if ( editorDeviceType === deviceType ) {
+                if ( ! isActive && 'Desktop' === editorDeviceType && ! isInDesktopRange( minWidth ) ) {
+                    storeDispatch.setActive();
+                }
+
+                if ( ! isActive && 'Tablet' === editorDeviceType && ! isInDesktopRange( minWidth ) ) {
+                    storeDispatch.setActive();
+                }
+            }
+
             editorDispatch.setDeviceType( deviceType );
 
             if ( ! isVisible ) {
