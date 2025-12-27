@@ -175,7 +175,7 @@ export const Keyframes = () => {
         iframeSize: number,
         iframeViewport: number,
         isActive: boolean,
-    } = useSelect( ( select : Function ) => {
+    } = useSelect( ( select: Function ) => {
         const store = select( STORE_NAME );
         const selected = select( 'core/block-editor' ).getSelectedBlock();
 
@@ -264,7 +264,7 @@ export const Keyframes = () => {
     /**
      * Set function to calculate width of given frame.
      */
-    const calculateWidth = ( frame : Frame ) => {
+    const calculateWidth = ( frame: Frame ) => {
         const { size, position, viewport } = frame;
         const zoom = uiWidth / props.viewport;
 
@@ -293,7 +293,7 @@ export const Keyframes = () => {
     /**
      * Set function to fire on mouse over.
      */
-    const onMouseOver = ( { target } : any ) => {
+    const onMouseOver = ( { target }: any ) => {
         if ( ! target.classList.contains( 'qp-keyframe' ) ) {
             target = target.closest( '.qp-keyframe' );
         }

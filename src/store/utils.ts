@@ -44,7 +44,7 @@ const {
  *
  * @return {boolean} indication
  */
-export const isInDesktopRange = ( viewport : number ) : boolean => {
+export const isInDesktopRange = ( viewport: number ): boolean => {
     if ( viewport >= desktopBreakpoint ) {
         return true;
     }
@@ -60,7 +60,7 @@ export const isInDesktopRange = ( viewport : number ) : boolean => {
  *
  * @return {boolean} indication
  */
-export const isInTabletRange = ( viewport : number ) : boolean => {
+export const isInTabletRange = ( viewport: number ): boolean => {
     if ( viewport >= tabletBreakpoint && viewport <= ( desktopBreakpoint - 1 ) ) {
         return true;
     }
@@ -76,7 +76,7 @@ export const isInTabletRange = ( viewport : number ) : boolean => {
  *
  * @return {boolean} indication
  */
-export const isInMobileRange = ( viewport : number ) : boolean => {
+export const isInMobileRange = ( viewport: number ): boolean => {
     if ( viewport <= ( tabletBreakpoint - 1 ) ) {
         return true;
     }
@@ -93,7 +93,7 @@ export const isInMobileRange = ( viewport : number ) : boolean => {
  *
  * @return {number}
  */
-export const getPrevViewport = ( viewport : number, viewports : Viewports ) : number => {
+export const getPrevViewport = ( viewport: number, viewports: Viewports ): number => {
     let last = 0;
 
     for ( const [ dirtyViewport ] of Object.entries( viewports ) ) {
@@ -118,7 +118,7 @@ export const getPrevViewport = ( viewport : number, viewports : Viewports ) : nu
  *
  * @return {number}
  */
-export const getNextViewport = ( viewport : number, viewports : Viewports ) : number => {
+export const getNextViewport = ( viewport: number, viewports: Viewports ): number => {
     let next = 0;
 
     for ( const [ dirtyViewport ] of Object.entries( viewports ) ) {
@@ -143,7 +143,7 @@ export const getNextViewport = ( viewport : number, viewports : Viewports ) : nu
  *
  * @return {Viewports}
  */
-export const getViewports = ( viewportType : viewportType, viewports : Viewports ) : Viewports => {
+export const getViewports = ( viewportType: viewportType, viewports: Viewports ): Viewports => {
     const cleaned = {};
 
     switch( viewportType ) {
@@ -196,7 +196,7 @@ export const getViewports = ( viewportType : viewportType, viewports : Viewports
  *
  * @return {number} highest viewport
  */
-export const getHighestPossibleViewport = ( viewports : Viewports, width : number ) : number => {
+export const getHighestPossibleViewport = ( viewports: Viewports, width: number ): number => {
 
     // Iterates over the viewports and returns the highest possible viewport
     // smaller than the iframe width.
@@ -221,7 +221,7 @@ export const getHighestPossibleViewport = ( viewports : Viewports, width : numbe
  *
  * @return {Function|null}
  */
-export const getInRange = ( deviceType : deviceType ) : Function|null => {
+export const getInRange = ( deviceType: deviceType ): Function|null => {
     let inRange = null;
 
     switch( deviceType ) {
@@ -250,7 +250,7 @@ export const getInRange = ( deviceType : deviceType ) : Function|null => {
  *
  * @return {boolean}
  */
-export const hasSpectrumSetViewportType = ( deviceType : deviceType, spectrumSet : SpectrumSet ) : boolean =>  {
+export const hasSpectrumSetViewportType = ( deviceType: deviceType, spectrumSet: SpectrumSet ): boolean =>  {
     const inRange = getInRange( deviceType );
 
     let hasSpectrumSet = false;
@@ -275,12 +275,12 @@ export const hasSpectrumSetViewportType = ( deviceType : deviceType, spectrumSet
  *
  * @return {ViewportStyleSets} cleaned saves
  */
-export const clearEmptySaves = ( saves : ViewportStyleSets ) : ViewportStyleSets => {
+export const clearEmptySaves = ( saves: ViewportStyleSets ): ViewportStyleSets => {
     if ( ! Object.keys( saves ).length ) {
         return {};
     }
 
-    let cleared : ViewportStyleSets = {};
+    let cleared: ViewportStyleSets = {};
 
     // Iterate over save entries.
     for ( const [ dirtyViewport, { style } ] of Object.entries( saves ) ) {
@@ -317,8 +317,8 @@ export const clearEmptySaves = ( saves : ViewportStyleSets ) : ViewportStyleSets
  *
  * @return {BlockStyles} cleaned
  */
-export const clearEmptyProperties = ( blockStyles : BlockStyles ) : BlockStyles => {
-    let cleared : BlockStyles = {};
+export const clearEmptyProperties = ( blockStyles: BlockStyles ): BlockStyles => {
+    let cleared: BlockStyles = {};
 
     // Iterate over style properties.
     for ( const [ property, styles ] of Object.entries( blockStyles ) ) {
@@ -367,9 +367,9 @@ export const clearEmptyProperties = ( blockStyles : BlockStyles ) : BlockStyles 
  *
  * @return {ViewportStyleSets} cleaned saves
  */
-export const clearDuplicateSaves = ( saves : ViewportStyleSets ) : ViewportStyleSets => {
-    let valids : ViewportStyleSets = {};
-    let cleared : ViewportStyleSets = {};
+export const clearDuplicateSaves = ( saves: ViewportStyleSets ): ViewportStyleSets => {
+    let valids: ViewportStyleSets = {};
+    let cleared: ViewportStyleSets = {};
 
     for ( const [ dirtyViewport, styles ] of Object.entries( saves ) ) {
         const viewport = parseInt( dirtyViewport );
@@ -405,7 +405,7 @@ export const clearDuplicateSaves = ( saves : ViewportStyleSets ) : ViewportStyle
  *
  * @return {ViewportStyleSets} saves
  */
-export const findBlockSaves = ( attributes : BlockAttributes ) : ViewportStyleSets => {
+export const findBlockSaves = ( attributes: BlockAttributes ): ViewportStyleSets => {
     const style = traverseGet( [ 'style' ], attributes ) || {};
 
     let saves = {
@@ -433,7 +433,7 @@ export const findBlockSaves = ( attributes : BlockAttributes ) : ViewportStyleSe
  *
  * @return {number} viewport
  */
-export const findHighestPropertyViewportStyle = ( property : string, actionViewport: number, viewportStyle : ViewportStyleSets ) : number => {
+export const findHighestPropertyViewportStyle = ( property: string, actionViewport: number, viewportStyle: ViewportStyleSets ): number => {
 
     // Reverse Iteration to get the latest from iframeViewport on.
     const viewportsSaves = Object.keys( viewportStyle ).reverse();
@@ -465,7 +465,7 @@ export const findHighestPropertyViewportStyle = ( property : string, actionViewp
  *
  * @return {BlockDifferences}
  */
-export const findBlockDifferences = ( clientId : clientId, attributes : BlockAttributes, state : State, actionViewport : number ) : BlockDifferences => {
+export const findBlockDifferences = ( clientId: clientId, attributes: BlockAttributes, state: State, actionViewport: number ): BlockDifferences => {
 
     // Deconstruct plain from state.
     const {
@@ -897,14 +897,14 @@ export const findBlockDifferences = ( clientId : clientId, attributes : BlockAtt
  *
  * @return {ViewportStyleSets} valids
  */
-export const findBlockValids = ( clientId : string, state : State ) : ViewportStyleSets => {
+export const findBlockValids = ( clientId: string, state: State ): ViewportStyleSets => {
     const { saves, changes, removes, viewports } = state;
 
     const blockSaves = traverseGet( [ clientId ], saves ) || {};
     const blockChanges = traverseGet( [ clientId ], changes ) || {};
     const blockRemoves = traverseGet( [ clientId ], removes ) || {};
 
-    const blockValids : ViewportStyleSets = {
+    const blockValids: ViewportStyleSets = {
         0: {
             style: {},
         },
@@ -949,7 +949,7 @@ export const findBlockValids = ( clientId : string, state : State ) : ViewportSt
  *
  * @return {T} removes
  */
-export const findRemoves = <T extends AnyObject>(keys: Array<string>, compare: T ) : T => {
+export const findRemoves = <T extends AnyObject>(keys: Array<string>, compare: T ): T => {
     const result = {} as T;
     const key: string | undefined = keys.shift();
 
@@ -1019,7 +1019,7 @@ export const findCleanedChanges = <T extends AnyObject>(attributes: T, removes: 
  *
  * @return {SpectrumProperties}
  */
-export const getSpectrumProperties = ( clientId : clientId, blockName : string, spectrumState : SpectrumState ) : SpectrumProperties => {
+export const getSpectrumProperties = ( clientId: clientId, blockName: string, spectrumState: SpectrumState ): SpectrumProperties => {
 
     // Set styles generator and get spectrumSet.
     const generator = new Generator( clientId, blockName, spectrumState );
@@ -1039,7 +1039,7 @@ export const getSpectrumProperties = ( clientId : clientId, blockName : string, 
  *
  * @return {Array<string | number>}
  */
-export const getViewportStyleProperties = ( viewportStyle: ViewportStyleSets ) : Array<string | number> => {
+export const getViewportStyleProperties = ( viewportStyle: ViewportStyleSets ): Array<string | number> => {
 
     // Initialize a Set to store unique keys
     const allKeys = new Set<string | number>();

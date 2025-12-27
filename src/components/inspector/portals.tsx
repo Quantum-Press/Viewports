@@ -41,7 +41,7 @@ export const InspectorPortals = () => {
     // Set states.
     const {
         isInspecting,
-    } = useSelect( ( select : Function ) => {
+    } = useSelect( ( select: Function ) => {
         const store = select( STORE_NAME );
 
         return {
@@ -64,7 +64,7 @@ export const InspectorPortals = () => {
     /**
      * Set function to find parent of given node by selector.
      */
-    const findParentBySelector = ( node: Element, selector: string ) : Element | null => {
+    const findParentBySelector = ( node: Element, selector: string ): Element | null => {
         let currentElement: Element | null = node.parentElement;
 
         while ( currentElement !== null ) {

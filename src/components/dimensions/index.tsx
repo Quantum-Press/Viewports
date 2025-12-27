@@ -22,7 +22,7 @@ export const Dimensions = () => {
     // Set state dependencies.
     const {
         selected,
-    } = useSelect( ( select : Function ) => {
+    } = useSelect( ( select: Function ) => {
         return {
             selected: select( 'core/block-editor' ).getSelectedBlock(),
         }

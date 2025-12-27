@@ -35,7 +35,7 @@ const { cloneDeep } = window[ 'lodash' ];
  *
  * @return {State} updated state
  */
-export const setViewports = ( state : State , action : Action ) : State => {
+export const setViewports = ( state: State , action: Action ): State => {
     switch ( action.type ) {
         case 'SET_VIEWPORTS' :
             return {
@@ -60,7 +60,7 @@ setViewports.handlesAction = ( actionType ) => actionType === 'SET_VIEWPORTS';
  *
  * @return {State} updated state
  */
-export const setViewport = ( state : State, action : Action ) : State => {
+export const setViewport = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'SET_VIEWPORT' :
             const smallestViewport = Math.min( ... Object.keys( state.viewports )
@@ -88,7 +88,7 @@ setViewport.handlesAction = ( actionType ) => actionType === 'SET_VIEWPORT';
  *
  * @return {State} updated state
  */
-export const setViewportType = ( state : State, action : Action ) : State => {
+export const setViewportType = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'SET_VIEWPORT_TYPE' :
             let viewportType = action.viewportType;
@@ -136,7 +136,7 @@ setViewportType.handlesAction = ( actionType ) => actionType === 'SET_VIEWPORT_T
  *
  * @return {State} updated state
  */
-export const setPrevViewport = ( state : State, action : Action ) : State => {
+export const setPrevViewport = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'SET_PREV_VIEWPORT' :
             switch ( action.viewportType ) {
@@ -239,7 +239,7 @@ setPrevViewport.handlesAction = ( actionType ) => actionType === 'SET_PREV_VIEWP
  *
  * @return {State} updated state
  */
-export const setNextViewport = ( state : State, action : Action ) : State => {
+export const setNextViewport = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'SET_NEXT_VIEWPORT' :
             switch ( action.viewportType ) {
@@ -334,7 +334,7 @@ setNextViewport.handlesAction = ( actionType ) => actionType === 'SET_NEXT_VIEWP
  *
  * @return {State} updated state
  */
-export const setDesktop = ( state : State, action : Action ) : State => {
+export const setDesktop = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'SET_DESKTOP' :
             if ( isInDesktopRange( state.viewport ) ) {
@@ -360,7 +360,7 @@ setDesktop.handlesAction = ( actionType ) => actionType === 'SET_DESKTOP';
  *
  * @return {State} updated state
  */
-export const setTablet = ( state : State, action : Action ) : State => {
+export const setTablet = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'SET_TABLET' :
             if ( isInTabletRange( state.viewport ) ) {
@@ -386,7 +386,7 @@ setTablet.handlesAction = ( actionType ) => actionType === 'SET_TABLET';
  *
  * @return {State} updated state
  */
-export const setMobile = ( state : State, action : Action ) : State => {
+export const setMobile = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'SET_MOBILE' :
             if ( isInMobileRange( state.viewport ) ) {
@@ -412,7 +412,7 @@ setMobile.handlesAction = ( actionType ) => actionType === 'SET_MOBILE';
  *
  * @return {State} updated state
  */
-export const setIframeSize = ( state : State, action : Action ) : State => {
+export const setIframeSize = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'SET_IFRAME_SIZE' :
             const iframeViewport = getHighestPossibleViewport( state.viewports, action.size.width );
@@ -444,7 +444,7 @@ setIframeSize.handlesAction = ( actionType ) => actionType === 'SET_IFRAME_SIZE'
  *
  * @return {State} updated state
  */
-export const setRegistering = ( state : State, action : Action ) : State => {
+export const setRegistering = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'SET_REGISTERING' :
             return {
@@ -466,7 +466,7 @@ setRegistering.handlesAction = ( actionType ) => actionType === 'SET_REGISTERING
  *
  * @return {State} updated state
  */
-export const unsetRegistering = ( state : State, action : Action ) : State => {
+export const unsetRegistering = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'UNSET_REGISTERING' :
             return {
@@ -488,7 +488,7 @@ unsetRegistering.handlesAction = ( actionType ) => actionType === 'UNSET_REGISTE
  *
  * @return {State} updated state
  */
-export const setLoading = ( state : State, action : Action ) : State => {
+export const setLoading = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'SET_LOADING' :
             return {
@@ -510,7 +510,7 @@ setLoading.handlesAction = ( actionType ) => actionType === 'SET_LOADING';
  *
  * @return {State} updated state
  */
-export const unsetLoading = ( state : State, action : Action ) : State => {
+export const unsetLoading = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'UNSET_LOADING' :
             return {
@@ -532,7 +532,7 @@ unsetLoading.handlesAction = ( actionType ) => actionType === 'UNSET_LOADING';
  *
  * @return {State} updated state
  */
-export const setSaving = ( state : State, action : Action ) : State => {
+export const setSaving = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'SET_SAVING' :
             return {
@@ -554,7 +554,7 @@ setSaving.handlesAction = ( actionType ) => actionType === 'SET_SAVING';
  *
  * @return {State} updated state
  */
-export const unsetSaving = ( state : State, action : Action ) : State => {
+export const unsetSaving = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'UNSET_SAVING' :
             return {
@@ -576,7 +576,7 @@ unsetSaving.handlesAction = ( actionType ) => actionType === 'UNSET_SAVING';
  *
  * @return {State} updated state
  */
-export const setAutoSaving = ( state : State, action : Action ) : State => {
+export const setAutoSaving = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'SET_AUTOSAVING' :
             return {
@@ -598,7 +598,7 @@ setAutoSaving.handlesAction = ( actionType ) => actionType === 'SET_AUTOSAVING';
  *
  * @return {State} updated state
  */
-export const unsetAutoSaving = ( state : State, action : Action ) : State => {
+export const unsetAutoSaving = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'UNSET_AUTOSAVING' :
             return {
@@ -620,7 +620,7 @@ unsetAutoSaving.handlesAction = ( actionType ) => actionType === 'UNSET_AUTOSAVI
  *
  * @return {State} updated state
  */
-export const setActive = ( state : State, action : Action ) : State => {
+export const setActive = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'SET_ACTIVE' :
             let { viewport } = state;
@@ -656,7 +656,7 @@ setActive.handlesAction = ( actionType ) => actionType === 'SET_ACTIVE';
  *
  * @return {State} updated state
  */
-export const unsetActive = ( state : State, action : Action ) : State => {
+export const unsetActive = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'UNSET_ACTIVE' :
             return {
@@ -679,7 +679,7 @@ unsetActive.handlesAction = ( actionType ) => actionType === 'UNSET_ACTIVE';
  *
  * @return {State} updated state
  */
-export const setInspecting = ( state : State, action : Action ) : State => {
+export const setInspecting = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'SET_INSPECTING' :
             return {
@@ -701,7 +701,7 @@ setInspecting.handlesAction = ( actionType ) => actionType === 'SET_INSPECTING';
  *
  * @return {State} updated state
  */
-export const unsetInspecting = ( state : State, action : Action ) : State => {
+export const unsetInspecting = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'UNSET_INSPECTING' :
             return {
@@ -723,7 +723,7 @@ unsetInspecting.handlesAction = ( actionType ) => actionType === 'UNSET_INSPECTI
  *
  * @return {State} updated state
  */
-export const toggleInspecting = ( state : State, action : Action ) : State => {
+export const toggleInspecting = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'TOGGLE_INSPECTING' :
             return {
@@ -745,7 +745,7 @@ toggleInspecting.handlesAction = ( actionType ) => actionType === 'TOGGLE_INSPEC
  *
  * @return {State} updated state
  */
-export const setInspectorPosition = ( state : State, action : Action ) : State => {
+export const setInspectorPosition = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'SET_INSPECTOR_POSITION' :
             return {
@@ -767,7 +767,7 @@ setInspectorPosition.handlesAction = ( actionType ) => actionType === 'SET_INSPE
  *
  * @return {State} updated state
  */
-export const setEditing = ( state : State, action : Action ) : State => {
+export const setEditing = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'SET_EDITING' :
             return {
@@ -789,7 +789,7 @@ setEditing.handlesAction = ( actionType ) => actionType === 'SET_EDITING';
  *
  * @return {State} updated state
  */
-export const unsetEditing = ( state : State, action : Action ) : State => {
+export const unsetEditing = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'UNSET_EDITING' :
             return {
@@ -811,7 +811,7 @@ unsetEditing.handlesAction = ( actionType ) => actionType === 'UNSET_EDITING';
  *
  * @return {State} updated state
  */
-export const toggleEditing = ( state : State, action : Action ) : State => {
+export const toggleEditing = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'TOGGLE_EDITING' :
             return {
@@ -833,7 +833,7 @@ toggleEditing.handlesAction = ( actionType ) => actionType === 'TOGGLE_EDITING';
  *
  * @return {State} updated state
  */
-export const toggleActive = ( state : State, action : Action ) : State => {
+export const toggleActive = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'TOGGLE_ACTIVE' :
             const isActive = state.isActive ? false : true;
@@ -869,7 +869,7 @@ toggleActive.handlesAction = ( actionType ) => actionType === 'TOGGLE_ACTIVE';
  *
  * @return {State} updated state
  */
-export const toggleDesktop = ( state : State, action : Action ) : State => {
+export const toggleDesktop = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'TOGGLE_DESKTOP' :
             return {
@@ -892,7 +892,7 @@ toggleDesktop.handlesAction = ( actionType ) => actionType === 'TOGGLE_DESKTOP';
  *
  * @return {State} updated state
  */
-export const toggleTablet = ( state : State, action : Action ) : State => {
+export const toggleTablet = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'TOGGLE_TABLET' :
             return {
@@ -915,7 +915,7 @@ toggleTablet.handlesAction = ( actionType ) => actionType === 'TOGGLE_TABLET';
  *
  * @return {State} updated state
  */
-export const toggleMobile = ( state : State, action : Action ) : State => {
+export const toggleMobile = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'TOGGLE_MOBILE' :
             const smallestViewport = Math.min( ... Object.keys( state.viewports )
@@ -943,7 +943,7 @@ toggleMobile.handlesAction = ( actionType ) => actionType === 'TOGGLE_MOBILE';
  *
  * @return {State} updated state
  */
-export const registerBlockInit = ( state : State, action : Action ) : State => {
+export const registerBlockInit = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'REGISTER_BLOCK_INIT' :
             // console.log( 'REGISTER_BLOCK_INIT', action );
@@ -1026,7 +1026,7 @@ registerBlockInit.handlesAction = ( actionType ) => actionType === 'REGISTER_BLO
  *
  * @return {State} updated state
  */
-export const updateBlockChanges = ( state : State, action : Action ) : State => {
+export const updateBlockChanges = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'UPDATE_BLOCK_CHANGES' :
             // console.log( 'UPDATE_BLOCK_CHANGES', action );
@@ -1054,7 +1054,7 @@ export const updateBlockChanges = ( state : State, action : Action ) : State => 
             const hasRemoves = traverseExist( [ clientId ], blockRemoves );
 
             // Set initial nextState.
-            let nextState : any = { ... state };
+            let nextState: any = { ... state };
 
             // Set new changes state.
             if ( hasChanges ) {
@@ -1140,7 +1140,7 @@ updateBlockChanges.handlesAction = ( actionType ) => actionType === 'UPDATE_BLOC
  *
  * @return {State} updated state
  */
-export const addBlockPropertyChanges = ( state : State, action : Action ) : State => {
+export const addBlockPropertyChanges = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'ADD_BLOCK_PROPERTY_CHANGES' :
 
@@ -1162,7 +1162,7 @@ export const addBlockPropertyChanges = ( state : State, action : Action ) : Stat
             const validStyle = traverseGet( [ clientId, viewport, 'style', prop ], valids, {} );
 
             // Set initial nextState.
-            let nextState : any = {};
+            let nextState: any = {};
 
             // Check if we need to merge to the deepest.
             if ( traverseFilled( [ clientId, viewport, 'style' ], changes ) ) {
@@ -1271,7 +1271,7 @@ addBlockPropertyChanges.handlesAction = ( actionType ) => actionType === 'ADD_BL
  *
  * @return {State} updated state
  */
-export const removeBlock = ( state : State, action : Action ) : State => {
+export const removeBlock = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'REMOVE_BLOCK' :
 
@@ -1317,7 +1317,7 @@ removeBlock.handlesAction = ( actionType ) => actionType === 'REMOVE_BLOCK';
  *
  * @return {State} updated state
  */
-export const removeBlockSaves = ( state : State, action : Action ) : State => {
+export const removeBlockSaves = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'REMOVE_BLOCK_SAVES' :
             const {
@@ -1352,7 +1352,7 @@ export const removeBlockSaves = ( state : State, action : Action ) : State => {
                     nextRemoves = foundRemoves;
                 }
 
-                let nextState : State = {
+                let nextState: State = {
                     ... state,
                     removes: {
                         ... removes,
@@ -1418,7 +1418,7 @@ removeBlockSaves.handlesAction = ( actionType ) => actionType === 'REMOVE_BLOCK_
  *
  * @return {State} updated state
  */
-export const restoreBlockSaves = ( state : State, action : Action ) : State => {
+export const restoreBlockSaves = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'RESTORE_BLOCK_SAVES' :
 
@@ -1437,7 +1437,7 @@ export const restoreBlockSaves = ( state : State, action : Action ) : State => {
             } = state;
 
             // Set nextState.
-            let nextState : any = { ... state };
+            let nextState: any = { ... state };
 
             // Set states.
             const blockChangesStyle = cloneDeep( traverseGet( [ clientId, viewport, 'style' ], changes ) );
@@ -1601,7 +1601,7 @@ restoreBlockSaves.handlesAction = ( actionType ) => actionType === 'RESTORE_BLOC
  *
  * @return {State} updated state
  */
-export const saveBlock = ( state : State, action : Action ) : State => {
+export const saveBlock = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'SAVE_BLOCK' :
             const { clientId, blockName } = action;
@@ -1706,7 +1706,7 @@ saveBlock.handlesAction = ( actionType ) => actionType === 'SAVE_BLOCK';
  *
  * @return {State} updated state
  */
-export const clearBlocks = ( state : State, action : Action ) : State => {
+export const clearBlocks = ( state: State, action: Action ): State => {
     switch ( action.type ) {
         case 'CLEAR_BLOCKS':
             return {
@@ -1731,7 +1731,7 @@ clearBlocks.handlesAction = ( actionType ) => actionType === 'CLEAR_BLOCKS';
  *
  * @return {State} updated state
  */
-export const registerRenderer = ( state : State, action : Action ) : State => {
+export const registerRenderer = ( state: State, action: Action ): State => {
     if ( action.type === 'REGISTER_RENDERER' ) {
         const {
             prop,
@@ -1839,7 +1839,7 @@ export const defaultReducers = {
  *
  * @return {State} nextState
  */
-const getReducedNextState = ( state : State, action : Action, reducers : typeof defaultReducers ) : State => {
+const getReducedNextState = ( state: State, action: Action, reducers: typeof defaultReducers ): State => {
     let nextState = state;
 
     if ( ! nextState ) {
@@ -1865,7 +1865,7 @@ const getReducedNextState = ( state : State, action : Action, reducers : typeof 
  *
  * @return {ReducerManager}
  */
-const createReducerManager = ( defaultReducers ) : ReducerManager => {
+const createReducerManager = ( defaultReducers ): ReducerManager => {
     const reducers = { ... defaultReducers };
 
     return {

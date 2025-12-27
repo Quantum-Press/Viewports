@@ -6,11 +6,11 @@ import { getMergedObject } from '@quantum-viewports/utils';
 import ReactJson from "@webkinect/react-json-view";
 
 interface Style {
-    baseKeys : Array<any>;
-    origKeys : Array<any>;
-    styleKey : string;
-    styleValue : any;
-    onClickFunction : Function;
+    baseKeys: Array<any>;
+    origKeys: Array<any>;
+    styleKey: string;
+    styleValue: any;
+    onClickFunction: Function;
 }
 
 const { isEqual } = window[ 'lodash' ];
@@ -57,8 +57,6 @@ export const Attribute = ( attributes ) => {
 
     // Set spectrum.
     const spectrum = attributes.spectrum as Spectrum;
-
-    // console.log( 'spectrum', spectrum );
 
     // Set useHighlightProperty hook.
     const [ highlightProperty, setHighlightProperty ] = useHighlightProperty();

@@ -47,9 +47,9 @@ export class Generator {
      * @param state
      */
     constructor(
-        clientId : string,
-        blockName : string,
-        state : SpectrumState
+        clientId: string,
+        blockName: string,
+        state: SpectrumState
     ) {
 
         // Set properties.
@@ -334,7 +334,7 @@ export class Generator {
     /**
      * Set method to return SelectorSet from CSS string.
      */
-    getCSSCollectionSet( baseCSS : string ) : CSSCollectionSet {
+    getCSSCollectionSet( baseCSS: string ): CSSCollectionSet {
         const CSSCollectionSet = [] as CSSCollectionSet;
 
         // Set baseParts by splitting baseCSS with selector.
@@ -372,7 +372,7 @@ export class Generator {
     /**
      * Set method to return wp native selector panel by property.
      */
-    getDeclarations( selector : string, collectionSet : CSSCollectionSet ) : string {
+    getDeclarations( selector: string, collectionSet: CSSCollectionSet ): string {
         for ( let index = 0; index < collectionSet.length; index++ ) {
             const collection = collectionSet[ index ];
 
@@ -388,7 +388,7 @@ export class Generator {
     /**
      * Set method to generate properties from css string.
      */
-    generateProperties( css ) : CSSProperties {
+    generateProperties( css ): CSSProperties {
 
         // Search for property key -> value pairs.
         const regex = /([^{}]+)\{([^{}]+)\}/g;
@@ -509,7 +509,7 @@ export class Generator {
         }
 
         // Set css defaults
-        const cssViewportSet : CSSViewportSet = {};
+        const cssViewportSet: CSSViewportSet = {};
 
         // Set unfiltered spectrumSet.
         const spectrumSet = this.getSpectrumSet();
@@ -547,7 +547,7 @@ export class Generator {
     /**
      * Set method to collapse a viewportStyleSet.
      */
-    collapseViewportStyleSets( viewportStyleSets : ViewportStyleSets, tillViewport : number ) {
+    collapseViewportStyleSets( viewportStyleSets: ViewportStyleSets, tillViewport: number ) {
         const stylesToMerge: BlockStyles[] = [];
 
         for ( const [ dirtyViewport, viewportStyleSet ] of Object.entries( viewportStyleSets ) ) {
@@ -600,7 +600,7 @@ export class Generator {
             const key = this.properties[ i ];
 
             // Iterate over ruleSet to compare viewport settings.
-            this.ruleSet.forEach( ( rule : Rule ) => {
+            this.ruleSet.forEach( ( rule: Rule ) => {
                 if ( key !== rule.property ) {
                     return true;
                 }

@@ -36,7 +36,7 @@ export function useResizeObserver<T extends HTMLElement = HTMLElement>(
 
     const isMounted = useIsMounted();
     const previousSize = useRef<Size>( { ...initialSize } );
-    const onResize = useRef<( ( size : Size ) => void ) | undefined>( undefined );
+    const onResize = useRef<( ( size: Size ) => void ) | undefined>( undefined );
     onResize.current = options.onResize;
 
     // Set useEffect to handle iframe resets.
@@ -130,7 +130,7 @@ function extractSize(
     entry: ResizeObserverEntry,
     box: BoxSizesKey,
     sizeType: keyof ResizeObserverSize,
-) : number | undefined {
+): number | undefined {
 
     if ( ! entry[ box ] ) {
         if ( box === 'contentBoxSize' ) {

@@ -33,11 +33,11 @@ export const IndicatorPopup = ( {
     setIsVisible,
     storeId,
     spectrumSet
-} : {
-    isVisible : boolean,
-    setIsVisible : Function,
-    storeId : string,
-    spectrumSet : SpectrumSet
+}: {
+    isVisible: boolean,
+    setIsVisible: Function,
+    storeId: string,
+    spectrumSet: SpectrumSet
 } ) => {
     const {
         isActive,

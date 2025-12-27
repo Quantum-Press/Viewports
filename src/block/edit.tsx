@@ -34,13 +34,13 @@ const {
 /**
  * Export functional BlockEdit component to handle block changes.
  */
-export default function BlockEdit( { block, props } : { block: Block, props: BlockEditProps } ) {
+export default function BlockEdit( { block, props }: { block: Block, props: BlockEditProps } ) {
     const {
         name: blockName,
         setAttributes,
         clientId,
         isSelected,
-    } : {
+    }: {
         name: string,
         setAttributes: ( attrs: Record<string, any> ) => void,
         clientId: string,
@@ -57,7 +57,7 @@ export default function BlockEdit( { block, props } : { block: Block, props: Blo
         isSaving,
         iframeViewport,
         lastEdit,
-    } = useSelect( ( select : Function ) => {
+    } = useSelect( ( select: Function ) => {
         const store = select( STORE_NAME );
 
         return {

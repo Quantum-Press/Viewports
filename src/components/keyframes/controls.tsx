@@ -26,7 +26,7 @@ const {
  *
  * @returns {JSX.Element | null} - The rendered component or null if conditions aren't met.
  */
-export const KeyframeControls = ( { visibleControls, setVisibleControls, storeId, iframeViewport, keyframe } : { visibleControls : Array<object>, setVisibleControls : Function, storeId : string, iframeViewport : number, keyframe } ) => {
+export const KeyframeControls = ( { visibleControls, setVisibleControls, storeId, iframeViewport, keyframe }: { visibleControls: Array<object>, setVisibleControls: Function, storeId: string, iframeViewport: number, keyframe } ) => {
     if ( ! visibleControls.some( obj => isEqual( obj, keyframe ) ) ) {
         return null;
     }

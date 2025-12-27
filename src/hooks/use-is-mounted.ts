@@ -10,7 +10,7 @@ const {
 /**
  * Set function to export use is mounted hook.
  */
-export function useIsMounted() : () => boolean {
+export function useIsMounted(): () => boolean {
     const isMounted = useRef( false );
 
     // Set useEffect to handle mount and unmount.

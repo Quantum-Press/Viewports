@@ -103,7 +103,7 @@ export const findObjectDifferences = <T extends AnyObject | any[]>( obj1: T, obj
  *
  * @return {T[number]}
  */
-export const getMergedObject = <T extends AnyObject[]>( ... objects: T ) : T[number] => {
+export const getMergedObject = <T extends AnyObject[]>( ... objects: T ): T[number] => {
     return objects.reduce( ( prev, obj ) => {
         for ( const [ key ] of Object.entries( obj ) ) {
             const prevValue = prev[ key ];
@@ -132,7 +132,7 @@ export const getMergedObject = <T extends AnyObject[]>( ... objects: T ) : T[num
  *
  * @return {T}
  */
-export const cleanupObject = <T extends AnyObject>( obj: T ) : T => {
+export const cleanupObject = <T extends AnyObject>( obj: T ): T => {
     const cleanedObject = {} as T;
 
     for ( const [ property, value ] of Object.entries( obj ) ) {

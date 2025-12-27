@@ -11,7 +11,7 @@
  * console.log(versionCompare("1.2.0", "1.2")); // 0
  * console.log(versionCompare("1.3", "1.2")); // 1
  */
-export const versionCompare = ( v1: string, v2: string ) : number => {
+export const versionCompare = ( v1: string, v2: string ): number => {
     const parts1 = v1.split( '.' ).map( Number );
     const parts2 = v2.split( '.' ).map( Number );
 

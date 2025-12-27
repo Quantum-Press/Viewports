@@ -15,15 +15,15 @@ export type viewportType = 'desktop' | 'tablet' | 'mobile' | '';
 export type deviceType = 'Desktop' | 'Tablet' | 'Mobile' | '';
 export type viewport = number|string;
 export type Viewports = {
-    [ key: viewport ] : string,
+    [ key: viewport ]: string,
 }
 
 
 export type ClientViewportSets = {
-    [ key: clientId ] : ViewportStyleSets,
+    [ key: clientId ]: ViewportStyleSets,
 }
 export type ViewportStyleSets = {
-    [ key: viewport ] : ViewportStyleSet;
+    [ key: viewport ]: ViewportStyleSet;
 }
 export type ViewportStyleSet = {
     style?: BlockStyles,
@@ -37,11 +37,11 @@ export type BlockDifferences = {
 }
 
 export type RendererPropertySet = {
-    [ key: string ] : RendererSet,
+    [ key: string ]: RendererSet,
 }
 
 export type RendererSet = {
-    [ key: number ] : {
+    [ key: number ]: {
         type?: string,
         callback: Function,
         groupId?: string,
@@ -51,7 +51,7 @@ export type RendererSet = {
 }
 
 export type RendererMapping = {
-    [ key: string ] : string,
+    [ key: string ]: string,
 }
 
 export type CSSCollectionSet = Array<CSSCollection>
@@ -62,19 +62,19 @@ export type CSSCollection = {
 };
 
 export type CSSProperties = {
-    [ key : string ]: string,
+    [ key: string ]: string,
 };
 
 export type CSSViewportSets = {
-    [ key : string ]: CSSViewportSet,
+    [ key: string ]: CSSViewportSet,
 }
 
 export type CSSViewportSet = {
-    [ key : number ]: Array<CSSViewport>,
+    [ key: number ]: Array<CSSViewport>,
 };
 
 export type CSSViewport = {
-    [ key : number ]: string,
+    [ key: number ]: string,
 }
 
 export type RuleSet = Array<Rule>;
@@ -102,7 +102,7 @@ export interface Rule {
 }
 
 export type SpectrumSets = {
-    [ key : string ] : SpectrumSet,
+    [ key: string ]: SpectrumSet,
 };
 
 export type SpectrumSet = Array<Spectrum>;
@@ -129,7 +129,7 @@ export type SpectrumState = {
 }
 
 export type IndicatorPropertySet = {
-    [ key : string ] : {
+    [ key: string ]: {
         property: Array<string>|string,
         groupId: string,
         panelId: string,
@@ -185,7 +185,7 @@ export type Action = {
 }
 
 export type Reducers = {
-    [ key : string ] : Function,
+    [ key: string ]: Function,
 }
 
 export type ReducerManager = {

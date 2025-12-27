@@ -21,11 +21,11 @@ const {
 // Setup dom elements.
 const viewportWrap = document.createElement( 'div' );
 viewportWrap.id = 'qp-viewports-wrap';
-let viewportRoot : any = false;
+let viewportRoot: any = false;
 
 const inspectorWrap = document.createElement( 'div' );
 inspectorWrap.id = 'qp-viewports-inspector-wrap';
-let inspectorRoot : any = false;
+let inspectorRoot: any = false;
 
 
 /**

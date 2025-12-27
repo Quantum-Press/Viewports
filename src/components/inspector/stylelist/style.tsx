@@ -3,11 +3,11 @@ import { STORE_NAME } from '@quantum-viewports/store';
 import { useHighlightProperty } from '@quantum-viewports/hooks';
 
 interface Style {
-    baseKeys : Array<any>;
-    origKeys : Array<any>;
-    styleKey : string;
-    styleValue : any;
-    onClickFunction : Function;
+    baseKeys: Array<any>;
+    origKeys: Array<any>;
+    styleKey: string;
+    styleValue: any;
+    onClickFunction: Function;
 }
 
 const { isEqual } = window[ 'lodash' ];

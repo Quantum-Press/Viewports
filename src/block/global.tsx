@@ -89,7 +89,7 @@ export default function GlobalBlockStyles() {
 
 
     // Set function to check if the block has viewports.
-    const findHighestValidViewport = ( settingsKey : string, settings ) : number => {
+    const findHighestValidViewport = ( settingsKey: string, settings ): number => {
 
         // Reverse Iteration to get the latest from iframeViewport on.
         const viewports = Object.keys( settings ).reverse();

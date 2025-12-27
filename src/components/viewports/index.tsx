@@ -97,8 +97,8 @@ export const Viewports = () => {
                 // Set calculated values.
                 const calculatedWidth = calculateWidth( viewportWidth );
                 const styles = {
-                    width : `${calculatedWidth}px`,
-                    zIndex : countViewports - index,
+                    width: `${calculatedWidth}px`,
+                    zIndex: countViewports - index,
                 }
 
                 // Set active / non-active.

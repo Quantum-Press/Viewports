@@ -8,7 +8,7 @@ export type BlockAttributes = {
 }
 
 export type BlockStyles = {
-    [ key: string ] : BlockStyle,
+    [ key: string ]: BlockStyle,
 }
 
 export type BlockStyle = any;

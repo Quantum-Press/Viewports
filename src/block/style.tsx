@@ -18,7 +18,7 @@ const {
 /**
  * Export functional BlockStyle component to handle block changes.
  */
-export default function BlockStyle( { props } : { props: BlockEditProps } ) {
+export default function BlockStyle( { props }: { props: BlockEditProps } ) {
     const {
         clientId,
     } = props;
@@ -27,7 +27,7 @@ export default function BlockStyle( { props } : { props: BlockEditProps } ) {
     const [ container, setContainer ] = useState( null );
 
     // Set datastore dependencies.
-    useSelect( ( select : Function ) => {
+    useSelect( ( select: Function ) => {
         const store = select( STORE_NAME );
 
         return {

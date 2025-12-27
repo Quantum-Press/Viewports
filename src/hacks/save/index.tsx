@@ -14,10 +14,10 @@ const {
  * Global dirty and save states.
  */
 let isAutosaving = false;
-let isRunning : any = false;
-let oldSaveEntityRecord : Function;
-let oldSavePost : Function;
-let oldAutosave : Function;
+let isRunning: any = false;
+let oldSaveEntityRecord: Function;
+let oldSavePost: Function;
+let oldAutosave: Function;
 
 
 /**
@@ -26,7 +26,7 @@ let oldAutosave : Function;
  * @param name   The events name
  * @param detail Additional data passed to subscribers
  */
-function dispatchEvent( name : string, detail : any ) {
+function dispatchEvent( name: string, detail: any ) {
     document.body.dispatchEvent( new CustomEvent( name, { detail } ) );
 }
 
@@ -40,7 +40,7 @@ function dispatchEvent( name : string, detail : any ) {
  * @param options
  * @returns
  */
-function newSaveEntityRecord( kind : string, name : string, record : any[], options : object ) {
+function newSaveEntityRecord( kind: string, name: string, record: any[], options: object ) {
 
     // Bail out if autosaving.
     if ( isAutosaving ) {
@@ -64,11 +64,11 @@ function newSaveEntityRecord( kind : string, name : string, record : any[], opti
     // Return outer promise and dispatch an event when inner promise is done.
     return new Promise( ( resolve, reject ) => {
         resultPromise
-        .then( ( response : any ) => {
+        .then( ( response: any ) => {
             dispatchEvent( 'qp-saveEntityRecord-after', response );
             resolve( response );
         } )
-        .catch( ( response : any ) => {
+        .catch( ( response: any ) => {
             dispatchEvent( 'qp-saveEntityRecord-after', response );
             reject( response );
         } );
@@ -94,11 +94,11 @@ function newSavePost( options = {} ) {
     // Return outer promise and dispatch an event when inner promise is done.
     return new Promise( ( resolve, reject ) => {
         resultPromise
-        .then( ( response : any ) => {
+        .then( ( response: any ) => {
             dispatchEvent( 'qp-savePost-after', response );
             resolve( response );
         } )
-        .catch( ( response : any ) => {
+        .catch( ( response: any ) => {
             dispatchEvent( 'qp-savePost-after', response );
             reject( response );
         } );
@@ -112,7 +112,7 @@ function newSavePost( options = {} ) {
  * @param state
  * @returns
  */
-function newAutosave( state : any ) {
+function newAutosave( state: any ) {
 
     // Fire event before autosave().
     dispatchEvent( 'qp-autosave-before', state );
@@ -124,12 +124,12 @@ function newAutosave( state : any ) {
     // Return outer promise and dispatch an event when inner promise is done.
     return new Promise( ( resolve, reject ) => {
         resultPromise
-        .then( ( response : any ) => {
+        .then( ( response: any ) => {
             dispatchEvent( 'qp-autosave-after', response );
             isAutosaving = false;
             resolve( response );
         } )
-        .catch( ( response : any ) => {
+        .catch( ( response: any ) => {
             dispatchEvent( 'qp-autosave-after', response );
             isAutosaving = false;
             reject( response );

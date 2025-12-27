@@ -13,7 +13,7 @@ const {
  *
  * @return {T}
  */
-export const cleanupArray = <T extends Array<any>>( arr : T ) : T => {
+export const cleanupArray = <T extends Array<any>>( arr: T ): T => {
     for ( let i = 0; i < arr.length; i++ ) {
         const value = arr[ i ];
 

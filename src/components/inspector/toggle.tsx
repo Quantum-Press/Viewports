@@ -20,13 +20,13 @@ const {
  *
  * @param object props
  */
-export const ToggleInspector = ( { showText = true, forceShow = false } : { showText?: boolean, forceShow?: boolean } ) => {
+export const ToggleInspector = ( { showText = true, forceShow = false }: { showText?: boolean, forceShow?: boolean } ) => {
 
     // Set states.
     const {
         selected,
         isInspecting,
-    } = useSelect( ( select : Function ) => {
+    } = useSelect( ( select: Function ) => {
         const store = select( STORE_NAME );
         const selected = select( 'core/block-editor' ).getSelectedBlock();
 

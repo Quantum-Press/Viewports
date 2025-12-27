@@ -7,8 +7,8 @@ type DebugTitle = string;
 
 // Debugging Options Interface
 interface DebugOptions {
-    enabled : boolean;
-    sections : DebugSection[] | true; // List of sections for which debugging is allowed
+    enabled: boolean;
+    sections: DebugSection[] | true; // List of sections for which debugging is allowed
 }
 
 
@@ -17,7 +17,7 @@ interface DebugOptions {
  *
  * @return {boolean} whether debug is enabled
  */
-function isDebugEnabled() : boolean {
+function isDebugEnabled(): boolean {
     const params = new URLSearchParams( window.location.search );
     const sectionsParam = params.get( 'debug' );
 
@@ -35,7 +35,7 @@ function isDebugEnabled() : boolean {
  *
  * @return {DebugSection[] | true} list of sections to debug or all
  */
-function getDebugSections() : DebugSection[] | true {
+function getDebugSections(): DebugSection[] | true {
     const params = new URLSearchParams( window.location.search );
     const sectionsParam = params.get( 'debug' );
 
@@ -74,7 +74,7 @@ export const debugOptions: DebugOptions = {
  *
  * @return {void}
  */
-export const debug = ( type: DebugType, section: DebugSection, title: DebugTitle, message: any = '' ) : void => {
+export const debug = ( type: DebugType, section: DebugSection, title: DebugTitle, message: any = '' ): void => {
 
     // Do nothing if debugging is not enabled.
     if ( ! debugOptions.enabled ) {

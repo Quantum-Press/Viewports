@@ -27,7 +27,7 @@ export const Head = () => {
     // Set state dependencies.
     const {
         inspectorPosition,
-    } = useSelect( ( select : Function ) => {
+    } = useSelect( ( select: Function ) => {
         const store = select( STORE_NAME );
 
         return {

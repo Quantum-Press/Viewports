@@ -21,19 +21,18 @@ const {
  * @param number storeId
  * @param SpectrumSet spectrumSet
  */
-export const StyleList = ( { storeId, spectrumSet } : { storeId : string, spectrumSet : SpectrumSet } ) => {
+export const StyleList = ( { storeId, spectrumSet }: { storeId: string, spectrumSet: SpectrumSet } ) => {
 
     // Set store dependencies.
     const {
         iframeViewport,
         hasBlockChanges,
         hasBlockRemoves,
-    } = useSelect( ( select : Function ) => {
+    } = useSelect( ( select: Function ) => {
         const store = select( STORE_NAME );
 
         return {
-            valids: store.getBlockValids( storeId ),
-            removes: store.getBlockRemoves( storeId ),
+            lastEdit: store.getLastEdit(),
             iframeViewport: store.getIframeViewport(),
             hasBlockChanges: store.hasBlockChanges( storeId ),
             hasBlockRemoves: store.hasBlockRemoves( storeId ),
@@ -74,7 +73,7 @@ export const BlockStyleList = () => {
     // Set store dependencies.
     const {
         selected,
-    } = useSelect( ( select : Function ) => {
+    } = useSelect( ( select: Function ) => {
         return {
             selected: select( 'core/block-editor' ).getSelectedBlock(),
         };

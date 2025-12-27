@@ -16,7 +16,7 @@ const {
     },
 } = window['wp'];
 
-const { Fill, Slot } = createSlotFill('BlockStyleSlot');
+const { Fill, Slot } = createSlotFill( 'BlockStyleSlot' );
 
 export const BlockStyles = () => {
     const [ documentHead, setDocumentHead ] = useState<HTMLElement | null>( null );

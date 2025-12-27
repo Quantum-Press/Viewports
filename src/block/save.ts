@@ -11,7 +11,7 @@ const {
 /**
  * Export functional BlockSave component to handle block changes.
  */
-export const BlockSave = ( { block, props } : { block: Block, props: BlockSaveProps } ) => {
+export const BlockSave = ( { block, props }: { block: Block, props: BlockSaveProps } ) => {
 
     // Debug saved attributes on enabled debug.
     if ( debugOptions.enabled && props.attributes.viewports && Object.keys( props.attributes.viewports ).length ) {

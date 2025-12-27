@@ -3,7 +3,7 @@
  *
  * @return {object} node document
  */
-export const getEditorHead = () : HTMLElement | null => {
+export const getEditorHead = (): HTMLElement | null => {
     if ( isSiteEditor() ) {
         const iframe = document.querySelector( 'iframe[name="editor-canvas"]' ) as HTMLIFrameElement;
 
@@ -19,7 +19,7 @@ export const getEditorHead = () : HTMLElement | null => {
  *
  * @return {boolean} indication
  */
-export const isSiteEditor = () : boolean => {
+export const isSiteEditor = (): boolean => {
     if ( 'site-editor' === window[ 'pagenow' ] ) {
         return true;
     }
@@ -33,7 +33,7 @@ export const isSiteEditor = () : boolean => {
  *
  * @return {string} version
  */
-export const getVersion = () : string => {
+export const getVersion = (): string => {
     const script = document.getElementById( 'quantum-viewports-scripts-js' ) as HTMLScriptElement;
     const parts = script.src.split( '?' );
     const params = new URLSearchParams( '?' + parts[1] );

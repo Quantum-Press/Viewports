@@ -63,7 +63,7 @@ export const useLongPress = ( onLongPress: Function, onClick: Function, { should
  *
  * @return {boolean}
  */
-const isTouchEvent = ( event : Event ) => {
+const isTouchEvent = ( event: Event ) => {
     return "touches" in event;
 };
 
@@ -75,7 +75,7 @@ const isTouchEvent = ( event : Event ) => {
  *
  * @return {boolean}
  */
-const preventDefault = ( event : TouchEvent ) => {
+const preventDefault = ( event: TouchEvent ) => {
     if ( ! isTouchEvent( event ) ) return;
 
     if ( event.touches.length < 2 && event.preventDefault ) {

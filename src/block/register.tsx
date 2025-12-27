@@ -24,7 +24,7 @@ const {
 
 
 // Filter into all blocks register to wrap around block.edit and block.save.
-addFilter( 'blocks.registerBlockType', 'qp/viewports-block', ( block : Block ) => {
+addFilter( 'blocks.registerBlockType', 'qp/viewports-block', ( block: Block ) => {
 
     // Ignore all blacklisted blocks.
     if ( isInBlockBlacklist( block.name ) ) {
@@ -34,7 +34,7 @@ addFilter( 'blocks.registerBlockType', 'qp/viewports-block', ( block : Block ) =
     // Return wrapped edit and save.
     return {
         ... block,
-        edit( props : BlockEditProps ) {
+        edit( props: BlockEditProps ) {
             return (
                 <>
                     { props.isSelectionEnabled && <BlockEdit
@@ -57,7 +57,7 @@ addFilter( 'blocks.registerBlockType', 'qp/viewports-block', ( block : Block ) =
             );
         },
 
-        save( props : BlockSaveProps ) {
+        save( props: BlockSaveProps ) {
             return <BlockSave block={ block } props={ props } />
         }
     };

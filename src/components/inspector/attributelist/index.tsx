@@ -15,17 +15,16 @@ const {
  * @param number storeId
  * @param SpectrumSet spectrumSet
  */
-export const AttributeList = ( { storeId, spectrumSet } : { storeId : string, spectrumSet : SpectrumSet } ) => {
+export const AttributeList = ( { storeId, spectrumSet }: { storeId: string, spectrumSet: SpectrumSet } ) => {
 
     // Set store dependencies.
     const {
         iframeViewport,
-    } = useSelect( ( select : Function ) => {
+    } = useSelect( ( select: Function ) => {
         const store = select( STORE_NAME );
 
         return {
-            valids: store.getBlockValids( storeId ),
-            removes: store.getBlockRemoves( storeId ),
+            lastEdit: store.getLastEdit(),
             iframeViewport: store.getIframeViewport(),
         };
     }, [] );
@@ -57,7 +56,7 @@ export const BlockAttributeList = () => {
     // Set store dependencies.
     const {
         selected,
-    } = useSelect( ( select : Function ) => {
+    } = useSelect( ( select: Function ) => {
         return {
             selected: select( 'core/block-editor' ).getSelectedBlock(),
         };

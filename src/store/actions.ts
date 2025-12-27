@@ -9,7 +9,7 @@ import type { Size } from '@quantum-viewports/hooks';
  *
  * @return {Action}
  */
-export const setViewports = ( viewports : Viewports ) : Action => {
+export const setViewports = ( viewports: Viewports ): Action => {
     return {
         type: 'SET_VIEWPORTS',
         viewports,
@@ -24,7 +24,7 @@ export const setViewports = ( viewports : Viewports ) : Action => {
  *
  * @return {Action}
  */
-export const setViewport = ( viewport : number ) : Action => {
+export const setViewport = ( viewport: number ): Action => {
     return {
         type: 'SET_VIEWPORT',
         viewport,
@@ -39,7 +39,7 @@ export const setViewport = ( viewport : number ) : Action => {
  *
  * @return {Action}
  */
-export const setViewportType = ( viewportType : viewportType ) : Action => {
+export const setViewportType = ( viewportType: viewportType ): Action => {
     return {
         type: 'SET_VIEWPORT_TYPE',
         viewportType,
@@ -54,7 +54,7 @@ export const setViewportType = ( viewportType : viewportType ) : Action => {
  *
  * @return {Action}
  */
-export const setPrevViewport = ( viewportType : viewportType = '' ) : Action => {
+export const setPrevViewport = ( viewportType: viewportType = '' ): Action => {
     return {
         type: 'SET_PREV_VIEWPORT',
         viewportType,
@@ -69,7 +69,7 @@ export const setPrevViewport = ( viewportType : viewportType = '' ) : Action => 
  *
  * @return {Action}
  */
-export const setNextViewport = ( viewportType : viewportType = '' ) : Action => {
+export const setNextViewport = ( viewportType: viewportType = '' ): Action => {
     return {
         type: 'SET_NEXT_VIEWPORT',
         viewportType,
@@ -82,7 +82,7 @@ export const setNextViewport = ( viewportType : viewportType = '' ) : Action => 
  *
  * @return {Action}
  */
-export const setDesktop = () : Action => {
+export const setDesktop = (): Action => {
     return {
         type: 'SET_DESKTOP',
     };
@@ -94,7 +94,7 @@ export const setDesktop = () : Action => {
  *
  * @return {Action}
  */
-export const setTablet = () : Action => {
+export const setTablet = (): Action => {
     return {
         type: 'SET_TABLET',
     };
@@ -106,7 +106,7 @@ export const setTablet = () : Action => {
  *
  * @return {Action}
  */
-export const setMobile = () : Action => {
+export const setMobile = (): Action => {
     return {
         type: 'SET_MOBILE',
     };
@@ -118,7 +118,7 @@ export const setMobile = () : Action => {
  *
  * @return {Action}
  */
-export const setIframeSize = ( size : Size ) : Action => {
+export const setIframeSize = ( size: Size ): Action => {
     return {
         type: 'SET_IFRAME_SIZE',
         size,
@@ -131,7 +131,7 @@ export const setIframeSize = ( size : Size ) : Action => {
  *
  * @return {Action}
  */
-export const setRegistering = () : Action => {
+export const setRegistering = (): Action => {
     return {
         type: 'SET_REGISTERING',
     };
@@ -143,7 +143,7 @@ export const setRegistering = () : Action => {
  *
  * @return {Action}
  */
-export const unsetRegistering = () : Action => {
+export const unsetRegistering = (): Action => {
     return {
         type: 'UNSET_REGISTERING',
     };
@@ -155,7 +155,7 @@ export const unsetRegistering = () : Action => {
  *
  * @return {Action}
  */
-export const setLoading = () : Action => {
+export const setLoading = (): Action => {
     return {
         type: 'SET_LOADING',
     };
@@ -167,7 +167,7 @@ export const setLoading = () : Action => {
  *
  * @return {Action}
  */
-export const unsetLoading = () : Action => {
+export const unsetLoading = (): Action => {
     return {
         type: 'UNSET_LOADING',
     };
@@ -179,7 +179,7 @@ export const unsetLoading = () : Action => {
  *
  * @return {Action}
  */
-export const setSaving = () : Action => {
+export const setSaving = (): Action => {
     return {
         type: 'SET_SAVING',
     };
@@ -191,7 +191,7 @@ export const setSaving = () : Action => {
  *
  * @return {Action}
  */
-export const unsetSaving = () : Action => {
+export const unsetSaving = (): Action => {
     return {
         type: 'UNSET_SAVING',
     };
@@ -203,7 +203,7 @@ export const unsetSaving = () : Action => {
  *
  * @return {Action}
  */
-export const setAutoSaving = () : Action => {
+export const setAutoSaving = (): Action => {
     return {
         type: 'SET_AUTOSAVING',
     };
@@ -215,7 +215,7 @@ export const setAutoSaving = () : Action => {
  *
  * @return {Action}
  */
-export const unsetAutoSaving = () : Action => {
+export const unsetAutoSaving = (): Action => {
     return {
         type: 'UNSET_AUTOSAVING',
     };
@@ -227,7 +227,7 @@ export const unsetAutoSaving = () : Action => {
  *
  * @return {Action}
  */
-export const setActive = () : Action => {
+export const setActive = (): Action => {
     return {
         type: 'SET_ACTIVE',
     };
@@ -239,7 +239,7 @@ export const setActive = () : Action => {
  *
  * @return {Action}
  */
-export const unsetActive = () : Action => {
+export const unsetActive = (): Action => {
     return {
         type: 'UNSET_ACTIVE',
     };
@@ -251,7 +251,7 @@ export const unsetActive = () : Action => {
  *
  * @return {Action}
  */
-export const setInspecting = () : Action => {
+export const setInspecting = (): Action => {
     return {
         type: 'SET_INSPECTING',
     };
@@ -263,7 +263,7 @@ export const setInspecting = () : Action => {
  *
  * @return {Action}
  */
-export const unsetInspecting = () : Action => {
+export const unsetInspecting = (): Action => {
     return {
         type: 'UNSET_INSPECTING',
     };
@@ -275,7 +275,7 @@ export const unsetInspecting = () : Action => {
  *
  * @return {Action}
  */
-export const toggleInspecting = () : Action => {
+export const toggleInspecting = (): Action => {
     return {
         type: 'TOGGLE_INSPECTING',
     };
@@ -289,7 +289,7 @@ export const toggleInspecting = () : Action => {
  *
  * @return {Action}
  */
-export const setInspectorPosition = ( position : string ) : Action => {
+export const setInspectorPosition = ( position: string ): Action => {
     return {
         type: 'SET_INSPECTOR_POSITION',
         position,
@@ -302,7 +302,7 @@ export const setInspectorPosition = ( position : string ) : Action => {
  *
  * @return {Action}
  */
-export const setEditing = () : Action => {
+export const setEditing = (): Action => {
     return {
         type: 'SET_EDITING',
     };
@@ -314,7 +314,7 @@ export const setEditing = () : Action => {
  *
  * @return {Action}
  */
-export const unsetEditing = () : Action => {
+export const unsetEditing = (): Action => {
     return {
         type: 'UNSET_EDITING',
     };
@@ -326,7 +326,7 @@ export const unsetEditing = () : Action => {
  *
  * @return {Action}
  */
-export const toggleEditing = () : Action => {
+export const toggleEditing = (): Action => {
     return {
         type: 'TOGGLE_EDITING',
     };
@@ -338,7 +338,7 @@ export const toggleEditing = () : Action => {
  *
  * @return {Action}
  */
-export const toggleActive = () : Action => {
+export const toggleActive = (): Action => {
     return {
         type: 'TOGGLE_ACTIVE',
     };
@@ -350,7 +350,7 @@ export const toggleActive = () : Action => {
  *
  * @return {Action}
  */
-export const toggleDesktop = () : Action => {
+export const toggleDesktop = (): Action => {
     return {
         type: 'TOGGLE_DESKTOP',
     };
@@ -362,7 +362,7 @@ export const toggleDesktop = () : Action => {
  *
  * @return {Action}
  */
-export const toggleTablet = () : Action => {
+export const toggleTablet = (): Action => {
     return {
         type: 'TOGGLE_TABLET',
     };
@@ -374,7 +374,7 @@ export const toggleTablet = () : Action => {
  *
  * @return {Action}
  */
-export const toggleMobile = () : Action => {
+export const toggleMobile = (): Action => {
     return {
         type: 'TOGGLE_MOBILE',
     };
@@ -391,10 +391,10 @@ export const toggleMobile = () : Action => {
  * @return {Action}
  */
 export const registerBlockInit = (
-    clientId : string,
-    blockName : string,
-    attributes : BlockAttributes
-) : Action => {
+    clientId: string,
+    blockName: string,
+    attributes: BlockAttributes
+): Action => {
     return {
         type: 'REGISTER_BLOCK_INIT',
         clientId,
@@ -415,11 +415,11 @@ export const registerBlockInit = (
  * @return {Action}
  */
 export const updateBlockChanges = (
-    clientId : string,
-    blockName : string,
-    attributes : BlockAttributes,
-    viewport : number = null
-) : Action => {
+    clientId: string,
+    blockName: string,
+    attributes: BlockAttributes,
+    viewport: number = null
+): Action => {
     return {
         type: 'UPDATE_BLOCK_CHANGES',
         clientId,
@@ -441,11 +441,11 @@ export const updateBlockChanges = (
  * @return {Action}
  */
 export const addBlockPropertyChanges = (
-    clientId : string,
-    blockName : string,
-    viewport : number,
+    clientId: string,
+    blockName: string,
+    viewport: number,
     prop: string
-) : Action => {
+): Action => {
     return {
         type: 'ADD_BLOCK_PROPERTY_CHANGES',
         clientId,
@@ -464,8 +464,8 @@ export const addBlockPropertyChanges = (
  * @return {Action}
  */
 export const removeBlock = (
-    clientId : string,
-) : Action => {
+    clientId: string,
+): Action => {
     return {
         type: 'REMOVE_BLOCK',
         clientId,
@@ -484,11 +484,11 @@ export const removeBlock = (
  * @return {Action}
  */
 export const removeBlockSaves = (
-    clientId : string,
-    blockName : string,
-    props : Array<string>,
-    viewport : number
-) : Action => {
+    clientId: string,
+    blockName: string,
+    props: Array<string>,
+    viewport: number
+): Action => {
     return {
         type: 'REMOVE_BLOCK_SAVES',
         clientId,
@@ -509,7 +509,7 @@ export const removeBlockSaves = (
  *
  * @return {Action}
  */
-export const restoreBlockSaves = ( clientId : string, blockName : string, props : Array<string>, viewport : number ) : Action => {
+export const restoreBlockSaves = ( clientId: string, blockName: string, props: Array<string>, viewport: number ): Action => {
     return {
         type: 'RESTORE_BLOCK_SAVES',
         clientId,
@@ -527,7 +527,7 @@ export const restoreBlockSaves = ( clientId : string, blockName : string, props 
  *
  * @return {Action}
  */
-export const saveBlock = ( clientId : string, blockName : string ) : Action => {
+export const saveBlock = ( clientId: string, blockName: string ): Action => {
     return {
         type: 'SAVE_BLOCK',
         clientId,
@@ -541,7 +541,7 @@ export const saveBlock = ( clientId : string, blockName : string ) : Action => {
  *
  * @return {Action}
  */
-export const clearBlocks = () : Action => {
+export const clearBlocks = (): Action => {
     return {
         type: 'CLEAR_BLOCKS',
     }
@@ -567,7 +567,7 @@ export const registerRenderer = (
     groupId: string = '',
     panelId: string = '',
     mapping: RendererMapping = {}
-) : Action => ( {
+): Action => ( {
     type: 'REGISTER_RENDERER',
     prop,
     callback,

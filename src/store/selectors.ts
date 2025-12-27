@@ -38,7 +38,7 @@ const { cloneDeep } = window[ 'lodash' ];
  *
  * @return {object} viewports
  */
-export const getViewports = ( state : State ) : object => {
+export const getViewports = ( state: State ): object => {
     return state.viewports;
 };
 
@@ -50,7 +50,7 @@ export const getViewports = ( state : State ) : object => {
  *
  * @return {integer} viewport
  */
-export const getViewport = ( state : State ) : number => {
+export const getViewport = ( state: State ): number => {
     if ( 0 === state.viewport ) {
         return document.querySelector( '.components-resizable-box__container, .edit-post-visual-editor' )?.getBoundingClientRect().width;
     }
@@ -66,7 +66,7 @@ export const getViewport = ( state : State ) : number => {
  *
  * @return {integer} desktop viewport
  */
-export const getDesktop = ( state : State ) : number => {
+export const getDesktop = ( state: State ): number => {
     return state.desktop;
 };
 
@@ -78,7 +78,7 @@ export const getDesktop = ( state : State ) : number => {
  *
  * @return {integer} tablet viewport
  */
-export const getTablet = ( state : State ) : number => {
+export const getTablet = ( state: State ): number => {
     return state.tablet;
 };
 
@@ -90,7 +90,7 @@ export const getTablet = ( state : State ) : number => {
  *
  * @return {integer} mobile viewport
  */
-export const getMobile = ( state : State ) : number => {
+export const getMobile = ( state: State ): number => {
     return state.mobile;
 };
 
@@ -102,7 +102,7 @@ export const getMobile = ( state : State ) : number => {
  *
  * @return {Size} of iframe
  */
-export const getIframeSize = ( state : State ) : Size => {
+export const getIframeSize = ( state: State ): Size => {
     return state.iframeSize;
 };
 
@@ -114,7 +114,7 @@ export const getIframeSize = ( state : State ) : Size => {
  *
  * @return {number}
  */
-export const getIframeViewport = ( state : State ) : number => {
+export const getIframeViewport = ( state: State ): number => {
     return state.iframeViewport;
 };
 
@@ -126,7 +126,7 @@ export const getIframeViewport = ( state : State ) : number => {
  *
  * @return {boolean}
  */
-export const isRegistering = ( state : State ) : boolean => {
+export const isRegistering = ( state: State ): boolean => {
     return state.isRegistering;
 };
 
@@ -138,7 +138,7 @@ export const isRegistering = ( state : State ) : boolean => {
  *
  * @return {boolean}
  */
-export const isLoading = ( state : State ) : boolean => {
+export const isLoading = ( state: State ): boolean => {
     return state.isLoading;
 };
 
@@ -150,7 +150,7 @@ export const isLoading = ( state : State ) : boolean => {
  *
  * @return {boolean}
  */
-export const isSaving = ( state : State ) : boolean => {
+export const isSaving = ( state: State ): boolean => {
     return state.isSaving;
 };
 
@@ -162,7 +162,7 @@ export const isSaving = ( state : State ) : boolean => {
  *
  * @return {boolean}
  */
-export const isAutoSaving = ( state : State ) : boolean => {
+export const isAutoSaving = ( state: State ): boolean => {
     return state.isAutoSaving;
 };
 
@@ -174,7 +174,7 @@ export const isAutoSaving = ( state : State ) : boolean => {
  *
  * @return {boolean}
  */
-export const isActive = ( state : State ) : boolean => {
+export const isActive = ( state: State ): boolean => {
     return state.isActive;
 };
 
@@ -186,7 +186,7 @@ export const isActive = ( state : State ) : boolean => {
  *
  * @return {boolean}
  */
-export const isInspecting = ( state : State ) : boolean => {
+export const isInspecting = ( state: State ): boolean => {
     return state.isInspecting;
 };
 
@@ -198,7 +198,7 @@ export const isInspecting = ( state : State ) : boolean => {
  *
  * @return {string}
  */
-export const getInspectorPosition = ( state : State ) : string => {
+export const getInspectorPosition = ( state: State ): string => {
     return state.inspectorPosition;
 };
 
@@ -210,7 +210,7 @@ export const getInspectorPosition = ( state : State ) : string => {
  *
  * @return {boolean}
  */
-export const isEditing = ( state : State ) : boolean => {
+export const isEditing = ( state: State ): boolean => {
     return state.isEditing;
 };
 
@@ -222,7 +222,7 @@ export const isEditing = ( state : State ) : boolean => {
  *
  * @return {boolean}
  */
-export const inDesktopRange = ( state : State ) : boolean => {
+export const inDesktopRange = ( state: State ): boolean => {
     return isInDesktopRange( state.viewport );
 };
 
@@ -234,7 +234,7 @@ export const inDesktopRange = ( state : State ) : boolean => {
  *
  * @return {boolean}
  */
-export const inTabletRange = ( state : State ) : boolean => {
+export const inTabletRange = ( state: State ): boolean => {
     return isInTabletRange( state.viewport );
 };
 
@@ -246,7 +246,7 @@ export const inTabletRange = ( state : State ) : boolean => {
  *
  * @return {boolean}
  */
-export const inMobileRange = ( state : State ) : boolean => {
+export const inMobileRange = ( state: State ): boolean => {
     return isInMobileRange( state.viewport );
 };
 
@@ -259,7 +259,7 @@ export const inMobileRange = ( state : State ) : boolean => {
  *
  * @return {boolean}
  */
-export const isRegistered = ( state : State, clientId : string ) : boolean => {
+export const isRegistered = ( state: State, clientId: string ): boolean => {
     return state.valids.hasOwnProperty( clientId );
 }
 
@@ -272,7 +272,7 @@ export const isRegistered = ( state : State, clientId : string ) : boolean => {
  *
  * @return {boolean}
  */
-export const hasBlockViewports = ( state : State, clientId : string ) : boolean => {
+export const hasBlockViewports = ( state: State, clientId: string ): boolean => {
     const hasSaves = state.saves.hasOwnProperty( clientId ) && Object.keys( state.saves[ clientId ] ).length ? true : false;
     const hasChanges = state.changes.hasOwnProperty( clientId ) && Object.keys( state.changes[ clientId ] ).length ? true : false;
     const hasRemoves = state.removes.hasOwnProperty( clientId ) && Object.keys( state.removes[ clientId ] ).length ? true : false;
@@ -293,7 +293,7 @@ export const hasBlockViewports = ( state : State, clientId : string ) : boolean 
  *
  * @return {boolean}
  */
-export const hasBlockDefaults = ( state : State, clientId : string ) : boolean => {
+export const hasBlockDefaults = ( state: State, clientId: string ): boolean => {
     return traverseFilled( [ clientId, 0, 'style' ], state.saves );
 };
 
@@ -306,7 +306,7 @@ export const hasBlockDefaults = ( state : State, clientId : string ) : boolean =
  *
  * @return {boolean}
  */
-export const hasBlockSaves = ( state : State, clientId : string ) : boolean => {
+export const hasBlockSaves = ( state: State, clientId: string ): boolean => {
     const saves = traverseGet( [ clientId ], state.saves, {} );
 
     if ( 1 < Object.keys( saves ).length ) {
@@ -325,7 +325,7 @@ export const hasBlockSaves = ( state : State, clientId : string ) : boolean => {
  *
  * @return {boolean}
  */
-export const hasBlockChanges = ( state : State, clientId : string ) : boolean => {
+export const hasBlockChanges = ( state: State, clientId: string ): boolean => {
     return traverseFilled( [ clientId ], state.changes );
 };
 
@@ -340,7 +340,7 @@ export const hasBlockChanges = ( state : State, clientId : string ) : boolean =>
  *
  * @return {boolean}
  */
-export const hasBlockPropertyChanges = ( state : State, clientId : string, viewport : number, property : string ) : boolean => {
+export const hasBlockPropertyChanges = ( state: State, clientId: string, viewport: number, property: string ): boolean => {
     return traverseFilled( [ clientId, viewport, 'style', property ], state.changes );
 };
 
@@ -353,7 +353,7 @@ export const hasBlockPropertyChanges = ( state : State, clientId : string, viewp
  *
  * @return {boolean}
  */
-export const hasBlockValids = ( state : State, clientId : string ) : boolean => {
+export const hasBlockValids = ( state: State, clientId: string ): boolean => {
     return traverseFilled( [ clientId ], state.valids );
 };
 
@@ -366,7 +366,7 @@ export const hasBlockValids = ( state : State, clientId : string ) : boolean => 
  *
  * @return {boolean}
  */
-export const hasBlockRemoves = ( state : State, clientId : string ) : boolean => {
+export const hasBlockRemoves = ( state: State, clientId: string ): boolean => {
     return traverseFilled( [ clientId ], state.removes );
 };
 
@@ -381,7 +381,7 @@ export const hasBlockRemoves = ( state : State, clientId : string ) : boolean =>
  *
  * @return {boolean}
  */
-export const hasBlockPropertyRemoves = ( state : State, clientId : string, viewport : number, property : string ) : boolean => {
+export const hasBlockPropertyRemoves = ( state: State, clientId: string, viewport: number, property: string ): boolean => {
     return traverseFilled( [ clientId, viewport, 'style', property ], state.removes );
 };
 
@@ -393,7 +393,7 @@ export const hasBlockPropertyRemoves = ( state : State, clientId : string, viewp
  *
  * @return {object} saves
  */
-export const getSaves = ( state : State ) : object => {
+export const getSaves = ( state: State ): object => {
     return state.saves;
 };
 
@@ -406,7 +406,7 @@ export const getSaves = ( state : State ) : object => {
  *
  * @return {object} block saves
  */
-export const getBlockSaves = ( state : State, clientId : string ) : object => {
+export const getBlockSaves = ( state: State, clientId: string ): object => {
     return traverseGet( [ clientId ], state.saves, {} );
 };
 
@@ -421,7 +421,7 @@ export const getBlockSaves = ( state : State, clientId : string ) : object => {
  *
  * @return {object} block saves
  */
-export const getBlockPropertySaves = ( state : State, clientId : string, viewport : number, property : string ) : object => {
+export const getBlockPropertySaves = ( state: State, clientId: string, viewport: number, property: string ): object => {
     return traverseGet( [ clientId, viewport, 'style', property ], state.saves, {} );
 };
 
@@ -434,7 +434,7 @@ export const getBlockPropertySaves = ( state : State, clientId : string, viewpor
  *
  * @return {object} block saves
  */
-export const getGeneratedBlockSaves = ( state : State, clientId : string ) : object => {
+export const getGeneratedBlockSaves = ( state: State, clientId: string ): object => {
     const { saves, changes, removes, valids } = state;
 
     // Set states.
@@ -481,7 +481,7 @@ export const getGeneratedBlockSaves = ( state : State, clientId : string ) : obj
  *
  * @return {object} changes
  */
-export const getChanges = ( state : State ) : object => {
+export const getChanges = ( state: State ): object => {
     return state.changes;
 };
 
@@ -494,7 +494,7 @@ export const getChanges = ( state : State ) : object => {
  *
  * @return {object} block changes
  */
-export const getBlockChanges = ( state : State, clientId : string ) : object => {
+export const getBlockChanges = ( state: State, clientId: string ): object => {
     if ( state.changes.hasOwnProperty( clientId ) ) {
         return state.changes[ clientId ];
     }
@@ -513,7 +513,7 @@ export const getBlockChanges = ( state : State, clientId : string ) : object => 
  *
  * @return {object} block changes
  */
-export const getBlockPropertyChanges = ( state : State, clientId : string, viewport : number, property : string ) : object => {
+export const getBlockPropertyChanges = ( state: State, clientId: string, viewport: number, property: string ): object => {
     return traverseGet( [ clientId, viewport, 'style', property ], state.changes, {} );
 };
 
@@ -525,7 +525,7 @@ export const getBlockPropertyChanges = ( state : State, clientId : string, viewp
  *
  * @return {object} valids
  */
-export const getValids = ( state : State ) : object => {
+export const getValids = ( state: State ): object => {
     return state.valids;
 }
 
@@ -538,7 +538,7 @@ export const getValids = ( state : State ) : object => {
  *
  * @return {object} block valids
  */
-export const getBlockValids = ( state : State, clientId : string ) : object => {
+export const getBlockValids = ( state: State, clientId: string ): object => {
     if ( state.valids.hasOwnProperty( clientId ) ) {
         return state.valids[ clientId ];
     }
@@ -555,7 +555,7 @@ export const getBlockValids = ( state : State, clientId : string ) : object => {
  *
  * @return {object} block valid
  */
-export const getViewportBlockValids = ( state : State, clientId : string ) : object => {
+export const getViewportBlockValids = ( state: State, clientId: string ): object => {
     const { viewports, iframeViewport, saves, changes, removes } = state;
 
     const blockSaves = cloneDeep( traverseGet( [ clientId ], saves, {} ) ) as ViewportStyleSets;
@@ -599,7 +599,7 @@ export const getViewportBlockValids = ( state : State, clientId : string ) : obj
  *
  * @return {object} removes
  */
-export const getRemoves = ( state : State ) : object => {
+export const getRemoves = ( state: State ): object => {
     return state.removes;
 }
 
@@ -612,7 +612,7 @@ export const getRemoves = ( state : State ) : object => {
  *
  * @return {object} block removes
  */
-export const getBlockRemoves = ( state : State, clientId : string ) : object => {
+export const getBlockRemoves = ( state: State, clientId: string ): object => {
     if ( state.removes.hasOwnProperty( clientId ) ) {
         return state.removes[ clientId ];
     }
@@ -629,7 +629,7 @@ export const getBlockRemoves = ( state : State, clientId : string ) : object => 
  *
  * @return {object} block removes
  */
-export const getBlockPropertyRemoves = ( state : State, clientId : string, viewport : number, property : string ) : object => {
+export const getBlockPropertyRemoves = ( state: State, clientId: string, viewport: number, property: string ): object => {
     return traverseGet( [ clientId, viewport, 'style', property ], state.removes, {} );
 };
 
@@ -639,7 +639,7 @@ export const getBlockPropertyRemoves = ( state : State, clientId : string, viewp
  *
  * @param {State} state current
  */
-export const getLastEdit = ( state : State ) : number => {
+export const getLastEdit = ( state: State ): number => {
     return state.lastEdit;
 }
 
@@ -649,7 +649,7 @@ export const getLastEdit = ( state : State ) : number => {
  *
  * @param {State} state current
  */
-export const getRendererPropertySet = ( state : State ) : RendererPropertySet => {
+export const getRendererPropertySet = ( state: State ): RendererPropertySet => {
     return state.renderer;
 }
 
@@ -660,7 +660,7 @@ export const getRendererPropertySet = ( state : State ) : RendererPropertySet =>
  * @param {State} state current
  * @param {string} key
  */
-export const getRendererSet = ( state : State, key : string ) : false | RendererSet => {
+export const getRendererSet = ( state: State, key: string ): false | RendererSet => {
     return state.renderer.hasOwnProperty( key ) ? state.renderer[ key ] : false;
 }
 
@@ -671,7 +671,7 @@ export const getRendererSet = ( state : State, key : string ) : false | Renderer
  * @param {State} state current
  * @param {object} style
  */
-export const needsRenderer = ( state : State, style : BlockStyles ) : boolean => {
+export const needsRenderer = ( state: State, style: BlockStyles ): boolean => {
     let need = false;
     for ( const [ prop ] of Object.entries( style ) ) {
         if ( state.renderer.hasOwnProperty( prop ) ) {
@@ -689,7 +689,7 @@ export const needsRenderer = ( state : State, style : BlockStyles ) : boolean =>
  * @param {State} state current
  * @param {string} key
  */
-export const hasRenderer = ( state : State, key : string ) : boolean => {
+export const hasRenderer = ( state: State, key: string ): boolean => {
     return state.renderer.hasOwnProperty( key );
 }
 
@@ -700,7 +700,7 @@ export const hasRenderer = ( state : State, key : string ) : boolean => {
  * @param {State} state current
  * @param {string} clientId
  */
-export const getCSS = ( state : State, clientId : string ) : string => {
+export const getCSS = ( state: State, clientId: string ): string => {
     const cssSet = state.cssSet.hasOwnProperty( clientId ) ? state.cssSet[ clientId ] : {};
     const css = [];
 
@@ -725,7 +725,7 @@ export const getCSS = ( state : State, clientId : string ) : string => {
  * @param {string} blockName
  * @param {BlockAttributes} attributes
  */
-export const getPreviewCSS = ( state : State, clientId : string, blockName : string, attributes : BlockAttributes ) : string => {
+export const getPreviewCSS = ( state: State, clientId: string, blockName: string, attributes: BlockAttributes ): string => {
     const blockSaves = findBlockSaves( attributes );
     const initState = {
         ... DEFAULT_STATE,

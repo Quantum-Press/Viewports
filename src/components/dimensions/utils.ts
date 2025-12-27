@@ -10,7 +10,7 @@ const {
 /**
  * Set function to fill styles with attributes.
  */
-export const getFilledStyles = ( path : string, style, schema ) => {
+export const getFilledStyles = ( path: string, style, schema ) => {
     const parts = path.split( '.' );
     const styleKey = parts.shift();
     const styleValue = style && style.hasOwnProperty( styleKey ) ? style[ styleKey ] : false;

@@ -8,7 +8,7 @@ const {
 
 declare const quantumViewportsConfig: ViewportsConfig | undefined;
 
-function getViewports() : Viewports {
+function getViewports(): Viewports {
     if ( typeof quantumViewportsConfig === 'undefined' ) {
         return {
             1920: 'VP - Desktop large',
@@ -51,11 +51,11 @@ function getViewports() : Viewports {
 }
 
 
-function getDesktopViewport() : number {
+function getDesktopViewport(): number {
     return 1360;
 }
 
-function getTabletViewport() : number {
+function getTabletViewport(): number {
     if ( typeof quantumViewportsConfig === 'undefined' ) {
         return 780;
     }
@@ -67,7 +67,7 @@ function getTabletViewport() : number {
     return 780;
 }
 
-function getMobileViewport() : number {
+function getMobileViewport(): number {
     if ( typeof quantumViewportsConfig === 'undefined' ) {
         return 360;
     }
@@ -80,10 +80,10 @@ function getMobileViewport() : number {
 }
 
 
-function getDesktopBreakpoint() : number {
+function getDesktopBreakpoint(): number {
     return 1360;
 }
-function getTabletBreakpoint() : number {
+function getTabletBreakpoint(): number {
     if ( typeof quantumViewportsConfig === 'undefined' ) {
         return 780;
     }

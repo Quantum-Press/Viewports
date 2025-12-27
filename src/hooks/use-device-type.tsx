@@ -44,7 +44,7 @@ const {
  *
  * @returns {Array} Currently an empty array (placeholder for future expansion).
  */
-function useDeviceTypeInternal() : DeviceTypeValue {
+function useDeviceTypeInternal(): DeviceTypeValue {
 
     // Select state from the viewports store and core/editor.
     const {

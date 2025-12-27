@@ -1,7 +1,7 @@
 /**
  * Set function to indicate whether element is scrollable.
  */
-export function isScrollable( element : HTMLElement ) : boolean {
+export function isScrollable( element: HTMLElement ): boolean {
     const computed = getComputedStyle( element );
 
     return ( 'auto' === computed.overflowY || 'scroll' === computed.overflowY ) && element.scrollHeight > element.clientHeight;
@@ -11,7 +11,7 @@ export function isScrollable( element : HTMLElement ) : boolean {
 /**
  * Set function to scroll to scrollable parent element.
  */
-export function scrollParent( element : HTMLElement ) {
+export function scrollParent( element: HTMLElement ) {
     let parent = element.parentElement;
 
     while ( parent ) {

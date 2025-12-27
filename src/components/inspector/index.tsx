@@ -22,7 +22,7 @@ export const Inspector = () => {
         isActive,
         isInspecting,
         isSaving,
-    } = useSelect( ( select : Function ) => {
+    } = useSelect( ( select: Function ) => {
         const store = select( STORE_NAME );
 
         return {

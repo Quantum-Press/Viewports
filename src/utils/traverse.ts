@@ -14,7 +14,7 @@ const {
  *
  * @return {boolean}
  */
-export const traverseExist = ( path : Array<string | number>, object : object|any ) : boolean => {
+export const traverseExist = ( path: Array<string | number>, object: object|any ): boolean => {
     const property = path.shift();
 
     if ( object && isObject( object ) && object.hasOwnProperty( property ) ) {
@@ -37,7 +37,7 @@ export const traverseExist = ( path : Array<string | number>, object : object|an
  *
  * @return {boolean}
  */
-export const traverseFilled = ( path : Array<string | number>, object : object ) : boolean => {
+export const traverseFilled = ( path: Array<string | number>, object: object ): boolean => {
     const value = traverseGet( path, object );
 
     if ( isObject( value ) && Object.keys( value ).length ) {
@@ -61,7 +61,7 @@ export const traverseFilled = ( path : Array<string | number>, object : object )
  *
  * @return {any}
  */
-export const traverseGet = ( path : Array<string | number>, object : object, fallback : any = null ) : any => {
+export const traverseGet = ( path: Array<string | number>, object: object, fallback: any = null ): any => {
     const property = path.shift();
 
     if ( ! path.length && isObject( object ) && object.hasOwnProperty( property ) ) {
@@ -85,7 +85,7 @@ export const traverseGet = ( path : Array<string | number>, object : object, fal
  *
  * @return {object} containing the extracted properties
  */
-export const ensureObjectPath = ( obj : any, path : string ) : object => {
+export const ensureObjectPath = ( obj: any, path: string ): object => {
     const value = {};
     const pathTokens = path.split( '.' );
     const ref = get( obj, pathTokens, value );

@@ -16,7 +16,7 @@ const {
 // Set portal element base.
 const portalWrap = document.createElement( 'div' );
 portalWrap.id = 'qp-viewports-portal-wrap';
-let portalRoot : any = false;
+let portalRoot: any = false;
 
 
 /**
@@ -43,7 +43,7 @@ const portalHandler = () => {
 /**
  * Set function const to export portals component.
  */
-const Portals = () : React.JSX.Element => {
+const Portals = (): React.JSX.Element => {
     return (
         <>
             <InspectorPortals />
