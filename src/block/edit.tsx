@@ -1,4 +1,3 @@
-import { StyleFill } from '@quantum-viewports/components';
 import { useMount } from '@quantum-viewports/hooks';
 import { STORE_NAME } from '@quantum-viewports/store';
 import {
@@ -12,6 +11,9 @@ import {
 import { Indicators } from './indicators';
 
 const {
+    blockEditor: {
+        useStyleOverride,
+    },
     data: {
         useDispatch,
         useSelect,
@@ -220,6 +222,7 @@ export default function BlockEdit( { block, props }: { block: Block, props: Bloc
 
     // Get css and selectors from store.
     const css = selector.getCSS( clientId ) as string;
+    useStyleOverride( { css } );
 
     // Check if block.edit is a function or class component to return its edit function.
     return (
@@ -228,10 +231,6 @@ export default function BlockEdit( { block, props }: { block: Block, props: Bloc
             { typeof block.edit === 'function' && block.edit.prototype instanceof Component
                 ? new block.edit( props ).render()
                 : block.edit( props ) }
-
-            { '' !== css && <StyleFill>
-                { css }
-            </StyleFill> }
         </>
     );
 }

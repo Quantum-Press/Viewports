@@ -1,5 +1,4 @@
 export * from './accordion';
-export * from './block-styles';
 export * from './body';
 export * from './dimensions';
 export * from './editing';
