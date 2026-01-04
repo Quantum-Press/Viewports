@@ -16,7 +16,7 @@
 - Performance and Optimizations
 	- PHPCS optimizations with syde/phpcs standard
 	- Streamlined TS + PHP syntax and indentation optimizations
-	- Implemented useStyleOverride to render css in block preview
+	- Implemented useStyleOverride to render css in block edit and preview
 	- Further optimized viewport management
 	- Runtime optimizations for useDeviceType + useResizeEditor
 	- Adjusted store dependencies on block edit
