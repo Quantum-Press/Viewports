@@ -1,5 +1,4 @@
 ## Table of Contents
-
 - [Overview](#overview)
 - [Features](#features)
 - [Status](#status)
@@ -13,23 +12,17 @@
 
 ## Overview
 
-**Quantum Viewports** extends the Gutenberg editor with viewport-specific controls for standard blocks. It allows editors and developers to adjust block properties such as **margin, padding, and other style attributes** independently for **desktop, tablet, and mobile**, without needing separate CSS or media queries.
-
-The plugin is designed to integrate seamlessly into the block editor workflow while providing a **developer-friendly API** for extending style rendering to custom blocks.
+**Quantum Viewports** extends the Gutenberg BlockEditor with viewport-specific controls for standard blocks. It allows editors and developers to adjust block properties such as **margin, padding, and other style attributes** independently for **desktop, tablet, and mobile**, without needing separate CSS or media queries.
 
 ---
 
 ## Features
-
 - **Viewport-specific controls**
   Adjust block styles per viewport directly in the Gutenberg sidebar.
-
 - **Keyframe-style UI**
   Each viewport has a “keyframe” view for inspecting the CSS generated for that viewport. Styles can be reviewed, deleted, or restored per viewport.
-
 - **Developer extensibility**
   Add custom style renderers for blocks or themes via the `registerRenderer` API. You can control rendering order, CSS selectors, and panel/label hooks.
-
 - **CSS output preview**
   Inspect the generated CSS for each block and viewport without leaving the editor.
 
@@ -38,15 +31,16 @@ The plugin is designed to integrate seamlessly into the block editor workflow wh
 ## Early Access - Feedback Welcome
 
 Quantum Viewports is currently in **active Early Access**.
+
 The responsive style engine already works well with many Block Themes, but we are still gathering **real-world feedback** to ensure **broader compatibility across different themes and editor configurations**.
 
 If you encounter something unexpected. A great success story, a bug, or a theme setup that behaves differently, we would love to hear from you.
+
 Every report helps us shape a reliable and truly native solution for responsive Block Styles in the WordPress ecosystem.
 
 ---
 
 ## Requirements
-
 - WordPress with **Gutenberg / Block Editor** enabled
 - Standard blocks for full functionality (third-party blocks may need extra configuration)
 
@@ -54,11 +48,30 @@ Every report helps us shape a reliable and truly native solution for responsive 
 
 ## Installation
 
-Currently, Viewports is **not in the WordPress plugin repository**. Use one of the following methods:
+Quantum Viewports adds responsive style controls to the Gutenberg block editor for mobile, tablet and desktop viewports. It is available through the **official WordPress.org plugin directory** and can also be installed manually or from the plugin’s GitHub repository.
 
-1. **Download / Clone** the repository to `wp-content/plugins/quantum-viewports`.
-2. Activate the plugin via the WordPress admin panel.
-3. Open the editor and check for the new viewport controls in block settings.
+### Option 1 — Install via WordPress admin
+
+1. Go to your WordPress dashboard → **Plugins → Add New**.
+2. Search for **Quantum Viewports**.
+3. Click **Install Now** and then **Activate**.
+4. Open the Block Editor and select any block — responsive viewport controls will appear in the block inspector.
+
+### Option 2 — Manual install from WordPress.org
+
+1. Download the plugin ZIP from **WordPress.org** (Quantum Viewports page).
+2. In the WordPress admin go to **Plugins → Add New → Upload Plugin**.
+3. Choose the ZIP file and click **Install Now**.
+4. Activate the plugin.
+
+### Option 3 — Install from GitHub (Releases)
+
+1. Download the latest ZIP from
+   https://github.com/Quantum-Press/Viewports/releases
+2. Extract the ```quantum-viewports-plugin.zip``` to
+   `wp-content/plugins/quantum-viewports`
+3. Activate the plugin via **Plugins → Installed Plugins**.
+
 
 ---
 
@@ -70,11 +83,9 @@ Currently, Viewports is **not in the WordPress plugin repository**. Use one of t
 4. **Switch between viewports** (desktop, tablet, mobile) using the viewport toggle.
 5. **Adjust styles per viewport** – changes are automatically applied for that screen size, effectively generating the necessary media queries.
 
-
 ---
 
 ## Usage
-
 - Supports standard block properties like **dimensions, spacing, border, shadow**, and other configurable style attributes.
 - Works best on desktop; preview behavior may vary on mobile previews.
 - Changes are saved per viewport and applied automatically.
@@ -83,19 +94,7 @@ Currently, Viewports is **not in the WordPress plugin repository**. Use one of t
 
 ## Developer API
 
-Quantum Viewports also delivers a **`registerRenderer`** function to register custom style attributes.
-Once registered the change detection will also watche the registered Attribute
+Quantum Viewports provides JavaScript and PHP APIs for registering custom style attributes.
+Once registered, the built-in StyleEngine automatically tracks your custom attributes.
 
-```js
-const customStyleRenderer = (styles, { selector }) => {
-  const { value } = styles.opacity || {};
-  if (value === undefined) return '';
-  return `${selector} { opacity: ${value / 100}; }`;
-};
-
-dispatch('quantumpress/viewports').registerRenderer(
-  'customOpacity',        // property name
-  customStyleRenderer,    // renderer callback
-  20,                     // optional priority
-  { panel: '.opacity-panel', label: '.opacity-panel .components-panel-header' }
-);
+Documentation: https://quantum-press.com/en/documentation/
