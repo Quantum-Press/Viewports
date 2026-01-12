@@ -150,7 +150,7 @@ export default function BlockEdit( { block, props }: { block: Block, props: Bloc
 
     // Set useEffect on updating selected block to update its attributes silently.
     useEffect( () => {
-        if ( ! updateSelectedViewport ) {
+        if ( ! updateSelectedViewport || ! isRegistered ) {
             return;
         }
 

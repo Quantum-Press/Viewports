@@ -29,7 +29,7 @@ export const Indicators = ( { clientId }: IndicatorsProps ) => {
         const store = select( STORE_NAME );
 
         return {
-            valids: store.getBlockValids( clientId ),
+            lastEdit: store.getLastEdit(),
         };
     }, [] );
 
