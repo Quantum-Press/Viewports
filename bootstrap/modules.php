@@ -7,6 +7,8 @@
 
 namespace QP\Viewports;
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly.
+
 use QP\Viewports\PluginModule;
 
 return static function ( string $rootDir ): iterable

@@ -4,6 +4,8 @@ declare( strict_types=1 );
 
 namespace QP\Viewports\Styles;
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly.
+
 use QP\Viewports\Vendor\Inpsyde\Modularity\Module\ServiceModule;
 use QP\Viewports\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
 use QP\Viewports\Vendor\Inpsyde\Modularity\Module\ModuleClassNameIdTrait;

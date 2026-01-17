@@ -2,6 +2,8 @@
 
 namespace QP\Viewports\Styles;
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly.
+
 use QP\Viewports\Vendor\Psr\Container\ContainerInterface;
 
 use QP\Viewports\Styles\Services\Processor;

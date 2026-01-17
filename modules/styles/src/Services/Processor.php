@@ -4,6 +4,8 @@ declare( strict_types=1 );
 
 namespace QP\Viewports\Styles\Services;
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly.
+
 use QP\Viewports\Styles\Block;
 use QP\Viewports\Styles\CSSRule;
 use QP\Viewports\Styles\CSSRuleSet;

@@ -7,6 +7,8 @@
 
 namespace QP\Viewports;
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly.
+
 use QP\Viewports\Vendor\Inpsyde\Modularity\Package;
 use QP\Viewports\Vendor\Inpsyde\Modularity\Properties\PluginProperties;
 use QP\Viewports\Vendor\Psr\Container\ContainerInterface;

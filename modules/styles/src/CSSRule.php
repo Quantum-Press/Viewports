@@ -4,6 +4,8 @@ declare( strict_types=1 );
 
 namespace QP\Viewports\Styles;
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly.
+
 /**
  * Represents a single CSS rule with selector, properties, and media queries.
  *

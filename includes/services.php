@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace QP\Viewports;
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly.
+
 use Dhii\Versions\StringVersionFactory;
 use QP\Viewports\Vendor\Psr\Container\ContainerInterface;
 use WpOop\WordPress\Plugin\PluginInterface;
