@@ -1,4 +1,4 @@
-## Version 0.9.12-dev
+## Version 0.9.11
 ### 🚀 New & Changed
 - Implemented php style engine
 	- Removed attribute inlineStyles to render css by php in frontend

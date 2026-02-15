@@ -1,4 +1,11 @@
+# Quantum Viewports
+
+> Extend your BlockTheme to make standard block styles responsive!
+
+**Version:** 0.9.11 | **Status:** Early Access
+
 ## Table of Contents
+
 - [Overview](#overview)
 - [Features](#features)
 - [Status](#status)
@@ -7,6 +14,7 @@
 - [Getting Started](#getting-started)
 - [Usage](#usage)
 - [Developer API](#developer-api)
+- [Documentation](#documentation)
 
 ---
 
@@ -98,3 +106,19 @@ Quantum Viewports provides JavaScript and PHP APIs for registering custom style 
 Once registered, the built-in StyleEngine automatically tracks your custom attributes.
 
 Documentation: https://quantum-press.com/en/documentation/
+
+---
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [CHANGELOG.md](./CHANGELOG.md) | Release history and changes |
+| [BRIEFING.md](./BRIEFING.md) | Requirements by topic area |
+| [SKILLS.md](./SKILLS.md) | AI interaction manual |
+
+---
+
+## License
+
+GPLv2 or later — see [License URI](https://www.gnu.org/licenses/gpl-2.0.html).
