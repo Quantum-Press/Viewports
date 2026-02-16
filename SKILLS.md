@@ -1,6 +1,6 @@
 ---
 version: "0.9.11"
-last_updated: "2026-02-15"
+last_updated: "2026-02-16"
 project: "Quantum Viewports"
 ai_context: true
 ---
@@ -9,25 +9,500 @@ ai_context: true
 
 ## Projektübersicht
 
-**Quantum Viewports** ist ein WordPress-Plugin, das den Gutenberg Block Editor mit viewport-spezifischen (responsiven) Stil-Kontrollen erweitert. Das Plugin ermöglicht es Redakteuren, unterschiedliche Stile für verschiedene Bildschirmgrößen direkt im Editor zu definieren und zu verwalten.
+**Quantum Viewports** ist ein WordPress-Plugin, das den Gutenberg Block Editor um viewport-spezifische (responsive) Stil-Kontrollen erweitert. Redakteure können Block-Styles für Desktop, Tablet und Mobile separat definieren — direkt im Editor, ohne eigenes CSS.
 
 - **Version:** 0.9.11
+- **Typ:** WordPress-Plugin
 - **Autor:** Sebastian Buchwald / Quantum-Press
 - **Lizenz:** GPLv2 oder später
 - **Repository:** https://github.com/Quantum-Press/Viewports
-- **Sprache:** Deutsch (Plugin-Dokumentation, Code-Kommentare)
-- **PHP-Anforderung:** 7.4+ / 8.0+
-- **WordPress:** Block Editor (Gutenberg) Integration
+- **Website:** https://quantum-press.com
+- **PHP:** 7.4+ / 8.0+
+- **Architektur:** Modular (inpsyde/modularity), PSR-4, Mozart Dependency Isolation
+- **Frontend:** TypeScript, React, SCSS, Webpack
+- **Store:** Redux-like via `@wordpress/data`
 
-### Architektur-Übersicht
+---
 
-Das Plugin folgt einer modularen Architektur auf Basis von **inpsyde/modularity**:
+## CRITICAL: Viewport-Attribut-Datenmodell
 
-1. **PHP Backend**: PSR-4 Autoloading, Service Container basiert
-2. **TypeScript/React Frontend**: Block Editor Integration über React Hooks und Redux-like State Management
-3. **Style Engine**: Eigenständiges PHP-Modul für CSS-Regelgenerierung basierend auf Viewports
-4. **Editor Module**: Gutenberg Editor Erweiterungen und UI-Komponenten
-5. **Dependency Isolation**: Mozart-basierte Vendor-Dependency Isolation für saubere Namespace-Trennung
+Dies ist das zentrale Konzept des Plugins. Jeder Block speichert viewport-spezifische Styles in einem `viewports`-Attribut.
+
+### Block-Attribut-Schema
+
+```
+{
+  style: {                          // WordPress Default-Styles (Viewport 0)
+    spacing: { padding: "20px" },
+    border: { radius: "5px" }
+  },
+  viewports: {                      // Viewport-spezifische Overrides
+    360: {                          // Mobile (360px)
+      style: {
+        spacing: { padding: "10px" }
+      }
+    },
+    780: {                          // Tablet (780px)
+      style: {
+        spacing: { padding: "15px" },
+        border: { radius: "3px" }
+      },
+      to: 1359                      // optional: max-width Grenze
+    },
+    1360: {                         // Desktop (1360px)
+      style: {
+        spacing: { padding: "30px" }
+      }
+    }
+  }
+}
+```
+
+**Schlüssel-Konzepte:**
+- `style` = WordPress-Standard-Block-Styles (Viewport 0 / Default)
+- `viewports` = Map von Viewport-Pixelbreiten zu Style-Overrides
+- Jeder Viewport-Eintrag hat ein `style`-Objekt (gleiche Struktur wie WordPress `style`)
+- Optionales `to`-Feld definiert max-width für Media-Query-Range
+- Viewport-Keys sind **Pixel-Zahlen** (0, 360, 780, 1360, 1920)
+
+### Viewport-Definitionen & Breakpoints
+
+**Standard-Distribution (default):**
+
+| Key | Label | Bereich |
+|-----|-------|---------|
+| `0` | Default | Basis-Styles ohne Media Query |
+| `360` | WordPress - Mobile | Mobile (≤ 779px) |
+| `780` | WordPress - Tablet | Tablet (780px – 1359px) |
+| `1360` | VP - Desktop small | Desktop (≥ 1360px) |
+| `1920` | VP - Desktop large | Desktop large (≥ 1920px) |
+
+**Extended Distribution (konfigurierbar):**
+
+| Key | Label |
+|-----|-------|
+| `0` | Default |
+| `320` | VP - Mobile small |
+| `360` | WordPress - Mobile |
+| `375` | VP - Mobile medium |
+| `425` | VP - Mobile large |
+| `540` | VP - Tablet tiny |
+| `768` | VP - Tablet small |
+| `780` | WordPress - Tablet |
+| `820` | VP - Tablet medium |
+| `1024` | VP - Tablet large |
+| `1180` | VP - Tablet xlarge |
+| `1280` | VP - Desktop tiny |
+| `1360` | VP - Desktop small |
+| `1650` | VP - Desktop medium |
+| `1920` | VP - Desktop large |
+| `2560` | VP - Desktop xlarge |
+| `3440` | VP - Desktop xxlarge |
+
+**Range-Erkennung:**
+- Mobile: `viewport <= 779` (tabletBreakpoint - 1)
+- Tablet: `780 <= viewport <= 1359`
+- Desktop: `viewport >= 1360`
+
+### Generierte Media Queries
+
+```css
+/* Viewport 360 (nur min-width) */
+@media (min-width: 360px) { .wp-block-xyz { padding: 10px; } }
+
+/* Viewport 780 mit to-Feld (min + max) */
+@media (min-width: 780px) and (max-width: 1359px) { .wp-block-xyz { padding: 15px; } }
+
+/* Viewport 1360 (nur min-width) */
+@media (min-width: 1360px) { .wp-block-xyz { padding: 30px; } }
+```
+
+---
+
+## Unterstützte Style Properties
+
+### Native WordPress Properties (via `wp_style_engine_get_styles`)
+
+| Property Key | CSS-Bereiche | Inspector Group |
+|-------------|-------------|-----------------|
+| `background` | background-color, background-image, gradient | `background` |
+| `border` | border-width, border-color, border-radius, border-style | `border` |
+| `dimensions` | width, height, min-width, min-height, max-width, max-height | `dimensions` |
+| `shadow` | box-shadow | `border` |
+| `spacing` | margin, padding | `dimensions` |
+
+### Custom Properties (qp-Prefix)
+
+| Property Key | CSS-Bereich |
+|-------------|-------------|
+| `qpBackground` | Erweiterte Background-Optionen |
+| `qpBoxShadow` | Erweiterte Box-Shadow-Kontrolle |
+| `qpClipPath` | clip-path |
+| `qpColumn` | column-count, column-gap |
+| `qpDimensions` | Erweiterte Dimensions |
+| `qpFilter` | filter, backdrop-filter |
+| `qpFlex` | flex, flex-grow, flex-shrink, align-self |
+| `qpOpacity` | opacity |
+| `qpOverflow` | overflow, overflow-x, overflow-y |
+| `qpPosition` | position, top, right, bottom, left, z-index |
+| `qpTextShadow` | text-shadow |
+| `qpTransform` | transform, transform-origin |
+| `qpVisibility` | visibility, display |
+
+### Selector Mapping (Block-spezifische Remaps)
+
+Einige Blocks brauchen CSS auf Kinder-Elemente statt auf den Wrapper:
+
+```typescript
+// Beispiel: core/image — border und shadow auf <img> statt auf den Block-Wrapper
+'core/image': {
+  border: '> img',
+  shadow: '> img'
+}
+```
+
+Das Mapping wird sowohl in JS (Store) als auch in PHP (Parser) angewandt.
+
+---
+
+## SpectrumSet — Zentrales Rendering-Konzept
+
+Ein **SpectrumSet** ist ein optimiertes Array von `Spectrum`-Objekten, das CSS-Regeln über alle Viewport-Breakpoints darstellt. Es ist die zentrale Zwischenrepräsentation zwischen Block-Attributen und CSS-Output.
+
+### Spectrum-Objekt Struktur
+
+```typescript
+interface Spectrum {
+  from: number;          // Start-Viewport (min-width in px)
+  to: number;            // End-Viewport (max-width in px)
+  media: string;         // Media Query String
+  type: string;          // 'attributes' | 'inline'
+  property: string;      // Style Property Key (z.B. 'spacing')
+  selector: string;      // CSS Selector
+  declarations: string;  // CSS Declarations
+  css: string;           // Komplette CSS Rule
+  changes: BlockStyles;  // Ungespeicherte Änderungen
+  hasChanges: boolean;
+  saves: BlockStyles;    // Gespeicherte Styles
+  hasSaves: boolean;
+  removes: BlockStyles;  // Zu löschende Styles
+  hasRemoves: boolean;
+  blockName: string;
+}
+```
+
+### Generierungsprozess
+
+```
+Block Attributes
+  → findBlockSaves() → ViewportStyleSets
+  → Generator.generateRuleSet() → RuleSet
+  → Generator.getSpectrumSet() → SpectrumSet (collapsed/optimiert)
+```
+
+Benachbarte Viewports mit identischen Styles werden zu einem Spectrum zusammengefasst (collapsed), um die CSS-Ausgabe zu optimieren.
+
+---
+
+## Redux Store Architektur
+
+**Store Name:** `'quantumpress/viewports'`
+
+### State Struktur
+
+```typescript
+{
+  // Viewport-Konfiguration
+  viewports: { [key: number]: string },  // z.B. { 0: 'Default', 360: 'Mobile', ... }
+  viewport: number,                       // Aktuell ausgewählter Viewport (px)
+  iframeSize: { width: number, height: number },
+  iframeViewport: number,
+  desktop: number,                        // Desktop Breakpoint (1360)
+  tablet: number,                         // Tablet Breakpoint (780)
+  mobile: number,                         // Mobile Breakpoint (360)
+
+  // UI-Flags
+  isActive: boolean,                      // Viewport-Simulation aktiv
+  isLoading: boolean,
+  isSaving: boolean,
+  isAutoSaving: boolean,
+  isRegistering: boolean,
+  isEditing: boolean,                     // Editor-Modus aktiv
+  isInspecting: boolean,                  // Keyframe-Inspector aktiv
+  inspectorPosition: string,              // 'left' | 'right'
+
+  // Block Style Data (pro clientId)
+  saves: ClientViewportSets,              // Gespeicherte Viewport-Styles
+  changes: ClientViewportSets,            // Ungespeicherte Änderungen
+  removes: ClientViewportSets,            // Zum Löschen markierte Styles
+  valids: ClientViewportSets,             // Aktuell gültig (merged: saves + changes - removes)
+
+  // Rendering & CSS
+  renderer: RendererPropertySet,          // Registrierte Style-Renderer
+  cssSet: CSSViewportSets,                // Generiertes CSS pro Block
+  spectrumSets: SpectrumSets,             // Optimierte Spectrum-Regeln
+
+  // Meta
+  inspect: object | boolean,
+  lastEdit: number                        // Timestamp der letzten Änderung
+}
+```
+
+### Wichtige Selektoren
+
+```typescript
+// Viewport-Konfiguration
+getViewports(): { [key: number]: string }
+getViewport(): number
+getDesktop(): number
+getTablet(): number
+getMobile(): number
+
+// Block-Daten
+getBlockSaves(clientId): ViewportStyleSets
+getBlockChanges(clientId): ViewportStyleSets
+getBlockValids(clientId): ViewportStyleSets
+hasBlockViewports(clientId): boolean
+hasBlockSaves(clientId): boolean
+hasBlockChanges(clientId): boolean
+
+// CSS & Rendering
+getCSS(clientId): string                  // Kompiliertes CSS für aktuelle Iframe-Breite
+getGeneratedBlockSaves(clientId): ViewportStyleSets  // Bereinigte Saves für Attribut-Speicherung
+getSpectrumSet(clientId): Spectrum[]      // Spectrum-Array für Property-Indikatoren
+```
+
+### Wichtige Actions
+
+```typescript
+// Block-Lifecycle
+registerBlockInit(clientId, blockName, attributes)     // Block initialisieren
+updateBlockChanges(clientId, blockName, attributes, viewport?)  // Änderungen verarbeiten
+saveBlock(clientId, blockName)                          // Changes → Saves mergen
+restoreBlockSaves(clientId, blockName, props, viewport) // Änderungen rückgängig machen
+removeBlockSaves(clientId, blockName, props, viewport)  // Styles löschen markieren
+
+// Renderer
+registerRenderer(prop, callback, priority, groupId, panelId, mapping)
+
+// Viewport
+setViewport(viewport: number)
+setViewportType(type: string)             // 'Desktop' | 'Tablet' | 'Mobile'
+```
+
+### Datenfluss: saves / changes / removes / valids
+
+```
+Block wird ausgewählt
+  → registerBlockInit() liest viewports-Attribut → speichert in saves[clientId]
+
+User ändert Style im Editor
+  → updateBlockChanges() berechnet Diff → speichert in changes[clientId]
+  → valids = saves + changes - removes (automatisch berechnet)
+  → SpectrumSet + CSS wird neu generiert
+
+User speichert Block
+  → getGeneratedBlockSaves() → merge(saves + changes - removes) → bereinigt leere Viewports
+  → setAttributes({ viewports: cleanedSaves })
+```
+
+---
+
+## registerRenderer API — Vollständige Signatur
+
+### JavaScript (Store Action)
+
+```typescript
+registerRenderer(
+  prop: string,              // Property Key (z.B. 'qpCustomGradient')
+  callback: Function,        // CSS-Generation Callback
+  priority: number = 10,     // Ausführungs-Priorität (native: 5, custom: 10+)
+  groupId: string = '',      // Inspector Panel Group ID
+  panelId: string = '',      // Inspector Panel ID
+  mapping?: RendererMapping  // Block-spezifisches Selector Mapping
+): Action
+```
+
+**Callback-Funktion:**
+```typescript
+(styleValue: any, valids?: any): string => {
+  // Muss gültigen CSS-String zurückgeben:
+  // Entweder Declarations: "color: red; padding: 10px;"
+  // Oder mit Selector: ".my-selector { color: red; }"
+  return 'background: linear-gradient(...)';
+}
+```
+
+**Beispiel:**
+```typescript
+dispatch.registerRenderer(
+  'qpCustomGradient',
+  (styleObj) => `background: linear-gradient(${styleObj.direction}, ${styleObj.colors.join(', ')});`,
+  15,
+  'design',
+  'customGradients',
+  { 'core/image': '> img.gradient-overlay' }
+);
+```
+
+### PHP (Filter-basiert)
+
+```php
+// Nativer Renderer-Override
+add_filter('quantum_viewports_register_renderer_spacing', function($css, $blockName, $value) {
+    // Custom CSS für spacing generieren
+    return $customCss;
+}, 10, 3);
+
+// Für custom properties
+add_filter('quantum_viewports_register_renderer_qpCustom', function($css, $blockName, $value) {
+    return "opacity: {$value['opacity']};";
+}, 10, 3);
+```
+
+---
+
+## PHP Style Engine — Parser & Processor
+
+### Datenfluss (PHP-seitig)
+
+```
+Post wird gespeichert / gerendert
+  → Processor.preparePostContent() iteriert Blöcke
+  → Parser.parseAttributes() liest style + viewports aus Block-Attributen
+  → Parser.parseViewportRules() generiert CSSRule pro Viewport
+  → Parser.parseStyleAttribute() generiert CSS pro Property
+    → Native Properties: wp_style_engine_get_styles() + Filter
+    → Custom Properties: quantum_viewports_register_renderer_[property] Filter
+  → Parser.remapSelectors() mapped CSS auf Kinder-Elemente
+  → CSSRuleSet sammelt alle Rules
+  → CSS wird im Frontend ausgegeben (inline oder enqueued)
+```
+
+### CSSRule Struktur (PHP)
+
+```php
+{
+  type: 'attributes' | 'inline',
+  property: string,         // z.B. 'spacing'
+  selector: string,         // z.B. '.wp-block-image'
+  declarations: array,      // ['padding' => '20px', 'margin' => '10px']
+  media: 'screen',
+  minWidth: int,            // z.B. 780
+  maxWidth: int,            // z.B. 1359
+  css: string               // Generierter CSS-String
+}
+```
+
+### Wichtige PHP Hooks & Filter
+
+| Hook / Filter | Typ | Beschreibung |
+|---------------|-----|--------------|
+| `quantum_viewports_init` | Action | Plugin initialisiert, Container verfügbar |
+| `quantum_viewports_migrate` | Action | Plugin installiert oder aktualisiert |
+| `quantum_viewports_migrate_on_update` | Action | Nur bei Update (nicht Fresh Install) |
+| `quantum_viewports_native_properties` | Filter | Native Properties Array [background, border, dimensions, shadow, spacing] |
+| `quantum_viewports_register_renderer_[property]` | Filter | CSS-Generierung pro Property überschreiben |
+| `quantum_viewports_ignore_properties` | Filter | Properties die nicht in Inline-HTML geschrieben werden |
+| `quantum_viewports_selector_mapping` | Filter | Block-spezifisches Selector Remapping |
+| `quantum_viewports_block_blacklist` | Filter | Blocks von Viewport-Verarbeitung ausschließen |
+
+### PHP Namespaces & Services
+
+```php
+QP\Viewports\                     // includes/
+QP\Viewports\Vendor\              // lib/packages/ (Mozart-isoliert)
+QP\Viewports\Styles\              // modules/styles/src/
+QP\Viewports\Editor\              // modules/editor/src/
+
+// Kernklassen
+QP\Viewports\Styles\Services\Parser       // CSS Parsing & Generierung
+QP\Viewports\Styles\Services\Processor    // Block-Verarbeitung
+QP\Viewports\Styles\CSSRule               // Einzelne CSS-Regel
+QP\Viewports\Styles\CSSRuleSet            // Regel-Sammlung
+QP\Viewports\Styles\Block                 // Block mit Viewport-Styles
+```
+
+---
+
+## Globale Konfiguration (Runtime)
+
+Über `window.quantumViewportsConfig` (PHP → JS via wp_localize_script):
+
+| Key | Wert | Beschreibung |
+|-----|------|-------------|
+| `distribution` | `'standard'` \| `'extended'` | Viewport-Set Konfiguration |
+| `gutenbergVersion` | String | Gutenberg Version für Kompatibilitätsprüfungen |
+| `blockBlacklist` | Array | Blocks die nicht viewport-fähig gemacht werden |
+
+**Config-Zugriff (TypeScript):**
+```typescript
+import { getConfig, getConfigValue, isInBlockBlacklist } from './config';
+
+const distribution = getConfigValue<string>('distribution', 'standard');
+const isBlocked = isInBlockBlacklist('core/freeform');
+```
+
+---
+
+## Block Integration — Wie Blocks viewport-fähig werden
+
+### Registrierung (addFilter)
+
+```typescript
+// src/block/register.tsx
+addFilter('blocks.registerBlockType', 'qp/viewports-block', (block) => {
+  if (isInBlockBlacklist(block.name)) return block;
+  return {
+    ...block,
+    edit(props) { /* Wrapper mit BlockEdit, BlockPreview, ToggleInspector */ },
+    save(props) { /* Wrapper mit BlockSave (viewport styles anwenden) */ }
+  };
+});
+```
+
+### Block Edit Lifecycle
+
+```
+1. BlockEdit mount → registerBlockInit(clientId, blockName, attributes)
+2. Attribute Change → updateBlockChanges(clientId, blockName, attributes)
+3. Store berechnet: diffs → valids → spectrumSets → cssSet
+4. getGeneratedBlockSaves(clientId) → bereinigte ViewportStyleSets
+5. setAttributes({ viewports: cleanedSaves })
+```
+
+### Plugin Registration
+
+```typescript
+// src/plugins.tsx
+registerPlugin('quantum-viewports-device-type', { render: DeviceTypeProvider });
+registerPlugin('quantum-viewports-keyframes-toggle', { render: KeyframesToggle });
+```
+
+---
+
+## Wichtige Custom Hooks
+
+### useDeviceType
+
+Synchronisiert Gutenberg `deviceType` (Desktop/Tablet/Mobile) mit dem Store Viewport:
+- Lauscht auf `core/editor` Store → dispatcht `setViewportType()`
+- Lauscht auf Store Viewport → dispatcht `setDeviceType()` an Editor
+- Verhindert Endlos-Loops mit `ignore`-Flag
+
+### useResizeEditor
+
+Skaliert den Editor-Canvas auf die ausgewählte Viewport-Breite:
+- ResizeObserver auf `.interface-interface-skeleton__content`
+- Berechnet Scale-Faktor wenn `viewport > maxWidth`
+- Wendet CSS Transform `scale()` auf Iframe an
+- Dispatcht `setIframeSize()` mit gemessenen Dimensionen
+
+### useStyleOverride
+
+Rendert CSS im Block Edit und Preview Modus:
+- Liest `cssSet` aus Store für aktuellen Block
+- Injiziert CSS über WordPress `useStyleOverride` oder `<style>` Tags
 
 ---
 
@@ -35,772 +510,177 @@ Das Plugin folgt einer modularen Architektur auf Basis von **inpsyde/modularity*
 
 | Befehl | Beschreibung | Kontext |
 |--------|-------------|---------|
-| `npm run build` | Production-Build (Webpack mit Optimierung) | Frontend-Assets kompilieren, minifizieren, für Production vorbereiten |
-| `npm run dev` | Development-Build (Webpack mit Source Maps) | Während der Entwicklung verwenden, besseres Debugging |
-| `npm run watch:build` | Watch-Modus für Live-Recompilation | Echtzeit-Kompilierung während der Entwicklung |
-| `npm run test` | Jest Test-Suite ausführen | Unit-Tests für TypeScript/React Code validieren |
-| `composer phpcs` | PHP CodeSniffer mit Syde Standard | Code-Stil und PHP-Standards validieren |
-| `npm install` | NPM Dependencies installieren | Nach `package.json` Änderungen ausführen |
-| `composer install` | Composer Dependencies installieren | Nach `composer.json` Änderungen ausführen |
+| `npm run build` | Production-Build (Webpack, minifiziert) | Assets für Distribution |
+| `npm run dev` | Development-Build (Source Maps) | Während Entwicklung |
+| `npm run watch:build` | Watch-Modus für Live-Recompilation | Echtzeit-Kompilierung |
+| `npm run test` | Jest Test-Suite | Unit-Tests TypeScript/React |
+| `composer phpcs` | PHP CodeSniffer mit Syde Standard | PHP Code-Style validieren |
+| `npm install` | NPM Dependencies installieren | Nach package.json Änderungen |
+| `composer install` | Composer Dependencies installieren | Nach composer.json Änderungen |
 
 ### Build-Prozess
 
-- **Webpack Config:** `/webpack.config.js` – Konfiguriert TypeScript/SCSS Compilation
-- **TypeScript Config:** `/tsconfig.json` – Kompileroptionen und Pfad-Mappings
-- **Jest Config:** `/jest.config.ts` – Test-Framework Konfiguration
-- **Output:** Assets gehen in `/build/` Verzeichnis
-- **Entry Point:** `/src/main.ts` für hauptsächliche Frontend-Logik
+- **Entry Point:** `src/main.ts`
+- **Webpack Config:** `webpack.config.js`
+- **Output:** `build/` Verzeichnis
+- **CSS Output:** `quantum-viewports.css` (via MiniCssExtractPlugin)
+- **JS Output:** `core.js`
 
 ---
 
-## Schnittstellen & APIs
-
-### PHP Hooks & Actions
-
-#### `quantum_viewports_init`
-```php
-do_action( 'quantum_viewports_init', ContainerInterface $container );
-```
-- **Kontext:** Wird beim Plugin-Initialization aufgerufen
-- **Parameter:** App Container mit allen registrierten Services
-- **Verwendung:** Für Erweiterungen, um auf Plugin-Services zuzugreifen
-- **Beispiel:** Zusätzliche Module oder Custom Styles registrieren
-
-#### `quantum_viewports_migrate`
-```php
-do_action( 'quantum_viewports_migrate', string $previousVersion );
-```
-- **Kontext:** Wird bei Installation oder Update aufgerufen
-- **Parameter:** Vorherige Plugin-Version (für Migrations-Logik)
-- **Verwendung:** Datenbank-Schema Updates, Konfiguration-Migrationen
-- **Ausgelöst:** Bei Plugin-Installation oder Update
-
-#### `quantum_viewports_migrate_on_update`
-```php
-do_action( 'quantum_viewports_migrate_on_update', string $previousVersion );
-```
-- **Kontext:** Wird nur bei Update aufgerufen (nicht bei Fresh Install)
-- **Parameter:** Vorherige Plugin-Version
-- **Verwendung:** Update-spezifische Migrations-Logik
-- **Unterschied zu `quantum_viewports_migrate`:** Ausgeschlossen bei Fresh-Installation
-
-### JavaScript APIs
-
-#### `registerRenderer`
-```typescript
-registerRenderer(groupId: string, panelId: string, renderer: Function): void
-```
-- **Kontext:** Registriert Custom Style Attribute Renderer
-- **Parameter:**
-  - `groupId`: Eindeutige Gruppen-ID für Renderer-Gruppe
-  - `panelId`: Panel-ID innerhalb der Gruppe
-  - `renderer`: Render-Funktion
-- **Verwendung:** Custom Viewport-Styles für spezifische Block-Typen registrieren
-- **Verfügbar über:** Redux Store / Editor State Management
-
-#### Store/Redux API
-- **Selector-Pattern:** Für State-Abruf verwenden
-- **Action-Dispatch:** Für State-Mutations verwenden
-- **Provider:** Root-Component via React Context
-- **Persistence:** Local Storage Integration via `@wordpress/data`
-
-### Style Engine API (PHP)
-
-#### Block-Klasse
-```php
-namespace QP\Viewports\Styles;
-
-class Block {
-    public function addRule(CSSRule $rule): void
-    public function getRules(): CSSRuleSet
-    public function toCSS(): string
-}
-```
-- **Kontext:** Repräsentiert einen Block mit Viewport-spezifischen Styles
-- **Verwendung:** Styles für einzelne Blöcke registrieren und abrufen
-
-#### CSSRuleSet-Klasse
-```php
-class CSSRuleSet {
-    public function add(CSSRule $rule): void
-    public function getRules(): array
-    public function filter(callable $callback): CSSRuleSet
-}
-```
-- **Kontext:** Sammlung von CSS-Regeln mit Viewport-Kontext
-- **Verwendung:** Regeln gruppieren, filtern, kombinieren
-
-#### CSSRule-Klasse
-```php
-class CSSRule {
-    public function __construct(string $selector, array $declarations, string $viewport = '')
-    public function getSelector(): string
-    public function getDeclarations(): array
-    public function getViewport(): string
-}
-```
-- **Kontext:** Einzelne CSS-Regel mit optionaler Viewport-Spezifikation
-- **Verwendung:** CSS-Regeln für Block-Styles definieren
-
----
-
-## Dateistruktur & Modulübersicht
-
-### Root Level
+## Dateistruktur
 
 ```
 quantum-viewports/
-├── quantum-viewports.php          # Main Plugin File – WordPress Entry Point
-├── bootstrap/                     # Bootstrap & Initialization
-├── includes/                      # Core PHP Classes (PSR-4: QP\Viewports\)
-├── modules/                       # Feature Modules
-├── src/                           # TypeScript/React Source Code
-├── config/                        # Konfigurationsdateien
-├── tests/                         # Test-Dateien
-├── build/                         # Kompilierte Assets (generiert)
-├── vendor/                        # Composer Dependencies
-├── lib/                           # Mozart-isolierte Dependencies
-├── languages/                     # Translations (i18n)
-├── package.json                   # NPM Abhängigkeiten
-├── composer.json                  # PHP Abhängigkeiten
-├── webpack.config.js              # Webpack Konfiguration
-├── tsconfig.json                  # TypeScript Konfiguration
-├── jest.config.ts                 # Jest Test Konfiguration
-└── phpunit.xml                    # PHPUnit Konfiguration
+├── quantum-viewports.php        # Plugin Entry Point
+├── bootstrap/
+│   ├── bootstrap.php            # Container-Setup, Service Registration
+│   └── modules.php              # Module-Registrierung (Styles, Editor)
+├── includes/                    # Core PHP (QP\Viewports\)
+│   ├── Plugin.php               # Main Plugin Class
+│   ├── PluginModule.php         # Modularity Module Definition
+│   ├── VPP.php                  # Static Container Accessor
+│   ├── FilePathPluginFactory.php
+│   └── services.php             # Service Definitionen
+├── modules/
+│   ├── styles/src/              # PHP Style Engine (QP\Viewports\Styles\)
+│   │   ├── Services/
+│   │   │   ├── Parser.php       # CSS Parsing, Viewport-Rule-Generierung
+│   │   │   └── Processor.php    # Block-Verarbeitung, Post-Content Processing
+│   │   ├── Block.php
+│   │   ├── CSSRule.php
+│   │   └── CSSRuleSet.php
+│   └── editor/src/              # Editor Module (QP\Viewports\Editor\)
+│       └── EditorModule.php
+├── src/                         # TypeScript/React Frontend
+│   ├── main.ts                  # Webpack Entry
+│   ├── config.ts                # Runtime Config (quantumViewportsConfig)
+│   ├── editor.scss              # Editor-only Styles
+│   ├── plugins.tsx              # Gutenberg Plugin Registration
+│   ├── portals.tsx              # React Portals Setup
+│   ├── subscribes.ts            # Store Subscriptions
+│   ├── block/                   # Block Integration
+│   │   ├── register.tsx         # addFilter für blocks.registerBlockType
+│   │   └── edit.tsx             # BlockEdit Component
+│   ├── components/              # UI Components (React)
+│   ├── hooks/                   # Custom Hooks
+│   │   ├── use-device-type.tsx  # Gutenberg ↔ Store Viewport Sync
+│   │   ├── use-resize-editor.ts # Editor Canvas Scaling
+│   │   └── ...
+│   ├── store/                   # Redux Store
+│   │   ├── index.ts             # Store Registration
+│   │   ├── default.ts           # Initial State
+│   │   ├── reducer.ts           # Reducer (registerBlockInit, updateBlockChanges, ...)
+│   │   ├── actions.ts           # Action Creators
+│   │   ├── selectors.ts         # Selectors (getCSS, getBlockSaves, ...)
+│   │   ├── generator.ts         # SpectrumSet Generator
+│   │   └── utils.ts             # Store Utilities
+│   ├── types/                   # TypeScript Type Definitions
+│   │   └── store.ts             # ViewportStyleSets, Spectrum, etc.
+│   ├── utils/                   # Utility Functions (pure)
+│   ├── hacks/                   # WordPress/Gutenberg Workarounds
+│   └── setup/                   # Initialization
+├── config/
+│   └── elements.json            # 112 erlaubte HTML-Elemente für Selector-Validierung
+├── tests/                       # Test-Dateien
+├── build/                       # Kompilierte Assets (generiert)
+├── vendor/                      # Composer Dependencies
+├── lib/                         # Mozart-isolierte Dependencies
+├── languages/                   # i18n Translations
+├── package.json                 # NPM (v0.9.11)
+├── composer.json                # Composer (v0.9.11)
+├── webpack.config.js
+├── tsconfig.json
+├── jest.config.ts
+└── phpunit.xml
 ```
-
-### `/quantum-viewports.php`
-- **Kontext:** Haupteinstiegspunkt des Plugins
-- **Verantwortung:** Plugin-Header, Version, Aktivierung/Deaktivierung Hooks
-- **Wichtig:** Hier werden Plugin-Konstanten definiert
-- **Lädt:** Bootstrap und initialisiert App-Container
-
-### `/bootstrap/`
-
-#### `bootstrap.php`
-- **Kontext:** Container-Setup und Dependency Injection
-- **Verantwortung:** Registrierung aller Services in PSR-11 Container
-- **Geladen von:** Hauptplug-in-Datei
-- **Rückgabe:** Konfigurierter `ContainerInterface`
-
-#### `modules.php`
-- **Kontext:** Module-Registrierung und Konfiguration
-- **Verantwortung:** Alle Feature-Module zur App hinzufügen
-- **Besonderheit:** Modular-basierte Plugin-Architektur
-- **Enthält:** StylesModule, EditorModule, weitere Custom Modules
-
-### `/includes/` (PHP Backend Core)
-
-```
-includes/
-├── Plugin.php                     # Main Plugin Class
-├── PluginModule.php               # Modularity Module Definition
-├── VPP.php                        # Static Container Accessor
-├── FilePathPluginFactory.php      # Plugin-Pfad basierte Factory
-└── services.php                   # Service Definitionen
-```
-
-#### Plugin.php
-- **Namespace:** `QP\Viewports`
-- **Verantwortung:** Zentrale Plugin-Logik, Lifecycle Management
-- **Implementiert:** PSR-11 `ContainerAwareInterface`
-- **Wichtige Methoden:**
-  - `activate()` – Plugin-Aktivierung
-  - `deactivate()` – Plugin-Deaktivierung
-  - `getContainer()` – Zugriff auf Service Container
-
-#### VPP.php
-- **Namespace:** `QP\Viewports`
-- **Zweck:** Statischer Accessor für App-Container
-- **Verwendung:** `VPP::app()->get('service-id')`
-- **Alternative zu:** Direct Container Injection (Dependency Injection bevorzugt)
-
-#### services.php
-- **Zweck:** Service-Definitionen für Dependency Injection
-- **Format:** PSR-11 compatible Service Definitions
-- **Beispiele:** BlockManager, StylesService, EditorService
-
-### `/modules/`
-
-#### `/modules/styles/src/` (PHP Style Engine)
-
-```
-modules/styles/src/
-├── StylesModule.php               # Styles Module Definition
-├── Block.php                      # Block mit Styles
-├── CSSRule.php                    # Einzelne CSS-Regel
-├── CSSRuleSet.php                 # Sammlung von CSS-Regeln
-└── Services/
-    ├── StylesService.php          # Service für Style-Management
-    └── RuleFactory.php            # Factory für CSS-Rules
-```
-
-**Namespace:** `QP\Viewports\Styles`
-
-**Kernklassen:**
-- `Block`: Repräsentiert einen Block mit Viewport-spezifischen Styles
-- `CSSRule`: Einzelne CSS-Regel (Selector + Declarations + Viewport)
-- `CSSRuleSet`: Gesammlung von Rules mit Filter/Query-Funktionalität
-- `StylesService`: Service für Style-Rendering und -Verwaltung
-
-**Verwendung:** Styles für Blocks registrieren, in CSS rendern, auf verschiedene Viewports anwenden
-
-#### `/modules/editor/src/` (Editor Module)
-
-```
-modules/editor/src/
-└── EditorModule.php               # Editor Integration Module
-```
-
-**Namespace:** `QP\Viewports\Editor`
-
-**Verantwortung:**
-- Integration mit Gutenberg Block Editor
-- Registrierung von Editor-UI Komponenten
-- Viewport Selector Setup
-- Editor Meta-Data Management
-
-### `/src/` (TypeScript/React Frontend)
-
-```
-src/
-├── main.ts                        # Webpack Entry Point
-├── config.ts                      # Runtime Configuration
-├── editor.scss                    # Editor Styles
-├── plugins.tsx                    # Gutenberg Plugins Registration
-├── portals.tsx                    # React Portals Setup
-├── subscribes.ts                  # Store Subscriptions
-├── block/                         # Block-Related Components
-├── components/                    # Reusable UI Components
-├── hooks/                         # Custom React Hooks
-├── store/                         # Redux-like State Management
-├── types/                         # TypeScript Type Definitions
-├── utils/                         # Utility Functions
-├── hacks/                         # WordPress Limitation Workarounds
-└── setup/                         # Initialization Logic
-```
-
-#### `main.ts`
-- **Kontext:** Webpack Entry Point
-- **Verantwortung:** Plugin Registration, Store Initialization
-- **Lädt:** Alle Komponenten, Hooks, und Initialization
-
-#### `config.ts`
-- **Kontext:** Runtime Konfiguration
-- **Zugriff:** Globale Config (z.B. Plugin Namespace, Viewport Konfiguration)
-- **Quelle:** Entweder `wp_localize_script` oder `window` globale Variablen
-
-#### `plugins.tsx`
-- **Kontext:** Gutenberg Plugin Registration
-- **Verwendung:** Registriert Plugin-Erweiterungen für Editor
-- **Integrationspunkt:** `registerPlugin()` von `@wordpress/plugins`
-
-#### `store/`
-- **Pattern:** Redux-like State Management
-- **Integration:** `@wordpress/data` Store System
-- **Zustand Verwaltung:** Viewports, Styles, Editor Meta-Data
-
-#### `components/`
-- **Beispiele:** ViewportSelector, StylePanel, BlockStyler, etc.
-- **Pattern:** React Functional Components mit Hooks
-- **Integration:** `@wordpress/components` für UI-Primitives
-
-#### `hooks/`
-- **Beispiele:** `useViewport()`, `useStyles()`, `useBlockData()`, etc.
-- **Pattern:** Custom React Hooks für State Management
-- **Verwendung:** Komponenten-unabhängige State-Logik
-
-#### `types/`
-- **Kontext:** TypeScript Type Definitions
-- **Beispiele:** `Viewport`, `CSSRule`, `BlockStyles`, etc.
-- **Wichtig:** Strikte Type Safety für Code Quality
-
-#### `utils/`
-- **Kontext:** Utility Funktionen und Helper
-- **Beispiele:** CSS Generation, Viewport Calculation, State Transformations
-- **Wichtig:** Pure Functions, keine Side Effects
-
-#### `hacks/`
-- **Kontext:** Workarounds für WordPress/Gutenberg Limitationen
-- **Beispiele:** Custom Event Handling, DOM Manipulation Workarounds
-- **Konvention:** Kommentiere WARUM der Hack nötig ist
-
-#### `setup/`
-- **Kontext:** Initialization und Setup-Logik
-- **Verantwortung:** Plugin-Initialisierung, Hook Registration
-- **Zeitpunkt:** Lädt vor Komponenten-Rendering
-
-### `/config/`
-
-#### `elements.json`
-- **Kontext:** Block-Element Konfiguration
-- **Format:** JSON mit Block-Typ Mappings
-- **Verwendung:** Definiert welche CSS-Eigenschaften für welche Blöcke verfügbar sind
-- **Struktur:**
-  ```json
-  {
-    "blockName": {
-      "properties": ["color", "padding", "margin"],
-      "viewport-aware": true
-    }
-  }
-  ```
-
-### `/tests/`
-
-#### `CSSRulesetTest.php`
-- **Framework:** PHPUnit
-- **Kontext:** Unit-Tests für Style Engine
-- **Konfiguration:** PHPUnit Config in `/phpunit.xml`
-- **Laufbefehl:** `composer phpunit`
 
 ---
 
-## Konventionen & Code-Standards
+## Konventionen
 
-### PHP Konventionen
+### PHP
+- **Standard:** Syde PHPCS (`composer phpcs`)
+- **Namespace:** PSR-4 (`QP\Viewports\*`)
+- **Typisierung:** `declare(strict_types=1)`, Type Hints bevorzugt
+- **DI:** Service Container (inpsyde/modularity), Dependency Injection bevorzugt
+- **Hooks:** Prefix `quantum_viewports_`
 
-#### Namespace & PSR-4
-```php
-// Basis-Namespace: QP\Viewports
-namespace QP\Viewports;
-namespace QP\Viewports\Styles;
-namespace QP\Viewports\Editor;
-```
-- **Mapping:** `QP\Viewports` → `/includes/`
-- **Mapping:** `QP\Viewports\Styles` → `/modules/styles/src/`
-- **Mapping:** `QP\Viewports\Editor` → `/modules/editor/src/`
+### TypeScript/React
+- **Components:** PascalCase (z.B. `ViewportSelector.tsx`)
+- **Hooks:** camelCase mit `use`-Prefix (z.B. `useDeviceType.tsx`)
+- **Types:** PascalCase in `src/types/`
+- **Utils:** camelCase, pure Functions, keine Side Effects
+- **Store:** `@wordpress/data` Pattern mit Selectors + Actions
 
-#### Code-Standard
-- **Standard:** Syde (via `composer phpcs`)
-- **PHP Version:** 7.4+ / 8.0+ Kompatibilität
-- **Typisierung:** Strict Types, Type Hints bevorzugt
-
-#### Service Container Pattern
-```php
-// Dependency Injection verwenden
-public function __construct(SomeService $service) {
-    $this->service = $service;
-}
-
-// NICHT: Statische Aufrufe
-// VPP::app()->get('service');  // Nur wenn nötig
-```
-
-#### Hook-Konventionen
-```php
-// Action Hook für plugin init
-do_action('quantum_viewports_init', $container);
-
-// Filter Hook mit Prefix
-$value = apply_filters('quantum_viewports_' . $filterName, $value);
-```
-
-### TypeScript/React Konventionen
-
-#### Namenskonventionen
-- **Components:** PascalCase (z.B., `ViewportSelector.tsx`)
-- **Hooks:** camelCase mit `use` Prefix (z.B., `useViewport.ts`)
-- **Types:** PascalCase (z.B., `Viewport.ts`, `CSSRule.ts`)
-- **Utils:** camelCase (z.B., `generateCSS.ts`)
-- **Constants:** SCREAMING_SNAKE_CASE (z.B., `DEFAULT_VIEWPORT_WIDTH.ts`)
-
-#### Dateistruktur Pro Komponente
-```
-components/
-├── ViewportSelector/
-│   ├── ViewportSelector.tsx       # Main Component
-│   ├── ViewportSelector.styles.scss
-│   ├── ViewportSelector.test.ts
-│   └── index.ts                   # Export
-```
-
-#### Typing Beispiel
-```typescript
-interface Viewport {
-    id: string;
-    label: string;
-    width: number;
-    isActive: boolean;
-}
-
-type ViewportMap = Record<string, Viewport>;
-```
-
-#### React Hooks Pattern
-```typescript
-export const useViewport = () => {
-    const { getState, dispatch } = useDataStore('quantum-viewports/editor');
-
-    return {
-        currentViewport: getState().currentViewport,
-        setViewport: (viewportId: string) => dispatch({
-            type: 'SET_VIEWPORT',
-            payload: viewportId
-        })
-    };
-};
-```
-
-#### Component Pattern
-```typescript
-interface ViewportSelectorProps {
-    onViewportChange?: (id: string) => void;
-}
-
-export const ViewportSelector: React.FC<ViewportSelectorProps> = ({
-    onViewportChange
-}) => {
-    const { currentViewport, setViewport } = useViewport();
-
-    return (
-        // JSX
-    );
-};
-```
-
-### CSS/SCSS Konventionen
-
-#### BEM-Naming
-```scss
-.qp-viewport-selector {           // Block
-    display: flex;
-
-    &__trigger {                  // Element
-        cursor: pointer;
-    }
-
-    &__trigger--active {           // Modifier
-        background-color: blue;
-    }
-}
-```
-
-#### Präfix
-- **Klassen:** `qp-` Präfix für Plugin-Spezifität (z.B., `qp-viewport-selector`)
-- **Variablen:** `--qp-` Präfix (z.B., `--qp-primary-color`)
-
-#### Editor vs Frontend
-- `editor.scss` – Styles nur im Editor sichtbar
-- Keine Frontend-Styles (werden dynamisch via PHP generiert)
-
----
-
-## Konfiguration
-
-### WordPress Integration
-
-#### Plugin Aktivierung
-```php
-register_activation_hook(__FILE__, ['QP\Viewports\Plugin', 'activate']);
-register_deactivation_hook(__FILE__, ['QP\Viewports\Plugin', 'deactivate']);
-```
-
-#### Gutenberg Block Registrierung
-- Via `@wordpress/blocks` API
-- Integration mit `registerBlockType()`
-- Editor-spezifische Meta-Felder via `registerBlockVariation()`
-
-### Webpack Konfiguration
-
-#### Entry Points
-```javascript
-entry: {
-    main: './src/main.ts',
-    // Weitere Entry Points optional
-}
-```
-
-#### Output
-```javascript
-output: {
-    path: path.resolve(__dirname, 'build'),
-    filename: '[name].js',
-}
-```
-
-#### Environment-spezifisch
-- **Production:** Minification, Optimization, Source Maps disabled
-- **Development:** Source Maps enabled, keine Minification
-
-### TypeScript Konfiguration
-
-#### Pfad-Mappings
-```json
-{
-    "compilerOptions": {
-        "baseUrl": ".",
-        "paths": {
-            "@components/*": ["src/components/*"],
-            "@hooks/*": ["src/hooks/*"],
-            "@types/*": ["src/types/*"],
-            "@utils/*": ["src/utils/*"]
-        }
-    }
-}
-```
-
-#### Strikte Einstellungen
-```json
-{
-    "compilerOptions": {
-        "strict": true,
-        "noImplicitAny": true,
-        "strictNullChecks": true,
-        "strictFunctionTypes": true
-    }
-}
-```
-
-### Jest Test Konfiguration
-
-#### Test-Patterns
-```typescript
-// setup.ts
-setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
-
-// test.ts
-describe('ViewportSelector', () => {
-    it('should render correctly', () => {
-        // Test
-    });
-});
-```
-
-#### Mocking WordPress APIs
-```typescript
-jest.mock('@wordpress/data', () => ({
-    useSelect: jest.fn(),
-    useDispatch: jest.fn(),
-}));
-```
+### CSS/SCSS
+- **Klassen:** BEM mit `qp-` Prefix (z.B. `qp-viewport-selector__trigger--active`)
+- **Variables:** `--qp-` Prefix
+- **Editor-only:** `src/editor.scss` — Frontend-CSS wird dynamisch via PHP generiert
 
 ---
 
 ## Abhängigkeiten
 
-### PHP Abhängigkeiten
+### PHP (Production)
+- **psr/log** ^1.1 — PSR-3 Logging
+- **wikimedia/composer-merge-plugin** ^2.0 — Module composer.json Merge
+- **wp-oop/wordpress-interface** — WordPress Type Hints
+- **dhii/versions** — Version Parsing
+- **inpsyde/modularity** ^1.12 — Plugin Architecture (via Mozart isoliert in `/lib/`)
 
-#### Produkion
-- **psr/log** ^1.1 – PSR-3 Logging Interface
-- **wikimedia/composer-merge-plugin** ^2.0 – Composer Plugin für Merge
-- **wp-oop/wordpress-interface** ^0.1.0-alpha1 – WordPress Type Hints
-- **dhii/versions** ^0.1.0-alpha1 – Version-Parsing/Vergleich
-- **inpsyde/modularity** ^1.12 – Modular Plugin Architecture (via Mozart)
+### JavaScript (WordPress APIs)
+- **@wordpress/data** — Store/State Management
+- **@wordpress/element** — React Integration
+- **@wordpress/primitives** — UI Primitives
+- **@wordpress/style-engine** — CSS Generation
+- **@webkinect/react-json-view** — JSON Viewer (Fork)
 
-#### Development
-- **syde/phpcs** dev-main – PHP CodeSniffer mit Syde Standard
-
-#### Dependency Isolation
-- **Mozart:** Isoliert `inpsyde/modularity` in `/lib/` Verzeichnis
-- **Grund:** Verhindert Konflikte mit anderen Plugins, die gleiches Package nutzen
-- **Autoloader:** Custom Autoloader via `composer.json` config
-
-### JavaScript Abhängigkeiten
-
-#### WordPress APIs
-- **@wordpress/data** – Store/State Management Pattern
-- **@wordpress/element** – React Integration
-- **@wordpress/primitives** – UI Primitives
-- **@wordpress/style-engine** – CSS Generation
-- **@wordpress/blocks** – Block API
-- **@wordpress/plugins** – Plugin API
-- **@wordpress/components** – UI Components
-
-#### Custom Dependencies
-- **@webkinect/react-json-view** (forked) – JSON Viewer Komponente
-
-#### Build Tools
-- **TypeScript** ^4.x – Sprachenfunktionen
-- **Webpack** ^5.x – Module Bundler
-- **Babel** – JavaScript Transpiler
-- **SCSS/Sass** – CSS Präprozessor
-- **Jest** – Testing Framework
-
-#### Hinweise
-- Keine externe UI-Frameworks (Bootstrap, Tailwind) verwenden
-- WordPress `@wordpress/components` für UI verwenden
-- Für neue Dependencies: Prüfung auf WordPress API Kompatibilität
+### Build Tools
+- **TypeScript** ^5.x, **Webpack** ^5.x, **Babel**, **SCSS/Sass**, **Jest**
 
 ---
 
-## Best Practices für AI-Assistenten
+## Bekannte Einschränkungen
 
-### Code-Analyse
-
-1. **PHP Struktur verstehen:**
-   - Sempre Namespace und PSR-4 überprüfen
-   - Service Container Dependencies ausfindig machen
-   - Hook-Trigger und `do_action()` / `apply_filters()` folgen
-
-2. **TypeScript/React Struktur verstehen:**
-   - Component Hierarchy analysieren
-   - Custom Hooks und State Flow verfolgen
-   - WordPress API Usage überprüfen
-
-3. **Build-Pipeline beachten:**
-   - Änderungen in `/src/` müssen `npm run build` auslösen
-   - Changes in `/includes/` oder `/modules/php` benötigen keine Kompilation
-   - Distribution Files sind in `/build/`
-
-### Häufige Aufgaben
-
-#### Neue Block-Styles hinzufügen
-1. Element-Konfiguration in `/config/elements.json` aktualisieren
-2. PHP Style Rule in `/modules/styles/src/` erstellen
-3. React Component in `/src/components/` für UI erstellen
-4. Custom Hook in `/src/hooks/` für State Management erstellen
-5. Tests schreiben und `npm run test` ausführen
-
-#### Custom Renderer registrieren
-1. `registerRenderer()` API in JavaScript verwenden
-2. Renderer-Funktion in Komponente implementieren
-3. Store-Integration für State Management
-4. Tests für Renderer-Logik
-
-#### PHP Service hinzufügen
-1. Class in `/includes/` oder `/modules/*/src/` erstellen
-2. Namespace mit PSR-4 Standard setzen
-3. In `services.php` oder `*Module.php` registrieren
-4. Type Hints für Dependencies verwenden
-5. PHPUnit Tests in `/tests/` erstellen
-
-#### i18n/Translations hinzufügen
-1. Text mit `__()`, `_e()`, etc. wrappen
-2. Textdomain: `quantum-viewports`
-3. PHO-Dateien in `/languages/` verwenden
-4. WPML/Polylang Kompatibilität beachten
-
-### Testing
-
-#### PHP Unit Tests
-```bash
-composer phpunit
-# Oder einzelne Test
-composer phpunit tests/CSSRulesetTest.php
-```
-
-#### JavaScript Tests
-```bash
-npm run test
-# Watch Mode
-npm run test:watch
-```
-
-#### Code Style
-```bash
-composer phpcs
-# Autofix wenn möglich
-composer phpcbf
-```
-
-### Debugging
-
-#### PHP Debugging
-- `error_log()` für Logs
-- WordPress Debug Mode in `wp-config.php` aktivieren
-- VPP Container: `VPP::app()->get('logger')`
-
-#### JavaScript Debugging
-- Browser Developer Tools verwenden
-- Redux DevTools für Store Inspection
-- Console Logs mit Plugin-Namespace Präfix
-- `npm run dev` für Source Maps
-
-#### Nützliche WordPress Hooks zum Inspizieren
-- `quantum_viewports_init` – Plugin Initialization
-- `wp_enqueue_scripts` / `admin_enqueue_scripts` – Asset Loading
+1. **Block Editor Viewport-Preview:** WordPress rendert immer im Default-Viewport. Workaround: `useResizeEditor` skaliert den Canvas via CSS Transform.
+2. **Highlight Property:** Temporär deaktiviert (seit v0.9.11).
+3. **Third-Party Blocks:** Funktionieren grundsätzlich, brauchen aber ggf. Custom Renderer und Selector Mapping.
+4. **Mobile Preview:** Vorschau-Verhalten kann auf mobilen Geräten variieren.
+5. **CSS-Volumen:** Viele Viewports × viele Properties × viele Blocks = potenziell großes CSS. Mitigation: SpectrumSet-Collapsing.
 
 ---
 
-## Bekannte Limitationen & Workarounds
+## Aufgaben-Leitfaden für KI-Assistenten
 
-### WordPress/Gutenberg Limitationen
+### Neuen Custom Renderer hinzufügen
+1. JavaScript: `registerRenderer()` via Store Dispatch
+2. PHP: Filter `quantum_viewports_register_renderer_[property]` registrieren
+3. Optional: Selector Mapping über `mapping`-Parameter definieren
+4. Tests schreiben
 
-1. **Block Editor Meta-Fields**
-   - Limitiertes API für komplexe State-Struktur
-   - **Workaround:** Redux-like Store in React verwenden
-   - **Datei:** `/src/hacks/` für spezielle Workarounds
+### Neuen Viewport hinzufügen
+1. Distribution-Konfiguration anpassen (PHP-seitig: `window.quantumViewportsConfig`)
+2. Store `viewports` Default-State aktualisieren (`src/store/default.ts`)
+3. Range-Detection Funktionen prüfen (`isInMobileRange`, `isInTabletRange`, `isInDesktopRange`)
 
-2. **Viewport Responsiveness**
-   - WP Block Editor rendert immer im Default Viewport
-   - **Workaround:** CSS Media Queries für Preview im Editor
-   - **Implementierung:** `editor.scss` mit spezifischen Selektoren
+### Block-Support erweitern
+1. Prüfen ob Block in `blockBlacklist` → ggf. entfernen
+2. Selector Mapping für den Block definieren wenn CSS auf Kinder-Elemente muss
+3. ggf. Custom Renderer für block-spezifische Properties
 
-3. **Plugin Isolation**
-   - Andere Plugins können Conflicts verursachen
-   - **Mitigation:** Namespace Präfixe verwenden
-   - **Mozart:** Vendor Dependencies isolieren
-
-### Browser Kompatibilität
-
-- **Target:** Chrome, Firefox, Safari, Edge (letzte 2 Versionen)
-- **IE11:** Nicht unterstützt
-- **Mobile:** Responsive Design, Touch-Events beachten
-
-### Performance Considerations
-
-1. **CSS Generation:**
-   - Viele Rules können großes CSS generieren
-   - **Mitigation:** CSS Caching, Minification
-
-2. **React Rendering:**
-   - Viewport Changes triggern Re-Renders
-   - **Mitigation:** Memoization, Selective Updates
-
-3. **Block Count:**
-   - Viele Blöcke mit vielen Viewports = komplexes DOM
-   - **Mitigation:** Virtual Scrolling für Long Lists
+### PHP Service hinzufügen
+1. Klasse in `includes/` oder `modules/*/src/` erstellen (PSR-4 Namespace)
+2. In `services.php` oder `*Module.php` registrieren
+3. Type Hints für Dependencies
+4. PHPUnit Tests
 
 ---
 
-## Wichtige Datei-Referenzen (Absolute Paths)
+## Merge-Hinweise
 
-### Ausführbare Dateien
-- `/sessions/loving-happy-darwin/mnt/Viewports/quantum-viewports.php` – Plugin Entry
-- `/sessions/loving-happy-darwin/mnt/Viewports/webpack.config.js` – Build Config
-- `/sessions/loving-happy-darwin/mnt/Viewports/package.json` – NPM Scripts
+Dieser Skill kann mit folgenden Skills kombiniert werden:
 
-### Konfiguration
-- `/sessions/loving-happy-darwin/mnt/Viewports/config/elements.json` – Element Config
-- `/sessions/loving-happy-darwin/mnt/Viewports/tsconfig.json` – TypeScript Config
-- `/sessions/loving-happy-darwin/mnt/Viewports/jest.config.ts` – Test Config
-
-### Backend Core
-- `/sessions/loving-happy-darwin/mnt/Viewports/includes/Plugin.php` – Main Plugin
-- `/sessions/loving-happy-darwin/mnt/Viewports/bootstrap/bootstrap.php` – DI Container
-- `/sessions/loving-happy-darwin/mnt/Viewports/bootstrap/modules.php` – Module Setup
-
-### Style Engine
-- `/sessions/loving-happy-darwin/mnt/Viewports/modules/styles/src/StylesModule.php`
-- `/sessions/loving-happy-darwin/mnt/Viewports/modules/styles/src/Block.php`
-- `/sessions/loving-happy-darwin/mnt/Viewports/modules/styles/src/CSSRule.php`
-
-### Frontend
-- `/sessions/loving-happy-darwin/mnt/Viewports/src/main.ts` – Webpack Entry
-- `/sessions/loving-happy-darwin/mnt/Viewports/src/config.ts` – Runtime Config
-- `/sessions/loving-happy-darwin/mnt/Viewports/src/components/` – UI Components
-- `/sessions/loving-happy-darwin/mnt/Viewports/src/hooks/` – Custom Hooks
-- `/sessions/loving-happy-darwin/mnt/Viewports/src/store/` – State Management
-
-### Tests
-- `/sessions/loving-happy-darwin/mnt/Viewports/tests/CSSRulesetTest.php` – PHP Tests
-- `/sessions/loving-happy-darwin/mnt/Viewports/jest.config.ts` – Test Config
-
----
-
-## Kontakt & Support
-
-- **Repository:** https://github.com/Quantum-Press/Viewports
-- **Author:** Sebastian Buchwald / Quantum-Press
-- **Issue Tracker:** GitHub Issues
-- **Documentation:** Code Comments (German), Docblocks
-
----
-
-## Changelog für AI-Kontext
-
-- **2026-02-15:** Initial SKILLS.md erstellt für Version 0.9.11
-- **Umfang:** Vollständige Architektur-Dokumentation, APIs, Konventionen, Abhängigkeiten
-- **Sprache:** Deutsch für Plugin-Konsistenz
-- **Format:** YAML Frontmatter + Markdown für GitHub/IDE Integration
+- **wp-plugin-rules** — Definiert Code-Standards und Analyse-Workflow. SKILLS.md hat Vorrang bei Viewport-spezifischer Logik.
+- **documentation-rules** — Stellt Dokumentationspflege sicher. Dokumentationsstruktur hat documentation-rules Vorrang.
+- **viewports-analyzer** — Nutzt SKILLS.md als Kontext für Code-Audit und Optimierungsanalyse.
