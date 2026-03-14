@@ -142,22 +142,13 @@ class StylesModule implements ServiceModule, ExecutableModule
             'render_block',
             function( string $blockHtml, array $block ) use ( $parser, $processor ): string
             {
-                // Check if the block contains viewports before processing.
-                if (
-                    (
-                        ! isset( $block[ 'attrs' ][ 'viewports' ] ) ||
-                        empty( $block[ 'attrs' ][ 'viewports' ] )
-                    ) && (
-                        ! isset( $block[ 'attrs' ][ 'style' ] ) ||
-                        empty( $block[ 'attrs' ][ 'style' ] )
-                    )
-                ) {
-                    return $blockHtml;
-                }
-
                 $block[ 'innerHtml' ] = $blockHtml;
 
                 $cssRuleSet = $processor->generateCSSRuleSet( $parser, $block );
+                if ( ! $cssRuleSet ) {
+                    return $blockHtml;
+                }
+
                 $cssRuleSet->compress( $processor );
                 $hash = $cssRuleSet->hash();
 
@@ -166,9 +157,13 @@ class StylesModule implements ServiceModule, ExecutableModule
 
                 $css = $cssRuleSet->css( $selector );
 
-                $this->registerCSS( $hash, $css );
+                if ( ! empty( $css ) ) {
+                    $this->registerCSS( $hash, $css );
 
-                return $cssRuleSet->blockHtml( $className );
+                    return $cssRuleSet->blockHtml( $className );
+                }
+
+                return $blockHtml;
             }, 20, 2
         );
     }

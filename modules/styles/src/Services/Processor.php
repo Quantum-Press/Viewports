@@ -211,8 +211,11 @@ class Processor {
         if ( $blockType ) {
             $defaultAttributes = $blockType->attributes;
 
-            if ( isset( $defaultAttributes[ 'style' ] ) ) {
-                return $defaultAttributes[ 'style' ];
+            if (
+                isset( $defaultAttributes[ 'style' ] ) &&
+                isset( $defaultAttributes[ 'style' ][ 'default' ] )
+            ) {
+                return $defaultAttributes[ 'style' ][ 'default' ];
             }
         }
 

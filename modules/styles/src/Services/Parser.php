@@ -389,22 +389,9 @@ class Parser
         array $attributes = []
     ): array
     {
-        // Check if there is a filled inlineStyles attribute to generate rules from.
-        if (
-            ( ! isset( $attributes[ 'style' ] ) || empty( $attributes[ 'style' ] ) ) &&
-            ( ! isset( $attributes[ 'viewports' ] ) || empty( $attributes[ 'viewports' ] ) )
-        ) {
-            return [];
-        }
-
         $viewports = $attributes[ 'viewports' ] ?? [];
         $attributeStyle = $attributes[ 'style' ] ?? [];
         $attributeStyleDefaults = $processor->blockStyleDefaults( $blockName );
-        $attributeStyleDefaults = $this->traverseGet(
-            [ 'default' ],
-            $attributeStyleDefaults,
-            []
-        );
 
         $viewports[ 0 ] = [
             'style' => $this->merge(
