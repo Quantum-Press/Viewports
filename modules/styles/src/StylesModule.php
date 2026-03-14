@@ -233,6 +233,9 @@ class StylesModule implements ServiceModule, ExecutableModule
                 'wp_font_family',
                 'wp_font_face',
                 'customize_changeset',
+                'rcb-cookie',
+                'rcb-blocker',
+                'rcb-banner-link',
             ];
             $this->invalidPostTypes = \apply_filters(
                 'quantum_viewports_invalid_post_types',
