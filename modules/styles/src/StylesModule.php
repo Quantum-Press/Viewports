@@ -153,7 +153,12 @@ class StylesModule implements ServiceModule, ExecutableModule
                 $hash = $cssRuleSet->hash();
 
                 $className = 'vp-' . $hash;
-                $selector  = 'body .wp-site-blocks .' . $className;
+                $selectorPrefix = \apply_filters(
+                    'quantum_viewports_selector_prefix',
+                    'body .wp-site-blocks'
+                );
+
+                $selector = rtrim( trim( $selectorPrefix . ' .' . $className ) );
 
                 $css = $cssRuleSet->css( $selector );
 
