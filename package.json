@@ -1,6 +1,6 @@
 {
     "name": "quantum-viewports",
-    "version": "0.9.12-dev",
+    "version": "0.9.12",
     "private": true,
     "description": "Extend your BlockTheme to make standard block styles responsive!",
     "author": "Sebastian Buchwald",

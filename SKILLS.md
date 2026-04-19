@@ -1,6 +1,6 @@
 ---
-version: "0.9.11"
-last_updated: "2026-02-16"
+version: "0.9.12"
+last_updated: "2026-04-19"
 project: "Quantum Viewports"
 ai_context: true
 ---
@@ -11,7 +11,7 @@ ai_context: true
 
 **Quantum Viewports** ist ein WordPress-Plugin, das den Gutenberg Block Editor um viewport-spezifische (responsive) Stil-Kontrollen erweitert. Redakteure können Block-Styles für Desktop, Tablet und Mobile separat definieren — direkt im Editor, ohne eigenes CSS.
 
-- **Version:** 0.9.11
+- **Version:** 0.9.12
 - **Typ:** WordPress-Plugin
 - **Autor:** Sebastian Buchwald / Quantum-Press
 - **Lizenz:** GPLv2 oder später
@@ -405,6 +405,7 @@ Post wird gespeichert / gerendert
 | `quantum_viewports_register_renderer_[property]` | Filter | CSS-Generierung pro Property überschreiben |
 | `quantum_viewports_ignore_properties` | Filter | Properties die nicht in Inline-HTML geschrieben werden |
 | `quantum_viewports_selector_mapping` | Filter | Block-spezifisches Selector Remapping |
+| `quantum_viewports_selector_prefix` | Filter | CSS-Selector-Prefix anpassen (v0.9.12) |
 | `quantum_viewports_block_blacklist` | Filter | Blocks von Viewport-Verarbeitung ausschließen |
 
 ### PHP Namespaces & Services
@@ -587,8 +588,8 @@ quantum-viewports/
 ├── vendor/                      # Composer Dependencies
 ├── lib/                         # Mozart-isolierte Dependencies
 ├── languages/                   # i18n Translations
-├── package.json                 # NPM (v0.9.11)
-├── composer.json                # Composer (v0.9.11)
+├── package.json                 # NPM (v0.9.12)
+├── composer.json                # Composer (v0.9.12)
 ├── webpack.config.js
 ├── tsconfig.json
 ├── jest.config.ts

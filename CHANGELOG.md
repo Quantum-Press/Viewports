@@ -1,3 +1,9 @@
+## Version 0.9.12
+### 🚀 New & Changed
+- Introduced `quantum_viewports_selector_prefix` filter to customize selector prefixes
+- Updated block default handling for parser and processor services
+- Ignore rcb post-types on post save
+
 ## Version 0.9.11
 ### 🚀 New & Changed
 - Implemented php style engine

@@ -1,6 +1,6 @@
 ---
-version: "0.9.11"
-last_updated: "2026-02-15"
+version: "0.9.12"
+last_updated: "2026-04-19"
 project: "Quantum Viewports"
 ---
 
@@ -10,7 +10,7 @@ project: "Quantum Viewports"
 
 Quantum Viewports ist ein WordPress-Plugin für die Gutenberg Block Editor, das Blöcke mit viewport-spezifischen (responsive) Style-Kontrollen erweitert. Das Plugin ermöglicht es Editoren und Entwicklern, Block-Eigenschaften wie Margin, Padding und andere Style-Attribute unabhängig für Desktop, Tablet und Mobile anzupassen, ohne separate CSS oder Media Queries manuell zu schreiben.
 
-**Status:** Early Access (v0.9.11)
+**Status:** Early Access (v0.9.12)
 **Lizenz:** GPLv2 oder später
 **Repository:** https://github.com/Quantum-Press/Viewports
 
@@ -153,6 +153,7 @@ Die registerRenderer API ermöglicht Entwicklern, Custom Style Renderer für Bl�
   - Hooks: `quantum_viewports_modules` zum Hinzufügen/Entfernen von Modulen
   - Hooks: `quantum_viewports_block_blacklist` zum Filtern der Blockierungsliste
   - Hooks: `quantum_viewports_invalid_post_types` für Post-Type-Ausschuss
+  - Hooks: `quantum_viewports_selector_prefix` zur Anpassung des Selector-Prefix (v0.9.12)
   - Hooks: `quantum_viewports_migrate` / `quantum_viewports_migrate_on_update` für Versionsverwaltung
 
 - **REQ-API-004** Block- und Theme-Extensibility
@@ -165,6 +166,8 @@ Die registerRenderer API ermöglicht Entwicklern, Custom Style Renderer für Bl�
 
 ### Entscheidungen
 
+- [2026-03-18] `quantum_viewports_selector_prefix` Filter eingeführt, um den CSS-Selector-Prefix anpassbar zu machen (v0.9.12)
+- [2026-03-14] Block-Default-Handling in Parser/Processor überarbeitet; rcb-Post-Types werden beim Save ignoriert (v0.9.12)
 - [2025-05-01] registerRenderer mit separaten groupId/panelId statt `selectors` Parameter für bessere UI-Kontrolle (v0.9.11)
 - [2025-04-01] Priority-basiertes Sorting von Renderern für vorhersagbare Rendering-Order (v0.9.11)
 

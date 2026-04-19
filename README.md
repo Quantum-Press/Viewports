@@ -2,7 +2,7 @@
 
 > Extend your BlockTheme to make standard block styles responsive!
 
-**Version:** 0.9.11 | **Status:** Early Access
+**Version:** 0.9.12 | **Status:** Early Access
 
 ## Table of Contents
 
